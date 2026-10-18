@@ -106,8 +106,8 @@ export class Game {
 
     setupCamera() {
         this.camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 0.1, 300);
-        this.camera.position.set(0, 12, 15);
-        this.camera.lookAt(0, 0, -10);
+        this.camera.position.set(0, 8.7, 11);
+        this.camera.lookAt(0, 0, -8.5);
     }
 
     setupLights() {
@@ -216,7 +216,7 @@ export class Game {
     }
 
     getStartingCrowdSize() {
-        return 3 + (this.crowdUpgrade - 1) * 3;
+        return 5 + (this.crowdUpgrade - 1) * 3;
     }
 
     clearLevel() {
@@ -283,8 +283,8 @@ export class Game {
 
         // Update camera
         this.camera.position.x = this.playerX * 0.3;
-        this.camera.position.z = -this.trackZ + 15;
-        this.camera.lookAt(this.playerX * 0.3, 0, -this.trackZ - 10);
+        this.camera.position.z = -this.trackZ + 11;
+        this.camera.lookAt(this.playerX * 0.3, 0, -this.trackZ - 8.5);
 
         // Update light position to follow player
         this.directionalLight.position.set(
