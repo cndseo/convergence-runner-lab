@@ -1,8 +1,6 @@
 import { defineConfig } from 'vite';
 
-export default defineConfig({
-    base: '/count-stickman-game/',
-    build: {
-        outDir: 'docs',
-    },
-});
+export default defineConfig(({ command }) => ({
+  base: command === 'serve' ? '/' : '/convergence-runner-lab/convergence/',
+  build: { outDir: '../../docs/convergence', emptyOutDir: true },
+}));
