@@ -20,10 +20,14 @@ export function attachAnimatedHumanoid(crowd) {
     for(const [index,runner] of crowd.playerStickmen.entries()) {
       if(!runner.parent||runner.userData.realHumanoid)continue;
       const model=cloneSkeleton(gltf.scene);
-      // This CC0 conversion uses Z-up geometry despite glTF's Y-up convention.
-      // Correct orientation BEFORE computing bounds or attaching to the runner.
-      model.rotation.x=-Math.PI/2;
+      const mixer=new THREE.AnimationMixer(model);
+      const clip=gltf.animations.find(a=>a.name.toLowerCase()==='run')||gltf.animations[0];
+      if(clip){const action=mixer.clipAction(clip);action.play();action.time=(index%7)*.11;mixer.update(.001);}
+      // Bind-pose bounds are misleading on this GLB. Measure the actual skinned RUN pose.
       model.updateMatrixWorld(true);
+      model.traverse(child=>{
+        if(child.isSkinnedMesh){child.computeBoundingBox();child.frustumCulled=false;child.userData.sharedHumanoidAsset=true;}
+      });
       const bbox=new THREE.Box3().setFromObject(model);
       const size=bbox.getSize(new THREE.Vector3());
       if(!Number.isFinite(size.y)||size.y<=0)continue;
@@ -38,9 +42,6 @@ export function attachAnimatedHumanoid(crowd) {
       runner.add(model);
       // Existing procedural animation remains operational but invisible.
       for(const part of runner.children)if(part!==model)part.visible=false;
-      const mixer=new THREE.AnimationMixer(model);
-      const clip=gltf.animations.find(a=>a.name.toLowerCase()==='run')||gltf.animations[0];
-      if(clip){const action=mixer.clipAction(clip);action.time=(index%7)*.11;action.play();}
       runner.userData.realHumanoid={mixer,model};
     }
     crowd._humanoidPending=false;
