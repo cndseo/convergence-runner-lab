@@ -1,10 +1,10 @@
-﻿# CONVERGENCE 3D — catalogue des assets externes
+# CONVERGENCE 3D — catalogue des assets externes
 
 ## Acquis et vérifiés (18 octobre 2026)
 
 | Asset | Source | Licence | Format | Statut |
 |---|---|---|---|---|
-| Road Side (Kenney City Kit Roads) | https://flockbay.com/assets/road-side-city-kit-roads/ | CC0-1.0 | GLB 2.0 + PNG | Intégré comme accessoire décoratif latéral dans la scène ; test navigateur restant à faire |
+| Road Side (Kenney City Kit Roads) | https://flockbay.com/assets/road-side-city-kit-roads/ | CC0-1.0 | GLB 2.0 + PNG | Intégré comme accessoire décoratif latéral dans la scène ; chargement confirmé par test navigateur Chrome mobile (HTTP 200, console de succès, aucune erreur JS) |
 
 Fichiers locaux : `public/assets/kenney/road-side.glb` et `public/assets/kenney/Textures/colormap.png`.
 
