@@ -22,12 +22,12 @@ export function attachAnimatedHumanoid(crowd) {
       if(index>=maxAnimated){runner.userData.lowDetail=true;continue;}
       if(!runner.parent||runner.userData.realHumanoid)continue;
       const model=cloneSkeleton(gltf.scene);
-      // Character source faces sideways; orient its animated run toward -Z.
+      // Character source faces sideways; orient its animated walk toward -Z.
       model.rotation.y=-Math.PI/2;
       const mixer=new THREE.AnimationMixer(model);
-      const clip=gltf.animations.find(a=>a.name.toLowerCase()==='run')||gltf.animations[0];
-      if(clip){const action=mixer.clipAction(clip);action.play();action.time=(index%7)*.11;mixer.update(.001);}
-      // Bind-pose bounds are misleading on this GLB. Measure the actual skinned RUN pose.
+      const clip=gltf.animations.find(a=>a.name.toLowerCase()==='walk')||gltf.animations.find(a=>a.name.toLowerCase()==='idle')||gltf.animations[0];
+      if(clip){const action=mixer.clipAction(clip);action.setLoop(THREE.LoopRepeat);action.setEffectiveTimeScale(.92);action.play();action.time=(index%7)*.16;mixer.update(.001);}
+      // Bind-pose bounds are misleading on this GLB. Measure the actual skinned WALK pose.
       model.updateMatrixWorld(true);
       model.traverse(child=>{
         if(child.isSkinnedMesh){child.computeBoundingBox();child.frustumCulled=false;child.userData.sharedHumanoidAsset=true;}
@@ -46,10 +46,10 @@ export function attachAnimatedHumanoid(crowd) {
       runner.add(model);
       // Existing procedural animation remains operational but invisible.
       for(const part of runner.children)if(part!==model)part.visible=false;
-      runner.userData.realHumanoid={mixer,model};
+      runner.userData.realHumanoid={mixer,model,animation:clip?.name??null};
     }
     crowd._humanoidPending=false;
-    console.info('Quaternius animated runner enabled',crowd.playerStickmen.length);
+    console.info('Quaternius walking demonstrators enabled',crowd.playerStickmen.length);
   }).catch(e=>{crowd._humanoidPending=false;console.warn('Quaternius humanoid fallback',e?.message);});
 }
 export function preloadRunnerHumanoid(){return source();}

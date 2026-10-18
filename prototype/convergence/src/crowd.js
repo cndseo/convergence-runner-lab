@@ -317,9 +317,9 @@ export class CrowdManager {
     update(delta) {
         updateAnimatedHumanoids(this,delta);
         if(this.playerStickmen.some(r=>!r.userData.realHumanoid&&!r.userData.lowDetail))attachAnimatedHumanoid(this);
-        this.animTime += delta * 5; // Slower animation cycle
+        this.animTime += delta * 2.6; // Measured walking cadence for fallback low-detail citizens
         
-        // Animate stickmen running
+        // Animate low-detail demonstrators walking
         if (this.playerStickmen.length > 0) {
             this.playerStickmen.forEach((stickman, i) => {
                 // Spawn pop-in animation
@@ -341,33 +341,33 @@ export class CrowdManager {
                 const offset = i * 0.7;
                 const walkCycle = this.animTime + offset;
                 
-                // Bobbing motion - more pronounced up/down
+                // Gentle vertical weight shift rather than sprint bouncing
                 if (!stickman.userData.spawning) {
-                    stickman.position.y = Math.abs(Math.sin(walkCycle * 2)) * 0.25;
+                    stickman.position.y = Math.abs(Math.sin(walkCycle * 2)) * 0.045;
                 }
                 
-                // Body lean forward while running
+                // Upright posture for the march
                 const children = stickman.children;
                 // Body tilt (children[0] = body)
                 if (children.length >= 1) {
-                    children[0].rotation.x = 0.15 + Math.sin(walkCycle) * 0.05;
+                    children[0].rotation.x = 0.01 + Math.sin(walkCycle) * 0.018;
                 }
                 // Head bob (children[1] = head)
                 if (children.length >= 2) {
-                    children[1].rotation.x = Math.sin(walkCycle * 2) * 0.08;
+                    children[1].rotation.x = Math.sin(walkCycle * 2) * 0.018;
                 }
                 
-                // Leg animation - much larger swing
+                // Controlled leg swing: walking, not running
                 if (children.length >= 4) {
-                    children[2].rotation.x = Math.sin(walkCycle) * 0.8; // left leg big swing
-                    children[3].rotation.x = -Math.sin(walkCycle) * 0.8; // right leg big swing
+                    children[2].rotation.x = Math.sin(walkCycle) * 0.36; // left leg
+                    children[3].rotation.x = -Math.sin(walkCycle) * 0.36; // right leg
                 }
-                // Arm animation - opposite to legs, big swing
+                // Gentle opposite arm swing
                 if (children.length >= 6) {
-                    children[4].rotation.x = -Math.sin(walkCycle) * 0.7; // left arm
-                    children[4].rotation.z = 0.3 + Math.sin(walkCycle * 2) * 0.1;
-                    children[5].rotation.x = Math.sin(walkCycle) * 0.7; // right arm
-                    children[5].rotation.z = -0.3 - Math.sin(walkCycle * 2) * 0.1;
+                    children[4].rotation.x = -Math.sin(walkCycle) * 0.25; // left arm
+                    children[4].rotation.z = 0.17 + Math.sin(walkCycle * 2) * 0.04;
+                    children[5].rotation.x = Math.sin(walkCycle) * 0.25; // right arm
+                    children[5].rotation.z = -0.17 - Math.sin(walkCycle * 2) * 0.04;
                 }
             });
         }

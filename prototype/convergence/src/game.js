@@ -7,6 +7,9 @@ import { updatePoliceAnimations,preloadPoliceHumanoid } from './policeAssets.js'
 import { preloadMotorcycle } from './motorcycleAssets.js';
 import { preloadRunnerHumanoid } from './humanoidAssets.js';
 
+// Forward movement calibrated for a walking demonstration, not a sprint.
+const MARCH_SPEED = 3.0;
+
 export class Game {
     constructor() {
         this.scene = null;
@@ -54,7 +57,7 @@ export class Game {
         // Player
         this.playerCrowd = null;
         this.playerX = 0;
-        this.speed = 9;
+        this.speed = MARCH_SPEED;
         this.trackZ = 0;
         
         // Level
@@ -200,7 +203,7 @@ export class Game {
         this.state = 'playing';
         this.trackZ = 0;
         this.playerX = 0;
-        this.speed = 9;
+        this.speed = MARCH_SPEED;
         
         // Init and start audio
         this.audio.init();
@@ -510,7 +513,7 @@ export class Game {
                 } else {
                     this.crowdManager.removeEnemyCrowd(enemy);
                     this.state = 'playing';
-                    this.speed = 9;
+                    this.speed = MARCH_SPEED;
                     this.fightingEnemy = null;
                     this.fightCameraTime = 0;
                     this.camera.position.y = 12;
