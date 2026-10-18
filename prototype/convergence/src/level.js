@@ -4,6 +4,7 @@ import { upgradeBossVan } from './bossAssets.js';
 import { placeKenneyCityDetails, disposeKenneyCityDetails } from './kenneyCity.js';
 import { makeOfficer, makeVan } from './characters.js';
 import { makeAsphaltTexture } from './roadTexture.js';
+import { upgradePoliceOfficer, resetPoliceVisualBudget } from './policeAssets.js';
 
 export class LevelGenerator {
     constructor(scene, game) {
