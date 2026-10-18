@@ -1,5 +1,6 @@
 import * as THREE from 'three';
 import { makeCitizen } from './characters.js';
+import { attachAnimatedHumanoid, updateAnimatedHumanoids } from './humanoidAssets.js';
 
 export class CrowdManager {
     constructor(scene, game) {
@@ -19,8 +20,8 @@ export class CrowdManager {
         if (this.playerGroup) {
             this.scene.remove(this.playerGroup);
             this.playerGroup.traverse(child => {
-                if (child.geometry) child.geometry.dispose();
-                if (child.material) child.material.dispose();
+                if (child.geometry && !child.userData.sharedHumanoidAsset) child.geometry.dispose();
+                if (child.material && !child.userData.sharedHumanoidAsset) child.material.dispose();
             });
         }
         this.playerStickmen = [];
@@ -49,6 +50,7 @@ export class CrowdManager {
         }
 
         this.scene.add(this.playerGroup);
+        attachAnimatedHumanoid(this);
     }
 
     addStickmanToGroup(index) {
@@ -313,6 +315,8 @@ export class CrowdManager {
     }
 
     update(delta) {
+        updateAnimatedHumanoids(this,delta);
+        if(this.playerStickmen.some(r=>!r.userData.realHumanoid))attachAnimatedHumanoid(this);
         this.animTime += delta * 5; // Slower animation cycle
         
         // Animate stickmen running
@@ -432,8 +436,8 @@ export class CrowdManager {
             if (ud.life <= 0) {
                 this.scene.remove(mesh);
                 mesh.traverse(child => {
-                    if (child.geometry) child.geometry.dispose();
-                    if (child.material) child.material.dispose();
+                    if (child.geometry && !child.userData.sharedHumanoidAsset) child.geometry.dispose();
+                    if (child.material && !child.userData.sharedHumanoidAsset) child.material.dispose();
                 });
                 this.flyingBodies.splice(i, 1);
             }
