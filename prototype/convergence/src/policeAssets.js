@@ -18,6 +18,24 @@ function box(g,color,size,pos){
  const m=new THREE.Mesh(new THREE.BoxGeometry(...size),material(color));
  m.position.set(...pos);m.castShadow=true;g.add(m);return m;
 }
+const patches=new Map();
+function addPatch(parent,label,position,width=.36,height=.13){
+ let patch=patches.get(label);
+ if(!patch){
+  const canvas=document.createElement('canvas');
+  canvas.width=256;canvas.height=96;
+  const context=canvas.getContext('2d');
+  context.fillStyle='#152236';context.fillRect(0,0,256,96);
+  context.strokeStyle='#9cafc5';context.lineWidth=5;context.strokeRect(3,3,250,90);
+  context.textAlign='center';context.textBaseline='middle';
+  context.font='900 54px Arial,sans-serif';
+  context.fillStyle='#f9fbff';context.fillText(label,128,49);
+  patch=new THREE.MeshBasicMaterial({map:new THREE.CanvasTexture(canvas),transparent:false,side:THREE.DoubleSide});
+  patches.set(label,patch);
+ }
+ const mesh=new THREE.Mesh(new THREE.PlaneGeometry(width,height),patch);
+ mesh.position.set(...position);parent.add(mesh);
+}
 function addGear(rig,kind){
  const scheme=uniforms[kind]||uniforms.crs;
  const gear=new THREE.Group();
@@ -29,20 +47,25 @@ function addGear(rig,kind){
  }
  const helmet=new THREE.Mesh(new THREE.SphereGeometry(.205,18,12,0,Math.PI*2,0,Math.PI*.63),material(scheme.helmet,.18));
  helmet.position.set(0,1.57,0);helmet.castShadow=true;gear.add(helmet);
- box(gear,0x17232f,[.38,.055,.23],[0,1.46,-.09]);
- const visor=box(gear,0x809caa,[.35,.16,.025],[0,1.44,-.19]);
+ box(gear,0x17232f,[.38,.055,.23],[0,1.46,.09]);
+ const visor=box(gear,0x809caa,[.35,.16,.025],[0,1.44,.19]);
+ visor.material=visor.material.clone();
  visor.material.transparent=true;visor.material.opacity=.63;
  if(kind==='crs'){
-  const shield=box(gear,0x738c9d,[.53,.79,.045],[.27,.80,-.33]);
+  const shield=box(gear,0x738c9d,[.53,.79,.045],[.27,.80,.33]);
+  shield.material=shield.material.clone();
   shield.material.transparent=true;shield.material.opacity=.72;shield.material.metalness=.08;
-  box(gear,0x142437,[.48,.15,.052],[.27,.85,-.36]);
-  box(gear,0xb6c4c9,[.49,.04,.055],[.27,1.17,-.35]);
-  box(gear,0xb6c4c9,[.49,.04,.055],[.27,.45,-.35]);
+  box(gear,0x142437,[.48,.15,.052],[.27,.85,.36]);
+  box(gear,0xb6c4c9,[.49,.04,.055],[.27,1.17,.35]);
+  box(gear,0xb6c4c9,[.49,.04,.055],[.27,.45,.35]);
+  addPatch(gear,'CRS',[.27,.88,.392],.37,.14);
  }else if(kind==='bac'){
-  box(gear,0x151b22,[.38,.12,.025],[0,1.15,-.16]);
+  box(gear,0x151b22,[.38,.12,.025],[0,1.15,.16]);
   box(gear,0x374b61,[.18,.19,.10],[-.26,.98,-.03]);
+  addPatch(gear,'BAC',[0,1.15,.179],.31,.13);
  }else{
   box(gear,0x243446,[.32,.12,.23],[0,.94,-.06]);
+  addPatch(gear,'BRAV-M',[0,1.16,.179],.38,.11);
  }
  rig.add(gear);
  return gear;

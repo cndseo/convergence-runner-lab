@@ -66,6 +66,12 @@ export function createParisStreetscape(scene,trackLength,tracked){
  instanced(scenery,mats.iron,railings);
  instanced(scenery,mats.slate,roofSlopes);
  instanced(scenery,mats.glass,dormers);
+ // Decorative iron balusters: instancing keeps the bridge detailed but cheap.
+ const bridgeBalusters=[];
+ for(let z=0;z<trackLength;z+=2.35){
+  for(const side of [-1,1])bridgeBalusters.push([side*5.65,.76,-z,.12,1.05,.12]);
+ }
+ instanced(scenery,mats.iron,bridgeBalusters);
  // Iron balustrades and classic lanterns, spaced to avoid visual clutter.
  const lampBases=[],lampPosts=[],lampCrossbars=[],lampCaps=[],lampBulbs=[];
  for(let z=9;z<trackLength;z+=18){

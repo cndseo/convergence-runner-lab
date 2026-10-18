@@ -25,14 +25,29 @@ export function upgradeBravMotorcycle(officer){
   model.scale.setScalar(1.72/length);
   // Place bike lengthwise on roadway and lift its wheels to ground.
   const mostlyX=size.x>size.z;
-  if(mostlyX)model.rotation.y=Math.PI/2;
+  if(mostlyX)model.rotation.y=-Math.PI/2;
   model.updateMatrixWorld(true);
   const fitted=new THREE.Box3().setFromObject(model);
   const center=fitted.getCenter(new THREE.Vector3());
   model.position.set(-center.x,-fitted.min.y,-center.z);
+  // Dark blue police fairing with black wheels instead of the white source paint.
+  model.traverse(child=>{
+   if(!child.isMesh||!child.material)return;
+   child.material=child.material.clone();
+   child.material.color.setHex(/wheel/i.test(child.name)?0x20242a:0x344e74);
+   child.material.roughness=.49;
+  });
   const holder=new THREE.Group();
   holder.userData.motorcycleVisual=true;
   holder.add(model);
+  const blue=new THREE.MeshStandardMaterial({color:0x2b9bff,emissive:0x1576ef,emissiveIntensity:2,roughness:.23});
+  const windscreen=new THREE.MeshStandardMaterial({color:0x567c9e,transparent:true,opacity:.69,metalness:.3,roughness:.2});
+  for(const side of [-1,1]){
+   const siren=new THREE.Mesh(new THREE.BoxGeometry(.13,.085,.12),blue);
+   siren.position.set(side*.23,1.01,.22);holder.add(siren);
+  }
+  const screen=new THREE.Mesh(new THREE.BoxGeometry(.45,.29,.025),windscreen);
+  screen.position.set(0,.91,.31);screen.rotation.x=-.3;holder.add(screen);
   officer.add(holder);
   // The last procedural child is the old temporary motorcycle.
   for(const child of officer.children){
