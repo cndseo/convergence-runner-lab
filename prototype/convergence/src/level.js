@@ -131,47 +131,32 @@ export class LevelGenerator {
         };
     }
 
-    createGateMesh(gateData, x, z) {
-        const isGood = gateData.op === '+' || gateData.op === '*';
-        const color = isGood ? 0x398ddb : 0xc44955;
-        
-        const gateGeo = new THREE.BoxGeometry(4.5, 4, 0.3);
-        const gateMat = new THREE.MeshStandardMaterial({ 
-            color: color,
-            transparent: true,
-            opacity: 0.8
+    createGateMesh(gateData,x,z) {
+        const good=gateData.op==='+'||gateData.op==='*';
+        const color=good?0x3c9ee5:0xd75b66;
+        const material=new THREE.MeshStandardMaterial({
+            color,transparent:true,opacity:.30,depthWrite:false,
+            emissive:color,emissiveIntensity:.08,side:THREE.DoubleSide
         });
-        const gateMesh = new THREE.Mesh(gateGeo, gateMat);
-        gateMesh.position.set(x, 2, -z);
-        gateMesh.userData.dynamic = true;
-        this.scene.add(gateMesh);
-        this.meshes.push(gateMesh);
-
-        // Text label
-        const canvas = document.createElement('canvas');
-        canvas.width = 256;
-        canvas.height = 128;
-        const ctx = canvas.getContext('2d');
-        ctx.fillStyle = 'white';
-        ctx.font = 'bold 64px Arial';
-        ctx.textAlign = 'center';
-        ctx.textBaseline = 'middle';
-        ctx.fillText(`${gateData.op}${gateData.value}`, 128, 64);
-
-        const texture = new THREE.CanvasTexture(canvas);
-        const labelGeo = new THREE.PlaneGeometry(3, 1.5);
-        const labelMat = new THREE.MeshBasicMaterial({ 
-            map: texture, 
-            transparent: true,
-            depthWrite: false
-        });
-        const label = new THREE.Mesh(labelGeo, labelMat);
-        label.position.set(x, 2.5, -z + 0.2);
-        label.userData.dynamic = true;
-        this.scene.add(label);
-        this.meshes.push(label);
-
-        return gateMesh;
+        const gate=new THREE.Mesh(new THREE.PlaneGeometry(4.48,3.35),material);
+        gate.position.set(x,2,-z);
+        gate.userData.dynamic=true;this.scene.add(gate);this.meshes.push(gate);
+        const frameMat=new THREE.MeshStandardMaterial({color:good?0x78caff:0xfc9e9b,emissive:good?0x1f81bd:0x8e3846,emissiveIntensity:.28});
+        for(const side of [-1,1]) {
+            const bar=new THREE.Mesh(new THREE.BoxGeometry(.15,3.8,.22),frameMat);
+            bar.position.set(x+side*2.23,2,-z);bar.userData.dynamic=true;
+            this.scene.add(bar);this.meshes.push(bar);
+        }
+        const top=new THREE.Mesh(new THREE.BoxGeometry(4.55,.16,.22),frameMat);
+        top.position.set(x,3.93,-z);top.userData.dynamic=true;this.scene.add(top);this.meshes.push(top);
+        const c=document.createElement('canvas');c.width=256;c.height=128;const ctx=c.getContext('2d');
+        ctx.font='900 76px system-ui';ctx.textAlign='center';ctx.textBaseline='middle';
+        ctx.lineWidth=8;ctx.strokeStyle='#18283d';
+        const txt=gateData.op==='*'?'×'+gateData.value:gateData.op+gateData.value;
+        ctx.strokeText(txt,128,62);ctx.fillStyle='#ffffff';ctx.fillText(txt,128,62);
+        const badge=new THREE.Mesh(new THREE.PlaneGeometry(3.2,1.6),new THREE.MeshBasicMaterial({map:new THREE.CanvasTexture(c),transparent:true,depthWrite:false}));
+        badge.position.set(x,2.4,-z-.04);badge.userData.dynamic=true;this.scene.add(badge);this.meshes.push(badge);
+        return gate;
     }
 
     createObstacles(level, trackLength) {
@@ -238,11 +223,11 @@ export class LevelGenerator {
     }
 
     createEnemies(level, trackLength) {
-        const count = 2 + Math.floor(level * 0.5);
-        const spacing = (trackLength - 60) / (count + 1);
+        const count = 3 + Math.floor((level - 1) * 0.45);
+        const spacing = (trackLength - 90) / Math.max(1,count - 1);
 
         for (let i = 0; i < count; i++) {
-            const z = 50 + (i + 1) * spacing;
+            const z = 48 + i * spacing;
             const enemyCount = Math.floor(5 + level * 3 + Math.random() * level * 5);
             
             const enemy = {
@@ -286,14 +271,15 @@ export class LevelGenerator {
         canvas.width = 128;
         canvas.height = 64;
         const ctx = canvas.getContext('2d');
-        ctx.fillStyle = '#ff0000';
-        ctx.font = 'bold 40px Arial';
+        ctx.fillStyle = '#f3f6ff';
+        ctx.font = 'bold 26px system-ui';
         ctx.textAlign = 'center';
         ctx.textBaseline = 'middle';
-        ctx.fillText(count.toString(), 64, 32);
+        ctx.fillText(enemy.kind==='bravm'?'BRAV-M':enemy.kind==='bac'?'BAC':'CRS',64,19);
+        ctx.font = 'bold 37px system-ui';ctx.fillText(count.toString(),64,49);
 
         const texture = new THREE.CanvasTexture(canvas);
-        const labelGeo = new THREE.PlaneGeometry(2, 1);
+        const labelGeo = new THREE.PlaneGeometry(2.4, 1.2);
         const labelMat = new THREE.MeshBasicMaterial({ map: texture, transparent: true, depthWrite: false });
         const label = new THREE.Mesh(labelGeo, labelMat);
         label.position.set(0, 4, -z);
@@ -309,11 +295,12 @@ export class LevelGenerator {
         canvas.width = 128;
         canvas.height = 64;
         const ctx = canvas.getContext('2d');
-        ctx.fillStyle = '#ff0000';
-        ctx.font = 'bold 40px Arial';
+        ctx.fillStyle = '#f3f6ff';
+        ctx.font = 'bold 26px system-ui';
         ctx.textAlign = 'center';
         ctx.textBaseline = 'middle';
-        ctx.fillText(Math.max(0, enemy.remainingCount).toString(), 64, 32);
+        ctx.fillText(enemy.kind==='bravm'?'BRAV-M':enemy.kind==='bac'?'BAC':'CRS',64,19);
+        ctx.font = 'bold 37px system-ui';ctx.fillText(Math.max(0,enemy.remainingCount).toString(),64,49);
         
         if (enemy.labelMesh.material.map) {
             enemy.labelMesh.material.map.dispose();
