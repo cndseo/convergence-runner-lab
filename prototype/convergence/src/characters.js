@@ -41,6 +41,19 @@ function makeHuman(kind,index){
   box(g,0xfff5ac,.42,.045,.30,[0,.75,-.005]);
   box(g,0xfff5ac,.42,.045,.30,[0,.93,-.005]);
   box(g,0x74777c,.13,.14,.17,[0,1.46,0]);
+  // Backpack and harness straps: separate meshes preserve the six-child runner rig.
+  box(g,0x28333d,.31,.39,.17,[0,.81,.23]);
+  for(const side of [-1,1]){
+   box(g,0x1a222b,.065,.45,.065,[side*.155,.85,-.17]);
+   box(g,0xe8e7c6,.075,.39,.022,[side*.12,.82,-.159]);
+  }
+  box(g,0x2c3035,.32,.08,.20,[0,.63,.25]);
+  // Raised right fist and small hand-held flag.
+  const pole=cyl(g,0x765334,.018,.018,1.03,[.43,1.24,-.05],7);
+  pole.rotation.z=-.22;
+  const flag=new THREE.Group();flag.position.set(.52,1.74,-.05);
+  for(let k=0;k<3;k++)box(flag,[0x1b4fba,0xf4f5f6,0xd92337][k],.16,.35,.025,[.08+k*.16,0,0]);
+  g.add(flag);
  }else if(kind==='genz'||kind==='lyceens'){
   box(g,kind==='genz'?0x884caa:0x477e9e,.34,.15,.32,[0,1.02,0]);
   box(g,0x2b313f,.21,.30,.19,[.14,.61,.18]);
