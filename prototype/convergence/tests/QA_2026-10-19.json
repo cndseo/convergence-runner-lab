@@ -1,0 +1,172 @@
+{
+  "base": "GMK production build, exact GitHub Pages base path",
+  "cases": [
+    {
+      "width": 390,
+      "height": 844,
+      "count": 5,
+      "rigged": 5,
+      "impostors": 0,
+      "approvedP02": 1,
+      "animations": [
+        "Walk"
+      ],
+      "fps": 33,
+      "p95FrameMs": 32,
+      "drawCalls": 320,
+      "triangles": 59509,
+      "overflow": false,
+      "state": "playing",
+      "shields": 0,
+      "proof": {
+        "winningPaths": 20,
+        "totalPaths": 1024,
+        "winningPath": [
+          "right",
+          "left",
+          "right",
+          "right",
+          "left",
+          "left",
+          "left",
+          "left",
+          "right",
+          "right"
+        ],
+        "greedyWins": false,
+        "minSurvivors": 3
+      }
+    },
+    {
+      "width": 390,
+      "height": 844,
+      "count": 50,
+      "rigged": 12,
+      "impostors": 38,
+      "approvedP02": 1,
+      "animations": [
+        "Walk"
+      ],
+      "fps": 32,
+      "p95FrameMs": 32,
+      "drawCalls": 450,
+      "triangles": 84461,
+      "overflow": false,
+      "state": "playing",
+      "shields": 0,
+      "proof": {
+        "winningPaths": 194,
+        "totalPaths": 1024,
+        "winningPath": [
+          "right",
+          "right",
+          "right",
+          "right",
+          "left",
+          "left",
+          "right",
+          "right",
+          "left",
+          "right"
+        ],
+        "greedyWins": false,
+        "minSurvivors": 1
+      }
+    },
+    {
+      "width": 320,
+      "height": 700,
+      "count": 5,
+      "rigged": 5,
+      "impostors": 0,
+      "approvedP02": 1,
+      "animations": [
+        "Walk"
+      ],
+      "fps": 32,
+      "p95FrameMs": 32,
+      "drawCalls": 320,
+      "triangles": 59509,
+      "overflow": false,
+      "state": "playing",
+      "shields": 0,
+      "proof": {
+        "winningPaths": 20,
+        "totalPaths": 1024,
+        "winningPath": [
+          "right",
+          "left",
+          "right",
+          "right",
+          "left",
+          "left",
+          "left",
+          "left",
+          "right",
+          "right"
+        ],
+        "greedyWins": false,
+        "minSurvivors": 3
+      }
+    },
+    {
+      "width": 320,
+      "height": 700,
+      "count": 50,
+      "rigged": 12,
+      "impostors": 38,
+      "approvedP02": 1,
+      "animations": [
+        "Walk"
+      ],
+      "fps": 33,
+      "p95FrameMs": 32,
+      "drawCalls": 450,
+      "triangles": 84461,
+      "overflow": false,
+      "state": "playing",
+      "shields": 0,
+      "proof": {
+        "winningPaths": 194,
+        "totalPaths": 1024,
+        "winningPath": [
+          "right",
+          "right",
+          "right",
+          "right",
+          "left",
+          "left",
+          "right",
+          "right",
+          "left",
+          "right"
+        ],
+        "greedyWins": false,
+        "minSurvivors": 1
+      }
+    }
+  ],
+  "errors": [],
+  "failures": [],
+  "testedAt": "2026-10-18T22:37:17.178Z",
+  "input": "touch drag + pause/resume passed",
+  "runtime": {
+    "win": {
+      "state": "boss_defeated",
+      "count": 11,
+      "shields": 0,
+      "events": 10
+    },
+    "lose": {
+      "state": "lose",
+      "count": 0,
+      "shields": 0,
+      "events": 10
+    },
+    "verified": "winning and greedy routes executed through live collisions and combat"
+  },
+  "unitTests": {
+    "generatedLevels": 800,
+    "failed": 0
+  }
+}

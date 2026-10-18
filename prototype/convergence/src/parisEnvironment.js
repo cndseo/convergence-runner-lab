@@ -71,7 +71,21 @@ export function createParisStreetscape(scene,trackLength,tracked){
  for(let z=0;z<trackLength;z+=2.35){
   for(const side of [-1,1])bridgeBalusters.push([side*5.65,.76,-z,.12,1.05,.12]);
  }
+ for(let z=0;z<trackLength;z+=2.35){
+  for(const side of [-1,1]){
+   bridgeBalusters.push([side*5.65,.78,-z-.58,.045,.045,1.3,.55,0,0]);
+   bridgeBalusters.push([side*5.65,.78,-z-.58,.045,.045,1.3,-.55,0,0]);
+  }
+ }
  instanced(scenery,mats.iron,bridgeBalusters);
+ const piers=[],footings=[];
+ for(let z=4;z<trackLength;z+=23){
+  for(const side of [-1,1]){
+   piers.push([side*5.9,-1.4,-z,1.15,3.6,2.0]);
+   footings.push([side*5.9,.2,-z,1.5,.5,2.5]);
+  }
+ }
+ instanced(scenery,mats.limestone,piers);instanced(scenery,mats.trim,footings);
  // Iron balustrades and classic lanterns, spaced to avoid visual clutter.
  const lampBases=[],lampPosts=[],lampCrossbars=[],lampCaps=[],lampBulbs=[];
  for(let z=9;z<trackLength;z+=18){
@@ -82,6 +96,13 @@ export function createParisStreetscape(scene,trackLength,tracked){
    lampCrossbars.push([x,4.16,zz,.40,.075,.40]);
    lampBulbs.push([x,4.46,zz,.29,.50,.29]);
    lampCaps.push([x,4.77,zz,.45,.16,.45]);
+   lampCaps.push([x,4.91,zz,.20,.15,.20]);
+   lampPosts.push([x,5.06,zz,.065,.18,.065]);
+   for(const offset of [-.55,.55]){
+    lampCrossbars.push([x+offset*.5,3.88,zz,.65,.065,.065]);
+    lampBulbs.push([x+offset,4.10,zz,.18,.32,.18]);
+    lampCaps.push([x+offset,4.31,zz,.29,.10,.29]);
+   }
    for(const offset of [-.16,.16]){
     lampPosts.push([x+offset,4.43,zz,.04,.56,.04]);
    }

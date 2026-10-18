@@ -31,6 +31,16 @@ export class UIManager {
         // Boss health bar element
         this.bossHealthBar = null;
         
+        this.tacticalStatus = document.getElementById('tactical-status');
+        const pause = document.getElementById('pause-btn'), panel = document.getElementById('pause-panel');
+        pause.addEventListener('click', () => {
+            if (!['playing','fighting'].includes(this.game.state)) return;
+            this.game.pausedState = this.game.state;
+            this.game.state = 'paused'; panel.classList.remove('hidden');
+        });
+        document.getElementById('resume-btn').addEventListener('click', () => {
+            this.game.state = this.game.pausedState || 'playing'; panel.classList.add('hidden');
+        });
         this.setupButtons();
         this.updateHUDInfo();
         this.startShakeLoop();
@@ -246,6 +256,11 @@ export class UIManager {
     }
 
     updateCount(count) {
+        if (this.tacticalStatus && this.game.levelGenerator?.plan) {
+            const done = this.game.levelGenerator.gates.filter(g => g.passed).length;
+            this.tacticalStatus.textContent = '◇ ' + (this.game.shields || 0) + ' protections · Front ' +
+                this.game.levelGenerator.plan.bossHealth + ' · ' + done + '/10';
+        }
         this.countDisplay.textContent = `👥 ${count}`;
         // Pulse the count display when count changes significantly
         if (Math.abs(count - this.prevCount) > 2) {

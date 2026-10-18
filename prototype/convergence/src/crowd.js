@@ -1,6 +1,6 @@
 import * as THREE from 'three';
 import { makeCitizen } from './characters.js';
-import { attachAnimatedHumanoid, updateAnimatedHumanoids } from './humanoidAssets.js';
+import { attachAnimatedHumanoid, updateAnimatedHumanoids, clearHumanoids } from './humanoidAssets.js';
 
 export class CrowdManager {
     constructor(scene, game) {
@@ -17,6 +17,7 @@ export class CrowdManager {
     }
 
     clear() {
+        clearHumanoids(this);
         if (this.playerGroup) {
             this.scene.remove(this.playerGroup);
             this.playerGroup.traverse(child => {
@@ -74,13 +75,11 @@ export class CrowdManager {
     }
 
     getFormationPosition(index) {
-        if (index === 0) return { x: 0, z: 0 };
-        const angle = index * 2.4;
-        const radius = Math.sqrt(index) * 0.4;
-        return {
-            x: Math.cos(angle) * radius,
-            z: Math.sin(angle) * radius * 0.6
-        };
+        if(index === 0) return {x:0, z:1.05};
+        index--;
+        const cols = this.playerCount > 8 ? 5 : 3;
+        const row = Math.floor(index / cols);
+        return { x: (index % cols - (cols - 1) / 2) * .53, z: .55 - row * .70 };
     }
 
     createStickman(color) {
@@ -134,11 +133,11 @@ export class CrowdManager {
     }
 
     removeFromPlayerCrowd(amount) {
-        amount = Math.min(amount, this.playerCount - 1);
+        amount = Math.min(amount, this.playerCount);
         if (amount <= 0) return;
 
         for (let i = 0; i < amount; i++) {
-            if (this.playerStickmen.length > 1) {
+            if (this.playerStickmen.length > 0) {
                 const stickman = this.playerStickmen.pop();
                 // Instead of just removing, launch it as a ragdoll
                 let ragdollColor;
@@ -148,11 +147,13 @@ export class CrowdManager {
                 } else {
                     ragdollColor = this.game ? this.game.getPlayerColor() : 0x2196F3;
                 }
-                this.launchRagdoll(stickman, ragdollColor);
+                if (i < 5) this.launchRagdoll(stickman, ragdollColor);
+                const h=stickman.userData.realHumanoid;
+                if(h){h.mixer.stopAllAction();h.mixer.uncacheRoot(h.model);}
                 this.playerGroup.remove(stickman);
             }
         }
-        this.playerCount = Math.max(1, this.playerCount - amount);
+        this.playerCount = Math.max(0, this.playerCount - amount);
     }
 
     removeEnemyCrowd(enemy) {
@@ -338,6 +339,9 @@ export class CrowdManager {
                     }
                 }
 
+                const target = this.getFormationPosition(i);
+                stickman.position.x += (target.x - stickman.position.x) * Math.min(1, delta * 8);
+                stickman.position.z += (target.z - stickman.position.z) * Math.min(1, delta * 8);
                 const offset = i * 0.7;
                 const walkCycle = this.animTime + offset;
                 

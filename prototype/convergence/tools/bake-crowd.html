@@ -1,0 +1,28 @@
+<!doctype html><html><head><meta charset="utf-8"></head><body><script type="module">
+import * as THREE from 'three';
+import {preloadRunnerHumanoid,createWalkingHumanoid} from '../src/humanoidAssets.js';
+import {FACTIONS} from '../src/factionOutfits.js';
+window.bake=async()=>{
+ const gltf=await preloadRunnerHumanoid();
+ const renderer=new THREE.WebGLRenderer({alpha:true,antialias:true,preserveDrawingBuffer:true});
+ renderer.setSize(160,220);renderer.setClearColor(0x000000,0);
+ renderer.outputColorSpace=THREE.SRGBColorSpace;renderer.toneMapping=THREE.ACESFilmicToneMapping;renderer.toneMappingExposure=1.18;
+ const scene=new THREE.Scene(),camera=new THREE.OrthographicCamera(-.96,.96,1.32,-1.32,.01,20);
+ camera.position.set(0,1.25,6);camera.lookAt(0,1.25,0);
+ scene.add(new THREE.HemisphereLight(0xe6efff,0x61714a,1.7));
+ const sun=new THREE.DirectionalLight(0xfff1d8,2.4);sun.position.set(-3,6,5);scene.add(sun);
+ const sheet=document.createElement('canvas');sheet.width=1920;sheet.height=1320;
+ const ctx=sheet.getContext('2d');
+ for(let row=0;row<6;row++){
+  const human=createWalkingHumanoid(gltf,0,FACTIONS[row]);scene.add(human.model);
+  await new Promise(r=>setTimeout(r,350));
+  for(let frame=0;frame<12;frame++){
+   human.mixer.setTime(frame*human.duration/12/.92);
+   renderer.render(scene,camera);ctx.drawImage(renderer.domElement,frame*160,row*220);
+  }
+  scene.remove(human.model);
+ }
+ renderer.dispose();
+ return sheet.toDataURL('image/png');
+};
+</script></body></html>

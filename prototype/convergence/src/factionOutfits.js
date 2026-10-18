@@ -8,7 +8,7 @@ const loader=new THREE.TextureLoader();
 const colorMaterial=(hex,metalness=0)=>new THREE.MeshStandardMaterial({
  color:hex,roughness:metalness?.55:.87,metalness,side:THREE.DoubleSide
 });
-const cloth=colorMaterial(0xf3d532);
+const cloth=colorMaterial(0xe5ff12);
 const silver=colorMaterial(0xe8ecdc,.28);
 const dark=colorMaterial(0x273340);
 const red=colorMaterial(0xd72c32);
@@ -29,12 +29,15 @@ function cube(parent,color,size,position,rotation){
 function band(parent,color,radius,y,thickness=.022){
  return piece(parent,new THREE.TorusGeometry(radius,thickness,5,18),color,[0,y,0],[Math.PI/2,0,0]);
 }
-function boneAnchor(model,name,y,z=0){
+function boneAnchor(model,name,y,z=0,x=0){
  const bone=model.getObjectByName(name);
  const anchor=new THREE.Group();
  model.add(anchor);
  model.updateMatrixWorld(true);
- anchor.position.copy(model.worldToLocal(new THREE.Vector3(0,y,z)));
+ anchor.position.copy(model.worldToLocal(new THREE.Vector3(x,y,z)));
+ // Costume dimensions are metres; the source rig has a non-unit scale.
+ anchor.scale.setScalar(1 / model.getWorldScale(new THREE.Vector3()).x);
+ anchor.quaternion.copy(model.getWorldQuaternion(new THREE.Quaternion()).invert());
  model.updateMatrixWorld(true);
  if(bone?.isBone)bone.attach(anchor);
  return anchor;
@@ -56,7 +59,10 @@ export function applyFactionPalette(model,faction){
  });
 }
 function backpack(spine,color=dark){
- cube(spine,color,[.31,.39,.15],[0,-.015,.20]);
+ const bag=piece(spine,new THREE.CapsuleGeometry(.16,.20,6,12),color,[0,-.015,.24]);
+ bag.scale.set(1,1,.60);
+ cube(spine,color,[.26,.16,.05],[0,-.09,.35]);
+ for(const x of [-.105,.105])cube(spine,silver,[.024,.060,.025],[x,.08,.34]);
  cube(spine,color,[.35,.10,.18],[0,-.22,.22]);
  for(const x of [-.16,.16])
   cube(spine,color,[.055,.4,.055],[x,0,-.16]);
@@ -81,7 +87,7 @@ function placard(model){
  cube(hand,tan,[.42,.29,.035],[.12,.85,0]);
 }
 function frenchFlag(model){
- const hand=boneAnchor(model,'RightHand',1.07,-.17);
+ const hand=boneAnchor(model,'LeftHand',1.12,0,-.31);
  piece(hand,new THREE.CylinderGeometry(.012,.012,1.09,7),tan,[0,.48,0]);
  const colors=[colorMaterial(0x1744ae),white,red];
  for(let c=0;c<3;c++){
@@ -90,16 +96,50 @@ function frenchFlag(model){
   for(let i=0;i<points.count;i++)
    points.setZ(i,Math.sin(points.getX(i)*15+c*.85)*.022);
   geometry.computeVertexNormals();
-  piece(hand,geometry,colors[c],[.08+c*.15,.88,0]);
+  piece(hand,geometry,colors[c],[-.40+c*.15,.88,0]);
  }
 }
+
+function walkingClothes(model,faction){
+ const color={gilets:dark,genz:violet,lyceens:colorMaterial(0x263e5c),pompiers:red,infirmieres:white,agriculteurs:colorMaterial(0x465841)}[faction];
+ for(const side of ['Left','Right']){
+  for(const [a,b] of [[side+'Arm',side+'ForeArm'],[side+'ForeArm',side+'Hand']]){
+   if(faction==='infirmieres'&&a.includes('ForeArm'))continue;
+   const start=model.getObjectByName(a)?.getWorldPosition(new THREE.Vector3());
+   const end=model.getObjectByName(b)?.getWorldPosition(new THREE.Vector3());
+   if(!start||!end)continue;
+   const midpoint=start.clone().add(end).multiplyScalar(.5),direction=end.clone().sub(start);
+   const anchor=boneAnchor(model,a,midpoint.y,midpoint.z,midpoint.x);
+   const sleeve=piece(anchor,new THREE.CapsuleGeometry(.074,Math.max(.02,direction.length()-.11),4,10),color);
+   sleeve.quaternion.setFromUnitVectors(new THREE.Vector3(0,1,0),direction.normalize());
+  }
+  const foot=model.getObjectByName(side+'Foot')?.getWorldPosition(new THREE.Vector3());
+  if(foot){
+   const anchor=boneAnchor(model,side+'Foot',foot.y,foot.z,foot.x);
+   const shoe=piece(anchor,new THREE.SphereGeometry(.115,10,8),dark,[0,-.018,-.065]);
+   shoe.scale.set(.88,.60,1.48);shoe.userData.walkingFootwear=true;
+   const sole=piece(anchor,new THREE.SphereGeometry(.114,10,8),white,[0,-.071,-.065]);
+   sole.scale.set(.90,.18,1.48);sole.userData.walkingFootwear=true;
+  }
+ }
+}
+
 export function dressFaction(model,faction){
  applyFactionPalette(model,faction);
+ walkingClothes(model,faction);
+ const hair=boneAnchor(model,'Head',1.62,0);
+ if(faction!=='pompiers'&&faction!=='infirmieres'&&faction!=='agriculteurs'){
+  piece(hair,new THREE.SphereGeometry(.19,14,10,0,Math.PI*2,0,Math.PI*.52),colorMaterial(faction==='genz'?0x38252c:0x312824),[0,.02,0]);
+ }
  const torso=boneAnchor(model,'Spine2',1.05,0);
  if(faction==='gilets'){
   piece(torso,new THREE.CylinderGeometry(.21,.245,.43,14),cloth);
   for(const y of [-.12,.10])band(torso,silver,.236,y,.026);
+  // Hood, stitched backpack, broad reflective bands: approved P02 direction.
+  const hood=boneAnchor(model,'Spine2',1.34,.03);
+  piece(hood,new THREE.TorusGeometry(.17,.065,7,16),dark,[0,0,0],[Math.PI/2,0,0]);
   backpack(torso);
+  for (const y of [-.12,.10]) cube(torso,silver,[.43,.055,.035],[0,y,.25]);
   frenchFlag(model);
  }else if(faction==='genz'){
   piece(torso,new THREE.CylinderGeometry(.205,.225,.41,14),violet);

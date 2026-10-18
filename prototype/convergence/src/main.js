@@ -4,6 +4,7 @@ import { Game } from './game.js';
 try {
     const game = new Game();
     game.init();
+    if (game.qa || import.meta.env.DEV) window.__convergence = game;
 } catch (e) {
     console.error('Game init failed:', e);
     document.body.innerHTML = `<div style="color:white;padding:20px;text-align:center;">

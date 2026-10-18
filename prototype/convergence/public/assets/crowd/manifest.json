@@ -1,0 +1,19 @@
+{
+  "format": "native-walk-atlas-v1",
+  "image": "walk-atlas.webp",
+  "width": 1920,
+  "height": 1320,
+  "columns": 12,
+  "rows": 6,
+  "animation": "Walk",
+  "source": "quaternius/animated-human.glb",
+  "factions": [
+    "gilets",
+    "genz",
+    "lyceens",
+    "pompiers",
+    "infirmieres",
+    "agriculteurs"
+  ],
+  "approvedP02": "../approved/P02.webp (single pose, separate hero)"
+}

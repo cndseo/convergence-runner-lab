@@ -1,4 +1,5 @@
 import * as THREE from 'three';
+import { applyChoice, sufferLoss, MAX_CROWD } from './tactics.mjs';
 import { LevelGenerator } from './level.js';
 import { CrowdManager } from './crowd.js';
 import { UIManager } from './ui.js';
@@ -16,6 +17,7 @@ export class Game {
         this.camera = null;
         this.renderer = null;
         this.clock = new THREE.Clock();
+        this.qa = new URLSearchParams(location.search).has('qa');
         
         // Game state
         this.state = 'menu'; // menu, playing, fighting, win, lose
@@ -121,10 +123,10 @@ export class Game {
     }
 
     setupLights() {
-        const ambient = new THREE.AmbientLight(0xffffff, 0.6);
+        const ambient = new THREE.AmbientLight(0xe4edff, 0.9);
         this.scene.add(ambient);
 
-        const directional = new THREE.DirectionalLight(0xfff5e0, 1.0);
+        const directional = new THREE.DirectionalLight(0xffedcc, 2.0);
         directional.position.set(10, 20, 10);
         directional.castShadow = true;
         directional.shadow.mapSize.set(1024, 1024);
@@ -201,6 +203,9 @@ export class Game {
 
     startGame() {
         this.state = 'playing';
+        this.shields = 0;
+        this.gateHistory = [];
+        this.runId = (this.runId || 0) + 1;
         this.trackZ = 0;
         this.playerX = 0;
         this.speed = MARCH_SPEED;
@@ -214,8 +219,9 @@ export class Game {
         this.clearLevel();
         
         // Generate level
-        this.trackLength = 150 + this.level * 30;
+        this.trackLength = 180;
         this.levelGenerator.generate(this.level, this.trackLength);
+        this.trackLength = this.levelGenerator.plan.trackLength;
         this.levelGenerator.updateVisibility(this.trackZ);
         
         // Create player crowd
@@ -227,7 +233,7 @@ export class Game {
     }
 
     getStartingCrowdSize() {
-        return 5 + (this.crowdUpgrade - 1) * 3;
+        return Math.min(MAX_CROWD, 5 + (this.crowdUpgrade - 1) * 3);
     }
 
     clearLevel() {
@@ -296,9 +302,9 @@ export class Game {
 
         // Update camera
         this.camera.position.x = this.playerX * 0.3;
-        this.camera.position.y = 4.5;
-        this.camera.position.z = -this.trackZ + 6.0;
-        this.camera.lookAt(this.playerX * 0.3, 0, -this.trackZ - 6.0);
+        this.camera.position.y = 6.3;
+        this.camera.position.z = -this.trackZ + 8.4;
+        this.camera.lookAt(this.playerX * 0.3, .8, -this.trackZ - 8.0);
 
         // Update light position to follow player
         this.directionalLight.position.set(
@@ -311,12 +317,15 @@ export class Game {
 
         // Check gate collisions
         this.checkGateCollisions();
+        if (this.state !== 'playing') return;
 
         // Check obstacle collisions
         this.checkObstacleCollisions();
+        if (this.state !== 'playing') return;
 
         // Check enemy collisions
         this.checkEnemyCollisions();
+        if (this.state !== 'playing') return;
 
         // Check if reached end (boss)
         if (this.trackZ >= this.trackLength) {
@@ -355,29 +364,22 @@ export class Game {
     }
 
     applyGate(gateData) {
-        const currentCount = this.crowdManager.getPlayerCount();
-        let newCount = currentCount;
-
-        switch (gateData.op) {
-            case '+': newCount = currentCount + gateData.value; break;
-            case '-': newCount = Math.max(1, currentCount - gateData.value); break;
-            case '*': newCount = currentCount * gateData.value; break;
-            case '/': newCount = Math.max(1, Math.floor(currentCount / gateData.value)); break;
-        }
-
-        newCount = Math.min(newCount, 72); // Mobile draw-call limit for detailed characters
-
-        if (newCount > currentCount) {
-            this.crowdManager.addToPlayerCrowd(newCount - currentCount);
-            this.audio.playGateGood();
-            this.ui.showFloatingText(`+${newCount - currentCount}`, '#4CAF50');
-            this.ui.screenShake(3);
-        } else if (newCount < currentCount) {
-            this.crowdManager.removeFromPlayerCrowd(currentCount - newCount);
-            this.audio.playGateBad();
-            this.ui.showFloatingText(`-${currentCount - newCount}`, '#f44336');
-            this.ui.screenShake(5);
-        }
+        const before = { count: this.crowdManager.getPlayerCount(), shields: this.shields };
+        const after = applyChoice(before, gateData);
+        this.shields = after.shields;
+        const change = after.count - before.count;
+        if (change > 0) this.crowdManager.addToPlayerCrowd(change);
+        if (change < 0) this.crowdManager.removeFromPlayerCrowd(-change);
+        const guard = after.shields - before.shields;
+        if (change || guard) {
+            const good = change > 0 || guard > 0;
+            good ? this.audio.playGateGood() : this.audio.playGateBad();
+            this.ui.showFloatingText((change ? (change > 0 ? '+' : '') + change : '') +
+                (guard ? '  ◇ ' + (guard > 0 ? '+' : '') + guard : ''), good ? '#a8f0d1' : '#ff817b');
+            this.ui.screenShake(good ? 2 : 4);
+        } else this.ui.showFloatingText('Condition non remplie', '#ddc5ff');
+        this.gateHistory.push({ choice: gateData, before, after });
+        if (after.count === 0) this.loseGame();
     }
 
     highlightGate(gate, side) {
@@ -473,7 +475,9 @@ export class Game {
 
             // Enemy kills one player stickman per tick
             if (enemy.remainingCount > 0) {
-                this.crowdManager.removeFromPlayerCrowd(1);
+                const absorbed = this.shields > 0;
+                if (absorbed) this.shields--;
+                else this.crowdManager.removeFromPlayerCrowd(1);
                 // Fly-off effect for the removed stickman
                 this.crowdManager.spawnDeathEffect(this.playerX, -this.trackZ, 0x2196F3);
             }
@@ -506,7 +510,8 @@ export class Game {
                         new THREE.Vector3(0, 3, -enemy.z), 0x9C27B0, 20
                     );
                     // Delay win screen for dramatic effect
-                    setTimeout(() => this.winGame(), 1200);
+                    const runId = this.runId;
+                    setTimeout(() => { if (this.runId === runId && this.state === 'boss_defeated') this.winGame(); }, 1200);
                     this.state = 'boss_defeated';
                     this.fightingEnemy = null;
                     this.fightCameraTime = 0;
@@ -566,6 +571,7 @@ export class Game {
     }
 
     winGame() {
+        if (this.state === 'win' || this.state === 'lose') return;
         this.state = 'win';
         const earnedCoins = Math.floor(this.crowdManager.getPlayerCount() * 2 + this.level * 10);
         this.coins += earnedCoins;
@@ -577,6 +583,7 @@ export class Game {
     }
 
     loseGame() {
+        if (this.state === 'win' || this.state === 'lose') return;
         this.state = 'lose';
         const earnedCoins = Math.floor(this.level * 2);
         this.coins += earnedCoins;
@@ -723,7 +730,7 @@ export class Game {
     animate() {
         requestAnimationFrame(() => this.animate());
         const delta = Math.min(this.clock.getDelta(), 0.05);
-        this.update(delta);
+        if (!this.qaManual) this.update(delta);
         this.renderer.render(this.scene, this.camera);
     }
 }

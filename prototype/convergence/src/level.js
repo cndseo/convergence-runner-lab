@@ -1,4 +1,7 @@
 import * as THREE from 'three';
+import { compactStaticTrack } from './staticScenery.js';
+import { generateTacticalLevel } from './tactics.mjs';
+import { createArcadeGate, animateArcadeGates } from './arcadeGates.js';
 import { placeKenneyRoadFurniture } from './assetLoader.js';
 import { upgradeBossVan } from './bossAssets.js';
 import { placeKenneyCityDetails, disposeKenneyCityDetails } from './kenneyCity.js';
@@ -26,6 +29,7 @@ export class LevelGenerator {
         this.enemies = [];
         this.boss = null;
         this.meshes.forEach(m => {
+            if (!m.isObject3D) return;
             this.scene.remove(m);
             if (m.geometry) m.geometry.dispose();
             if (m.material) {
@@ -39,7 +43,13 @@ export class LevelGenerator {
     generate(level, trackLength) {
         resetPoliceVisualBudget();
         resetMotorcycles();
+        this.plan = generateTacticalLevel({
+            level, seed: this.game.levelSeed ?? level * 20261019,
+            startCount: this.game.getStartingCrowdSize(), strength: this.game.strengthUpgrade
+        });
+        trackLength = this.plan.trackLength;
         this.createTrack(trackLength);
+        compactStaticTrack(this.scene, this.meshes);
         this.createGates(level, trackLength);
         this.createObstacles(level, trackLength);
         this.createEnemies(level, trackLength);
@@ -50,6 +60,7 @@ export class LevelGenerator {
     }
 
     updateVisibility(progress) {
+        animateArcadeGates(this.gates, progress, performance.now() / 1000);
         // Preserve all gameplay and collision data, cull only distant visuals.
         for (const enemy of this.enemies) {
             const distance=enemy.z-progress;
@@ -98,7 +109,7 @@ export class LevelGenerator {
             for(const side of [-1,1]){
                 const h=4+(Math.floor(z/17)%4)*1.8;
                 const house=mesh(new THREE.BoxGeometry(7.5,h,9),[0xe0c7a0,0xd8b2a1,0xc8b5a6,0xd7c6af][Math.floor(z/17)%4],side*(16+Math.abs(z%3)),h/2-1.5,-z);
-                mesh(new THREE.BoxGeometry(7.8,.45,9.3),0x9d5947,side*(16+Math.abs(z%3)),h-1.5,-z);
+                mesh(new THREE.BoxGeometry(7.8,.45,9.3),0x536475,side*(16+Math.abs(z%3)),h-1.5,-z);
                 for(let floor=1;floor<h/2;floor++)for(let zz of [-2.6,1.8]){
                     mesh(new THREE.BoxGeometry(.10,.9,.85),0x45586c,side*(16+Math.abs(z%3))-side*3.82,floor*1.55-1.2,-z+zz);
                 }
@@ -107,180 +118,33 @@ export class LevelGenerator {
     }
 
     createGates(level, trackLength) {
-        const gateCount = 8 + level * 2;
-        const spacing = (trackLength - 30) / gateCount;
-
-        for (let i = 0; i < gateCount; i++) {
-            const z = 20 + i * spacing;
-            const gateData = this.generateGatePair(level);
-            
-            const gate = {
-                z: z,
-                passed: false,
-                leftGate: gateData.left,
-                rightGate: gateData.right,
-                leftMesh: null,
-                rightMesh: null
-            };
-
-            // Create gate meshes
-            gate.leftMesh = this.createGateMesh(gateData.left, -2.5, z);
-            gate.rightMesh = this.createGateMesh(gateData.right, 2.5, z);
-
-            // Divider
-            const divGeo = new THREE.BoxGeometry(0.2, 4, 0.3);
-            const divMat = new THREE.MeshStandardMaterial({ color: 0x333333 });
-            const divider = new THREE.Mesh(divGeo, divMat);
-            divider.position.set(0, 2, -z);
-            divider.userData.dynamic = true;
-            this.scene.add(divider);
-            this.meshes.push(divider);
-
+        for (const event of this.plan.events.filter(e => e.type === 'choice')) {
+            const gate = { z: event.z, passed: false, leftGate: event.left, rightGate: event.right };
+            gate.leftMesh = this.createGateMesh(event.left, -2.5, event.z);
+            gate.rightMesh = this.createGateMesh(event.right, 2.5, event.z);
             this.gates.push(gate);
         }
     }
 
-    generateGatePair(level) {
-        const ops = ['+', '*', '-'];
-        const leftOp = ops[Math.floor(Math.random() * 2)]; // Prefer + and *
-        let rightOp = ops[Math.floor(Math.random() * 3)];
-        
-        // Ensure variety
-        if (rightOp === leftOp) rightOp = ops[(ops.indexOf(rightOp) + 1) % ops.length];
-
-        const getValue = (op) => {
-            switch (op) {
-                case '+': return Math.floor(Math.random() * (5 + level * 2)) + 3;
-                case '*': return Math.floor(Math.random() * 2) + 2;
-                case '-': return Math.floor(Math.random() * (3 + level)) + 2;
-                default: return 2;
-            }
-        };
-
-        return {
-            left: { op: leftOp, value: getValue(leftOp) },
-            right: { op: rightOp, value: getValue(rightOp) }
-        };
+    createGateMesh(data, x, z) {
+        return createArcadeGate(data, x, z, this.scene, this.meshes);
     }
 
-    createGateMesh(gateData,x,z) {
-        const good=gateData.op==='+'||gateData.op==='*';
-        const color=good?0x3c9ee5:0xd75b66;
-        const material=new THREE.MeshStandardMaterial({
-            color,transparent:true,opacity:.20,depthWrite:false,
-            emissive:color,emissiveIntensity:.13,side:THREE.DoubleSide
-        });
-        const gate=new THREE.Mesh(new THREE.PlaneGeometry(4.48,3.35),material);
-        gate.position.set(x,2,-z);
-        gate.userData.dynamic=true;this.scene.add(gate);this.meshes.push(gate);
-        const frameMat=new THREE.MeshStandardMaterial({color:good?0x78caff:0xfc9e9b,emissive:good?0x1f81bd:0x8e3846,emissiveIntensity:.45});
-        for(const side of [-1,1]) {
-            const bar=new THREE.Mesh(new THREE.BoxGeometry(.15,3.8,.22),frameMat);
-            bar.position.set(x+side*2.23,2,-z);bar.userData.dynamic=true;
-            this.scene.add(bar);this.meshes.push(bar);
-        }
-        const top=new THREE.Mesh(new THREE.BoxGeometry(4.55,.16,.22),frameMat);
-        top.position.set(x,3.93,-z);top.userData.dynamic=true;this.scene.add(top);this.meshes.push(top);
-        const c=document.createElement('canvas');c.width=256;c.height=128;const ctx=c.getContext('2d');
-        ctx.font='900 76px system-ui';ctx.textAlign='center';ctx.textBaseline='middle';
-        ctx.lineWidth=8;ctx.strokeStyle='#18283d';
-        const txt=gateData.op==='*'?'×'+gateData.value:gateData.op+gateData.value;
-        ctx.strokeText(txt,128,53);ctx.fillStyle='#ffffff';ctx.fillText(txt,128,53);
-        ctx.font='800 22px system-ui';ctx.lineWidth=3;
-        const caption=gateData.op==='+'?'RENFORTS':gateData.op==='*'?'MOBILISATION':'PERTE';
-        ctx.strokeText(caption,128,105);ctx.fillText(caption,128,105);
-        const badge=new THREE.Mesh(new THREE.PlaneGeometry(3.2,1.6),new THREE.MeshBasicMaterial({map:new THREE.CanvasTexture(c),transparent:true,depthWrite:false}));
-        badge.position.set(x,2.4,-z-.04);badge.userData.dynamic=true;this.scene.add(badge);this.meshes.push(badge);
-        return gate;
+    createObstacles() {
+        // Hazard rows are choices, evaluated once by the same rules as the solver.
+        // Their actual vans, barriers and motorbikes are rendered by arcadeGates.
     }
 
-    createObstacles(level, trackLength) {
-        const count = 3 + level;
-        const safeZones = this.gates.map(g => g.z);
-
-        for (let i = 0; i < count; i++) {
-            let z;
-            let attempts = 0;
-            do {
-                z = 30 + Math.random() * (trackLength - 60);
-                attempts++;
-            } while (safeZones.some(gz => Math.abs(gz - z) < 8) && attempts < 50);
-
-            if (attempts >= 50) continue;
-
-            const obstacleType = Math.random();
-            let x, width;
-
-            if (obstacleType < 0.5) {
-                // Spinning saw
-                x = (Math.random() - 0.5) * 5;
-                width = 3;
-                this.createSawObstacle(x, z);
-            } else {
-                // Wall barrier
-                x = (Math.random() - 0.5) * 4;
-                width = 2 + Math.random() * 3;
-                this.createWallObstacle(x, z, width);
-            }
-
-            this.obstacles.push({ x, z, width, passed: false });
-        }
-    }
-
-    createSawObstacle(x,z) {
-        // Stylised burning refuse bin is a temporary arcade obstacle.
-        const group=new THREE.Group();
-        const box=(w,h,d,col,px,py,pz)=>{
-            const m=new THREE.Mesh(new THREE.BoxGeometry(w,h,d),new THREE.MeshStandardMaterial({color:col}));
-            m.position.set(px,py,pz);group.add(m);
-        };
-        box(1.35,1.14,1,0x424e57,0,.55,0);
-        box(1.55,.14,1.2,0x253441,0,1.17,0);
-        for(let i=0;i<3;i++) {
-            const flame=new THREE.Mesh(new THREE.ConeGeometry(.20,.58,5),new THREE.MeshBasicMaterial({color:i%2?0xffc156:0xed6535}));
-            flame.position.set((i-1)*.36,1.47+i%2*.14,0);
-            group.add(flame);
-        }
-        group.position.set(x,0,-z);group.userData.dynamic=true;
-        this.scene.add(group);this.meshes.push(group);
-    }
-
-    createWallObstacle(x,z,width) {
-        const group=new THREE.Group();
-        const wall=new THREE.Mesh(new THREE.BoxGeometry(width,1.2,.38),new THREE.MeshStandardMaterial({color:0x9cabb7,roughness:.82}));
-        wall.position.y=.75;wall.castShadow=true;group.add(wall);
-        for(let i=0;i<Math.floor(width/.60);i++){
-            const stripe=new THREE.Mesh(new THREE.BoxGeometry(.30,.20,.42),new THREE.MeshStandardMaterial({color:i%2?0xf1f1e3:0xca5551}));
-            stripe.position.set(-width/2+i*.62+.3,1.15,0);group.add(stripe);
-        }
-        group.position.set(x,0,-z);group.userData.dynamic=true;
-        this.scene.add(group);this.meshes.push(group);
-    }
-
-    createEnemies(level, trackLength) {
-        const count = 3 + Math.floor((level - 1) * 0.45);
-        const spacing = (trackLength - 90) / Math.max(1,count - 1);
-
-        for (let i = 0; i < count; i++) {
-            const z = 48 + i * spacing;
-            const enemyCount = Math.floor(5 + level * 3 + Math.random() * level * 5);
-            
-            const enemy = {
-                kind: ['crs','bravm','bac'][(i + level - 1) % 3],
-                z: z,
-                count: enemyCount,
-                defeated: false,
-                meshes: []
-            };
-
-            // Create enemy crowd visual
-            this.createEnemyCrowd(enemy, z, enemyCount);
+    createEnemies() {
+        for (const event of this.plan.events.filter(e => e.type === 'enemy')) {
+            const enemy = { kind: event.kind, z: event.z, count: event.count, defeated: false, meshes: [] };
+            this.createEnemyCrowd(enemy, enemy.z, enemy.count);
             this.enemies.push(enemy);
         }
     }
 
     createEnemyCrowd(enemy, z, count) {
-        const displayCount = Math.min(count, 30);
+        const displayCount = Math.min(count, 12);
         const group = new THREE.Group();
         group.userData.dynamic = true;
 
@@ -289,9 +153,9 @@ export class LevelGenerator {
             const radius = Math.sqrt(i / displayCount) * 2.5;
             const stickman = makeOfficer(enemy.kind,i);
             stickman.position.set(
-                Math.cos(angle) * radius,
+                (i % 6 - 2.5) * .78,
                 0,
-                Math.sin(angle) * radius * 0.5
+                -Math.floor(i / 6) * .75
             );
             group.add(stickman);
             upgradePoliceOfficer(stickman,enemy.kind);
@@ -353,7 +217,7 @@ export class LevelGenerator {
     }
 
     createBoss(level, trackLength) {
-        const bossHealth=Math.floor(20+level*15);
+        const bossHealth=this.plan.bossHealth;
         this.boss={z:trackLength,health:bossHealth,defeated:false};
         const squad=new THREE.Group();squad.userData.dynamic=true;
         // Final front: CRS line backed by a white van instead of a king stickman.
@@ -361,6 +225,7 @@ export class LevelGenerator {
             const officer=makeOfficer(i%5===0?'bac':'crs',i);
             officer.position.set((i-3)*.68,0,i%2*.6);
             squad.add(officer);
+            upgradePoliceOfficer(officer, i%5===0?'bac':'crs');
         }
         const vehicle=makeVan();vehicle.scale.set(.85,.85,.85);
         vehicle.position.set(0,0,-4.3);squad.add(vehicle);
