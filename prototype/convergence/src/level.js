@@ -1,5 +1,6 @@
 import * as THREE from 'three';
 import { placeKenneyRoadFurniture } from './assetLoader.js';
+import { upgradeBossVan } from './bossAssets.js';
 import { placeKenneyCityDetails, disposeKenneyCityDetails } from './kenneyCity.js';
 import { makeOfficer, makeVan } from './characters.js';
 
@@ -332,6 +333,7 @@ export class LevelGenerator {
         }
         const vehicle=makeVan();vehicle.scale.set(.85,.85,.85);
         vehicle.position.set(0,0,-4.3);squad.add(vehicle);
+        upgradeBossVan(squad,vehicle);
         squad.position.set(0,0,-trackLength);
         this.scene.add(squad);this.meshes.push(squad);
         this.boss.meshGroup=squad;this.boss.defeatTime=0;this.boss.isDefeating=false;
