@@ -4,6 +4,7 @@ import { clone as cloneSkeleton } from 'three/addons/utils/SkeletonUtils.js';
 import { dressFaction, FACTIONS } from './factionOutfits.js';
 
 const loader=new GLTFLoader();
+const maxAnimated=window.innerWidth<600?28:48;
 let shared;
 function source() {
   if(!shared)shared=new Promise((resolve,reject)=>loader.load(
@@ -18,8 +19,11 @@ export function attachAnimatedHumanoid(crowd) {
   source().then(gltf=>{
     if(!crowd.playerGroup)return;
     for(const [index,runner] of crowd.playerStickmen.entries()) {
+      if(index>=maxAnimated){runner.userData.lowDetail=true;continue;}
       if(!runner.parent||runner.userData.realHumanoid)continue;
       const model=cloneSkeleton(gltf.scene);
+      // Character source faces sideways; orient its animated run toward -Z.
+      model.rotation.y=-Math.PI/2;
       const mixer=new THREE.AnimationMixer(model);
       const clip=gltf.animations.find(a=>a.name.toLowerCase()==='run')||gltf.animations[0];
       if(clip){const action=mixer.clipAction(clip);action.play();action.time=(index%7)*.11;mixer.update(.001);}

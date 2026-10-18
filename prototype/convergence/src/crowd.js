@@ -316,7 +316,7 @@ export class CrowdManager {
 
     update(delta) {
         updateAnimatedHumanoids(this,delta);
-        if(this.playerStickmen.some(r=>!r.userData.realHumanoid))attachAnimatedHumanoid(this);
+        if(this.playerStickmen.some(r=>!r.userData.realHumanoid&&!r.userData.lowDetail))attachAnimatedHumanoid(this);
         this.animTime += delta * 5; // Slower animation cycle
         
         // Animate stickmen running

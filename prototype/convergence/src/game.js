@@ -106,8 +106,8 @@ export class Game {
 
     setupCamera() {
         this.camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 0.1, 300);
-        this.camera.position.set(0, 8.7, 11);
-        this.camera.lookAt(0, 0, -8.5);
+        this.camera.position.set(0, 4.5, 6.0);
+        this.camera.lookAt(0, 0, -6.0);
     }
 
     setupLights() {
@@ -283,8 +283,9 @@ export class Game {
 
         // Update camera
         this.camera.position.x = this.playerX * 0.3;
-        this.camera.position.z = -this.trackZ + 11;
-        this.camera.lookAt(this.playerX * 0.3, 0, -this.trackZ - 8.5);
+        this.camera.position.y = 4.5;
+        this.camera.position.z = -this.trackZ + 6.0;
+        this.camera.lookAt(this.playerX * 0.3, 0, -this.trackZ - 6.0);
 
         // Update light position to follow player
         this.directionalLight.position.set(

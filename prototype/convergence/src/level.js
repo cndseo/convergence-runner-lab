@@ -3,6 +3,7 @@ import { placeKenneyRoadFurniture } from './assetLoader.js';
 import { upgradeBossVan } from './bossAssets.js';
 import { placeKenneyCityDetails, disposeKenneyCityDetails } from './kenneyCity.js';
 import { makeOfficer, makeVan } from './characters.js';
+import { makeAsphaltTexture } from './roadTexture.js';
 
 export class LevelGenerator {
     constructor(scene, game) {
@@ -25,8 +26,8 @@ export class LevelGenerator {
             this.scene.remove(m);
             if (m.geometry) m.geometry.dispose();
             if (m.material) {
-                if (Array.isArray(m.material)) m.material.forEach(mat => mat.dispose());
-                else m.material.dispose();
+                if (Array.isArray(m.material)) m.material.forEach(mat => {mat.map?.dispose();mat.dispose();});
+                else {m.material.map?.dispose();m.material.dispose();}
             }
         });
         this.meshes = [];
@@ -52,15 +53,20 @@ export class LevelGenerator {
         };
         const surface=mesh(new THREE.PlaneGeometry(11,trackLength+24),0x68717b,0,.025,-trackLength/2);
         surface.rotation.x=-Math.PI/2;
+        surface.material.color.set(0xffffff);
+        surface.material.map=makeAsphaltTexture(trackLength);
+        surface.material.roughness=.96;
         const river=mesh(new THREE.PlaneGeometry(220,trackLength+70),0x426784,0,-1.65,-trackLength/2);
         river.rotation.x=-Math.PI/2;
+        river.material.roughness=.30;
+        river.material.metalness=.12;
         for(let side of [-1,1]){
             // Raised concrete verge and metal bridge railings
             mesh(new THREE.BoxGeometry(.7,.36,trackLength+18),0x9eabb0,side*5.55,.18,-trackLength/2);
-            mesh(new THREE.BoxGeometry(.14,.12,trackLength+18),0x964b4b,side*5.65,1.24,-trackLength/2);
-            mesh(new THREE.BoxGeometry(.10,.10,trackLength+18),0xb26b56,side*5.65,.77,-trackLength/2);
+            mesh(new THREE.BoxGeometry(.14,.12,trackLength+18),0x374858,side*5.65,1.24,-trackLength/2);
+            mesh(new THREE.BoxGeometry(.10,.10,trackLength+18),0x516277,side*5.65,.77,-trackLength/2);
             for(let z=0;z<trackLength+6;z+=5){
-                mesh(new THREE.BoxGeometry(.11,1.3,.10),0x8b4249,side*5.65,.7,-z);
+                mesh(new THREE.BoxGeometry(.11,1.3,.10),0x384d5f,side*5.65,.7,-z);
             }
         }
         for(let z=0;z<trackLength+6;z+=8){

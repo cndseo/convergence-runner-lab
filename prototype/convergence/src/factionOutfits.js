@@ -3,6 +3,7 @@ import * as THREE from 'three';
 // Lightweight costume pieces follow actual humanoid bones, not static proxies.
 export const FACTIONS=['gilets','genz','lyceens','pompiers','infirmieres','agriculteurs'];
 const palettes=new Map();
+const sharedMaterials=new Map();
 const loader=new THREE.TextureLoader();
 const colorMaterial=(hex,metalness=0)=>new THREE.MeshStandardMaterial({
  color:hex,roughness:metalness?.55:.87,metalness,side:THREE.DoubleSide
@@ -48,9 +49,9 @@ export function applyFactionPalette(model,faction){
  }
  model.traverse(node=>{
   if(!node.isSkinnedMesh)return;
-  node.material=node.material.clone();
-  node.material.map=atlas;
-  node.material.needsUpdate=true;
+  let material=sharedMaterials.get(faction);
+  if(!material){material=node.material.clone();material.map=atlas;material.needsUpdate=true;sharedMaterials.set(faction,material);}
+  node.material=material;
   node.userData.sharedHumanoidAsset=true;
  });
 }
