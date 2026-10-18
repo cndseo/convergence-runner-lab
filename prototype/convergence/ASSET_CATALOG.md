@@ -25,3 +25,17 @@ Fichiers locaux : `public/assets/kenney/road-side.glb` et `public/assets/kenney/
 - Modèles et textures conservés sous leur nom de provenance ; adapter ensuite vers GLB optimisé et LOD.
 - Prochaine étape : importer et tester les modèles humanoïdes riggés, puis remplacer progressivement les personnages procéduraux.
 
+
+## Deuxième collecte — Kenney via tge-assets (18 octobre 2026)
+
+Source : https://github.com/Hidencod/tge-assets ; catalogue : https://raw.githubusercontent.com/Hidencod/tge-assets/main/catalog.json
+Licence déclarée par la source : CC0-1.0 (Kenney). Tous les fichiers ci-dessous ont été téléchargés et vérifiés comme binaires GLB ; **non intégrés dans le jeu**.
+
+- Véhicules : `car-kit/police.glb`, `van.glb`, `ambulance.glb`, `firetruck.glb`.
+- Mobilier urbain : `city-kit-roads/construction-barrier.glb`, `traffic-light.glb`, `light-curved.glb`.
+- Architecture : `city-kit-commercial/building-a.glb`, `building-b.glb`.
+- Personnages : `blocky-characters/character-a.glb`, `character-b.glb`, `character-c.glb`.
+
+Emplacement : `public/assets/tge-kenney/` (12 fichiers, 1 577 956 octets).
+
+Note : les trois personnages sont des modèles GLB, sans validation de rig ni d'animations. Les véhicules sont génériques et devront être adaptés. Prochaine étape : banc d'essai visuel mobile, mesure de performances, sélection et intégration progressive.
