@@ -3,7 +3,9 @@ import { LevelGenerator } from './level.js';
 import { CrowdManager } from './crowd.js';
 import { UIManager } from './ui.js';
 import { AudioManager } from './audio.js';
-import { updatePoliceAnimations } from './policeAssets.js';
+import { updatePoliceAnimations,preloadPoliceHumanoid } from './policeAssets.js';
+import { preloadMotorcycle } from './motorcycleAssets.js';
+import { preloadRunnerHumanoid } from './humanoidAssets.js';
 
 export class Game {
     constructor() {
@@ -79,7 +81,8 @@ export class Game {
         this.crowdManager = new CrowdManager(this.scene, this);
         this.levelGenerator = new LevelGenerator(this.scene, this);
         this.audio = new AudioManager();
-        
+        // Warm the shared CC0 asset caches while the user views the menu.
+        Promise.allSettled([preloadRunnerHumanoid(),preloadPoliceHumanoid(),preloadMotorcycle()]);
         this.animate();
     }
 
@@ -210,6 +213,7 @@ export class Game {
         // Generate level
         this.trackLength = 150 + this.level * 30;
         this.levelGenerator.generate(this.level, this.trackLength);
+        this.levelGenerator.updateVisibility(this.trackZ);
         
         // Create player crowd
         const startCount = this.getStartingCrowdSize();
@@ -247,6 +251,7 @@ export class Game {
     }
 
     update(delta) {
+        this.levelGenerator.updateVisibility(this.trackZ);
         updatePoliceAnimations(delta);
         if (this.state === 'boss_defeated') {
             this.crowdManager.update(delta);

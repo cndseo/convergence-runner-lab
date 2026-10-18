@@ -115,11 +115,16 @@ export function upgradePoliceOfficer(officer,kind='crs'){
    if(!part.userData?.motorcycleVisual)part.visible=false;
   }
   officer.add(holder);
-  activeMixers.push(mixer);
+  activeMixers.push({mixer,officer});
   officer.userData.policeModel=holder;
  }).catch(e=>console.warn('Police model fallback',e?.message));
 }
 export function resetPoliceVisualBudget(){budget=0;activeMixers.length=0;}
+export function preloadPoliceHumanoid(){return source();}
 export function updatePoliceAnimations(delta){
- for(const mixer of activeMixers)mixer.update(delta);
+ for(const item of activeMixers){
+  let object=item.officer,visible=true;
+  while(object){if(!object.visible){visible=false;break;}object=object.parent;}
+  if(visible)item.mixer.update(delta);
+ }
 }

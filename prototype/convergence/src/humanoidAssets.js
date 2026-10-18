@@ -52,6 +52,7 @@ export function attachAnimatedHumanoid(crowd) {
     console.info('Quaternius animated runner enabled',crowd.playerStickmen.length);
   }).catch(e=>{crowd._humanoidPending=false;console.warn('Quaternius humanoid fallback',e?.message);});
 }
+export function preloadRunnerHumanoid(){return source();}
 export function updateAnimatedHumanoids(crowd,dt) {
   for(const runner of crowd.playerStickmen)runner.userData.realHumanoid?.mixer.update(dt);
 }

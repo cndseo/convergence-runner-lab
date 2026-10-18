@@ -49,6 +49,21 @@ export class LevelGenerator {
         placeKenneyCityDetails(this.scene,trackLength,this.meshes);
     }
 
+    updateVisibility(progress) {
+        // Preserve all gameplay and collision data, cull only distant visuals.
+        for (const enemy of this.enemies) {
+            const distance=enemy.z-progress;
+            const show=distance<72 && distance> -14;
+            if(enemy.meshGroup)enemy.meshGroup.visible=show;
+            if(enemy.labelMesh)enemy.labelMesh.visible=show;
+        }
+        if(this.boss) {
+            const show=this.boss.isDefeating || (this.boss.z-progress)<75;
+            if(this.boss.meshGroup)this.boss.meshGroup.visible=show;
+            if(this.boss.labelMesh)this.boss.labelMesh.visible=show;
+        }
+    }
+
     createTrack(trackLength) {
         // City boulevard / bridge. All geometry is procedural; no image downloads.
         const mesh=(geometry,color,x,y,z,shadow=false)=>{
@@ -152,13 +167,13 @@ export class LevelGenerator {
         const good=gateData.op==='+'||gateData.op==='*';
         const color=good?0x3c9ee5:0xd75b66;
         const material=new THREE.MeshStandardMaterial({
-            color,transparent:true,opacity:.30,depthWrite:false,
-            emissive:color,emissiveIntensity:.08,side:THREE.DoubleSide
+            color,transparent:true,opacity:.20,depthWrite:false,
+            emissive:color,emissiveIntensity:.13,side:THREE.DoubleSide
         });
         const gate=new THREE.Mesh(new THREE.PlaneGeometry(4.48,3.35),material);
         gate.position.set(x,2,-z);
         gate.userData.dynamic=true;this.scene.add(gate);this.meshes.push(gate);
-        const frameMat=new THREE.MeshStandardMaterial({color:good?0x78caff:0xfc9e9b,emissive:good?0x1f81bd:0x8e3846,emissiveIntensity:.28});
+        const frameMat=new THREE.MeshStandardMaterial({color:good?0x78caff:0xfc9e9b,emissive:good?0x1f81bd:0x8e3846,emissiveIntensity:.45});
         for(const side of [-1,1]) {
             const bar=new THREE.Mesh(new THREE.BoxGeometry(.15,3.8,.22),frameMat);
             bar.position.set(x+side*2.23,2,-z);bar.userData.dynamic=true;
@@ -170,7 +185,10 @@ export class LevelGenerator {
         ctx.font='900 76px system-ui';ctx.textAlign='center';ctx.textBaseline='middle';
         ctx.lineWidth=8;ctx.strokeStyle='#18283d';
         const txt=gateData.op==='*'?'×'+gateData.value:gateData.op+gateData.value;
-        ctx.strokeText(txt,128,62);ctx.fillStyle='#ffffff';ctx.fillText(txt,128,62);
+        ctx.strokeText(txt,128,53);ctx.fillStyle='#ffffff';ctx.fillText(txt,128,53);
+        ctx.font='800 22px system-ui';ctx.lineWidth=3;
+        const caption=gateData.op==='+'?'RENFORTS':gateData.op==='*'?'MOBILISATION':'PERTE';
+        ctx.strokeText(caption,128,105);ctx.fillText(caption,128,105);
         const badge=new THREE.Mesh(new THREE.PlaneGeometry(3.2,1.6),new THREE.MeshBasicMaterial({map:new THREE.CanvasTexture(c),transparent:true,depthWrite:false}));
         badge.position.set(x,2.4,-z-.04);badge.userData.dynamic=true;this.scene.add(badge);this.meshes.push(badge);
         return gate;
@@ -358,6 +376,7 @@ export class LevelGenerator {
         ctx.fillText('FRONT CRS : '+bossHealth,256,64);
         const label=new THREE.Mesh(new THREE.PlaneGeometry(7,1.6),new THREE.MeshBasicMaterial({map:new THREE.CanvasTexture(c),transparent:true,depthWrite:false}));
         label.position.set(0,3.4,-trackLength);label.userData.dynamic=true;this.scene.add(label);this.meshes.push(label);
+        this.boss.labelMesh=label;
     }
 
     shakeBoss() {

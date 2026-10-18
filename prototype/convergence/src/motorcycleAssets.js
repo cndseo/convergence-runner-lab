@@ -59,3 +59,4 @@ export function upgradeBravMotorcycle(officer){
  }).catch(err=>console.warn('Kenney motorcycle fallback',err?.message));
 }
 export function resetMotorcycles(){clones.clear();}
+export function preloadMotorcycle(){return getMotorcycle();}
