@@ -20,3 +20,14 @@ npm run build -- --base=/convergence-runner-lab/corical/
 npm install
 npm run build -- --base=/convergence-runner-lab/count/ --outDir dist-bench
 ```
+
+
+## Prototype CONVERGENCE vertical V1
+
+- Jeu : https://cndseo.github.io/convergence-runner-lab/convergence/
+- Source maintenable : `prototype/convergence/`
+- Dossier build : `docs/convergence/` (GitHub Pages)
+- Le jeu original Count Masters reste disponible à `docs/count/`.
+- La V11 du premier jeu CONVERGENCE n'est ni modifiée ni remplacée.
+- Nouveaux personnages géométriques : manifestants (6 rôles) et CRS, BRAV-M, BAC ; front final policier.
+- Test compilé sur Windows et testé en Chrome format mobile (320, 390, 430 et 768 px), pas encore sur iPhone physique.
