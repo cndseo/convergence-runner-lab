@@ -5,6 +5,8 @@ import { placeKenneyCityDetails, disposeKenneyCityDetails } from './kenneyCity.j
 import { makeOfficer, makeVan } from './characters.js';
 import { makeAsphaltTexture } from './roadTexture.js';
 import { upgradePoliceOfficer, resetPoliceVisualBudget } from './policeAssets.js';
+import { upgradeBravMotorcycle, resetMotorcycles } from './motorcycleAssets.js';
+import { createParisStreetscape } from './parisEnvironment.js';
 
 export class LevelGenerator {
     constructor(scene, game) {
@@ -35,12 +37,14 @@ export class LevelGenerator {
     }
 
     generate(level, trackLength) {
+        resetPoliceVisualBudget();
+        resetMotorcycles();
         this.createTrack(trackLength);
         this.createGates(level, trackLength);
         this.createObstacles(level, trackLength);
         this.createEnemies(level, trackLength);
         this.createBoss(level, trackLength);
-        this.createDecorations(trackLength);
+        createParisStreetscape(this.scene,trackLength,this.meshes);
         placeKenneyRoadFurniture(this.scene,trackLength,this.meshes);
         placeKenneyCityDetails(this.scene,trackLength,this.meshes);
     }
@@ -272,6 +276,8 @@ export class LevelGenerator {
                 Math.sin(angle) * radius * 0.5
             );
             group.add(stickman);
+            upgradePoliceOfficer(stickman,enemy.kind);
+            if(enemy.kind==='bravm')upgradeBravMotorcycle(stickman);
         }
 
         group.position.set(0, 0, -z);

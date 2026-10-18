@@ -6,7 +6,8 @@ import { clone as cloneSkeleton } from 'three/addons/utils/SkeletonUtils.js';
 const loader=new GLTFLoader();
 let shared;
 let budget=0;
-const limit=40;
+const activeMixers=[];
+const limit=window.innerWidth<600?24:40;
 const uniforms={
  crs:{coat:0x233349,vest:0x1a283a,helmet:0x20324a},
  bac:{coat:0x343940,vest:0x161d26,helmet:0x2a2d33},
@@ -58,6 +59,9 @@ export function upgradePoliceOfficer(officer,kind='crs'){
  source().then(gltf=>{
   if(!officer.parent)return;
   const rig=cloneSkeleton(gltf.scene);
+  const mixer=new THREE.AnimationMixer(rig);
+  const idle=gltf.animations.find(a=>a.name==='Idle');
+  if(idle){mixer.clipAction(idle).play();mixer.update(.001);}
   rig.updateMatrixWorld(true);
   rig.traverse(m=>{if(m.isSkinnedMesh){m.computeBoundingBox();m.frustumCulled=false;}});
   const bounds=new THREE.Box3().setFromObject(rig);
@@ -79,11 +83,20 @@ export function upgradePoliceOfficer(officer,kind='crs'){
    mat.needsUpdate=true;
    m.material=mat;
   });
-  addGear(rig,kind);
-  // Preserve original officer as fallback until the GLB has loaded.
-  for(const part of officer.children)part.visible=false;
-  officer.add(rig);
-  officer.userData.policeModel=rig;
+  // Costume pieces must be world-scaled, not multiplied by the source GLB scale.
+  const holder=new THREE.Group();
+  holder.add(rig);
+  addGear(holder,kind);
+  // Keep the independent Kenney motorcycle if its asynchronous load completed.
+  for(const part of officer.children){
+   if(!part.userData?.motorcycleVisual)part.visible=false;
+  }
+  officer.add(holder);
+  activeMixers.push(mixer);
+  officer.userData.policeModel=holder;
  }).catch(e=>console.warn('Police model fallback',e?.message));
 }
-export function resetPoliceVisualBudget(){budget=0;}
+export function resetPoliceVisualBudget(){budget=0;activeMixers.length=0;}
+export function updatePoliceAnimations(delta){
+ for(const mixer of activeMixers)mixer.update(delta);
+}

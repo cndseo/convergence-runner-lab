@@ -3,6 +3,7 @@ import { LevelGenerator } from './level.js';
 import { CrowdManager } from './crowd.js';
 import { UIManager } from './ui.js';
 import { AudioManager } from './audio.js';
+import { updatePoliceAnimations } from './policeAssets.js';
 
 export class Game {
     constructor() {
@@ -243,6 +244,7 @@ export class Game {
     }
 
     update(delta) {
+        updatePoliceAnimations(delta);
         if (this.state === 'boss_defeated') {
             this.crowdManager.update(delta);
             this.levelGenerator.updateBossDefeat(delta);

@@ -94,6 +94,7 @@ function makeHuman(kind,index){
  }
  if(kind==='bravm'){
   const bike=new THREE.Group();
+  bike.userData.legacyMotorcycle=true;
   g.add(bike);
   for(const x of [-.34,.37]){
    const wheel=piece(bike,new THREE.TorusGeometry(.19,.073,7,10),0x161c24,[x,.2,.05],[0,Math.PI/2,0]);
