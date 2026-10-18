@@ -1,4 +1,5 @@
-import * as THREE from 'three';
+﻿import * as THREE from 'three';
+import { placeKenneyRoadFurniture } from './assetLoader.js';
 import { makeOfficer, makeVan } from './characters.js';
 
 export class LevelGenerator {
@@ -35,6 +36,7 @@ export class LevelGenerator {
         this.createEnemies(level, trackLength);
         this.createBoss(level, trackLength);
         this.createDecorations(trackLength);
+        placeKenneyRoadFurniture(this.scene,trackLength,this.meshes);
     }
 
     createTrack(trackLength) {
@@ -662,3 +664,4 @@ export class LevelGenerator {
         return group;
     }
 }
+

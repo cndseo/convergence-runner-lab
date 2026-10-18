@@ -4,7 +4,7 @@
 
 | Asset | Source | Licence | Format | Statut |
 |---|---|---|---|---|
-| Road Side (Kenney City Kit Roads) | https://flockbay.com/assets/road-side-city-kit-roads/ | CC0-1.0 | GLB 2.0 + PNG | Téléchargé, en staging; non intégré dans la scène |
+| Road Side (Kenney City Kit Roads) | https://flockbay.com/assets/road-side-city-kit-roads/ | CC0-1.0 | GLB 2.0 + PNG | Intégré comme accessoire décoratif latéral dans la scène ; test navigateur restant à faire |
 
 Fichiers locaux : `public/assets/kenney/road-side.glb` et `public/assets/kenney/Textures/colormap.png`.
 
@@ -24,3 +24,4 @@ Fichiers locaux : `public/assets/kenney/road-side.glb` et `public/assets/kenney/
 - Ne pas annoncer un asset comme intégré tant qu'il n'est pas rendu dans la scène et testé sur format mobile.
 - Modèles et textures conservés sous leur nom de provenance ; adapter ensuite vers GLB optimisé et LOD.
 - Prochaine étape : importer et tester les modèles humanoïdes riggés, puis remplacer progressivement les personnages procéduraux.
+
