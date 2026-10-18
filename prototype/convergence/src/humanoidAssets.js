@@ -1,6 +1,7 @@
 import * as THREE from 'three';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 import { clone as cloneSkeleton } from 'three/addons/utils/SkeletonUtils.js';
+import { dressFaction, FACTIONS } from './factionOutfits.js';
 
 const loader=new GLTFLoader();
 let shared;
@@ -19,6 +20,10 @@ export function attachAnimatedHumanoid(crowd) {
     for(const [index,runner] of crowd.playerStickmen.entries()) {
       if(!runner.parent||runner.userData.realHumanoid)continue;
       const model=cloneSkeleton(gltf.scene);
+      // This CC0 conversion uses Z-up geometry despite glTF's Y-up convention.
+      // Correct orientation BEFORE computing bounds or attaching to the runner.
+      model.rotation.x=-Math.PI/2;
+      model.updateMatrixWorld(true);
       const bbox=new THREE.Box3().setFromObject(model);
       const size=bbox.getSize(new THREE.Vector3());
       if(!Number.isFinite(size.y)||size.y<=0)continue;
@@ -28,7 +33,8 @@ export function attachAnimatedHumanoid(crowd) {
       const fitted=new THREE.Box3().setFromObject(model);
       const c=fitted.getCenter(new THREE.Vector3());
       model.position.set(-c.x,-fitted.min.y,-c.z);
-      model.traverse(child=>{if(child.isMesh)child.userData.sharedHumanoidAsset=true;});
+      model.traverse(child=>{if(child.isSkinnedMesh)child.userData.sharedHumanoidAsset=true;});
+      dressFaction(model,FACTIONS[index%FACTIONS.length]);
       runner.add(model);
       // Existing procedural animation remains operational but invisible.
       for(const part of runner.children)if(part!==model)part.visible=false;
