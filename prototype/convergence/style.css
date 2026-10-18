@@ -349,3 +349,12 @@ body{font-family:system-ui,-apple-system,Segoe UI,sans-serif;background:#182b42}
 #game-container:has(.screen:not(.hidden)) #gesture-hint{display:none}
 #shop-btn[hidden]{display:none!important}
 @media(max-width:410px){#hud div{font-size:11px;padding:8px 6px}#hud #count-display{font-size:17px!important}}
+
+/* Keep floating combat labels and narrow-phone menus within the viewport. */
+html,body{width:100%;max-width:100%;overflow:hidden}
+#game-container{width:100%;max-width:100%;overflow:hidden}
+@media(max-width:430px){
+ .upgrade-item{min-width:0;width:100%;gap:8px;padding:12px;font-size:13px}
+ .upgrade-item .btn{padding:8px 10px;min-height:40px}
+ .screen{padding-left:12px;padding-right:12px}
+}
