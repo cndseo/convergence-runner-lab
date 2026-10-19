@@ -45,7 +45,7 @@ export class LevelGenerator {
         resetMotorcycles();
         this.plan = generateTacticalLevel({
             level, seed: this.game.levelSeed ?? level * 20261019,
-            startCount: this.game.getStartingCrowdSize(), strength: this.game.strengthUpgrade
+            startCount: this.game.getStartingCrowdSize(), strength: this.game.getEffectiveStrength()
         });
         trackLength = this.plan.trackLength;
         this.createTrack(trackLength);

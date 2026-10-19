@@ -444,3 +444,38 @@ html,body{width:100%;max-width:100%;overflow:hidden}
 /* Finale reward: actual approved cut-out image, only after level 10. */
 .final-portrait{display:block;width:auto;height:clamp(75px,15vh,126px);object-fit:contain;filter:drop-shadow(0 8px 18px #0009);margin:0 auto -5px}
 .final-portrait[hidden]{display:none!important}
+
+/* Daily challenge and cosmetic-only catalogue. */
+#challenge-hub.challenge-hub{position:absolute;inset:0;z-index:130;display:flex;align-items:center;justify-content:center;
+ background:rgba(4,13,22,.89);padding:clamp(12px,3vw,25px);overflow:auto;color:#f3f4f6;
+ font-family:system-ui,-apple-system,Segoe UI,sans-serif}
+#challenge-hub.hidden{display:none}
+.challenge-card{width:min(100%,430px);max-height:min(93vh,760px);overflow:auto;background:#182b40;
+ border:1px solid #718e9a88;border-radius:20px;box-shadow:0 15px 60px #0009;
+ padding:clamp(14px,3.5vw,22px);display:flex;flex-direction:column;gap:12px}
+.challenge-top{display:flex;justify-content:space-between;align-items:center;gap:12px;font-weight:850;
+ font-size:12px;letter-spacing:.06em;color:#ffdb82}
+.challenge-day{margin-left:auto;color:#d3deee;font-size:11px;font-weight:650}
+.challenge-close{background:#304861;color:#fff;border:1px solid #8d9eae66;border-radius:50%;
+ width:37px;height:37px;cursor:pointer;flex:0 0 auto;font-size:16px}
+.challenge-title{font-size:clamp(21px,6vw,30px);line-height:1.1;margin:5px 0 0;text-align:center;color:#f5dc9b}
+.challenge-note,.challenge-explain{font-size:13px;line-height:1.5;color:#d5e3ee;text-align:center;margin:0}
+.challenge-body{display:flex;flex-direction:column;gap:12px}
+.challenge-seed,.challenge-record,.challenge-ranking{margin:0;background:#233c54;border-radius:9px;
+ padding:10px 12px;color:#dceaf3;font:600 13px/1.5 system-ui}
+.challenge-record{text-align:center}
+.challenge-stat{text-align:center;padding:18px 8px;background:#264453;border-radius:12px;
+ font:900 clamp(21px,7vw,30px)/1.1 system-ui;color:#ffdc83}
+.challenge-product{display:flex;justify-content:space-between;align-items:center;gap:12px;border-radius:11px;
+ background:#263f55;padding:11px;min-height:82px}
+.challenge-product>div{display:flex;flex-direction:column;gap:6px;flex:1}
+.challenge-product strong{font-size:13px;line-height:1.25;color:#fff0c8}
+.challenge-product span{font-size:11px;line-height:1.35;color:#d2deea}
+.challenge-product button{min-width:85px;flex:0 0 auto}
+.challenge-product button:disabled{opacity:.55;cursor:not-allowed}
+.challenge-warning{font:600 12px/1.45 system-ui;color:#fbd99c;text-align:center}
+.challenge-foot{display:flex;flex-direction:column;gap:9px}
+.challenge-foot .btn{margin:0;width:100%;min-height:43px;font-size:clamp(12px,3.5vw,15px)}
+.challenge-rank{margin:3px 0;padding:9px;border-bottom:1px solid #57728766;font-size:13px}
+
+.supporter-badge{display:inline-flex;align-items:center;margin-left:6px;padding:3px 5px;border-radius:5px;background:#f6d37f;color:#192a3a;font:900 8px/1 system-ui;letter-spacing:.05em;vertical-align:middle}

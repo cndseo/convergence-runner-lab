@@ -109,7 +109,8 @@ export class UIManager {
         document.getElementById('next-btn').addEventListener('click', () => {
             if (this.game.audio.initialized) this.game.audio.playClick();
             this.transitionOut(this.winScreen, () => {
-                if(this.game.campaignComplete){
+                if(this.game.mode==='daily')this.game.challengeHub.returnToCampaignMenu();
+                else if(this.game.campaignComplete){
                     this.game.level=1;
                     this.game.campaignComplete=false;
                     this.game.story.introSeen=false;
@@ -139,7 +140,8 @@ export class UIManager {
         document.getElementById('retry-btn').addEventListener('click', () => {
             if (this.game.audio.initialized) this.game.audio.playClick();
             this.transitionOut(this.loseScreen, () => {
-                this.game.startGame();
+                if(this.game.mode==='daily')this.game.startDailyChallenge(this.game.dailyDate);
+                else this.game.startGame();
             });
         });
 
@@ -307,7 +309,7 @@ export class UIManager {
     }
 
     updateHUDInfo() {
-        this.levelDisplay.textContent = `Étape ${this.game.level}`;
+        this.levelDisplay.textContent = this.game.mode==='daily'?'Défi du jour':`Étape ${this.game.level}`;
         this.coinDisplay.textContent = `🪙 ${this.game.coins}`;
     }
 

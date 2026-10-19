@@ -3,6 +3,8 @@ import { applyChoice, sufferLoss, MAX_CROWD } from './tactics.mjs';
 import { explainGateChoice, evaluateResult } from './tacticalFeedback.mjs';
 import { FINAL_CAMPAIGN_LEVEL } from './storyRules.mjs';
 import { StoryDirector } from './storyDirector.js';
+import { ChallengeHub } from './challengeHub.js';
+import { DAILY_START_COUNT,DAILY_STRENGTH,dailyChallengeSeed,utcChallengeDate } from './dailyChallenge.mjs';
 import { LevelGenerator } from './level.js';
 import { CrowdManager } from './crowd.js';
 import { UIManager } from './ui.js';
@@ -28,6 +30,9 @@ export class Game {
         // Game state
         this.state = 'menu'; // menu, playing, fighting, win, lose
         this.level = 1;
+        this.mode = 'campaign';
+        this.dailyDate = null;
+        this.campaignLevelBackup = null;
         this.campaignComplete = false;
         this.finalCaptured = false;
         this.coins = 0;
@@ -101,6 +106,7 @@ export class Game {
         this.genzFireworks = new GenzFireworks(this);
         this.story = new StoryDirector(this);
         this.story.loadAssets();
+        this.challengeHub = new ChallengeHub(this);
         // Warm the shared CC0 asset caches while the user views the menu.
         Promise.allSettled([preloadRunnerHumanoid(),preloadPoliceHumanoid(),preloadMotorcycle()]);
         this.animate();
@@ -224,6 +230,15 @@ export class Game {
         }
     }
 
+    startDailyChallenge(day=utcChallengeDate()) {
+        if(this.mode!=='daily')this.campaignLevelBackup=this.level;
+        this.mode='daily';
+        this.dailyDate=day;
+        this.levelSeed=dailyChallengeSeed(day);
+        this.level=1;
+        this.startGame();
+    }
+
     startGame() {
         this.state = 'playing';
         this.finalCaptured=false;
@@ -261,7 +276,12 @@ export class Game {
     }
 
     getStartingCrowdSize() {
+        if(this.mode==='daily')return DAILY_START_COUNT;
         return Math.min(MAX_CROWD, 5 + (this.crowdUpgrade - 1) * 3);
+    }
+
+    getEffectiveStrength(){
+        return this.mode==='daily'?DAILY_STRENGTH:this.strengthUpgrade;
     }
 
     clearLevel() {
@@ -406,11 +426,11 @@ export class Game {
             if (Math.abs(playerZ - gateZ) < 1.0) {
                 // Check if player is on left or right gate
                 if (this.playerX < 0 && gate.leftGate) {
-                    this.applyGate(gate.leftGate);
+                    this.applyGate(gate.leftGate,'left');
                     gate.passed = true;
                     this.highlightGate(gate, 'left');
                 } else if (this.playerX >= 0 && gate.rightGate) {
-                    this.applyGate(gate.rightGate);
+                    this.applyGate(gate.rightGate,'right');
                     gate.passed = true;
                     this.highlightGate(gate, 'right');
                 }
@@ -418,7 +438,7 @@ export class Game {
         }
     }
 
-    applyGate(gateData) {
+    applyGate(gateData,side=null) {
         const before = { count: this.crowdManager.getPlayerCount(), shields: this.shields };
         const after = applyChoice(before, gateData);
         this.shields = after.shields;
@@ -440,7 +460,7 @@ export class Game {
                 (guard ? '  ◇ ' + (guard > 0 ? '+' : '') + guard : ''), good ? '#a8f0d1' : '#ff817b');
             this.ui.screenShake(good ? 2 : 4);
         } else this.ui.showFloatingText('Condition non remplie', '#ddc5ff');
-        this.gateHistory.push({ choice: gateData, before, after });
+        this.gateHistory.push({ choice: gateData, before, after, side });
         if(after.count>0)this.ui.showTacticalHint(explainGateChoice(gateData,before,after));
         if (after.count === 0) this.loseGame('gate');
     }
@@ -504,7 +524,7 @@ export class Game {
                 this.fightingEnemy.remainingCount = enemy.count;
                 this.fightTimer = -0.44; // Approach and shield-ready before the first exchange
                 this.fightElapsed = 0;
-                this.fightInterval = Math.max(0.30, (this.minFightDuration - 0.44) / Math.ceil(enemy.count / Math.max(1, this.strengthUpgrade)));
+                this.fightInterval = Math.max(0.30, (this.minFightDuration - 0.44) / Math.ceil(enemy.count / Math.max(1, this.getEffectiveStrength())));
                 this.fightCameraTime = 0;
                 this.combatChoreo?.dispose();
                 this.combatChoreo = new CombatChoreography(this,enemy);
@@ -545,7 +565,7 @@ export class Game {
 
             // Resolve losses exactly as in the certified tactical solver.
             const shieldsBefore = this.shields;
-            const strength = this.strengthUpgrade;
+            const strength = this.getEffectiveStrength();
 
             // Player kills enemy stickmen (strength determines how many enemy die per tick)
             const enemyKills = Math.min(strength, enemy.remainingCount);
@@ -657,7 +677,7 @@ export class Game {
         };
         this.fightTimer = -0.44;
         this.fightElapsed = 0;
-        this.fightInterval = Math.max(0.30, (this.minFightDuration - 0.44) / Math.ceil(boss.health / Math.max(1, this.strengthUpgrade)));
+        this.fightInterval = Math.max(0.30, (this.minFightDuration - 0.44) / Math.ceil(boss.health / Math.max(1, this.getEffectiveStrength())));
         this.speed = 0;
         this.combatChoreo?.dispose();
         this.combatChoreo=new CombatChoreography(this,this.fightingEnemy);
@@ -681,6 +701,11 @@ export class Game {
             return;
         }
         this.audio.stopCombatVoice?.();
+        if(this.mode==='daily'){
+            const report=evaluateResult({won:true,survivors:this.crowdManager.getPlayerCount(),gateHistory:this.gateHistory,level:1});
+            this.state='win';this.audio.stopCrowdAmbience();this.audio.stopMusic();this.audio.playWin();
+            this.ui.showWin(0,report);this.challengeHub.complete(true);return;
+        }
         const report=evaluateResult({won:true,survivors:this.crowdManager.getPlayerCount(),gateHistory:this.gateHistory,level:this.level});
         this.state = 'win';
         const earnedCoins = Math.floor(this.crowdManager.getPlayerCount() * 2 + this.level * 10);
@@ -701,6 +726,10 @@ export class Game {
         this.combatChoreo?.dispose();
         this.combatChoreo=null;
         this.audio.stopCombatVoice?.();
+        if(this.mode==='daily'){
+            this.state='lose';this.audio.stopCrowdAmbience();this.audio.stopMusic();this.audio.playLose();
+            this.ui.showLose(report);this.challengeHub.complete(false);return;
+        }
         this.state = 'lose';
         const earnedCoins = Math.floor(this.level * 2);
         this.coins += earnedCoins;
