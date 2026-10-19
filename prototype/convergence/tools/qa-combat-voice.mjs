@@ -31,6 +31,26 @@ try{
  });
  assert.equal(combat.state,'fighting');assert.equal(combat.voiceActive,true);
  report.checks.push({name:'combat-start',combat});
+ const held=await page.evaluate(()=>{
+  const g=window.__convergence;g.qaManual=true;
+  // Keep this test focused on timing, not tactical survival.
+  g.fightingEnemy.remainingCount=1;g.shields=20;
+  for(let i=0;i<162;i++)g.update(.05); // 8.1 seconds of game time
+  return {state:g.state,elapsed:g.fightElapsed,remaining:g.fightingEnemy?.remainingCount,
+    voiceRequested:g.audio.combatVoiceRequested,voiceActive:!!g.audio.combatVoiceNode};
+ });
+ assert.equal(held.state,'fighting','combat should still be visible during full recording');
+ assert.ok(held.elapsed>=8&&held.elapsed<9.2);
+ assert.equal(held.voiceRequested,true);
+ report.checks.push({name:'full-voice-window',held});
+ const completed=await page.evaluate(()=>{
+  const g=window.__convergence;
+  for(let i=0;i<55;i++)g.update(.05);
+  return {state:g.state,elapsed:g.fightElapsed,voiceRequested:g.audio.combatVoiceRequested};
+ });
+ assert.equal(completed.state,'playing','combat must release after the recording');
+ assert.equal(completed.voiceRequested,false);
+ report.checks.push({name:'combat-releases',completed});
  const paused=await page.evaluate(async()=>{
   document.querySelector('#pause-btn').click();
   await new Promise(r=>setTimeout(r,200));

@@ -57,7 +57,9 @@ export class Game {
         // Fighting state
         this.fightingEnemy = null;
         this.fightTimer = 0;
-        this.fightInterval = 0.20; // Give the front line time to react to each exchange
+        this.fightInterval = 0.30; // Exchanges are readable without changing casualties
+        this.minFightDuration = 9.2; // Let the complete ~8 s voice recording be heard
+        this.fightElapsed = 0;
         this.combatChoreo = null;
         
         // Player
@@ -468,6 +470,8 @@ export class Game {
                 this.fightingEnemy = enemy;
                 this.fightingEnemy.remainingCount = enemy.count;
                 this.fightTimer = -0.44; // Approach and shield-ready before the first exchange
+                this.fightElapsed = 0;
+                this.fightInterval = Math.max(0.30, (this.minFightDuration - 0.44) / Math.ceil(enemy.count / Math.max(1, this.strengthUpgrade)));
                 this.fightCameraTime = 0;
                 this.combatChoreo?.dispose();
                 this.combatChoreo = new CombatChoreography(this,enemy);
@@ -487,7 +491,14 @@ export class Game {
     }
 
     updateFight(delta) {
-        this.fightTimer += delta;
+        this.fightElapsed += delta;
+        // Once the tactical exchange is over, hold the camera until the
+        // complete combat recording has had time to play. No extra casualties.
+        if (this.fightingEnemy?.remainingCount <= 0 && this.fightElapsed >= this.minFightDuration) {
+            this.fightTimer = this.fightInterval;
+        } else {
+            this.fightTimer += delta;
+        }
 
         if (this.fightTimer >= this.fightInterval) {
             this.fightTimer -= this.fightInterval;
@@ -531,6 +542,10 @@ export class Game {
 
             // Check fight outcome
             if (enemy.remainingCount <= 0) {
+                if (this.fightElapsed < this.minFightDuration) {
+                    this.fightTimer = -100;
+                    return;
+                }
                 this.audio.stopCombatVoice?.();
                 this.combatChoreo?.finish();
                 // Player wins
@@ -593,7 +608,8 @@ export class Game {
             kind: 'crs'
         };
         this.fightTimer = -0.44;
-        this.fightInterval = 0.20;
+        this.fightElapsed = 0;
+        this.fightInterval = Math.max(0.30, (this.minFightDuration - 0.44) / Math.ceil(boss.health / Math.max(1, this.strengthUpgrade)));
         this.speed = 0;
         this.combatChoreo?.dispose();
         this.combatChoreo=new CombatChoreography(this,this.fightingEnemy);
