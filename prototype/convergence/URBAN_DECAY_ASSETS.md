@@ -1,6 +1,6 @@
 # CONVERGENCE — pack de décors urbains 3D
 
-**Livraison séparée :** \`feature/convergence-urban-decay-assets\`, à partir de \`b660df3\`. Aucun changement sur la production ni dans la branche de travail principale d'Astra.
+**Livraison compatible renforts marseillais 2D :** `feature/marseille-2d-urban-decay` sur la base validée `fix/marseille-premium-2d` (`51d0ac6`). Première création sur `feature/convergence-urban-decay-assets` (`4513844`). Aucun changement sur la production ni dans la branche d'Astra.
 
 ## Modèles livrés (format GLB 2.0 autonome, PBR sans texture externe)
 
