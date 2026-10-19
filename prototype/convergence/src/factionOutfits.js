@@ -5,6 +5,24 @@ export const FACTIONS=['gilets','genz','lyceens','pompiers','infirmieres','agric
 const palettes=new Map();
 const sharedMaterials=new Map();
 const loader=new THREE.TextureLoader();
+let backpackDetailMaterial;
+let vestDetailMaterial;
+function getVestDetailMaterial(){
+ if(!vestDetailMaterial){
+  const tex=loader.load(import.meta.env.BASE_URL+'assets/crowd/p02-vest-detail.webp');
+  tex.colorSpace=THREE.SRGBColorSpace;
+  vestDetailMaterial=new THREE.MeshStandardMaterial({map:tex,transparent:true,alphaTest:.12,depthWrite:false,roughness:.93,side:THREE.DoubleSide});
+ }
+ return vestDetailMaterial;
+}
+function getBackpackDetailMaterial(){
+ if(!backpackDetailMaterial){
+  const tex=loader.load(import.meta.env.BASE_URL+'assets/crowd/p02-backpack-detail.webp');
+  tex.colorSpace=THREE.SRGBColorSpace;
+  backpackDetailMaterial=new THREE.MeshStandardMaterial({map:tex,transparent:true,alphaTest:.12,depthWrite:false,roughness:.91,metalness:0,side:THREE.DoubleSide});
+ }
+ return backpackDetailMaterial;
+}
 const colorMaterial=(hex,metalness=0)=>new THREE.MeshStandardMaterial({
  color:hex,roughness:metalness?.55:.87,metalness,side:THREE.DoubleSide
 });
@@ -62,6 +80,10 @@ function backpack(spine,color=dark){
  const bag=piece(spine,new THREE.CapsuleGeometry(.16,.20,6,12),color,[0,-.015,.24]);
  bag.scale.set(1,1,.60);
  cube(spine,color,[.26,.16,.05],[0,-.09,.35]);
+ // Sewn pockets and straps are baked from the approved P02 photograph.
+ // Applied to the existing rigged backpack, not repeated as a static character.
+ const detail=piece(spine,new THREE.PlaneGeometry(.29,.30),getBackpackDetailMaterial(),[0,-.025,.389]);
+ detail.castShadow=false;detail.renderOrder=2;
  for(const x of [-.105,.105])cube(spine,silver,[.024,.060,.025],[x,.08,.34]);
  cube(spine,color,[.35,.10,.18],[0,-.22,.22]);
  for(const x of [-.16,.16])
@@ -140,6 +162,8 @@ export function dressFaction(model,faction){
   piece(hood,new THREE.TorusGeometry(.17,.065,7,16),dark,[0,0,0],[Math.PI/2,0,0]);
   backpack(torso);
   for (const y of [-.12,.10]) cube(torso,silver,[.43,.055,.035],[0,y,.25]);
+  const vestPhoto=piece(torso,new THREE.PlaneGeometry(.49,.45),getVestDetailMaterial(),[0,-.045,.408]);
+  vestPhoto.castShadow=false;vestPhoto.renderOrder=3;
   frenchFlag(model);
  }else if(faction==='genz'){
   piece(torso,new THREE.CylinderGeometry(.205,.225,.41,14),violet);
