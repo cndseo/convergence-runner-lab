@@ -153,7 +153,7 @@ export class LevelGenerator {
     }
 
     createEnemyCrowd(enemy, z, count) {
-        const displayCount = Math.min(count, 12);
+        const displayCount = Math.min(Math.max(count, 16), 24);
         const group = new THREE.Group();
         group.userData.dynamic = true;
 
@@ -162,9 +162,9 @@ export class LevelGenerator {
             const radius = Math.sqrt(i / displayCount) * 2.5;
             const stickman = makeOfficer(enemy.kind,i);
             stickman.position.set(
-                (i % 6 - 2.5) * .78,
+                (i % 8 - 3.5) * .68,
                 0,
-                -Math.floor(i / 6) * .75
+                -Math.floor(i / 8) * .83
             );
             group.add(stickman);
             upgradePoliceOfficer(stickman,enemy.kind);
@@ -230,11 +230,22 @@ export class LevelGenerator {
         this.boss={z:trackLength,health:bossHealth,defeated:false};
         const squad=new THREE.Group();squad.userData.dynamic=true;
         // Final front: CRS line backed by a white van instead of a king stickman.
-        for(let i=0;i<7;i++){
+        for(let i=0;i<13;i++){
             const officer=makeOfficer(i%5===0?'bac':'crs',i);
-            officer.position.set((i-3)*.68,0,i%2*.6);
+            officer.position.set((i%7-3)*.66,0,Math.floor(i/7)*-.86);
             squad.add(officer);
             upgradePoliceOfficer(officer, i%5===0?'bac':'crs');
+        }
+        // Two flanking motorcycle units; scenery only, no additional tactical damage.
+        for(const side of [-1,1]){
+            for(let j=0;j<2;j++){
+                const rider=makeOfficer('bravm',j);
+                rider.position.set(side*(4.2+j*.85),0,-1.1-j*1.9);
+                rider.rotation.y=side*Math.PI/10;
+                squad.add(rider);
+                upgradePoliceOfficer(rider,'bravm');
+                upgradeBravMotorcycle(rider);
+            }
         }
         const vehicle=makeVan();vehicle.scale.set(.85,.85,.85);
         vehicle.position.set(0,0,-4.3);squad.add(vehicle);

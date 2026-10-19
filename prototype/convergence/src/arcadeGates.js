@@ -16,6 +16,8 @@ export function createArcadeGate(data,x,z,scene,tracked) {
   const m=new THREE.Mesh(new THREE.BoxGeometry(w,h,d),mat);m.position.set(px,py,pz);root.add(m);return m;
  };
  const hazard=data.op==='damage';
+ // Physical hazard volume for ranged projectiles. Decorative portal signs are not blockers.
+ root.userData.lbdOccluder=hazard&&['van','barrier','debris'].includes(data.kind);
  const height=hazard?3.1:3.85;
  for(const side of [-1,1]){
   box(.42,height,.45,side*2.16,height/2,0,shell);
@@ -72,7 +74,9 @@ export function animateArcadeGates(gates,progress,time) {
   for(const side of ['leftMesh','rightMesh']){
    const pane=g[side],root=pane?.userData.root;
    if(!root)continue;
-   root.visible=distance<62&&distance>-8;
+   // A validated portal must disappear after crossing: otherwise its giant
+   // billboard obstructs the camera and the incoming long-range projectiles.
+   root.visible=!g.passed&&distance<62&&distance>-8;
    if(root.visible)pane.material.emissiveIntensity=.14+Math.sin(time*2.5+g.z)*.05;
   }
  }

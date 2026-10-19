@@ -205,6 +205,21 @@ export class UIManager {
         loop();
     }
 
+    // Compact warning of injuries during distant LBD fire.
+    showLbdImpact(message,blocked=false) {
+        if(!this.lbdNotice){
+            this.lbdNotice=document.createElement('div');
+            this.lbdNotice.setAttribute('role','status');
+            this.lbdNotice.style.cssText='position:absolute;top:16%;left:50%;transform:translateX(-50%);z-index:40;pointer-events:none;border-radius:8px;padding:6px 10px;max-width:86%;font:700 14px system-ui,sans-serif;text-align:center;background:rgba(27,33,46,.86);border:1px solid rgba(255,255,255,.25);text-shadow:0 1px 2px #000;white-space:nowrap;';
+            this.container.appendChild(this.lbdNotice);
+        }
+        this.lbdNotice.textContent=message;
+        this.lbdNotice.style.color=blocked?'#bce8ff':'#ffb1b1';
+        this.lbdNotice.style.display='block';
+        clearTimeout(this.lbdNoticeTimeout);
+        this.lbdNoticeTimeout=setTimeout(()=>{if(this.lbdNotice)this.lbdNotice.style.display='none';},1050);
+    }
+
     // ============ FLOATING TEXT ============
     showFloatingText(text, color) {
         const el = document.createElement('div');
