@@ -7,7 +7,11 @@ import { fileURLToPath } from 'node:url';
 import { utcChallengeDate, validChallengeDate, computeDailyScore } from '../src/dailyChallenge.mjs';
 
 export const PRODUCTS = Object.freeze({
- spiderman:{sku:'spiderman',name:'CONVERGENCE — Personnage Spider-Man',cents:299,description:'Personnage déguisé - apparence visuelle, sans avantage tactique'}
+ spiderman:{sku:'spiderman',name:'CONVERGENCE — Personnage Spider-Man',cents:299,description:'Personnage déguisé - apparence visuelle, sans avantage tactique'},
+ dinosaur:{sku:'dinosaur',name:'CONVERGENCE — Dinosaure gonflable',cents:299,description:'Personnage déguisé, sans avantage tactique'},
+ marseille1:{sku:'marseille1',name:'CONVERGENCE — Renfort marseillais x1',cents:199,description:'Une intervention spéciale en campagne',charges:1},
+ marseille3:{sku:'marseille3',name:'CONVERGENCE — Renfort marseillais x3',cents:499,description:'Trois interventions spéciales en campagne',charges:3},
+ marseille10:{sku:'marseille10',name:'CONVERGENCE — Renfort marseillais x10',cents:1299,description:'Dix interventions spéciales en campagne',charges:10}
 });
 const sha=s=>crypto.createHash('sha256').update(s).digest('hex');
 const json=(res,status,data)=>{res.writeHead(status,{'Content-Type':'application/json; charset=utf-8','Cache-Control':'no-store','X-Content-Type-Options':'nosniff'});res.end(JSON.stringify(data));};
@@ -26,7 +30,9 @@ function database(file){
  PRIMARY KEY(day,player_id));
  CREATE INDEX IF NOT EXISTS scores_ranking ON scores(day,survivors DESC,created ASC);
  CREATE TABLE IF NOT EXISTS orders(session_id TEXT PRIMARY KEY,player_id TEXT NOT NULL REFERENCES players(id),sku TEXT NOT NULL,created TEXT NOT NULL);
- CREATE TABLE IF NOT EXISTS inventory(player_id TEXT NOT NULL REFERENCES players(id),sku TEXT NOT NULL,created TEXT NOT NULL,PRIMARY KEY(player_id,sku));`);
+ CREATE TABLE IF NOT EXISTS inventory(player_id TEXT NOT NULL REFERENCES players(id),sku TEXT NOT NULL,created TEXT NOT NULL,PRIMARY KEY(player_id,sku));
+ CREATE TABLE IF NOT EXISTS marseille_charges(player_id TEXT PRIMARY KEY REFERENCES players(id),charges INTEGER NOT NULL DEFAULT 0 CHECK(charges>=0));
+ CREATE TABLE IF NOT EXISTS support_redemptions(request_id TEXT PRIMARY KEY,player_id TEXT NOT NULL REFERENCES players(id),remaining INTEGER NOT NULL,created TEXT NOT NULL);`);
  return db;
 }
 function auth(db,req){
@@ -95,7 +101,22 @@ export function createApiServer({dbPath=':memory:',clock=()=>new Date(),corsOrig
     const player=auth(db,req);
     if(!player)return json(res,401,{error:'unauthorized'});
     const owned=db.prepare('SELECT sku FROM inventory WHERE player_id=?').all(player.id).map(x=>x.sku);
-    return json(res,200,{owned});
+    const charges=db.prepare('SELECT charges FROM marseille_charges WHERE player_id=?').get(player.id)?.charges||0;
+    return json(res,200,{owned,marseilleCharges:charges});
+   }
+   if(req.method==='POST'&&path==='/api/v1/support/consume'){
+    const player=auth(db,req);if(!player)return json(res,401,{error:'unauthorized'});
+    const params=JSON.parse((await readBody(req)).toString('utf8'));
+    if(typeof params.requestId!=='string'||!/^[0-9a-f-]{36}$/.test(params.requestId))return json(res,400,{error:'invalid_request_id'});
+    db.exec('BEGIN IMMEDIATE');
+    try{
+      const previous=db.prepare('SELECT remaining FROM support_redemptions WHERE request_id=? AND player_id=?').get(params.requestId,player.id);
+      if(previous){db.exec('COMMIT');return json(res,200,{remaining:previous.remaining,idempotent:true});}
+      const updated=db.prepare('UPDATE marseille_charges SET charges=charges-1 WHERE player_id=? AND charges>0 RETURNING charges').get(player.id);
+      if(!updated){db.exec('COMMIT');return json(res,409,{error:'no_support_charges'});}
+      db.prepare('INSERT INTO support_redemptions VALUES(?,?,?,?)').run(params.requestId,player.id,updated.charges,new Date().toISOString());
+      db.exec('COMMIT');return json(res,200,{remaining:updated.charges,spent:1});
+    }catch(e){db.exec('ROLLBACK');throw e;}
    }
    if(req.method==='POST'&&path==='/api/v1/shop/checkout'){
     if(!paymentsReady)return json(res,503,{error:'payments_disabled'});
@@ -104,7 +125,7 @@ export function createApiServer({dbPath=':memory:',clock=()=>new Date(),corsOrig
     const params=JSON.parse((await readBody(req)).toString('utf8'));
     const product=PRODUCTS[params.sku];
     if(!product)return json(res,400,{error:'unknown_product'});
-    if(db.prepare('SELECT sku FROM inventory WHERE player_id=? AND sku=?').get(player.id,product.sku))
+    if(!product.charges && db.prepare('SELECT sku FROM inventory WHERE player_id=? AND sku=?').get(player.id,product.sku))
       return json(res,409,{error:'already_owned'});
     const session=await stripeClient.checkout.sessions.create({
       mode:'payment',
@@ -127,10 +148,17 @@ export function createApiServer({dbPath=':memory:',clock=()=>new Date(),corsOrig
       const sku=session.metadata.sku,pid=session.metadata.player_id;
       if(!PRODUCTS[sku]||!db.prepare('SELECT id FROM players WHERE id=?').get(pid))
        return json(res,400,{error:'invalid_metadata'});
+      // A signed event must also match our fixed-price Checkout session.
+      if(session.amount_total!==PRODUCTS[sku].cents||session.currency!=='eur'||session.client_reference_id!==pid)
+       return json(res,400,{error:'checkout_mismatch'});
       db.exec('BEGIN IMMEDIATE');
       try{
-       db.prepare('INSERT OR IGNORE INTO orders VALUES(?,?,?,?)').run(session.id,pid,sku,new Date().toISOString());
-       db.prepare('INSERT OR IGNORE INTO inventory VALUES(?,?,?)').run(pid,sku,new Date().toISOString());
+       const inserted=db.prepare('INSERT OR IGNORE INTO orders VALUES(?,?,?,?)').run(session.id,pid,sku,new Date().toISOString()).changes;
+       if(inserted){
+        if(PRODUCTS[sku].charges){
+         db.prepare('INSERT INTO marseille_charges(player_id,charges) VALUES(?,?) ON CONFLICT(player_id) DO UPDATE SET charges=charges+excluded.charges').run(pid,PRODUCTS[sku].charges);
+        }else db.prepare('INSERT OR IGNORE INTO inventory VALUES(?,?,?)').run(pid,sku,new Date().toISOString());
+       }
        db.exec('COMMIT');
       }catch(e){db.exec('ROLLBACK');throw e;}
      }

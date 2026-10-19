@@ -19,9 +19,9 @@ try {
   const row=page.locator('.challenge-product').first();
   assert.match(await row.innerText(),/Spider-Man/);
   assert.match(await row.innerText(),/2,99 €/);
-  assert.equal(await page.locator('.character-product-thumb').count(),1);
+  assert.ok(await page.locator('.character-product-thumb').count()>=2);
   await page.waitForFunction(()=>{const i=document.querySelector('.character-product-thumb');return i?.complete&&i.naturalWidth>100;},{timeout:12000});
-  assert.equal(await page.locator('.character-product-thumb').evaluate(i=>i.complete&&i.naturalWidth>100),true);
+  assert.equal(await page.locator('.character-product-thumb').first().evaluate(i=>i.complete&&i.naturalWidth>100),true);
   await page.screenshot({path:dir+'/shop-'+size.width+'.png'});
   await page.getByRole('button',{name:/TESTER SPIDER-MAN/}).click();
   await page.waitForFunction(()=>{

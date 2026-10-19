@@ -81,8 +81,8 @@ try{
     labels:buttons.map(x=>x.textContent),message:document.querySelector('.challenge-warning')?.textContent,
     heading:document.querySelector('.challenge-title')?.textContent};
   });
-  assert.equal(premium.count,3);assert.equal(premium.disabled,true);
-  assert.match(premium.labels.join(' '),/1,99 €.*3,99 €.*5,99 €/);
+  assert.equal(premium.count,5);assert.equal(premium.disabled,true);
+  assert.match(premium.labels.join(' '),/2,99 €.*2,99 €.*1,99 €.*4,99 €.*12,99 €/);
   assert.match(premium.message,/désactivés/);
   report.checks.push({viewport,type:'premium',premium});
   await page.screenshot({path:dir+'/shop-'+viewport.width+'.png'});

@@ -74,7 +74,8 @@ test('Stripe checkout uses fixed EUR catalog and grants only via verified paid w
   assert.equal(lastSession.line_items[0].price_data.unit_amount,PRODUCTS.spiderman.cents);
   assert.equal(lastSession.line_items[0].price_data.currency,'eur');
   assert.deepEqual(Object.keys(lastSession.line_items[0].price_data).sort(),['currency','product_data','unit_amount']);
-  const session={id:'cs_test_foo',payment_status:'unpaid',
+  const session={id:'cs_test_foo',payment_status:'unpaid',currency:'eur',
+   amount_total:PRODUCTS.spiderman.cents,client_reference_id:profile.playerId,
    metadata:{game:'convergence',sku:'spiderman',player_id:profile.playerId}};
   const hook=async(data,signature='sig-test')=>req('/api/v1/shop/stripe-webhook',{method:'POST',headers:{'Stripe-Signature':signature,'Content-Type':'application/json'},
    body:JSON.stringify({type:'checkout.session.completed',data:{object:data}})});

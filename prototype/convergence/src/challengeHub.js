@@ -4,10 +4,10 @@ import {
 
 export const PREMIUM_CATALOG = Object.freeze([
   {id:'spiderman',label:'Spider-Man manifestant',description:'Personnage déguisé, avec les deux vues fournies',cents:299,art:'spiderman-front.webp'},
-  {id:'dinosaur',label:'Dinosaure gonflable',description:'Personnage déguisé en dinosaure',cents:299,comingSoon:true},
-  {id:'marseille1',label:'Renfort marseillais · 1 intervention',description:'Une intervention spéciale en mode campagne',cents:199,comingSoon:true},
-  {id:'marseille3',label:'Renfort marseillais · 3 interventions',description:'Trois interventions spéciales en mode campagne',cents:499,comingSoon:true},
-  {id:'marseille10',label:'Renfort marseillais · 10 interventions',description:'Dix interventions spéciales en mode campagne',cents:1299,comingSoon:true}
+  {id:'dinosaur',label:'Dinosaure gonflable',description:'Personnage déguisé en dinosaure',cents:299,art:'dinosaur-front.webp'},
+  {id:'marseille1',label:'Renfort marseillais · 1 intervention',description:'Une intervention spéciale en mode campagne',cents:199,art:'marseille-front.webp'},
+  {id:'marseille3',label:'Renfort marseillais · 3 interventions',description:'Trois interventions spéciales en mode campagne',cents:499},
+  {id:'marseille10',label:'Renfort marseillais · 10 interventions',description:'Dix interventions spéciales en mode campagne',cents:1299}
 ]);
 
 function make(tag,className,text='') {
@@ -176,22 +176,31 @@ export class ChallengeHub {
       if(item.art){
         const img=make('img','character-product-thumb');
         img.src=import.meta.env.BASE_URL+'assets/characters/'+item.art;
-        img.alt='Vue de face du Spider-Man transmis';
+        img.alt='Vue de face du déguisement fourni par le joueur';
         info.prepend(img);
       }
       const owned=this.ownedSkus.has(item.id);
       const pay=this.action(item.comingSoon?'BIENTÔT':owned?'ACQUIS':(item.cents/100).toFixed(2).replace('.',',')+' €',
         ()=>this.checkout(item.id),item.comingSoon||owned||!this.paymentsEnabled);
       row.append(info,pay);this.body.append(row);
-      if(item.id==='spiderman'){
-        const preview=this.action(owned?'ÉQUIPER SPIDER-MAN':'TESTER SPIDER-MAN (DÉMO)',()=>this.previewCharacter('spiderman',owned));
+      if(item.id==='marseille1' && (!this.paymentsEnabled || this.game.qa)){
+        const preview=this.action('TESTER UNE SUPER ATTAQUE (DÉMO)',()=>this.previewMarseille());
+        preview.classList.add('character-preview-action');
+        this.body.append(preview);
+      }
+      if((item.id==='spiderman' || item.id==='dinosaur') && (owned || !this.paymentsEnabled || this.game.qa)){
+        const label=item.id==='spiderman'?'SPIDER-MAN':'DINOSAURE';
+        const preview=this.action(owned?'ÉQUIPER '+label:'TESTER '+label+' (DÉMO)',()=>this.previewCharacter(item.id,owned));
         preview.classList.add('character-preview-action');
         this.body.append(preview);
       }
     }
+    const charges=make('p','challenge-credit-count',
+      'Interventions marseillaises disponibles : '+(this.game.marseille?.available()||0));
+    this.body.append(charges);
     const warning=make('p','challenge-warning',this.paymentsEnabled
       ?'Paiement sur Stripe Checkout. Uniquement après confirmation serveur.'
-      :'Paiements désactivés. Le bouton TESTER permet de voir Spider-Man dans le prototype, sans achat.');
+      :'Paiements désactivés. Le bouton TESTER permet de voir les personnages dans le prototype, sans achat.');
     this.body.append(warning);
     this.foot.append(this.action('PERSONNALISER MA FOULE',()=>{
       this.panel.classList.add('hidden');
@@ -201,7 +210,8 @@ export class ChallengeHub {
     this.foot.append(this.action('← RETOUR',()=>this.open('daily')));
   }
   previewCharacter(id,owned=false){
-    if(id!=='spiderman')return;
+    if(!['spiderman','dinosaur'].includes(id))return;
+    if(this.paymentsEnabled && !owned && !this.game.qa)return;
     const game=this.game;
     game.activeCostume=id;
     game.demoCostumeOnce=!owned;
@@ -209,6 +219,33 @@ export class ChallengeHub {
     game.ui.hideAllScreens();
     this.panel.classList.add('hidden');
     game.startGame();
+  }
+  previewMarseille(){
+    const game=this.game;
+    if(this.paymentsEnabled && !game.qa)return;
+    if(game.marseille?.available()===0)game.marseille.demoCharges=1;
+    game.mode='campaign';
+    this.panel.classList.add('hidden');
+    game.ui.hideAllScreens();
+    game.startGame();
+  }
+  async consumeMarseilleCharge(){
+    if(this.game.mode!=='campaign')return false;
+    if(this.game.marseille.demoCharges>0){
+      this.game.marseille.demoCharges--;
+      return true;
+    }
+    if(!this.apiBase || this.game.marseille.charges<=0)return false;
+    const token=await this.ensurePlayer();
+    const requestId=crypto.randomUUID();
+    const response=await fetch(this.apiBase+'/api/v1/support/consume',{
+      method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+token},
+      body:JSON.stringify({requestId})
+    });
+    if(!response.ok)return false;
+    const data=await response.json();
+    this.game.marseille.charges=data.remaining;
+    return true;
   }
   async refreshRemoteStatus(){
     if(!this.apiBase)return;
@@ -229,8 +266,9 @@ export class ChallengeHub {
         headers:{'Authorization':'Bearer '+this.playerToken}
       });
       if(!response.ok)return;
-      const {owned}=await response.json();
+      const {owned,marseilleCharges}=await response.json();
       this.ownedSkus=new Set(Array.isArray(owned)?owned:[]);
+      if(this.game.marseille && Number.isSafeInteger(marseilleCharges))this.game.marseille.charges=marseilleCharges;
       this.applyPremiumAppearance();
     }catch{/* Keep existing unlocked appearances when offline. */}
   }

@@ -5,6 +5,7 @@ import * as THREE from 'three';
 const BASE=import.meta.env.BASE_URL+'assets/characters/';
 const CLOTHES={
   spiderman:{front:'spiderman-front.webp',back:'spiderman-back.webp',height:1.86},
+  dinosaur:{front:'dinosaur-front.webp',back:'dinosaur-back.webp',height:2.16},
 };
 let cache={};
 const loader=new THREE.TextureLoader();

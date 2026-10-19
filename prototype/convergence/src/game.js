@@ -15,6 +15,7 @@ import { preloadRunnerHumanoid } from './humanoidAssets.js';
 import { CombatChoreography } from './combatChoreography.js';
 import { LBDSystem } from './lbdSystem.js';
 import { GenzFireworks } from './genzFireworks.js';
+import { MarseilleReinforcements } from './marseilleReinforcements.js';
 
 // Forward movement calibrated for a walking demonstration, not a sprint.
 const MARCH_SPEED = 3.0;
@@ -105,6 +106,7 @@ export class Game {
         this.audio = new AudioManager();
         this.lbdSystem = new LBDSystem(this);
         this.genzFireworks = new GenzFireworks(this);
+        this.marseille = new MarseilleReinforcements(this);
         this.story = new StoryDirector(this);
         this.story.loadAssets();
         this.challengeHub = new ChallengeHub(this);
@@ -241,6 +243,10 @@ export class Game {
     }
 
     startGame() {
+        // A free visual demo lasts one playthrough, not a permanent paid unlock.
+        if(this.demoCostumeConsumed && this.demoCostumeOnce){
+            this.activeCostume=null;this.demoCostumeOnce=false;this.demoCostumeConsumed=false;
+        }
         this.state = 'playing';
         this.finalCaptured=false;
         this.shields = 0;
@@ -271,6 +277,7 @@ export class Game {
         // Create player crowd
         const startCount = this.getStartingCrowdSize();
         this.crowdManager.createPlayerCrowd(startCount);
+        if(this.demoCostumeOnce)this.demoCostumeConsumed=true;
         
         this.ui.showHUD();
         this.ui.updateCount(startCount);
@@ -290,6 +297,7 @@ export class Game {
         this.audio.stopCombatVoice?.();
         this.lbdSystem?.clear();
         this.genzFireworks?.clear();
+        this.marseille?.clear();
         this.combatChoreo?.dispose();
         this.combatChoreo=null;
         // Remove all dynamic objects
@@ -321,8 +329,11 @@ export class Game {
         }
         this.levelGenerator.updateVisibility(this.trackZ);
         if(this.state!=='paused')updatePoliceAnimations(delta);
-        this.lbdSystem?.update(delta);
+        // During the paid campaign reinforcement cinematic, LBD shots pause.
+        // Daily challenges never activate this effect.
+        if(!this.marseille?.active && !this.marseille?.pending)this.lbdSystem?.update(delta);
         this.genzFireworks?.update(delta);
+        this.marseille?.update(delta);
         if (this.state === 'boss_defeated') {
             this.crowdManager.update(delta);
             this.combatChoreo?.step(delta);
@@ -332,7 +343,7 @@ export class Game {
         }
 
         if (this.state === 'fighting') {
-            this.updateFight(delta);
+            if(!this.marseille?.active && !this.marseille?.pending)this.updateFight(delta);
             this.crowdManager.update(delta);
             this.combatChoreo?.step(delta);
             if(this.combatChoreo?.finished)this.combatChoreo=null;
