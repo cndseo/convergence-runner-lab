@@ -7,6 +7,7 @@ import { AudioManager } from './audio.js';
 import { updatePoliceAnimations,preloadPoliceHumanoid } from './policeAssets.js';
 import { preloadMotorcycle } from './motorcycleAssets.js';
 import { preloadRunnerHumanoid } from './humanoidAssets.js';
+import { CombatChoreography } from './combatChoreography.js';
 
 // Forward movement calibrated for a walking demonstration, not a sprint.
 const MARCH_SPEED = 3.0;
@@ -54,7 +55,8 @@ export class Game {
         // Fighting state
         this.fightingEnemy = null;
         this.fightTimer = 0;
-        this.fightInterval = 0.12; // Time between each stickman removal
+        this.fightInterval = 0.20; // Give the front line time to react to each exchange
+        this.combatChoreo = null;
         
         // Player
         this.playerCrowd = null;
@@ -237,6 +239,8 @@ export class Game {
     }
 
     clearLevel() {
+        this.combatChoreo?.dispose();
+        this.combatChoreo=null;
         // Remove all dynamic objects
         const toRemove = [];
         this.scene.traverse((obj) => {
@@ -261,9 +265,11 @@ export class Game {
 
     update(delta) {
         this.levelGenerator.updateVisibility(this.trackZ);
-        updatePoliceAnimations(delta);
+        if(this.state!=='paused')updatePoliceAnimations(delta);
         if (this.state === 'boss_defeated') {
             this.crowdManager.update(delta);
+            this.combatChoreo?.step(delta);
+            if(this.combatChoreo?.finished)this.combatChoreo=null;
             this.levelGenerator.updateBossDefeat(delta);
             return;
         }
@@ -271,16 +277,19 @@ export class Game {
         if (this.state === 'fighting') {
             this.updateFight(delta);
             this.crowdManager.update(delta);
+            this.combatChoreo?.step(delta);
+            if(this.combatChoreo?.finished)this.combatChoreo=null;
             this.ui.updateCount(this.crowdManager.getPlayerCount());
             
             // Camera shake and zoom during fight
             this.fightCameraTime = (this.fightCameraTime || 0) + delta;
-            const shakeX = Math.sin(this.fightCameraTime * 25) * 0.15;
-            const shakeY = Math.cos(this.fightCameraTime * 30) * 0.08;
-            this.camera.position.x = this.playerX * 0.3 + shakeX;
-            this.camera.position.z = -this.trackZ + 12; // Zoom in closer
-            this.camera.position.y = 10 + shakeY;
-            this.camera.lookAt(this.playerX * 0.3, 1, -this.trackZ - 5);
+            const shakeX = Math.sin(this.fightCameraTime * 25) * 0.075;
+            const shakeY = Math.cos(this.fightCameraTime * 30) * 0.035;
+            // Low over-the-shoulder framing keeps shields, faces and reactions readable.
+            this.camera.position.x = this.playerX * 0.30 + shakeX;
+            this.camera.position.z = -this.trackZ + 7.8;
+            this.camera.position.y = 5.0 + shakeY;
+            this.camera.lookAt(this.playerX * 0.30, 1.1, -this.trackZ - .85);
             return;
         }
 
@@ -332,8 +341,10 @@ export class Game {
             this.checkBossFight();
         }
 
-        // Update crowd animation
+        // Update crowd animation, including the non-blocking combat recovery.
         this.crowdManager.update(delta);
+        if(this.combatChoreo?.recovering)this.combatChoreo.step(delta);
+        if(this.combatChoreo?.finished)this.combatChoreo=null;
 
         // Update UI
         this.ui.updateCount(this.crowdManager.getPlayerCount());
@@ -438,8 +449,10 @@ export class Game {
                 this.state = 'fighting';
                 this.fightingEnemy = enemy;
                 this.fightingEnemy.remainingCount = enemy.count;
-                this.fightTimer = 0;
+                this.fightTimer = -0.44; // Approach and shield-ready before the first exchange
                 this.fightCameraTime = 0;
+                this.combatChoreo?.dispose();
+                this.combatChoreo = new CombatChoreography(this,enemy);
                 this.speed = 0;
                 this.audio.playHit();
                 this.ui.screenShake(10);
@@ -466,7 +479,8 @@ export class Game {
 
             if (!enemy) return;
 
-            // Remove one from each side per tick
+            this.combatChoreo?.onExchange();
+            // Resolve losses exactly as in the certified tactical solver.
             const strength = this.strengthUpgrade;
 
             // Player kills enemy stickmen (strength determines how many enemy die per tick)
@@ -499,6 +513,7 @@ export class Game {
 
             // Check fight outcome
             if (enemy.remainingCount <= 0) {
+                this.combatChoreo?.finish();
                 // Player wins
                 enemy.defeated = true;
                 if (enemy.isBoss) {
@@ -554,10 +569,14 @@ export class Game {
             remainingCount: boss.health,
             defeated: false,
             isBoss: true,
-            meshGroup: null
+            meshGroup: boss.meshGroup,
+            kind: 'crs'
         };
-        this.fightTimer = 0;
+        this.fightTimer = -0.44;
+        this.fightInterval = 0.20;
         this.speed = 0;
+        this.combatChoreo?.dispose();
+        this.combatChoreo=new CombatChoreography(this,this.fightingEnemy);
 
         // Show boss health bar
         this.ui.showBossHealthBar(boss.health);
@@ -584,6 +603,8 @@ export class Game {
 
     loseGame() {
         if (this.state === 'win' || this.state === 'lose') return;
+        this.combatChoreo?.dispose();
+        this.combatChoreo=null;
         this.state = 'lose';
         const earnedCoins = Math.floor(this.level * 2);
         this.coins += earnedCoins;

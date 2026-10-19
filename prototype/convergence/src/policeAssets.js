@@ -53,6 +53,7 @@ function addGear(rig,kind){
  visor.material.transparent=true;visor.material.opacity=.63;
  if(kind==='crs'){
   const shield=box(gear,0x738c9d,[.53,.79,.045],[.27,.80,.33]);
+  gear.userData.combatShield=shield;
   shield.material=shield.material.clone();
   shield.material.transparent=true;shield.material.opacity=.72;shield.material.metalness=.08;
   box(gear,0x142437,[.48,.15,.052],[.27,.85,.36]);
@@ -109,7 +110,8 @@ export function upgradePoliceOfficer(officer,kind='crs'){
   // Costume pieces must be world-scaled, not multiplied by the source GLB scale.
   const holder=new THREE.Group();
   holder.add(rig);
-  addGear(holder,kind);
+  const gear=addGear(holder,kind);
+  holder.userData.combatShield=gear.userData.combatShield||null;
   // Keep the independent Kenney motorcycle if its asynchronous load completed.
   for(const part of officer.children){
    if(!part.userData?.motorcycleVisual)part.visible=false;
