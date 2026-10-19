@@ -10,6 +10,7 @@ import { makeAsphaltTexture } from './roadTexture.js';
 import { upgradePoliceOfficer, resetPoliceVisualBudget } from './policeAssets.js';
 import { upgradeBravMotorcycle, resetMotorcycles } from './motorcycleAssets.js';
 import { createParisStreetscape } from './parisEnvironment.js';
+import { placeUrbanDecayAssets, disposeUrbanDecayAssets } from './urbanDecayAssets.js';
 
 export class LevelGenerator {
     constructor(scene, game) {
@@ -23,6 +24,7 @@ export class LevelGenerator {
     }
 
     clear() {
+        disposeUrbanDecayAssets(this.meshes);
         disposeKenneyCityDetails(this.meshes);
         this.gates = [];
         this.obstacles = [];
@@ -57,6 +59,7 @@ export class LevelGenerator {
         createParisStreetscape(this.scene,trackLength,this.meshes);
         placeKenneyRoadFurniture(this.scene,trackLength,this.meshes);
         placeKenneyCityDetails(this.scene,trackLength,this.meshes);
+        placeUrbanDecayAssets(this.scene,trackLength,this.meshes);
     }
 
     updateVisibility(progress) {
