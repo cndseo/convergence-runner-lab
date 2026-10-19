@@ -17,7 +17,7 @@ try{
   const panels=g.levelGenerator.gates.flatMap(x=>[x.leftMesh,x.rightMesh]).filter(x=>x.userData.root?.userData.bonusPanel);
   const factions=[...new Set(bonuses.map(x=>x.bonusFaction))];
   const genz=bonuses.find(x=>x.bonusFaction==='genz');
-  if(genz){g.genzFireworks.addGenz(genz.value);g.trackZ=g.levelGenerator.enemies[0].z-25;g.crowdManager.updatePlayerPosition(0,-g.trackZ);g.levelGenerator.updateVisibility(g.trackZ);g.genzFireworks.fire();}
+  if(genz){g.applyGate(genz);g.trackZ=g.levelGenerator.enemies[0].z-25;g.crowdManager.updatePlayerPosition(0,-g.trackZ);g.levelGenerator.updateVisibility(g.trackZ);g.genzFireworks.fire();}
   g.renderer.render(g.scene,g.camera);
   return {bonuses:bonuses.length,factions,panels:panels.length,fireworks:g.genzFireworks.bursts.length,errors:[]};
  });

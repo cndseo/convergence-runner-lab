@@ -49,7 +49,8 @@ export class AudioManager {
 
     // Optional supplied recording during combat; gracefully skip if absent.
     async preloadCombatVoice(){
-        if(this.combatVoiceBuffer||this.combatVoiceLoading)return this.combatVoiceLoading;
+        if(this.combatVoiceBuffer)return Promise.resolve();
+        if(this.combatVoiceLoading)return this.combatVoiceLoading;
         if(!this.initialized)this.init();
         this.combatVoiceLoading=(async()=>{
             try{
@@ -58,25 +59,40 @@ export class AudioManager {
                 if(!response.ok)throw new Error('combat recording not installed');
                 this.combatVoiceBuffer=await this.ctx.decodeAudioData(await response.arrayBuffer());
             }catch(error){this.combatVoiceBuffer=null;}
+            finally{this.combatVoiceLoading=null;}
         })();
         return this.combatVoiceLoading;
     }
     playCombatVoice(){
         if(!this.ctx||this.ctx.state!=='running')return;
-        if(!this.combatVoiceBuffer){this.preloadCombatVoice();return;}
+        this.combatVoiceRequested=true;
+        if(!this.combatVoiceBuffer){
+            this.preloadCombatVoice().then(()=>{
+                if(this.combatVoiceBuffer&&this.combatVoiceRequested)this.playCombatVoice();
+            });
+            return;
+        }
         if(this.combatVoiceNode)return;
         const source=this.ctx.createBufferSource();
         const gain=this.ctx.createGain();
         source.buffer=this.combatVoiceBuffer;
-        gain.gain.value=.46;
+        gain.gain.value=.82;
         source.connect(gain);gain.connect(this.sfxGain);
+        if(this.musicGain){
+            this.musicGain.gain.setTargetAtTime(this.ambienceMuted?0:.12,this.ctx.currentTime,.12);
+        }
         this.combatVoiceNode=source;
-        source.onended=()=>{if(this.combatVoiceNode===source)this.combatVoiceNode=null;};
+        source.onended=()=>{
+            if(this.combatVoiceNode===source)this.combatVoiceNode=null;
+            if(this.musicGain)this.musicGain.gain.setTargetAtTime(this.ambienceMuted?0:.35,this.ctx.currentTime,.30);
+        };
         source.start();
     }
     stopCombatVoice(){
+        this.combatVoiceRequested=false;
         try{this.combatVoiceNode?.stop();}catch{}
         this.combatVoiceNode=null;
+        if(this.ctx&&this.musicGain)this.musicGain.gain.setTargetAtTime(this.ambienceMuted?0:.35,this.ctx.currentTime,.18);
     }
 
     // ============ BACKGROUND MUSIC ============

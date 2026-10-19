@@ -244,6 +244,7 @@ export class Game {
     }
 
     clearLevel() {
+        this.audio.stopCombatVoice?.();
         this.lbdSystem?.clear();
         this.genzFireworks?.clear();
         this.combatChoreo?.dispose();
@@ -530,6 +531,7 @@ export class Game {
 
             // Check fight outcome
             if (enemy.remainingCount <= 0) {
+                this.audio.stopCombatVoice?.();
                 this.combatChoreo?.finish();
                 // Player wins
                 enemy.defeated = true;
