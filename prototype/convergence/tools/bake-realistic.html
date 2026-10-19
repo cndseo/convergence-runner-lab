@@ -1,0 +1,30 @@
+<!doctype html><html><head><meta charset="utf-8"><link rel="icon" href="data:,"></head><body><script type="module">
+import * as THREE from 'three';
+import {createRealisticWalker} from '../src/realisticHumanoids.js';
+window.bakeRealistic=async()=>{
+ const renderer=new THREE.WebGLRenderer({alpha:true,antialias:true,preserveDrawingBuffer:true});
+ renderer.setSize(160,220);renderer.setClearColor(0x000000,0);
+ renderer.outputColorSpace=THREE.SRGBColorSpace;renderer.toneMapping=THREE.ACESFilmicToneMapping;renderer.toneMappingExposure=1.35;
+ const scene=new THREE.Scene(),camera=new THREE.OrthographicCamera(-.96,.96,1.32,-1.32,.01,20);
+ camera.position.set(0,1.25,6);camera.lookAt(0,1.25,0);
+ scene.add(new THREE.HemisphereLight(0xe8f2ff,0x788278,2.3));
+ const sun=new THREE.DirectionalLight(0xffebd4,2.7);sun.position.set(-3,6,5);scene.add(sun);
+ const sheet=document.createElement('canvas');sheet.width=1920;sheet.height=2640;
+ const ctx=sheet.getContext('2d');
+ for(let row=0;row<12;row++){
+   const person=await createRealisticWalker(row);
+   scene.add(person.model);
+   for(let frame=0;frame<12;frame++){
+      person.mixer.setTime(frame*person.duration/12/.92);
+      renderer.render(scene,camera);
+      ctx.drawImage(renderer.domElement,frame*160,row*220);
+   }
+   scene.remove(person.model);
+   person.mixer.stopAllAction();
+   person.mixer.uncacheRoot(person.model);
+   person.model.traverse(n=>{if(n.isSkinnedMesh)n.skeleton?.dispose();});
+ }
+ renderer.dispose();
+ return sheet.toDataURL('image/png');
+};
+</script></body></html>

@@ -3,9 +3,12 @@ import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 import { clone as cloneSkeleton } from 'three/addons/utils/SkeletonUtils.js';
 import { createApprovedLeader, showWalkingLegs } from './approvedLeader.js';
 import { dressFaction, FACTIONS } from './factionOutfits.js';
+import { createRealisticWalker, realisticAtlasRow } from './realisticHumanoids.js';
 
 const loader=new GLTFLoader();
 const maxAnimated=window.innerWidth<600?12:20;
+// ?visual=legacy preserves the verified Quaternius crowd without changing P02.
+const realisticEnabled=new URLSearchParams(window.location.search).get('visual')!=='legacy';
 let shared,atlas;
 export function preloadRunnerHumanoid() {
  if(!shared)shared=loader.loadAsync(import.meta.env.BASE_URL+'assets/quaternius/animated-human.glb').catch(e=>{shared=null;throw e;});
@@ -30,14 +33,15 @@ export function createWalkingHumanoid(gltf,index=0,faction=FACTIONS[index%6]) {
 }
 function getAtlas() {
  if(!atlas) {
-  atlas=new THREE.TextureLoader().load(import.meta.env.BASE_URL+'assets/crowd/walk-atlas.webp');
+  const file=realisticEnabled?'assets/crowd/walk-realistic.webp':'assets/crowd/walk-atlas.webp';
+  atlas=new THREE.TextureLoader().load(import.meta.env.BASE_URL+file);
   atlas.colorSpace=THREE.SRGBColorSpace;atlas.magFilter=THREE.LinearFilter;atlas.minFilter=THREE.LinearMipmapLinearFilter;
  }
  return atlas;
 }
 function createImpostors(crowd) {
  const geometry=new THREE.PlaneGeometry(1.92,2.64);
- const rows=new Float32Array(72),phases=new Float32Array(72);
+ const rows=new Float32Array(256),phases=new Float32Array(256);
  geometry.setAttribute('factionRow',new THREE.InstancedBufferAttribute(rows,1));
  geometry.setAttribute('walkPhase',new THREE.InstancedBufferAttribute(phases,1));
  const material=new THREE.MeshBasicMaterial({map:getAtlas(),alphaTest:.18,side:THREE.DoubleSide});
@@ -46,13 +50,31 @@ function createImpostors(crowd) {
   shader.uniforms.walkTime=time;
   shader.vertexShader='attribute float factionRow; attribute float walkPhase; uniform float walkTime;\n'+shader.vertexShader;
   shader.vertexShader=shader.vertexShader.replace('#include <uv_vertex>',
-   '#include <uv_vertex>\nvMapUv.x = (uv.x + mod(floor(walkTime * 9.2 + walkPhase),12.0))/12.0;\nvMapUv.y = (uv.y + 5.0-factionRow)/6.0;');
+   '#include <uv_vertex>\nvMapUv.x = (uv.x + mod(floor(walkTime * 9.2 + walkPhase),12.0))/12.0;\nvMapUv.y = (uv.y + '+(realisticEnabled?'11.0':'5.0')+'-factionRow)/'+(realisticEnabled?'12.0':'6.0')+';');
  };
- const mesh=new THREE.InstancedMesh(geometry,material,72);
+ const mesh=new THREE.InstancedMesh(geometry,material,rows.length);
  mesh.frustumCulled=false;mesh.count=0;mesh.userData.sharedHumanoidAsset=true;
  crowd.playerGroup.add(mesh);
  const matrix=new THREE.Object3D();
  crowd.impostors={mesh,time,rows,phases,geometry,matrix};
+}
+async function upgradeToRealistic(crowd,runner,index,group){
+ try{
+  const replacement=await createRealisticWalker(index);
+  if(crowd.playerGroup!==group||runner.parent!==group){
+   replacement.mixer.stopAllAction();replacement.mixer.uncacheRoot(replacement.model);
+   replacement.model.traverse(n=>{if(n.isSkinnedMesh)n.skeleton?.dispose();});
+   return;
+  }
+  const old=runner.userData.realHumanoid;
+  if(!old||runner.userData.realisticAvatar)return;
+  old.mixer.stopAllAction();old.mixer.uncacheRoot(old.model);
+  old.model.traverse(n=>{if(n.isSkinnedMesh)n.skeleton?.dispose();});
+  runner.remove(old.model);
+  runner.add(replacement.model);
+  runner.userData.realHumanoid=replacement;
+  runner.userData.realisticAvatar=replacement.id;
+ }catch(e){console.warn('Realistic avatar fallback',index,e.message);}
 }
 export function attachAnimatedHumanoid(crowd) {
  if(crowd._humanoidPending||!crowd.playerGroup)return;
@@ -78,6 +100,15 @@ export function attachAnimatedHumanoid(crowd) {
    }
   }
   if(!crowd.impostors)createImpostors(crowd);
+  if(realisticEnabled){
+   for(let i=1;i<Math.min(maxAnimated,crowd.playerStickmen.length);i++){
+    const runner=crowd.playerStickmen[i];
+    if(runner.userData.realHumanoid&&!runner.userData.realisticAvatar&&!runner.userData.upgradingRealistic){
+     runner.userData.upgradingRealistic=true;
+     upgradeToRealistic(crowd,runner,i,group).finally(()=>{runner.userData.upgradingRealistic=false;});
+    }
+   }
+  }
  }).catch(e=>console.warn('Humanoid fallback',e.message)).finally(()=>{
   crowd._humanoidPending=false;
  });
@@ -92,11 +123,12 @@ export function updateAnimatedHumanoids(crowd,dt) {
  let n=0;
  for(const runner of crowd.playerStickmen){
   if(!runner.userData.impostor)continue;
+  if(n>=imp.rows.length)break;
   const i=runner.userData.index;
   imp.matrix.position.set(runner.position.x,1.24+runner.position.y,runner.position.z);
   imp.matrix.scale.copy(runner.scale);imp.matrix.updateMatrix();
   imp.mesh.setMatrixAt(n,imp.matrix.matrix);
-  imp.rows[n]=i%6;imp.phases[n]=(i*3.17)%12;n++;
+  imp.rows[n]=realisticEnabled?realisticAtlasRow(i):i%6;imp.phases[n]=(i*3.17)%12;n++;
  }
  imp.mesh.count=n;imp.mesh.instanceMatrix.needsUpdate=true;
  imp.geometry.attributes.factionRow.needsUpdate=true;imp.geometry.attributes.walkPhase.needsUpdate=true;

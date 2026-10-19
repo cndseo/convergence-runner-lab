@@ -1,0 +1,11 @@
+{
+  "format": "realistic-mixed-walk-v1",
+  "image": "walk-realistic.webp",
+  "width": 1920,
+  "height": 2640,
+  "columns": 12,
+  "rows": 12,
+  "animation": "Walk",
+  "license": "MIT (see assets/realistic/LICENSE.md)",
+  "variation": "row=index % 12, factions=index % 6, variation=floor(index / 6) % 2"
+}

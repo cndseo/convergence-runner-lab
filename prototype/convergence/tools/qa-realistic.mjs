@@ -1,0 +1,17 @@
+import fs from 'node:fs';
+import {createRequire} from 'node:module';
+const require=createRequire(import.meta.url);
+const {chromium}=require('playwright-core');
+const out='C:/CITYOS/convergence-qa-20261019/rigged-adults-candidates/';
+const browser=await chromium.launch({executablePath:'C:/Program Files/Google/Chrome/Application/chrome.exe',headless:true,args:['--enable-webgl','--ignore-gpu-blocklist']});
+const page=await browser.newPage({viewport:{width:960,height:920}});
+const errs=[];
+page.on('pageerror',e=>errs.push(e.message));
+page.on('console',e=>{if(e.type()==='error')errs.push(e.text())});
+await page.goto('http://127.0.0.1:4291/tools/preview-realistic.html',{waitUntil:'domcontentloaded'});
+await page.waitForFunction(()=>window.qaRealistic,{timeout:60000});
+await page.waitForTimeout(1300);
+await page.screenshot({path:out+'realistic-12-preview.png',fullPage:true});
+const status=await page.evaluate(()=>window.qaRealistic);
+console.log(JSON.stringify({status,errs},null,2));
+await browser.close();

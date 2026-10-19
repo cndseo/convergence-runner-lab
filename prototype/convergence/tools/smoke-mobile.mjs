@@ -6,6 +6,7 @@ import {greedyPath,replayPlan} from '../src/tactics.mjs';
 const require=createRequire(import.meta.url),{chromium}=require('playwright-core');
 const base=process.env.QA_URL||'http://127.0.0.1:4178/';
 const output=process.env.QA_OUTPUT||'C:/CITYOS/convergence-qa-20261019';
+const requireRealistic=process.env.QA_REALISTIC==='1';
 const executablePath=process.env.CHROME_PATH||'C:/Program Files/Google/Chrome/Application/chrome.exe';
 fs.mkdirSync(output,{recursive:true});
 const report={base,cases:[],errors:[],failures:[],testedAt:new Date().toISOString()};
@@ -25,6 +26,9 @@ async function captureCase(width,height,count){
  await page.waitForFunction(n=>{
   const g=window.__convergence;return g.crowdManager.playerCount===n&&g.crowdManager.playerStickmen.every(r=>r.userData.realHumanoid||r.userData.impostor||r.userData.approvedLeader);
  },count);
+ if(requireRealistic){
+  await page.waitForFunction(n=>window.__convergence.crowdManager.playerStickmen.slice(1,Math.min(n,12)).every(r=>r.userData.realisticAvatar),count,{timeout:45000});
+ }
  await page.waitForTimeout(1600);
  const stats=await page.evaluate(async()=>{
   const g=window.__convergence,cm=g.crowdManager,dt=[];let last=performance.now();
@@ -32,6 +36,8 @@ async function captureCase(width,height,count){
   const render=g.renderer.info;
   return {count:cm.playerCount,rigged:cm.playerStickmen.filter(r=>r.userData.realHumanoid).length,
    impostors:cm.impostors?.mesh.count,approvedP02:cm.playerStickmen.filter(r=>r.userData.approvedLeader).length,
+   realistic:cm.playerStickmen.filter(r=>r.userData.realisticAvatar).length,
+   uniqueModels:[...new Set(cm.playerStickmen.map(r=>r.userData.realisticAvatar).filter(Boolean))].length,
    animations:[...new Set(cm.playerStickmen.map(r=>r.userData.realHumanoid?.animation).filter(Boolean))],
    fps:Math.round(60000/dt.reduce((a,b)=>a+b,0)),p95FrameMs:Math.round(dt.sort((a,b)=>a-b)[56]),
    drawCalls:render.render.calls,triangles:render.render.triangles,
@@ -40,6 +46,7 @@ async function captureCase(width,height,count){
  });
  assert.equal(stats.count,count);assert.equal(stats.approvedP02,1);assert.equal(stats.overflow,false);
  assert.deepEqual(stats.animations,['Walk']);if(count===50)assert.equal(stats.impostors,38);
+ if(requireRealistic){assert.equal(stats.realistic,Math.min(count,12)-1);assert.equal(stats.uniqueModels,Math.min(count,12)-1);}
  await page.evaluate(()=>{window.__convergence.qaManual=true;});
  await page.screenshot({path:path.join(output,'mobile-'+width+'-'+count+'.png')});
  if(count===5&&width===390){

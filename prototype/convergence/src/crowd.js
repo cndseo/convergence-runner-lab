@@ -130,6 +130,9 @@ export class CrowdManager {
         for (let i = 0; i < amount; i++) {
             this.addStickmanToGroup(startIndex + i);
         }
+        // Gate reinforcements must also become skinned walkers / LOD sprites.
+        // Previously newly recruited citizens stayed as geometric placeholders.
+        attachAnimatedHumanoid(this);
     }
 
     removeFromPlayerCrowd(amount) {
