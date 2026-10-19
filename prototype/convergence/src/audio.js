@@ -203,6 +203,20 @@ export class AudioManager {
         noise.start(now);
     }
 
+    playLbdShot() {
+        if (!this.initialized || this.ctx.state !== 'running') return;
+        const now=this.ctx.currentTime;
+        const osc=this.ctx.createOscillator();
+        const gain=this.ctx.createGain();
+        osc.type='triangle';
+        osc.frequency.setValueAtTime(480,now);
+        osc.frequency.exponentialRampToValueAtTime(78,now+.13);
+        gain.gain.setValueAtTime(.11,now);
+        gain.gain.exponentialRampToValueAtTime(.001,now+.15);
+        osc.connect(gain);gain.connect(this.sfxGain);
+        osc.start(now);osc.stop(now+.16);
+    }
+
     playFightHit() {
         if (!this.initialized) return;
         const now = this.ctx.currentTime;
