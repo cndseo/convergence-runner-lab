@@ -61,6 +61,15 @@ export class LevelGenerator {
 
     updateVisibility(progress) {
         animateArcadeGates(this.gates, progress, performance.now() / 1000);
+        // During an encounter, hide nearby giant choice billboards so the camera
+        // can show the front line. Gate collision/solver data remain untouched.
+        const combatView=this.game.state==='fighting'||(this.game.state==='paused'&&this.game.pausedState==='fighting');
+        if(combatView)for(const gate of this.gates){
+            if(Math.abs(gate.z-progress)>18)continue;
+            for(const pane of [gate.leftMesh,gate.rightMesh]){
+                if(pane?.userData.root)pane.userData.root.visible=false;
+            }
+        }
         // Preserve all gameplay and collision data, cull only distant visuals.
         for (const enemy of this.enemies) {
             const distance=enemy.z-progress;

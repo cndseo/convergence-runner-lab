@@ -343,6 +343,11 @@ export class CrowdManager {
                 }
 
                 const target = this.getFormationPosition(i);
+                if(this.game?.state==='fighting' && i>0){
+                    // Spread the front line so individual reactions stay readable.
+                    target.x *= 1.55;
+                    target.z += .18;
+                }
                 stickman.position.x += (target.x - stickman.position.x) * Math.min(1, delta * 8);
                 stickman.position.z += (target.z - stickman.position.z) * Math.min(1, delta * 8);
                 const offset = i * 0.7;
