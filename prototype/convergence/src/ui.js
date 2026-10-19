@@ -37,9 +37,16 @@ export class UIManager {
             if (!['playing','fighting'].includes(this.game.state)) return;
             this.game.pausedState = this.game.state;
             this.game.state = 'paused'; panel.classList.remove('hidden');
+            this.game.audio.pauseAudio();
         });
         document.getElementById('resume-btn').addEventListener('click', () => {
             this.game.state = this.game.pausedState || 'playing'; panel.classList.add('hidden');
+            this.game.audio.resumeAudio();
+        });
+        const soundButton=document.getElementById('ambience-toggle-btn');
+        soundButton?.addEventListener('click',()=>{
+            const muted=this.game.audio.toggleAmbienceMute();
+            soundButton.textContent=muted?'SON : COUPÉ':'SON : ACTIVÉ';
         });
         this.setupButtons();
         this.updateHUDInfo();

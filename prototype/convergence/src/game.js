@@ -213,7 +213,7 @@ export class Game {
         // Init and start audio
         this.audio.init();
         this.audio.resume();
-        this.audio.startMusic();
+        this.audio.startCrowdAmbience();
         
         // Clear scene objects
         this.clearLevel();
@@ -577,6 +577,7 @@ export class Game {
         this.coins += earnedCoins;
         this.level++;
         this.saveProgress();
+        this.audio.stopCrowdAmbience();
         this.audio.stopMusic();
         this.audio.playWin();
         this.ui.showWin(earnedCoins);
@@ -588,6 +589,7 @@ export class Game {
         const earnedCoins = Math.floor(this.level * 2);
         this.coins += earnedCoins;
         this.saveProgress();
+        this.audio.stopCrowdAmbience();
         this.audio.stopMusic();
         this.audio.playLose();
         this.ui.showLose();

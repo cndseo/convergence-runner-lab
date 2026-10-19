@@ -1,3 +1,5 @@
+import {CrowdAmbience} from './crowdAmbience.js';
+
 export class AudioManager {
     constructor() {
         this.ctx = null;
@@ -7,6 +9,8 @@ export class AudioManager {
         this.isMusicPlaying = false;
         this.musicNodes = [];
         this.initialized = false;
+        this.ambience = new CrowdAmbience(this);
+        this.ambienceMuted = false;
     }
 
     init() {
@@ -32,6 +36,16 @@ export class AudioManager {
             this.ctx.resume();
         }
     }
+
+    startCrowdAmbience(){ return this.ambience.start(); }
+    toggleAmbienceMute(){
+      this.ambienceMuted=!this.ambienceMuted;
+      if(this.musicGain)this.musicGain.gain.value=this.ambienceMuted?0:.35;
+      return this.ambienceMuted;
+    }
+    stopCrowdAmbience(){ this.ambience.stop(); }
+    pauseAudio(){ return this.ctx?.suspend(); }
+    resumeAudio(){ return this.ctx?.resume(); }
 
     // ============ BACKGROUND MUSIC ============
     startMusic() {
