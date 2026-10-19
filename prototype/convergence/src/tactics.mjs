@@ -87,6 +87,15 @@ export function replayPlan(plan, path) {
     ? applyCombat(state, e.count, plan.strength) : applyChoice(state, e[path[i++]]);
   return applyCombat(state, plan.bossHealth, plan.strength);
 }
+// Difficulty is measured against all 2^10 legal routes, not just routes
+// that survive the intermediate police lines. Never publish a near-impossible
+// puzzle merely because it has one certified winning path.
+export function difficultyTargets(level) {
+  if (level <= 1) return { min: 0.17, ideal: 0.21, max: 0.27 };
+  if (level <= 3) return { min: 0.14, ideal: 0.19, max: 0.25 };
+  if (level <= 9) return { min: 0.11, ideal: 0.16, max: 0.22 };
+  return { min: 0.08, ideal: 0.13, max: 0.19 };
+}
 export function greedyPath(plan) {
   let state = initialState(plan.startCount), path = [];
   for (const e of plan.events) {
@@ -135,21 +144,43 @@ export function generateTacticalLevel({ level = 1, seed = 1, startCount = 5, str
     const alive = paths.filter(p => p.count > 0).sort((a, b) => a.capacity - b.capacity);
     if (!alive.length) continue;
     const greedy = greedyPath(plan);
-    const max = alive.at(-1).capacity;
-    const quantile = Math.min(0.93, 0.77 + level * 0.012);
-    const target = alive[Math.floor((alive.length - 1) * quantile)].capacity;
-    plan.bossHealth = Math.max(target, greedy.capacity + 1);
-    if (plan.bossHealth > max) plan.bossHealth = target;
-    const winners = alive.filter(p => p.capacity >= plan.bossHealth);
+    const bounds = difficultyTargets(level);
+    // All 1024 routes matter. Only the boss's HP may be adjusted;
+    // enemy line strength, risky portals and the ten real choices stay intact.
+    let choice = null, lower = 0;
+    for (const health of [...new Set(alive.map(p => p.capacity))]) {
+      while (lower < alive.length && alive[lower].capacity < health) lower++;
+      const winners = alive.length - lower, rate = winners / paths.length;
+      if (health <= greedy.capacity || winners < 2 || rate >= 0.32) continue;
+      const shortfall = Math.max(0, bounds.min - rate);
+      const excess = Math.max(0, rate - bounds.max);
+      const score = Math.abs(rate - bounds.ideal) + 5 * (shortfall + excess);
+      if (!choice || score < choice.score ||
+          (score === choice.score && health > choice.health)) {
+        choice = { health, lower, winners, rate, score };
+      }
+    }
+    if (!choice) continue;
+    plan.bossHealth = choice.health;
+    const winners = alive.slice(choice.lower);
+    // Proof must be an actual surviving route, not just a nonzero capacity.
+    const witness = winners.at(-1);
+    const survivors = replayPlan(plan, witness.path).count;
+    if (survivors <= 0) continue;
     plan.proof = {
       winningPaths: winners.length, totalPaths: paths.length,
-      winningPath: winners.at(-1).path,
-      greedyWins: greedy.capacity >= plan.bossHealth,
-      minSurvivors: Math.min(...winners.map(p => applyCombat(p, plan.bossHealth, strength).count))
+      winningPath: witness.path,
+      greedyWins: replayPlan(plan, greedy.path).count > 0,
+      minSurvivors: Math.min(...winners.map(p => applyCombat(p, plan.bossHealth, strength).count)),
+      witnessSurvivors: survivors,
+      winningRate: choice.rate,
+      difficulty: bounds
     };
-    fallback = plan;
-    if (!plan.proof.greedyWins && winners.length / paths.length <= 0.30 && winners.length >= 2) return plan;
+    if (plan.proof.greedyWins) continue;
+    if (!fallback || choice.score < fallback.score) fallback = {plan, score: choice.score};
+    if (choice.rate >= bounds.min && choice.rate <= bounds.max) return plan;
   }
   if (!fallback) throw new Error('Unable to certify a playable level');
-  return fallback;
+  // The closest verified alternative is still winning and defeats greedy play.
+  return fallback.plan;
 }
