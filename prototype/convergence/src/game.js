@@ -1,6 +1,8 @@
 import * as THREE from 'three';
 import { applyChoice, sufferLoss, MAX_CROWD } from './tactics.mjs';
 import { explainGateChoice, evaluateResult } from './tacticalFeedback.mjs';
+import { FINAL_CAMPAIGN_LEVEL } from './storyRules.mjs';
+import { StoryDirector } from './storyDirector.js';
 import { LevelGenerator } from './level.js';
 import { CrowdManager } from './crowd.js';
 import { UIManager } from './ui.js';
@@ -26,6 +28,8 @@ export class Game {
         // Game state
         this.state = 'menu'; // menu, playing, fighting, win, lose
         this.level = 1;
+        this.campaignComplete = false;
+        this.finalCaptured = false;
         this.coins = 0;
         this.crowdUpgrade = 1;
         this.strengthUpgrade = 1;
@@ -95,6 +99,8 @@ export class Game {
         this.audio = new AudioManager();
         this.lbdSystem = new LBDSystem(this);
         this.genzFireworks = new GenzFireworks(this);
+        this.story = new StoryDirector(this);
+        this.story.loadAssets();
         // Warm the shared CC0 asset caches while the user views the menu.
         Promise.allSettled([preloadRunnerHumanoid(),preloadPoliceHumanoid(),preloadMotorcycle()]);
         this.animate();
@@ -176,12 +182,12 @@ export class Game {
         
         // Mouse
         canvas.addEventListener('mousedown', (e) => {
-            if (this.state !== 'playing') return;
+            if (!['playing','final_chase'].includes(this.state)) return;
             this.isDragging = true;
             this.lastInputX = e.clientX;
         });
         canvas.addEventListener('mousemove', (e) => {
-            if (!this.isDragging || this.state !== 'playing') return;
+            if (!this.isDragging || !['playing','final_chase'].includes(this.state)) return;
             const deltaX = (e.clientX - this.lastInputX) * 0.02;
             this.playerX = Math.max(-3.5, Math.min(3.5, this.playerX + deltaX));
             this.lastInputX = e.clientX;
@@ -191,12 +197,12 @@ export class Game {
 
         // Touch
         canvas.addEventListener('touchstart', (e) => {
-            if (this.state !== 'playing') return;
+            if (!['playing','final_chase'].includes(this.state)) return;
             this.isDragging = true;
             this.lastInputX = e.touches[0].clientX;
         }, { passive: true });
         canvas.addEventListener('touchmove', (e) => {
-            if (!this.isDragging || this.state !== 'playing') return;
+            if (!this.isDragging || !['playing','final_chase'].includes(this.state)) return;
             e.preventDefault();
             const deltaX = (e.touches[0].clientX - this.lastInputX) * 0.02;
             this.playerX = Math.max(-3.5, Math.min(3.5, this.playerX + deltaX));
@@ -210,8 +216,17 @@ export class Game {
         window.addEventListener('keyup', (e) => { this.keys[e.key] = false; });
     }
 
+    startWithIntro({force=false}={}) {
+        this.startGame();
+        const manualQA=this.qa && !new URLSearchParams(location.search).has('intro');
+        if(this.level===1 && (!this.story.introSeen || force) && (!manualQA || force)){
+            this.story.beginIntro();
+        }
+    }
+
     startGame() {
         this.state = 'playing';
+        this.finalCaptured=false;
         this.shields = 0;
         this.gateHistory = [];
         this.ui.clearTacticalHint?.();
@@ -234,6 +249,7 @@ export class Game {
         this.trackLength = 180;
         this.levelGenerator.generate(this.level, this.trackLength);
         this.trackLength = this.levelGenerator.plan.trackLength;
+        this.story.prepareFinalTarget();
         this.levelGenerator.updateVisibility(this.trackZ);
         
         // Create player crowd
@@ -249,6 +265,7 @@ export class Game {
     }
 
     clearLevel() {
+        this.story?.clear();
         this.audio.stopCombatVoice?.();
         this.lbdSystem?.clear();
         this.genzFireworks?.clear();
@@ -277,6 +294,10 @@ export class Game {
     }
 
     update(delta) {
+        if(['intro','final_chase','final_capture'].includes(this.state)) {
+            this.story?.update(delta);
+            return;
+        }
         this.levelGenerator.updateVisibility(this.trackZ);
         if(this.state!=='paused')updatePoliceAnimations(delta);
         this.lbdSystem?.update(delta);
@@ -582,7 +603,11 @@ export class Game {
                     );
                     // Delay win screen for dramatic effect
                     const runId = this.runId;
-                    setTimeout(() => { if (this.runId === runId && this.state === 'boss_defeated') this.winGame(); }, 1200);
+                    setTimeout(() => {
+                        if(this.runId!==runId || this.state!=='boss_defeated')return;
+                        if(this.level===FINAL_CAMPAIGN_LEVEL)this.story.beginFinalChase();
+                        else this.winGame();
+                    }, 1200);
                     this.state = 'boss_defeated';
                     this.fightingEnemy = null;
                     this.fightCameraTime = 0;
@@ -610,7 +635,8 @@ export class Game {
     checkBossFight() {
         const boss = this.levelGenerator.boss;
         if (!boss || boss.defeated) {
-            this.winGame();
+            if(this.level===FINAL_CAMPAIGN_LEVEL && !this.finalCaptured)this.story.beginFinalChase();
+            else this.winGame();
             return;
         }
 
@@ -650,12 +676,17 @@ export class Game {
 
     winGame() {
         if (this.state === 'win' || this.state === 'lose') return;
+        if(this.level===FINAL_CAMPAIGN_LEVEL && !this.finalCaptured){
+            if(this.levelGenerator.boss?.defeated)this.story.beginFinalChase();
+            return;
+        }
         this.audio.stopCombatVoice?.();
         const report=evaluateResult({won:true,survivors:this.crowdManager.getPlayerCount(),gateHistory:this.gateHistory,level:this.level});
         this.state = 'win';
         const earnedCoins = Math.floor(this.crowdManager.getPlayerCount() * 2 + this.level * 10);
         this.coins += earnedCoins;
-        this.level++;
+        if(this.level===FINAL_CAMPAIGN_LEVEL && this.finalCaptured)this.campaignComplete=true;
+        else this.level++;
         this.saveProgress();
         this.audio.stopCrowdAmbience();
         this.audio.stopMusic();
@@ -784,6 +815,7 @@ export class Game {
     saveProgress() {
         const data = {
             level: this.level,
+            campaignComplete: this.campaignComplete,
             coins: this.coins,
             crowdUpgrade: this.crowdUpgrade,
             strengthUpgrade: this.strengthUpgrade,
@@ -799,7 +831,8 @@ export class Game {
         const data = localStorage.getItem('convergence_vertical_v1');
         if (data) {
             const parsed = JSON.parse(data);
-            this.level = parsed.level || 1;
+            this.level = Math.max(1,Math.min(FINAL_CAMPAIGN_LEVEL,parsed.level||1));
+            this.campaignComplete=!!parsed.campaignComplete;
             this.coins = parsed.coins || 0;
             this.crowdUpgrade = parsed.crowdUpgrade || 1;
             this.strengthUpgrade = parsed.strengthUpgrade || 1;

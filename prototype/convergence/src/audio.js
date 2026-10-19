@@ -47,6 +47,54 @@ export class AudioManager {
     pauseAudio(){ return this.ctx?.suspend(); }
     resumeAudio(){ return this.ctx?.resume(); }
 
+    // Audio supplied in the user's introduction video; plays only during
+    // the scripted prologue, from the already-unlocked game AudioContext.
+    async preloadIntroVoice(){
+        if(this.introVoiceBuffer)return;
+        if(this.introVoiceLoading)return this.introVoiceLoading;
+        if(!this.initialized)this.init();
+        this.introVoiceLoading=(async()=>{
+            try{
+                const url=import.meta.env.BASE_URL+'assets/story/intro-voice.mp3';
+                const response=await fetch(url);
+                if(!response.ok)throw new Error('intro recording unavailable');
+                this.introVoiceBuffer=await this.ctx.decodeAudioData(await response.arrayBuffer());
+            }catch(error){console.warn('Intro audio:',error.message);this.introVoiceBuffer=null;}
+            finally{this.introVoiceLoading=null;}
+        })();
+        return this.introVoiceLoading;
+    }
+    playIntroVoice(){
+        if(!this.introVoiceBuffer || !this.ctx)return false;
+        this.introVoiceRequested=true;
+        if(this.ctx.state!=='running'){
+            this.ctx.resume().then(()=>{
+                if(this.introVoiceRequested && this.ctx.state==='running')this.playIntroVoice();
+            }).catch(()=>{});
+            return false;
+        }
+        this.stopIntroVoice();
+        this.introVoiceRequested=true;
+        const source=this.ctx.createBufferSource(), gain=this.ctx.createGain();
+        source.buffer=this.introVoiceBuffer;gain.gain.value=.94;
+        source.connect(gain);gain.connect(this.masterGain);
+        if(this.musicGain)this.musicGain.gain.setTargetAtTime(.07,this.ctx.currentTime,.12);
+        this.introVoiceNode=source;
+        source.onended=()=>{
+            if(this.introVoiceNode!==source)return;
+            this.introVoiceNode=null;
+            if(this.musicGain)this.musicGain.gain.setTargetAtTime(this.ambienceMuted?0:.35,this.ctx.currentTime,.25);
+        };
+        source.start();
+        return true;
+    }
+    stopIntroVoice(){
+        this.introVoiceRequested=false;
+        try{this.introVoiceNode?.stop();}catch{}
+        this.introVoiceNode=null;
+        if(this.ctx&&this.musicGain)this.musicGain.gain.setTargetAtTime(this.ambienceMuted?0:.35,this.ctx.currentTime,.15);
+    }
+
     // Optional supplied recording during combat; gracefully skip if absent.
     async preloadCombatVoice(){
         if(this.combatVoiceBuffer)return Promise.resolve();

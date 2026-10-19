@@ -58,7 +58,7 @@ export class UIManager {
             this.game.audio.init();
             this.game.audio.playClick();
             this.transitionOut(this.startScreen, () => {
-                this.game.startGame();
+                this.game.startWithIntro();
             });
         });
 
@@ -109,7 +109,13 @@ export class UIManager {
         document.getElementById('next-btn').addEventListener('click', () => {
             if (this.game.audio.initialized) this.game.audio.playClick();
             this.transitionOut(this.winScreen, () => {
-                this.game.startGame();
+                if(this.game.campaignComplete){
+                    this.game.level=1;
+                    this.game.campaignComplete=false;
+                    this.game.story.introSeen=false;
+                    this.game.saveProgress();
+                    this.game.startWithIntro();
+                }else this.game.startGame();
             });
         });
 
@@ -480,6 +486,13 @@ export class UIManager {
 
     showWin(coins, report) {
         this.hideAllScreens();
+        const completed=!!this.game.campaignComplete;
+        const heading=this.winScreen.querySelector('h2');
+        if(heading)heading.textContent=completed?'OBJECTIF FINAL ATTEINT !':'FRONT FRANCHI !';
+        const portrait=document.getElementById('final-portrait');
+        if(portrait)portrait.hidden=!completed;
+        document.getElementById('next-btn').textContent=completed?'↻ REJOUER LA CAMPAGNE':'ÉTAPE SUIVANTE →';
+        if(completed)report={...report,title:'PERSONNAGE RATTRAPÉ !',tip:'Il ne peut être rejoint qu’après le front du niveau 10. Tu as terminé la campagne.'};
         this.clearTacticalHint();
         const el=document.getElementById('win-report');
         if(el){

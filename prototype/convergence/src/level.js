@@ -63,7 +63,8 @@ export class LevelGenerator {
         animateArcadeGates(this.gates, progress, performance.now() / 1000);
         // During an encounter, hide nearby giant choice billboards so the camera
         // can show the front line. Gate collision/solver data remain untouched.
-        const combatView=this.game.state==='fighting'||(this.game.state==='paused'&&this.game.pausedState==='fighting');
+        const combatView=['fighting','intro','final_chase','final_capture'].includes(this.game.state)
+            ||(this.game.state==='paused'&&this.game.pausedState==='fighting');
         if(combatView)for(const gate of this.gates){
             // Even portals 30m ahead can cover an encounter in portrait mode.
             // Hide every giant billboard *visually* until marching resumes.
