@@ -68,6 +68,16 @@ function addGear(rig,kind){
   box(gear,0x243446,[.32,.12,.23],[0,.94,-.06]);
   addPatch(gear,'BRAV-M',[0,1.16,.179],.38,.11);
  }
+ if(kind==='crs'||kind==='bac'){
+  // Visible LBD-style launcher and muzzle marker for the ranged system.
+  box(gear,0x22282d,[.15,.16,.55],[-.29,1.10,.49]);
+  box(gear,0x38434b,[.12,.09,.18],[-.29,1.21,.45]);
+  box(gear,0x151b20,[.10,.25,.11],[-.29,.95,.36]);
+  const barrel=new THREE.Mesh(new THREE.CylinderGeometry(.047,.055,.54,8),material(0x10161c,.15));
+  barrel.rotation.x=Math.PI/2;barrel.position.set(-.29,1.1,.76);gear.add(barrel);
+  const muzzle=new THREE.Object3D();muzzle.position.set(-.29,1.1,1.05);gear.add(muzzle);
+  gear.userData.lbdMuzzle=muzzle;
+ }
  rig.add(gear);
  return gear;
 }
@@ -112,6 +122,7 @@ export function upgradePoliceOfficer(officer,kind='crs'){
   holder.add(rig);
   const gear=addGear(holder,kind);
   holder.userData.combatShield=gear.userData.combatShield||null;
+  holder.userData.lbdMuzzle=gear.userData.lbdMuzzle||null;
   // Keep the independent Kenney motorcycle if its asynchronous load completed.
   for(const part of officer.children){
    if(!part.userData?.motorcycleVisual)part.visible=false;

@@ -8,6 +8,7 @@ import { updatePoliceAnimations,preloadPoliceHumanoid } from './policeAssets.js'
 import { preloadMotorcycle } from './motorcycleAssets.js';
 import { preloadRunnerHumanoid } from './humanoidAssets.js';
 import { CombatChoreography } from './combatChoreography.js';
+import { LBDSystem } from './lbdSystem.js';
 
 // Forward movement calibrated for a walking demonstration, not a sprint.
 const MARCH_SPEED = 3.0;
@@ -88,6 +89,7 @@ export class Game {
         this.crowdManager = new CrowdManager(this.scene, this);
         this.levelGenerator = new LevelGenerator(this.scene, this);
         this.audio = new AudioManager();
+        this.lbdSystem = new LBDSystem(this);
         // Warm the shared CC0 asset caches while the user views the menu.
         Promise.allSettled([preloadRunnerHumanoid(),preloadPoliceHumanoid(),preloadMotorcycle()]);
         this.animate();
@@ -239,6 +241,7 @@ export class Game {
     }
 
     clearLevel() {
+        this.lbdSystem?.clear();
         this.combatChoreo?.dispose();
         this.combatChoreo=null;
         // Remove all dynamic objects
@@ -266,6 +269,7 @@ export class Game {
     update(delta) {
         this.levelGenerator.updateVisibility(this.trackZ);
         if(this.state!=='paused')updatePoliceAnimations(delta);
+        this.lbdSystem?.update(delta);
         if (this.state === 'boss_defeated') {
             this.crowdManager.update(delta);
             this.combatChoreo?.step(delta);
@@ -304,7 +308,7 @@ export class Game {
         }
 
         // Move forward
-        this.trackZ += this.speed * delta;
+        this.trackZ += this.speed * (this.lbdSystem?.marchFactor ?? 1) * delta;
 
         // Update crowd position
         this.crowdManager.updatePlayerPosition(this.playerX, -this.trackZ);
