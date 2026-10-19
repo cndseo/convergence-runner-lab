@@ -180,6 +180,8 @@ export class LevelGenerator {
         this.scene.add(group);
         this.meshes.push(group);
         enemy.meshGroup = group;
+        enemy.officers = [...group.children];
+        enemy.visualOfficerCount = displayCount;
 
         // Count label
         const canvas = document.createElement('canvas');
@@ -223,11 +225,49 @@ export class LevelGenerator {
         enemy.labelMesh.material.map = new THREE.CanvasTexture(canvas);
         enemy.labelMesh.material.needsUpdate = true;
 
-        // Also remove stickmen from the enemy group visually
-        if (enemy.meshGroup && enemy.meshGroup.children.length > 0) {
-            const child = enemy.meshGroup.children[enemy.meshGroup.children.length - 1];
-            enemy.meshGroup.remove(child);
+        // Keep the visible CRS line in proportion to the *actual* tactical
+        // count. A 20-officer proxy for 60 CRS must not vanish after 20 hits.
+        this.updateOfficerVisuals(enemy);
+    }
+
+    updateOfficerVisuals(enemy) {
+        const target = enemy.isBoss ? this.boss : enemy;
+        const officers = target?.officers;
+        if (!officers?.length || !target.meshGroup) return;
+        const original = Math.max(1, enemy.count);
+        const remaining = Math.max(0, enemy.remainingCount);
+        const wanted = remaining > 0
+            ? Math.max(1, Math.ceil(officers.length * remaining / original))
+            : 0;
+        let visible = officers.reduce((n, officer) => n + Number(officer.visible), 0);
+        while (visible > wanted) {
+            const officer = officers.findLast(o => o.visible);
+            if (!officer) break;
+            // Preserve the original model and its materials; fall back,
+            // scatter, then disappear instead of popping off in one frame.
+            officer.visible = false;
+            this.game?.crowdManager?.launchOfficerFall?.(officer);
+            visible--;
         }
+        target.visualOfficerCount = visible;
+    }
+
+    updateBossCount(enemy) {
+        if (!this.boss) return;
+        this.updateOfficerVisuals(enemy);
+        const label = this.boss.labelMesh;
+        if (!label) return;
+        const canvas = document.createElement('canvas');
+        canvas.width = 512; canvas.height = 128;
+        const ctx = canvas.getContext('2d');
+        ctx.fillStyle='#f3e8d8'; ctx.font='bold 49px system-ui';
+        ctx.textAlign='center'; ctx.textBaseline='middle';
+        ctx.strokeStyle='#152334';ctx.lineWidth=9;
+        const message='FRONT CRS : '+Math.max(0,enemy.remainingCount);
+        ctx.strokeText(message,256,64);ctx.fillText(message,256,64);
+        label.material.map?.dispose();
+        label.material.map=new THREE.CanvasTexture(canvas);
+        label.material.needsUpdate=true;
     }
 
     createBoss(level, trackLength) {
@@ -257,7 +297,8 @@ export class LevelGenerator {
         upgradeBossVan(squad,vehicle);
         squad.position.set(0,0,-trackLength);
         this.scene.add(squad);this.meshes.push(squad);
-        this.boss.meshGroup=squad;this.boss.defeatTime=0;this.boss.isDefeating=false;
+        this.boss.meshGroup=squad;this.boss.officers=squad.children.filter(c=>c!==vehicle);this.boss.visualOfficerCount=this.boss.officers.length;
+        this.boss.defeatTime=0;this.boss.isDefeating=false;
         const c=document.createElement('canvas');c.width=512;c.height=128;
         const ctx=c.getContext('2d');
         ctx.fillStyle='#f3e8d8';ctx.font='bold 49px system-ui';

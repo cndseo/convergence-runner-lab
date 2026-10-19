@@ -160,23 +160,32 @@ export class CrowdManager {
         this.playerCount = Math.max(0, this.playerCount - amount);
     }
 
+    launchOfficerFall(officer) {
+        if (!officer?.parent) return;
+        const world = new THREE.Vector3();
+        officer.getWorldPosition(world);
+        // A small, readable fall at the exact CRS position, without the
+        // bright red arcade burst previously used for casualties.
+        const body = this.createStickman(0x303b48);
+        body.position.copy(world);
+        body.rotation.y=officer.rotation.y;
+        body.userData.dynamic=true;
+        body.userData.velocity=new THREE.Vector3((Math.random()-.5)*1.6,1.3,(Math.random()-.5)*1.6);
+        body.userData.angularVel=new THREE.Vector3(2.5+(Math.random()-.5),0,(Math.random()-.5)*2);
+        body.userData.life=1.1;
+        body.userData.maxLife=1.1;
+        body.userData.color=0x303b48;
+        body.userData.trailTimer=0;
+        body.traverse(c=>{if(c.material){c.material=c.material.clone();c.material.transparent=true;}});
+        this.scene.add(body);
+        this.flyingBodies.push({mesh:body});
+    }
+
     removeEnemyCrowd(enemy) {
-        if (enemy.meshGroup) {
-            // Launch remaining enemy stickmen as ragdolls
-            const children = [...enemy.meshGroup.children];
-            children.forEach(child => {
-                this.launchRagdoll(child, 0xf44336, enemy.meshGroup);
-            });
-            setTimeout(() => {
-                if (enemy.meshGroup) {
-                    this.scene.remove(enemy.meshGroup);
-                    enemy.meshGroup.traverse(c => {
-                        if (c.geometry) c.geometry.dispose();
-                        if (c.material) c.material.dispose();
-                    });
-                }
-            }, 100);
-        }
+        // Officers already fell one by one during the exchange.
+        // Only clean up the now-empty unit; do not explode the whole squad.
+        if(enemy.meshGroup)enemy.meshGroup.visible=false;
+        if(enemy.labelMesh)enemy.labelMesh.visible=false;
     }
 
     // ============ RAGDOLL FLYING STICKMAN ============

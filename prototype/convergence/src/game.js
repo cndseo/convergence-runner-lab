@@ -535,6 +535,7 @@ export class Game {
             // Update enemy visual count or boss health bar
             if (enemy.isBoss) {
                 this.ui.updateBossHealthBar(enemy.remainingCount, enemy.count);
+                this.levelGenerator.updateBossCount(enemy);
                 this.levelGenerator.shakeBoss();
             } else {
                 this.levelGenerator.updateEnemyLabel(enemy);
