@@ -479,3 +479,8 @@ html,body{width:100%;max-width:100%;overflow:hidden}
 .challenge-rank{margin:3px 0;padding:9px;border-bottom:1px solid #57728766;font-size:13px}
 
 .supporter-badge{display:inline-flex;align-items:center;margin-left:6px;padding:3px 5px;border-radius:5px;background:#f6d37f;color:#192a3a;font:900 8px/1 system-ui;letter-spacing:.05em;vertical-align:middle}
+
+/* Original user-provided Spider-Man character preview in the in-game shop. */
+.character-product-thumb{width:80px;height:106px;object-fit:contain;align-self:center;filter:drop-shadow(0 5px 10px #0008)}
+.character-preview-action{background:#e9bf62!important;color:#142136!important;font-weight:900!important;min-height:42px;font-size:12px!important}
+.challenge-product>div:has(.character-product-thumb){align-items:center;text-align:center}

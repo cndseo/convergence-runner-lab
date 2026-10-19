@@ -1,6 +1,7 @@
 import * as THREE from 'three';
 import { makeCitizen } from './characters.js';
 import { attachAnimatedHumanoid, updateAnimatedHumanoids, clearHumanoids } from './humanoidAssets.js';
+import { applyCostumeToCrowd } from './characterCostumes.js';
 
 export class CrowdManager {
     constructor(scene, game) {
@@ -54,6 +55,12 @@ export class CrowdManager {
         }
 
         this.scene.add(this.playerGroup);
+        // Flag the costume before the asynchronous humanoid loader can run.
+        const costume=this.game?.activeCostume;
+        if(costume && this.game?.mode!=='daily' && this.playerStickmen[1]){
+            this.playerStickmen[1].userData.costumeAvatar=costume;
+            applyCostumeToCrowd(this,costume);
+        }
         attachAnimatedHumanoid(this);
     }
 

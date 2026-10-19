@@ -7,9 +7,7 @@ import { fileURLToPath } from 'node:url';
 import { utcChallengeDate, validChallengeDate, computeDailyScore } from '../src/dailyChallenge.mjs';
 
 export const PRODUCTS = Object.freeze({
- colors:{sku:'colors',name:'CONVERGENCE — Couleurs de la mobilisation',cents:199,description:'Apparences et accessoires cosmétiques'},
- scenes:{sku:'scenes',name:'CONVERGENCE — Ambiances spéciales',cents:399,description:'Thèmes visuels sans avantage tactique'},
- supporter:{sku:'supporter',name:'CONVERGENCE — Soutien',cents:599,description:'Apparence de soutien cosmétique'}
+ spiderman:{sku:'spiderman',name:'CONVERGENCE — Personnage Spider-Man',cents:299,description:'Personnage déguisé - apparence visuelle, sans avantage tactique'}
 });
 const sha=s=>crypto.createHash('sha256').update(s).digest('hex');
 const json=(res,status,data)=>{res.writeHead(status,{'Content-Type':'application/json; charset=utf-8','Cache-Control':'no-store','X-Content-Type-Options':'nosniff'});res.end(JSON.stringify(data));};

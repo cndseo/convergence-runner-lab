@@ -68,14 +68,14 @@ test('Stripe checkout uses fixed EUR catalog and grants only via verified paid w
  await withApp({stripeClient,webhookSecret:'whsec_test',paymentsMode:'test'},async(req)=>{
   const profile=(await req('/api/v1/players',{method:'POST'})).data;
   const headers={'Authorization':'Bearer '+profile.token,'Content-Type':'application/json'};
-  const checkout=await req('/api/v1/shop/checkout',{method:'POST',headers,body:JSON.stringify({sku:'colors',price:1})});
+  const checkout=await req('/api/v1/shop/checkout',{method:'POST',headers,body:JSON.stringify({sku:'spiderman',price:1})});
   assert.equal(checkout.status,200);
   assert.equal(lastSession.mode,'payment');
-  assert.equal(lastSession.line_items[0].price_data.unit_amount,PRODUCTS.colors.cents);
+  assert.equal(lastSession.line_items[0].price_data.unit_amount,PRODUCTS.spiderman.cents);
   assert.equal(lastSession.line_items[0].price_data.currency,'eur');
   assert.deepEqual(Object.keys(lastSession.line_items[0].price_data).sort(),['currency','product_data','unit_amount']);
   const session={id:'cs_test_foo',payment_status:'unpaid',
-   metadata:{game:'convergence',sku:'colors',player_id:profile.playerId}};
+   metadata:{game:'convergence',sku:'spiderman',player_id:profile.playerId}};
   const hook=async(data,signature='sig-test')=>req('/api/v1/shop/stripe-webhook',{method:'POST',headers:{'Stripe-Signature':signature,'Content-Type':'application/json'},
    body:JSON.stringify({type:'checkout.session.completed',data:{object:data}})});
   assert.equal((await hook(session,'wrong-signature')).status,400);
@@ -86,8 +86,8 @@ test('Stripe checkout uses fixed EUR catalog and grants only via verified paid w
   assert.equal((await hook(session)).status,200);
   assert.equal((await hook(session)).status,200);
   inventory=await req('/api/v1/shop/inventory',{headers});
-  assert.deepEqual(inventory.data.owned,['colors']);
+  assert.deepEqual(inventory.data.owned,['spiderman']);
   assert.equal((await req('/api/v1/shop/checkout',{method:'POST',headers,
-    body:JSON.stringify({sku:'colors'})})).status,409);
+    body:JSON.stringify({sku:'spiderman'})})).status,409);
  });
 });

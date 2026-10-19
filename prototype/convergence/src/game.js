@@ -31,6 +31,7 @@ export class Game {
         this.state = 'menu'; // menu, playing, fighting, win, lose
         this.level = 1;
         this.mode = 'campaign';
+        this.activeCostume = null; // Prototype preview only; never grants paid entitlement.
         this.dailyDate = null;
         this.campaignLevelBackup = null;
         this.campaignComplete = false;

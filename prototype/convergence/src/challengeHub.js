@@ -3,9 +3,11 @@ import {
 } from './dailyChallenge.mjs';
 
 export const PREMIUM_CATALOG = Object.freeze([
-  {id:'colors',label:'Couleurs de la mobilisation',description:'Apparences et accessoires décoratifs',cents:199},
-  {id:'scenes',label:'Ambiances spéciales',description:'Thèmes visuels du jeu, sans bonus de force',cents:399},
-  {id:'supporter',label:'Soutien CONVERGENCE',description:'Badge et apparence de soutien, aucun avantage',cents:599}
+  {id:'spiderman',label:'Spider-Man manifestant',description:'Personnage déguisé, avec les deux vues fournies',cents:299,art:'spiderman-front.webp'},
+  {id:'dinosaur',label:'Dinosaure gonflable',description:'Personnage déguisé en dinosaure',cents:299,comingSoon:true},
+  {id:'marseille1',label:'Renfort marseillais · 1 intervention',description:'Une intervention spéciale en mode campagne',cents:199,comingSoon:true},
+  {id:'marseille3',label:'Renfort marseillais · 3 interventions',description:'Trois interventions spéciales en mode campagne',cents:499,comingSoon:true},
+  {id:'marseille10',label:'Renfort marseillais · 10 interventions',description:'Dix interventions spéciales en mode campagne',cents:1299,comingSoon:true}
 ]);
 
 function make(tag,className,text='') {
@@ -166,19 +168,30 @@ export class ChallengeHub {
   renderPremium(){
     this.body.replaceChildren();this.foot.replaceChildren();
     this.heading.textContent='BOUTIQUE COSMÉTIQUE';
-    this.note.textContent='Aucun renfort payant. Les articles changent uniquement l’apparence, jamais les chances de gagner.';
+    this.note.textContent='Personnages déguisés et interventions spectaculaires pour la campagne. Aucun avantage dans le défi quotidien.';
     for(const item of PREMIUM_CATALOG){
       const row=make('div','challenge-product');
       const info=make('div','');
       info.append(make('strong','',item.label),make('span','',item.description));
+      if(item.art){
+        const img=make('img','character-product-thumb');
+        img.src=import.meta.env.BASE_URL+'assets/characters/'+item.art;
+        img.alt='Vue de face du Spider-Man transmis';
+        info.prepend(img);
+      }
       const owned=this.ownedSkus.has(item.id);
-      const pay=this.action(owned?'ACQUIS':(item.cents/100).toFixed(2).replace('.',',')+' €',
-        ()=>this.checkout(item.id),owned||!this.paymentsEnabled);
+      const pay=this.action(item.comingSoon?'BIENTÔT':owned?'ACQUIS':(item.cents/100).toFixed(2).replace('.',',')+' €',
+        ()=>this.checkout(item.id),item.comingSoon||owned||!this.paymentsEnabled);
       row.append(info,pay);this.body.append(row);
+      if(item.id==='spiderman'){
+        const preview=this.action(owned?'ÉQUIPER SPIDER-MAN':'TESTER SPIDER-MAN (DÉMO)',()=>this.previewCharacter('spiderman',owned));
+        preview.classList.add('character-preview-action');
+        this.body.append(preview);
+      }
     }
     const warning=make('p','challenge-warning',this.paymentsEnabled
-      ?'Paiement sur Stripe Checkout. Les articles ne sont attribués qu’après confirmation du serveur.'
-      :'Paiements désactivés : préparation en mode test, aucune carte ne sera débitée.');
+      ?'Paiement sur Stripe Checkout. Uniquement après confirmation serveur.'
+      :'Paiements désactivés. Le bouton TESTER permet de voir Spider-Man dans le prototype, sans achat.');
     this.body.append(warning);
     this.foot.append(this.action('PERSONNALISER MA FOULE',()=>{
       this.panel.classList.add('hidden');
@@ -186,6 +199,16 @@ export class ChallengeHub {
       this.game.ui.showShop();
     }));
     this.foot.append(this.action('← RETOUR',()=>this.open('daily')));
+  }
+  previewCharacter(id,owned=false){
+    if(id!=='spiderman')return;
+    const game=this.game;
+    game.activeCostume=id;
+    game.demoCostumeOnce=!owned;
+    game.mode='campaign';
+    game.ui.hideAllScreens();
+    this.panel.classList.add('hidden');
+    game.startGame();
   }
   async refreshRemoteStatus(){
     if(!this.apiBase)return;

@@ -88,6 +88,10 @@ export function attachAnimatedHumanoid(crowd) {
   if(crowd.playerGroup!==group)return;
   for(const [index,runner] of crowd.playerStickmen.entries()){
    if(!runner.parent||runner.userData.realHumanoid||runner.userData.impostor||runner.userData.approvedLeader)continue;
+   if(runner.userData.costumeAvatar){
+    runner.userData.lowDetail=true; // Real sprite is already mounted on runner.
+    continue;
+   }
    if(index===0){
     runner.children.forEach(c=>{c.visible=false;});
     const human=createWalkingHumanoid(gltf,index,'gilets');showWalkingLegs(human);
