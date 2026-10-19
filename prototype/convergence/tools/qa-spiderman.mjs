@@ -18,7 +18,7 @@ try {
   await page.locator('#premium-btn').click();
   const row=page.locator('.challenge-product').first();
   assert.match(await row.innerText(),/Spider-Man/);
-  assert.match(await row.innerText(),/2,99 €/);
+  assert.match(await row.innerText(),/1,99 €/);
   assert.ok(await page.locator('.character-product-thumb').count()>=2);
   await page.waitForFunction(()=>{const i=document.querySelector('.character-product-thumb');return i?.complete&&i.naturalWidth>100;},{timeout:12000});
   assert.equal(await page.locator('.character-product-thumb').first().evaluate(i=>i.complete&&i.naturalWidth>100),true);
@@ -26,7 +26,7 @@ try {
   await page.getByRole('button',{name:/TESTER SPIDER-MAN/}).click();
   await page.waitForFunction(()=>{
     const g=window.__convergence;
-    return g.state==='playing'&&!!g.crowdManager?.playerStickmen?.[1]?.userData?.costumeBillboard;
+    return g.state==='playing'&&!!g.crowdManager?.playerStickmen?.[1]?.userData?.costumeModel3D;
   },{timeout:19000});
   const state=await page.evaluate(()=>{
     const g=window.__convergence;
@@ -34,20 +34,26 @@ try {
     for(let i=0;i<30;i++)g.update(.05);
     const p02=g.crowdManager.playerStickmen[0];
     const second=g.crowdManager.playerStickmen[1];
-    const sprite=second.userData.costumeBillboard;
-    const asset=sprite.material.map.image;
+    const model=second.userData.costumeModel3D;
+    let meshes=0,sprites=0,photoPanels=0;
+    model.traverse(o=>{
+      if(o.isMesh)meshes++;
+      if(o.isSprite)sprites++;
+      if(o.name==='ORIGINAL_ART_FABRIC_DECAL')photoPanels++;
+    });
     return {level:g.level,mode:g.mode,population:g.crowdManager.getPlayerCount(),
       p02IsLeader:!!p02.userData.approvedLeader,p02Costume:!!p02.userData.costumeAvatar,
       spiderCostume:second.userData.costumeAvatar,secondIndex:second.userData.index,
-      sprite:sprite.name,src:asset.src,dimensions:[asset.width,asset.height],alpha:sprite.material.alphaTest,
-      planeHeight:sprite.scale.y,visible:sprite.visible,frontline:g.fightingEnemy===null,
-      cost:g.challengeHub.paymentsEnabled};
+      model:model.name,meshes,sprites,photoPanels,visible:model.visible,
+      frontline:g.fightingEnemy===null,cost:g.challengeHub.paymentsEnabled};
   });
   assert.equal(state.mode,'campaign');
   assert.equal(state.p02Costume,false);
   assert.equal(state.spiderCostume,'spiderman');
-  assert.match(state.src,/spiderman-back.webp/);
-  assert.ok(state.dimensions[0]>250 && state.dimensions[1]>500);
+  assert.match(state.model,/SPIDERMAN_3D/);
+  assert.ok(state.meshes>=25);
+  assert.equal(state.sprites,0);
+  assert.ok(state.photoPanels>=2);
   assert.equal(state.visible,true);
   assert.equal(state.cost,false);
   assert.deepEqual(errors,[]);

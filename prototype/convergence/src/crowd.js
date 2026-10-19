@@ -1,7 +1,7 @@
 import * as THREE from 'three';
 import { makeCitizen } from './characters.js';
 import { attachAnimatedHumanoid, updateAnimatedHumanoids, clearHumanoids } from './humanoidAssets.js';
-import { applyCostumeToCrowd } from './characterCostumes.js';
+import { applyCostumeToCrowd, disposeRunnerCostume } from './characterCostumes.js';
 
 export class CrowdManager {
     constructor(scene, game) {
@@ -180,6 +180,7 @@ export class CrowdManager {
                 if (i < 5) this.launchRagdoll(stickman, ragdollColor);
                 const h=stickman.userData.realHumanoid;
                 if(h){h.mixer.stopAllAction();h.mixer.uncacheRoot(h.model);h.dispose?.();h.model.traverse(n=>{if(n.isSkinnedMesh)n.skeleton?.dispose();});}
+                disposeRunnerCostume(stickman);
                 this.playerGroup.remove(stickman);
             }
         }

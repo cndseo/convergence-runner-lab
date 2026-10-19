@@ -6,6 +6,8 @@ import { dressFaction, FACTIONS } from './factionOutfits.js';
 import { createRealisticWalker, realisticAtlasRow } from './realisticHumanoids.js';
 import {CHARACTER_ATLAS} from './characterCatalog.mjs';
 import {createGreenSmoke} from './referenceOutfits.js';
+import {updateCharacterModel3D} from './characterModels3D.js';
+import {disposeRunnerCostume} from './characterCostumes.js';
 
 const loader=new GLTFLoader();
 const maxAnimated=window.innerWidth<600?12:20;
@@ -89,7 +91,7 @@ export function attachAnimatedHumanoid(crowd) {
   for(const [index,runner] of crowd.playerStickmen.entries()){
    if(!runner.parent||runner.userData.realHumanoid||runner.userData.impostor||runner.userData.approvedLeader)continue;
    if(runner.userData.costumeAvatar){
-    runner.userData.lowDetail=true; // Real sprite is already mounted on runner.
+    runner.userData.lowDetail=true; // Volumetric costume owns its animation.
     continue;
    }
    if(index===0){
@@ -123,6 +125,8 @@ export function attachAnimatedHumanoid(crowd) {
 }
 export function updateAnimatedHumanoids(crowd,dt) {
  for(const runner of crowd.playerStickmen){
+  if(runner.userData.costumeModel3D)
+   updateCharacterModel3D(runner.userData.costumeModel3D,crowd.animTime/2.6,true);
   runner.userData.realHumanoid?.mixer.update(dt);
   runner.userData.realHumanoid?.update?.(dt);
   if(runner.userData.approvedLeader)runner.userData.approvedLeader.time.value+=dt;
@@ -154,6 +158,7 @@ export function updateAnimatedHumanoids(crowd,dt) {
 }
 export function clearHumanoids(crowd) {
  for(const runner of crowd.playerStickmen){
+  disposeRunnerCostume(runner);
   const human=runner.userData.realHumanoid;
   if(human){human.mixer.stopAllAction();human.mixer.uncacheRoot(human.model);human.dispose?.();
    human.model.traverse(n=>{if(n.isSkinnedMesh)n.skeleton?.dispose();if(n.userData.ownedLeaderGeometry){n.geometry.dispose();n.material.dispose();}});

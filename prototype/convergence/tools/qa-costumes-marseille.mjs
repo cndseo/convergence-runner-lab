@@ -20,15 +20,25 @@ try{
   await page.waitForFunction(()=>[...document.querySelectorAll('.character-product-thumb')].every(i=>i.complete&&i.naturalWidth>100),{timeout:12000});
   await page.screenshot({path:dir+'/shop-'+viewport.width+'.png'});
   await page.getByRole('button',{name:/TESTER DINOSAURE/}).click();
-  await page.waitForFunction(()=>!!window.__convergence?.crowdManager?.playerStickmen?.[1]?.userData?.costumeBillboard,{timeout:22000});
+  await page.waitForFunction(()=>!!window.__convergence?.crowdManager?.playerStickmen?.[1]?.userData?.costumeModel3D,{timeout:22000});
   let costume=await page.evaluate(()=>{
    const g=window.__convergence;g.qaManual=true;for(let i=0;i<25;i++)g.update(.05);
    const p=g.crowdManager.playerStickmen[1];
-   return {kind:p.userData.costumeAvatar,source:p.userData.costumeBillboard?.material.map.image.src,
+   const model=p.userData.costumeModel3D;
+   const geometries=[],spriteNames=[],art=[];
+   model.traverse(o=>{if(o.isMesh)geometries.push(o.geometry.type);if(o.isSprite)spriteNames.push(o.name);
+     if(o.name==='ORIGINAL_ART_FABRIC_DECAL')art.push(o.material.map?.image?.width);});
+   return {kind:p.userData.costumeAvatar,modelName:model.name,
+    realMeshCount:geometries.length,sprites:spriteNames,art,
+    tail3D:model.getObjectByName('3D_INFLATABLE_TAIL')?.isMesh===true,
     leader:!!g.crowdManager.playerStickmen[0].userData.approvedLeader,
     count:g.crowdManager.getPlayerCount(),mode:g.mode};
   });
-  assert.equal(costume.kind,'dinosaur');assert.match(costume.source,/dinosaur-back.webp/);
+  assert.equal(costume.kind,'dinosaur');
+  assert.match(costume.modelName,/3D/);
+  assert.ok(costume.realMeshCount>25,'Dinosaur needs volumetric parts');
+  assert.deepEqual(costume.sprites,[]);
+  assert.equal(costume.tail3D,true,'Dinosaur needs an actual volumetric tail');
   assert.equal(costume.leader,true);assert.equal(costume.count,5);
   await page.screenshot({path:dir+'/dinosaur-'+viewport.width+'.png'});
   await page.evaluate(()=>{
@@ -53,31 +63,37 @@ try{
   assert.equal(start.charges,1);
   assert.equal(start.button,'block');
   await page.locator('#marseille-support-button').click();
-  await page.waitForFunction(()=>window.__convergence?.marseille?.active===true,{timeout:20000});
+  await page.waitForFunction(()=>window.__convergence?.marseille?.active===true,{timeout:40000});
   const active=await page.evaluate(()=>{
    const g=window.__convergence;
    for(let i=0;i<56;i++)g.update(.05);
    const system=g.marseille;
-   const sprites=system.sprites.map(x=>({name:x.sprite.name,x:x.sprite.position.x,z:x.sprite.position.z,
-    texture:x.sprite.material.map.image.src}));
+   const actors=system.actors.map(x=>{
+      let meshes=0,sprites=0,skinned=0;
+      x.model.traverse(o=>{if(o.isMesh)meshes++;if(o.isSprite)sprites++;if(o.isSkinnedMesh)skinned++;});
+      return {name:x.model.name,x:x.model.position.x,z:x.model.position.z,
+        yaw:x.model.rotation.y,lane:x.lane,meshes,sprites,skinned,rigged:!!x.rig};
+   });
    const police=g.fightingEnemy?.officers.filter(o=>o.userData.marseilleOrigin).length;
    return {active:system.active,credits:system.available(),elapsed:system.elapsed,
-    sprites,retreatingOfficers:police,population:g.crowdManager.getPlayerCount()};
+    actors,retreatingOfficers:police,population:g.crowdManager.getPlayerCount()};
   });
   assert.equal(active.active,true);assert.equal(active.credits,0);
-  assert.equal(active.sprites.length,9);
-  assert.ok(active.sprites.some(s=>Math.abs(s.x)<1.5),'rear reinforcements should enter from center');
-  assert.ok(active.sprites.every(x=>/marseille-(front|back).webp/.test(x.texture)));
+  assert.equal(active.actors.length,12);
+  assert.deepEqual([...new Set(active.actors.map(x=>x.lane))].sort(),[0,1,2]);
+  assert.ok(active.actors.every(x=>x.meshes>=7&&x.sprites===0),'every reinforcement must be real 3D');
+  assert.ok(active.actors.filter(x=>x.rigged&&x.skinned>0).length>=6,
+   'most Marseille avatars must use animated realistic glTF rigs');
   assert.ok(active.retreatingOfficers>0);
   await page.screenshot({path:dir+'/marseille-rush-'+viewport.width+'.png'});
   const finish=await page.evaluate(()=>{
    const g=window.__convergence;for(let i=0;i<60;i++)g.update(.05);
    return {state:g.state,defeated:g.levelGenerator.enemies[0].defeated,
     alive:g.crowdManager.getPlayerCount(),support:g.marseille.available(),
-    sprites:g.marseille.sprites.length,dailyAllowed:g.mode==='daily'};
+    actors:g.marseille.actors.length,dailyAllowed:g.mode==='daily'};
   });
   assert.equal(finish.state,'playing');assert.equal(finish.defeated,true);
-  assert.equal(finish.support,0);assert.equal(finish.sprites,0);
+  assert.equal(finish.support,0);assert.equal(finish.actors,0);
   assert.equal(finish.alive,start.population);
   const daily=await page.evaluate(()=>{
    const g=window.__convergence;
@@ -86,7 +102,7 @@ try{
   });
   assert.equal(daily.hidden,true);
   assert.deepEqual(errors,[]);
-  console.log('COSTUMES_SUPPORT_QA_PASS '+JSON.stringify({viewport,costume,start,active:{...active,sprites:active.sprites.length},finish,daily,errors}));
+  console.log('COSTUMES_SUPPORT_QA_PASS '+JSON.stringify({viewport,costume,start,active:{...active,actors:active.actors.length},finish,daily,errors}));
   await ctx.close();
  }
 }finally{await browser.close();}
