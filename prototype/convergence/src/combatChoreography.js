@@ -16,27 +16,44 @@ export class CombatChoreography {
     this.phase='approach';
     this.poses=new Map();
     this.reactions=new WeakMap();
+    this.actors=new Set();
+    this.impactPulse=0;
+    this.fallenOfficers=0;
     this.finished=false;
   }
   get players() {
     // P02 (index 0) is deliberately skipped: preserve the approved reference.
-    return this.game.crowdManager.playerStickmen.slice(1,MAX_ACTORS_PER_SIDE+1);
+    const available=this.game.crowdManager.playerStickmen.filter((actor,i)=>i>0 && actor.parent);
+    const visible=available.slice(0,MAX_ACTORS_PER_SIDE);
+    // Let a recruited medic appear at the front when someone needs help.
+    const medic=available.find(a=>a.userData.bonusFaction==='infirmieres');
+    if(medic && !visible.includes(medic) && visible.length)visible[visible.length-1]=medic;
+    return visible;
   }
   get officers() {
     const group=this.enemy.meshGroup;
-    return group?.children.filter(c=>['crs','bac','bravm'].includes(c.userData.faction)).slice(0,MAX_ACTORS_PER_SIDE) || [];
+    return group?.children.filter(c=>c.visible && !c.userData.combatRetired &&
+      ['crs','bac','bravm'].includes(c.userData.faction)).slice(0,MAX_ACTORS_PER_SIDE) || [];
   }
-  onExchange() {
+  onExchange({policeLost=0, protestersLost=0, blocked=false}={}) {
     if(this.recovering)return;
     this.exchange++;
-    for (const [actors,salt] of [[this.players,0],[this.officers,3]]) {
-      if(!actors.length)continue;
-      const actor=actors[(this.exchange*3+salt)%actors.length];
-      this.reactions.set(actor,this.elapsed+.38);
+    this.fallenOfficers+=policeLost;
+    this.impactPulse=Math.max(this.impactPulse,.65+Math.min(.35,policeLost*.1));
+    // Recoil tracks what actually happened, not a pre-scripted animation.
+    const fronts=[[this.players,protestersLost>0||blocked],[this.officers,policeLost>0]];
+    for(const [actors,affected] of fronts){
+      if(!actors.length || !affected)continue;
+      const actor=actors[(this.exchange*3)%actors.length];
+      this.reactions.set(actor,this.elapsed+.52);
+    }
+    if(protestersLost>0){
+      const medic=this.players.find(a=>a.userData.bonusFaction==='infirmieres');
+      if(medic)this.reactions.set(medic,this.elapsed+.95);
     }
   }
   finish() { this.recovering=true;this.recoveryTime=0;this.phase='recover'; }
-  cachePose(root) {
+  cachePose(root,actor) {
     let pose=this.poses.get(root);
     if(pose)return pose;
     const arms={left:null,right:null,spine:null};
@@ -48,35 +65,43 @@ export class CombatChoreography {
       if(!arms.spine && (n.endsWith('spine2')||n.endsWith('spine1')||n.endsWith('chest')))arms.spine=o;
     });
     pose={baseX:root.position.x,baseY:root.position.y,baseZ:root.position.z,
-      rx:root.rotation.x,rz:root.rotation.z,arms};
+      rx:root.rotation.x,rz:root.rotation.z,arms,actor};
+    this.actors.add(actor);
     this.poses.set(root,pose);
     return pose;
   }
   applyActor(actor,police,index,weight) {
     const human=actor.userData.realHumanoid;
-    const root=police?(actor.userData.policeModel||actor):human?.model;
+    const root=police?(actor.userData.policeModel||actor):(human?.model||actor);
     if(!root)return;
-    const pose=this.cachePose(root);
+    const pose=this.cachePose(root,actor);
     const dir=police?1:-1; // toward the opposing front (Z)
     const phase=this.phase;
     const sideOffset=index*.83;
     const contact=smooth((this.elapsed-INTRO_SECONDS)/.28);
     const beating=Math.sin(this.elapsed*9.5+sideOffset*1.3);
-    const recoil=(this.reactions.get(actor)??0)>this.elapsed?
-      Math.sin(Math.PI*clamp01(1-((this.reactions.get(actor)-this.elapsed)/.38))):0;
+    const reactionUntil=this.reactions.get(actor)??0;
+    const recoil=reactionUntil>this.elapsed?
+      Math.sin(Math.PI*clamp01(1-(reactionUntil-this.elapsed)/.55)):0;
     const pushing=phase==='approach'?.15:phase==='contact'?.62+.38*contact:
       phase==='pressure'?.56+.18*beating:.12;
-    const intensity=weight*pushing;
-    root.rotation.x=pose.rx+dir*(.12*intensity-.18*recoil*weight);
-    root.rotation.z=pose.rz+(.025*Math.sin(this.elapsed*7+sideOffset)+.08*recoil)*weight;
-    root.position.z=pose.baseZ+dir*(.22*intensity-.17*recoil*weight);
+    const role=actor.userData.bonusFaction;
+    // Firefighters brace under pressure, medics help with a visible gesture.
+    const medicHelping=!police&&role==='infirmieres'&&reactionUntil>this.elapsed;
+    const firefighter=!police&&role==='pompiers';
+    const intensity=weight*pushing*(firefighter?.88:1);
+    root.rotation.x=pose.rx+dir*(.16*intensity-.24*recoil*weight)
+      +(medicHelping?.12:0);
+    root.rotation.z=pose.rz+(.018*Math.sin(this.elapsed*5+sideOffset)
+      +.13*recoil+(medicHelping?.13:0))*weight;
+    root.position.z=pose.baseZ+dir*(.26*intensity-.22*recoil*weight);
     root.position.x=pose.baseX+.055*intensity*Math.sin(this.elapsed*5+sideOffset);
-    root.position.y=pose.baseY-(.055*intensity)+.025*recoil;
+    root.position.y=pose.baseY-(.055*intensity)+.045*recoil-(medicHelping?.14:0);
     const {arms}=pose;
     // Mixer.write -> additive pose, no accumulated skeleton drift.
     // Hide the effect during recover to return to the unaltered Walk/Idle clips.
-    if(arms.left)arms.left.rotation.x+=dir*.38*intensity-.10*recoil;
-    if(arms.right)arms.right.rotation.x+=dir*.33*intensity+.13*recoil;
+    if(arms.left)arms.left.rotation.x+=dir*.38*intensity-.10*recoil+(medicHelping?.35:0);
+    if(arms.right)arms.right.rotation.x+=dir*.33*intensity+.13*recoil+(medicHelping?.62:0);
     if(arms.spine)arms.spine.rotation.x+=dir*.07*intensity;
     if(police){
       const shield=actor.userData.policeModel?.userData.combatShield;
@@ -91,6 +116,7 @@ export class CombatChoreography {
   step(dt) {
     if(this.finished)return;
     this.elapsed+=dt;
+    this.impactPulse=Math.max(0,this.impactPulse-dt*2.3);
     if(this.recovering)this.recoveryTime+=dt;
     this.phase=visualCombatPhase(this.elapsed,this.recovering);
     const weight=visualCombatWeight(this.elapsed,this.recovering,this.recoveryTime);
@@ -103,12 +129,13 @@ export class CombatChoreography {
     if(this.finished)return;
     this.finished=true;
     for(const [root,pose] of this.poses){
-      // Restore all procedural offsets; the original GLB/Walk remains intact.
+      // A retired CRS is now independently falling in world space.
+      if(pose.actor?.userData.combatRetired)continue;
       root.position.set(pose.baseX,pose.baseY,pose.baseZ);
       root.rotation.x=pose.rx;
       root.rotation.z=pose.rz;
     }
-    for(const actor of [...this.players,...this.officers]) {
+    for(const actor of this.actors) {
       if(actor.userData.combatVisualState)delete actor.userData.combatVisualState;
       const shield=actor.userData.policeModel?.userData.combatShield;
       if(shield && shield.userData.combatBaseX!==undefined){
@@ -116,5 +143,6 @@ export class CombatChoreography {
       }
     }
     this.poses.clear();
+    this.actors.clear();
   }
 }

@@ -65,7 +65,8 @@ export class LevelGenerator {
         // can show the front line. Gate collision/solver data remain untouched.
         const combatView=this.game.state==='fighting'||(this.game.state==='paused'&&this.game.pausedState==='fighting');
         if(combatView)for(const gate of this.gates){
-            if(Math.abs(gate.z-progress)>18)continue;
+            // Even portals 30m ahead can cover an encounter in portrait mode.
+            // Hide every giant billboard *visually* until marching resumes.
             for(const pane of [gate.leftMesh,gate.rightMesh]){
                 if(pane?.userData.root)pane.userData.root.visible=false;
             }
@@ -158,7 +159,9 @@ export class LevelGenerator {
     }
 
     createEnemyCrowd(enemy, z, count) {
-        const displayCount = Math.min(Math.max(count, 16), 24);
+        // A six-person unit must actually show six officers, not sixteen.
+        // Large groups use a capped visual proxy for mobile performance.
+        const displayCount = Math.min(Math.max(count, 1), 24);
         const group = new THREE.Group();
         group.userData.dynamic = true;
 
@@ -166,6 +169,8 @@ export class LevelGenerator {
             const angle = (i / displayCount) * Math.PI * 2 + Math.random() * 0.5;
             const radius = Math.sqrt(i / displayCount) * 2.5;
             const stickman = makeOfficer(enemy.kind,i);
+            // Police face the advancing crowd (+Z), not away from it.
+            stickman.rotation.y=Math.PI;
             stickman.position.set(
                 (i % 8 - 3.5) * .68,
                 0,
@@ -196,10 +201,11 @@ export class LevelGenerator {
         ctx.font = 'bold 37px system-ui';ctx.fillText(count.toString(),64,49);
 
         const texture = new THREE.CanvasTexture(canvas);
-        const labelGeo = new THREE.PlaneGeometry(2.4, 1.2);
+        const labelGeo = new THREE.PlaneGeometry(1.75, .88);
         const labelMat = new THREE.MeshBasicMaterial({ map: texture, transparent: true, depthWrite: false });
         const label = new THREE.Mesh(labelGeo, labelMat);
-        label.position.set(0, 4, -z);
+        // Keep the count readable but off the officers' bodies and faces.
+        label.position.set(-2.95, 2.9, -z-.85);
         label.userData.dynamic = true;
         this.scene.add(label);
         this.meshes.push(label);
@@ -239,17 +245,16 @@ export class LevelGenerator {
         const wanted = remaining > 0
             ? Math.max(1, Math.ceil(officers.length * remaining / original))
             : 0;
-        let visible = officers.reduce((n, officer) => n + Number(officer.visible), 0);
-        while (visible > wanted) {
-            const officer = officers.findLast(o => o.visible);
+        let standing = officers.reduce((n, officer) =>
+            n + Number(officer.parent === target.meshGroup && !officer.userData.combatRetired), 0);
+        while (standing > wanted) {
+            const officer = officers.findLast(o => o.parent === target.meshGroup && !o.userData.combatRetired);
             if (!officer) break;
-            // Preserve the original model and its materials; fall back,
-            // scatter, then disappear instead of popping off in one frame.
-            officer.visible = false;
-            this.game?.crowdManager?.launchOfficerFall?.(officer);
-            visible--;
+            // The officer is detached and animated as the *same dressed model*.
+            if (!this.game?.crowdManager?.launchOfficerFall?.(officer)) break;
+            standing--;
         }
-        target.visualOfficerCount = visible;
+        target.visualOfficerCount = standing;
     }
 
     updateBossCount(enemy) {
@@ -277,6 +282,7 @@ export class LevelGenerator {
         // Final front: CRS line backed by a white van instead of a king stickman.
         for(let i=0;i<13;i++){
             const officer=makeOfficer(i%5===0?'bac':'crs',i);
+            officer.rotation.y=Math.PI;
             officer.position.set((i%7-3)*.66,0,Math.floor(i/7)*-.86);
             squad.add(officer);
             upgradePoliceOfficer(officer, i%5===0?'bac':'crs');
@@ -286,7 +292,7 @@ export class LevelGenerator {
             for(let j=0;j<2;j++){
                 const rider=makeOfficer('bravm',j);
                 rider.position.set(side*(4.2+j*.85),0,-1.1-j*1.9);
-                rider.rotation.y=side*Math.PI/10;
+                rider.rotation.y=Math.PI+side*Math.PI/10;
                 squad.add(rider);
                 upgradePoliceOfficer(rider,'bravm');
                 upgradeBravMotorcycle(rider);
@@ -305,8 +311,8 @@ export class LevelGenerator {
         ctx.textAlign='center';ctx.textBaseline='middle';
         ctx.strokeStyle='#152334';ctx.lineWidth=9;ctx.strokeText('FRONT CRS : '+bossHealth,256,64);
         ctx.fillText('FRONT CRS : '+bossHealth,256,64);
-        const label=new THREE.Mesh(new THREE.PlaneGeometry(7,1.6),new THREE.MeshBasicMaterial({map:new THREE.CanvasTexture(c),transparent:true,depthWrite:false}));
-        label.position.set(0,3.4,-trackLength);label.userData.dynamic=true;this.scene.add(label);this.meshes.push(label);
+        const label=new THREE.Mesh(new THREE.PlaneGeometry(4.0,1.0),new THREE.MeshBasicMaterial({map:new THREE.CanvasTexture(c),transparent:true,depthWrite:false}));
+        label.position.set(-2.6,3.4,-trackLength-1.3);label.userData.dynamic=true;this.scene.add(label);this.meshes.push(label);
         this.boss.labelMesh=label;
     }
 

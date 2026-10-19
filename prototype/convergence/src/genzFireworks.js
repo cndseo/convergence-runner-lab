@@ -20,6 +20,10 @@ export class GenzFireworks {
  addGenz(amount){this.active=Math.min(12,this.active+Math.max(0,amount));this.clock=2.0;}
  pickEnemy(){
   const g=this.game;
+  // During a close encounter the old >2m filter excluded the CRS entirely.
+  // This is only a visible arcade effect; no tactical damage is changed.
+  if(g.state==='fighting' && g.fightingEnemy?.remainingCount>0)
+   return g.fightingEnemy;
   return [...g.levelGenerator.enemies,...(g.levelGenerator.boss?[g.levelGenerator.boss]:[])]
    .filter(e=>!e.defeated&&e.z-g.trackZ>2&&e.z-g.trackZ<70)
    .sort((a,b)=>a.z-b.z)[0];

@@ -217,6 +217,7 @@ export class Game {
         this.trackZ = 0;
         this.playerX = 0;
         this.speed = MARCH_SPEED;
+        this.fightFormationOffset = 0;
         
         // Init and start audio
         this.audio.init();
@@ -293,15 +294,28 @@ export class Game {
             if(this.combatChoreo?.finished)this.combatChoreo=null;
             this.ui.updateCount(this.crowdManager.getPlayerCount());
             
-            // Camera shake and zoom during fight
+            // Smooth cinematic framing, with a brief impulse only on real
+            // collisions. No continuous shaking or obscured front lines.
             this.fightCameraTime = (this.fightCameraTime || 0) + delta;
-            const shakeX = Math.sin(this.fightCameraTime * 25) * 0.075;
-            const shakeY = Math.cos(this.fightCameraTime * 30) * 0.035;
-            // Low over-the-shoulder framing keeps shields, faces and reactions readable.
-            this.camera.position.x = this.playerX * 0.30 + shakeX;
-            this.camera.position.z = -this.trackZ + 7.8;
-            this.camera.position.y = 5.0 + shakeY;
-            this.camera.lookAt(this.playerX * 0.30, 1.1, -this.trackZ - .85);
+            const enter = Math.min(1, this.fightCameraTime / .82);
+            // A small visual separation keeps both formations readable.
+            // It is never fed back into collision or tactical calculations.
+            this.fightFormationOffset = Math.min(2.1, (this.fightFormationOffset || 0) + delta * 3.5);
+            if(this.crowdManager.playerGroup)
+                this.crowdManager.playerGroup.position.z = -this.trackZ + this.fightFormationOffset;
+            const pressure = this.fightingEnemy?.count
+                ? 1 - this.fightingEnemy.remainingCount / this.fightingEnemy.count : 0;
+            const pulse = this.combatChoreo?.impactPulse || 0;
+            const shakeX = Math.sin(this.fightCameraTime * 27) * .075 * pulse;
+            const shakeY = Math.cos(this.fightCameraTime * 23) * .045 * pulse;
+            this.fightCameraTarget ??= new THREE.Vector3();
+            this.fightCameraTarget.set(
+                this.playerX * .29 + 2.0 * enter + shakeX,
+                6.3 - .1 * enter + .12 * pressure + shakeY,
+                -this.trackZ + 8.4 + 1.6 * enter + .1 * pressure
+            );
+            this.camera.position.lerp(this.fightCameraTarget, Math.min(1, delta * 6.5));
+            this.camera.lookAt(this.playerX * .28, .7, -this.trackZ - 1.0);
             return;
         }
 
@@ -318,8 +332,9 @@ export class Game {
         // Move forward
         this.trackZ += this.speed * (this.lbdSystem?.marchFactor ?? 1) * delta;
 
-        // Update crowd position
-        this.crowdManager.updatePlayerPosition(this.playerX, -this.trackZ);
+        // Ease out the purely visual frontline spacing after the encounter.
+        this.fightFormationOffset = Math.max(0, (this.fightFormationOffset || 0) - delta * 2.8);
+        this.crowdManager.updatePlayerPosition(this.playerX, -this.trackZ + this.fightFormationOffset);
 
         // Update camera
         this.camera.position.x = this.playerX * 0.3;
@@ -475,6 +490,8 @@ export class Game {
                 this.fightCameraTime = 0;
                 this.combatChoreo?.dispose();
                 this.combatChoreo = new CombatChoreography(this,enemy);
+                // Fireworks may be purely visual if Gen Z was recruited.
+                this.genzFireworks?.fire();
                 this.speed = 0;
                 this.audio.playHit();
                 this.ui.screenShake(10);
@@ -508,8 +525,8 @@ export class Game {
 
             if (!enemy) return;
 
-            this.combatChoreo?.onExchange();
             // Resolve losses exactly as in the certified tactical solver.
+            const shieldsBefore = this.shields;
             const strength = this.strengthUpgrade;
 
             // Player kills enemy stickmen (strength determines how many enemy die per tick)
@@ -540,6 +557,11 @@ export class Game {
             } else {
                 this.levelGenerator.updateEnemyLabel(enemy);
             }
+            this.combatChoreo?.onExchange({
+                policeLost: enemyKills,
+                protestersLost: playerCount - this.crowdManager.getPlayerCount(),
+                blocked: this.shields < shieldsBefore
+            });
 
             // Check fight outcome
             if (enemy.remainingCount <= 0) {
@@ -614,6 +636,7 @@ export class Game {
         this.speed = 0;
         this.combatChoreo?.dispose();
         this.combatChoreo=new CombatChoreography(this,this.fightingEnemy);
+        this.genzFireworks?.fire();
 
         // Show boss health bar
         this.ui.showBossHealthBar(boss.health);

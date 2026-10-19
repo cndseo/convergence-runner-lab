@@ -11,6 +11,7 @@ export class CrowdManager {
         this.playerCount = 0;
         this.animTime = 0;
         this.flyingBodies = [];    // Ragdoll stickmen flying away
+        this.fallingOfficers = []; // Retain the real equipped CRS models during a fall
         this.impactFlashes = [];   // Impact burst rings
         this.sparkParticles = [];  // Small spark particles
         this.trailParticles = [];  // Trailing particles behind flying bodies
@@ -30,6 +31,8 @@ export class CrowdManager {
         this.playerCount = 0;
         
         // Clean up effects
+        this.fallingOfficers.forEach(f => { this.scene.remove(f.officer); });
+        this.fallingOfficers = [];
         this.flyingBodies.forEach(b => { this.scene.remove(b.mesh); });
         this.flyingBodies = [];
         this.impactFlashes.forEach(f => { this.scene.remove(f.mesh); });
@@ -161,24 +164,46 @@ export class CrowdManager {
     }
 
     launchOfficerFall(officer) {
-        if (!officer?.parent) return;
-        const world = new THREE.Vector3();
-        officer.getWorldPosition(world);
-        // A small, readable fall at the exact CRS position, without the
-        // bright red arcade burst previously used for casualties.
-        const body = this.createStickman(0x303b48);
-        body.position.copy(world);
-        body.rotation.y=officer.rotation.y;
-        body.userData.dynamic=true;
-        body.userData.velocity=new THREE.Vector3((Math.random()-.5)*1.6,1.3,(Math.random()-.5)*1.6);
-        body.userData.angularVel=new THREE.Vector3(2.5+(Math.random()-.5),0,(Math.random()-.5)*2);
-        body.userData.life=1.1;
-        body.userData.maxLife=1.1;
-        body.userData.color=0x303b48;
-        body.userData.trailTimer=0;
-        body.traverse(c=>{if(c.material){c.material=c.material.clone();c.material.transparent=true;}});
-        this.scene.add(body);
-        this.flyingBodies.push({mesh:body});
+        if (!officer?.parent || officer.userData.combatRetired) return false;
+        // Re-parent the actual equipped officer to world space: helmet, shield
+        // and uniform remain visible for the whole fall (no dummy stickman).
+        officer.updateWorldMatrix(true, true);
+        this.scene.attach(officer);
+        officer.userData.combatRetired = true;
+        this.fallingOfficers.push({
+            officer, elapsed: 0, duration: 1.55,
+            origin: officer.position.clone(), rotation: officer.rotation.clone(),
+            scale: officer.scale.clone(),
+            side: (this.fallingOfficers.length % 2 ? -1 : 1)
+        });
+        return true;
+    }
+
+    updateFallingOfficers(dt) {
+        for (let i = this.fallingOfficers.length - 1; i >= 0; i--) {
+            const fx = this.fallingOfficers[i];
+            fx.elapsed += dt;
+            const progress = Math.min(1, fx.elapsed / .78);
+            const ease = progress * progress * (3 - 2 * progress);
+            const officer = fx.officer;
+            // Stumble sideways, fall to the street and stay down briefly.
+            officer.rotation.set(
+                fx.rotation.x - .45 * ease,
+                fx.rotation.y,
+                fx.rotation.z + fx.side * 1.35 * ease
+            );
+            officer.position.set(
+                fx.origin.x + fx.side * .32 * ease,
+                fx.origin.y + .10 * Math.sin(progress * Math.PI),
+                fx.origin.z + .38 * ease
+            );
+            const fade = Math.max(0, Math.min(1, (fx.duration - fx.elapsed) / .35));
+            officer.scale.copy(fx.scale).multiplyScalar(Math.max(.001, fade));
+            if (fx.elapsed >= fx.duration) {
+                this.scene.remove(officer);
+                this.fallingOfficers.splice(i, 1);
+            }
+        }
     }
 
     removeEnemyCrowd(enemy) {
@@ -396,6 +421,7 @@ export class CrowdManager {
 
         // Update all effects
         this.updateFlyingBodies(delta);
+        this.updateFallingOfficers(delta);
         this.updateImpactFlashes(delta);
         this.updateSparkParticles(delta);
         this.updateTrailParticles(delta);
