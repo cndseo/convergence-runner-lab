@@ -169,8 +169,8 @@ export class LevelGenerator {
             const angle = (i / displayCount) * Math.PI * 2 + Math.random() * 0.5;
             const radius = Math.sqrt(i / displayCount) * 2.5;
             const stickman = makeOfficer(enemy.kind,i);
-            // Police face the advancing crowd (+Z), not away from it.
-            stickman.rotation.y=Math.PI;
+            // Police kit (shields, visor and launchers) faces local +Z,
+            // toward the approaching protesters. Do not reverse the officer.
             stickman.position.set(
                 (i % 8 - 3.5) * .68,
                 0,
@@ -282,7 +282,7 @@ export class LevelGenerator {
         // Final front: CRS line backed by a white van instead of a king stickman.
         for(let i=0;i<13;i++){
             const officer=makeOfficer(i%5===0?'bac':'crs',i);
-            officer.rotation.y=Math.PI;
+            // The model's shield is already oriented toward local +Z.
             officer.position.set((i%7-3)*.66,0,Math.floor(i/7)*-.86);
             squad.add(officer);
             upgradePoliceOfficer(officer, i%5===0?'bac':'crs');
@@ -292,7 +292,7 @@ export class LevelGenerator {
             for(let j=0;j<2;j++){
                 const rider=makeOfficer('bravm',j);
                 rider.position.set(side*(4.2+j*.85),0,-1.1-j*1.9);
-                rider.rotation.y=Math.PI+side*Math.PI/10;
+                rider.rotation.y=side*Math.PI/10;
                 squad.add(rider);
                 upgradePoliceOfficer(rider,'bravm');
                 upgradeBravMotorcycle(rider);

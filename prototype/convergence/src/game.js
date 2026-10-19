@@ -217,7 +217,7 @@ export class Game {
         this.trackZ = 0;
         this.playerX = 0;
         this.speed = MARCH_SPEED;
-        this.fightFormationOffset = 0;
+        // No artificial offset of the player's group during combat.
         
         // Init and start audio
         this.audio.init();
@@ -298,11 +298,6 @@ export class Game {
             // collisions. No continuous shaking or obscured front lines.
             this.fightCameraTime = (this.fightCameraTime || 0) + delta;
             const enter = Math.min(1, this.fightCameraTime / .82);
-            // A small visual separation keeps both formations readable.
-            // It is never fed back into collision or tactical calculations.
-            this.fightFormationOffset = Math.min(2.1, (this.fightFormationOffset || 0) + delta * 3.5);
-            if(this.crowdManager.playerGroup)
-                this.crowdManager.playerGroup.position.z = -this.trackZ + this.fightFormationOffset;
             const pressure = this.fightingEnemy?.count
                 ? 1 - this.fightingEnemy.remainingCount / this.fightingEnemy.count : 0;
             const pulse = this.combatChoreo?.impactPulse || 0;
@@ -310,12 +305,12 @@ export class Game {
             const shakeY = Math.cos(this.fightCameraTime * 23) * .045 * pulse;
             this.fightCameraTarget ??= new THREE.Vector3();
             this.fightCameraTarget.set(
-                this.playerX * .29 + 2.0 * enter + shakeX,
-                6.3 - .1 * enter + .12 * pressure + shakeY,
-                -this.trackZ + 8.4 + 1.6 * enter + .1 * pressure
+                this.playerX * .29 + .75 * enter + shakeX,
+                6.3 - 1.15 * enter + .12 * pressure + shakeY,
+                -this.trackZ + 8.4 - .95 * enter + .1 * pressure
             );
             this.camera.position.lerp(this.fightCameraTarget, Math.min(1, delta * 6.5));
-            this.camera.lookAt(this.playerX * .28, .7, -this.trackZ - 1.0);
+            this.camera.lookAt(this.playerX * .28, 1.0, -this.trackZ - .9);
             return;
         }
 
@@ -332,9 +327,8 @@ export class Game {
         // Move forward
         this.trackZ += this.speed * (this.lbdSystem?.marchFactor ?? 1) * delta;
 
-        // Ease out the purely visual frontline spacing after the encounter.
-        this.fightFormationOffset = Math.max(0, (this.fightFormationOffset || 0) - delta * 2.8);
-        this.crowdManager.updatePlayerPosition(this.playerX, -this.trackZ + this.fightFormationOffset);
+        // Combat poses operate on individual runners, never teleport the whole group.
+        this.crowdManager.updatePlayerPosition(this.playerX, -this.trackZ);
 
         // Update camera
         this.camera.position.x = this.playerX * 0.3;

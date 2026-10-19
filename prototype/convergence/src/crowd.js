@@ -85,6 +85,22 @@ export class CrowdManager {
         return { x: (index % cols - (cols - 1) / 2) * .53, z: .55 - row * .70 };
     }
 
+    // During a fight the visible front rank must remain physically opposite
+    // the officers, regardless of how long the marching crowd has become.
+    // This changes display positions only, never the collision/solver state.
+    getCombatFormationPosition(index) {
+        const enemy = this.game?.fightingEnemy;
+        if (!enemy) return this.getFormationPosition(index);
+        const cols = this.playerCount > 8 ? 5 : 3;
+        if (index === 0) return {x:0, z:this.game.trackZ-enemy.z+.68};
+        const rank = index - 1;
+        const row = Math.floor(rank / cols);
+        return {
+            x:(rank % cols - (cols - 1) / 2) * .58,
+            z:this.game.trackZ-enemy.z+.8+row*.67
+        };
+    }
+
     createStickman(color) {
         const group = new THREE.Group();
         const mat = new THREE.MeshStandardMaterial({ color });
@@ -171,7 +187,7 @@ export class CrowdManager {
         this.scene.attach(officer);
         officer.userData.combatRetired = true;
         this.fallingOfficers.push({
-            officer, elapsed: 0, duration: 1.55,
+            officer, elapsed: 0, duration: 2.15,
             origin: officer.position.clone(), rotation: officer.rotation.clone(),
             scale: officer.scale.clone(),
             side: (this.fallingOfficers.length % 2 ? -1 : 1)
@@ -183,21 +199,21 @@ export class CrowdManager {
         for (let i = this.fallingOfficers.length - 1; i >= 0; i--) {
             const fx = this.fallingOfficers[i];
             fx.elapsed += dt;
-            const progress = Math.min(1, fx.elapsed / .78);
+            const progress = Math.min(1, fx.elapsed / .52);
             const ease = progress * progress * (3 - 2 * progress);
             const officer = fx.officer;
             // Stumble sideways, fall to the street and stay down briefly.
             officer.rotation.set(
-                fx.rotation.x - .45 * ease,
+                fx.rotation.x - .13 * ease,
                 fx.rotation.y,
-                fx.rotation.z + fx.side * 1.35 * ease
+                fx.rotation.z + fx.side * 1.48 * ease
             );
             officer.position.set(
-                fx.origin.x + fx.side * .32 * ease,
-                fx.origin.y + .10 * Math.sin(progress * Math.PI),
-                fx.origin.z + .38 * ease
+                fx.origin.x + fx.side * .13 * ease,
+                fx.origin.y + .12 * ease,
+                fx.origin.z + .12 * ease
             );
-            const fade = Math.max(0, Math.min(1, (fx.duration - fx.elapsed) / .35));
+            const fade = Math.max(0, Math.min(1, (fx.duration - fx.elapsed) / .30));
             officer.scale.copy(fx.scale).multiplyScalar(Math.max(.001, fade));
             if (fx.elapsed >= fx.duration) {
                 this.scene.remove(officer);
@@ -377,12 +393,9 @@ export class CrowdManager {
                     }
                 }
 
-                const target = this.getFormationPosition(i);
-                if(this.game?.state==='fighting' && i>0){
-                    // Spread the front line so individual reactions stay readable.
-                    target.x *= 1.55;
-                    target.z += .18;
-                }
+                const target = this.game?.state==='fighting'
+                    ? this.getCombatFormationPosition(i)
+                    : this.getFormationPosition(i);
                 stickman.position.x += (target.x - stickman.position.x) * Math.min(1, delta * 8);
                 stickman.position.z += (target.z - stickman.position.z) * Math.min(1, delta * 8);
                 const offset = i * 0.7;

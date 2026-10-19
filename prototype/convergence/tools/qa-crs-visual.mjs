@@ -26,7 +26,7 @@ try{
   const bossZero=boss.officers.filter(o=>o.parent===boss.meshGroup).length;
   const preserved=g.crowdManager.fallingOfficers.every(f=>f.officer.parent===g.scene && f.officer.children.length>0);
   const fading=g.crowdManager.fallingOfficers.length;
-  for(let i=0;i<36;i++)g.crowdManager.updateFallingOfficers(.05);
+  for(let i=0;i<52;i++)g.crowdManager.updateFallingOfficers(.05); // 2.6 s > new 2.15 s fall
   const cleared=g.crowdManager.fallingOfficers.length;
   return {before,half,almost,none,original,f1,f2,bossHalf,bossZero,bossTotal:boss.officers.length,preserved,fading,cleared};
  });
