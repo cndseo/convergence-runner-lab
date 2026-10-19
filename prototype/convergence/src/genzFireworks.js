@@ -28,6 +28,7 @@ export class GenzFireworks {
   const g=this.game;if(this.active<=0||!g.crowdManager?.playerGroup)return false;
   const enemy=this.pickEnemy();if(!enemy)return false;
   const runners=g.crowdManager.playerStickmen.filter(r=>r.userData.bonusFaction==='genz'&&r.parent);
+  if(!runners.length)return false;
   const shooter=runners[0]||g.crowdManager.playerStickmen[Math.min(2,g.crowdManager.playerStickmen.length-1)];
   if(!shooter)return false;
   this.shooter=shooter;this.shooter.userData.genzFireAnimation=.9;

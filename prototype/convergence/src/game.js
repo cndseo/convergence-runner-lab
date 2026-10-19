@@ -220,6 +220,7 @@ export class Game {
         this.audio.init();
         this.audio.resume();
         this.audio.startCrowdAmbience();
+        this.audio.preloadCombatVoice?.();
         
         // Clear scene objects
         this.clearLevel();
@@ -608,6 +609,7 @@ export class Game {
 
     winGame() {
         if (this.state === 'win' || this.state === 'lose') return;
+        this.audio.stopCombatVoice?.();
         this.state = 'win';
         const earnedCoins = Math.floor(this.crowdManager.getPlayerCount() * 2 + this.level * 10);
         this.coins += earnedCoins;
