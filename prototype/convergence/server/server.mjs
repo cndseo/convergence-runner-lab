@@ -7,11 +7,11 @@ import { fileURLToPath } from 'node:url';
 import { utcChallengeDate, validChallengeDate, computeDailyScore } from '../src/dailyChallenge.mjs';
 
 export const PRODUCTS = Object.freeze({
- spiderman:{sku:'spiderman',name:'CONVERGENCE — Personnage Spider-Man',cents:299,description:'Personnage déguisé - apparence visuelle, sans avantage tactique'},
- dinosaur:{sku:'dinosaur',name:'CONVERGENCE — Dinosaure gonflable',cents:299,description:'Personnage déguisé, sans avantage tactique'},
- marseille1:{sku:'marseille1',name:'CONVERGENCE — Renfort marseillais x1',cents:199,description:'Une intervention spéciale en campagne',charges:1},
- marseille3:{sku:'marseille3',name:'CONVERGENCE — Renfort marseillais x3',cents:499,description:'Trois interventions spéciales en campagne',charges:3},
- marseille10:{sku:'marseille10',name:'CONVERGENCE — Renfort marseillais x10',cents:1299,description:'Dix interventions spéciales en campagne',charges:10}
+ spiderman:{sku:'spiderman',name:'CONVERGENCE — Personnage Spider-Man',cents:199,description:'Personnage déguisé - apparence visuelle, sans avantage tactique'},
+ dinosaur:{sku:'dinosaur',name:'CONVERGENCE — Dinosaure gonflable',cents:199,description:'Personnage déguisé, sans avantage tactique'},
+ marseille1:{sku:'marseille1',name:'CONVERGENCE — Renfort marseillais x1',cents:299,description:'Une intervention spéciale en campagne',charges:1},
+ marseille3:{sku:'marseille3',name:'CONVERGENCE — Renfort marseillais x3',cents:897,description:'Trois interventions spéciales en campagne',charges:3},
+ marseille10:{sku:'marseille10',name:'CONVERGENCE — Renfort marseillais x10',cents:2990,description:'Dix interventions spéciales en campagne',charges:10}
 });
 const sha=s=>crypto.createHash('sha256').update(s).digest('hex');
 const json=(res,status,data)=>{res.writeHead(status,{'Content-Type':'application/json; charset=utf-8','Cache-Control':'no-store','X-Content-Type-Options':'nosniff'});res.end(JSON.stringify(data));};

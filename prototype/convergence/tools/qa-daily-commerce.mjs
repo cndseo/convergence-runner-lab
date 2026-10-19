@@ -82,7 +82,7 @@ try{
     heading:document.querySelector('.challenge-title')?.textContent};
   });
   assert.equal(premium.count,5);assert.equal(premium.disabled,true);
-  assert.match(premium.labels.join(' '),/2,99 €.*2,99 €.*1,99 €.*4,99 €.*12,99 €/);
+  assert.match(premium.labels.join(' '),/1,99 €.*1,99 €.*2,99 €.*8,97 €.*29,90 €/);
   assert.match(premium.message,/désactivés/);
   report.checks.push({viewport,type:'premium',premium});
   await page.screenshot({path:dir+'/shop-'+viewport.width+'.png'});

@@ -3,11 +3,11 @@ import {
 } from './dailyChallenge.mjs';
 
 export const PREMIUM_CATALOG = Object.freeze([
-  {id:'spiderman',label:'Spider-Man manifestant',description:'Personnage déguisé, avec les deux vues fournies',cents:299,art:'spiderman-front.webp'},
-  {id:'dinosaur',label:'Dinosaure gonflable',description:'Personnage déguisé en dinosaure',cents:299,art:'dinosaur-front.webp'},
-  {id:'marseille1',label:'Renfort marseillais · 1 intervention',description:'Une intervention spéciale en mode campagne',cents:199,art:'marseille-front.webp'},
-  {id:'marseille3',label:'Renfort marseillais · 3 interventions',description:'Trois interventions spéciales en mode campagne',cents:499},
-  {id:'marseille10',label:'Renfort marseillais · 10 interventions',description:'Dix interventions spéciales en mode campagne',cents:1299}
+  {id:'spiderman',label:'Spider-Man manifestant',description:'Personnage déguisé, avec les deux vues fournies',cents:199,art:'spiderman-front.webp'},
+  {id:'dinosaur',label:'Dinosaure gonflable',description:'Personnage déguisé en dinosaure',cents:199,art:'dinosaur-front.webp'},
+  {id:'marseille1',label:'Renfort marseillais · 1 intervention',description:'Une intervention spéciale en mode campagne',cents:299,art:'marseille-front.webp'},
+  {id:'marseille3',label:'Renfort marseillais · 3 interventions',description:'Trois interventions spéciales en mode campagne',cents:897},
+  {id:'marseille10',label:'Renfort marseillais · 10 interventions',description:'Dix interventions spéciales en mode campagne',cents:2990}
 ]);
 
 function make(tag,className,text='') {
@@ -43,7 +43,7 @@ export class ChallengeHub {
     this.dailyButton.type='button';
     this.dailyButton.addEventListener('click',()=>this.open('daily'));
     play.insertAdjacentElement('afterend',this.dailyButton);
-    this.premiumButton=make('button','btn btn-secondary','BOUTIQUE COSMÉTIQUE');
+    this.premiumButton=make('button','btn btn-secondary','PERSONNAGES ET RENFORTS');
     this.premiumButton.id='premium-btn';
     this.premiumButton.type='button';
     document.getElementById('upgrade-btn').insertAdjacentElement('afterend',this.premiumButton);
@@ -167,8 +167,8 @@ export class ChallengeHub {
   }
   renderPremium(){
     this.body.replaceChildren();this.foot.replaceChildren();
-    this.heading.textContent='BOUTIQUE COSMÉTIQUE';
-    this.note.textContent='Personnages déguisés et interventions spectaculaires pour la campagne. Aucun avantage dans le défi quotidien.';
+    this.heading.textContent='PERSONNAGES ET RENFORTS';
+    this.note.textContent='Personnages à 1,99 € · Renfort marseillais à 2,99 € par intervention. Réservé à la campagne, sans avantage dans le défi quotidien.';
     for(const item of PREMIUM_CATALOG){
       const row=make('div','challenge-product');
       const info=make('div','');

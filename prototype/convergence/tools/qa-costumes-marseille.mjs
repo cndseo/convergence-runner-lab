@@ -15,6 +15,8 @@ try{
   await page.waitForFunction(()=>window.__convergence?.challengeHub,{timeout:22000});
   await page.locator('#premium-btn').click();
   assert.equal(await page.locator('.challenge-product').count(),5);
+  const prices=await page.locator('.challenge-product button').allInnerTexts();
+  assert.deepEqual(prices.map(s=>s.trim()),['1,99 €','1,99 €','2,99 €','8,97 €','29,90 €']);
   await page.waitForFunction(()=>[...document.querySelectorAll('.character-product-thumb')].every(i=>i.complete&&i.naturalWidth>100),{timeout:12000});
   await page.screenshot({path:dir+'/shop-'+viewport.width+'.png'});
   await page.getByRole('button',{name:/TESTER DINOSAURE/}).click();
@@ -63,7 +65,8 @@ try{
     sprites,retreatingOfficers:police,population:g.crowdManager.getPlayerCount()};
   });
   assert.equal(active.active,true);assert.equal(active.credits,0);
-  assert.equal(active.sprites.length,6);
+  assert.equal(active.sprites.length,9);
+  assert.ok(active.sprites.some(s=>Math.abs(s.x)<1.5),'rear reinforcements should enter from center');
   assert.ok(active.sprites.every(x=>/marseille-(front|back).webp/.test(x.texture)));
   assert.ok(active.retreatingOfficers>0);
   await page.screenshot({path:dir+'/marseille-rush-'+viewport.width+'.png'});

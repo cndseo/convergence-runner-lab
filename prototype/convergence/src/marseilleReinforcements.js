@@ -55,17 +55,24 @@ export class MarseilleReinforcements{
   this.active=true;this.enemy=enemy;this.elapsed=0;this.spriteStartZ=-this.game.trackZ+1.0;
   this.spriteTargetZ=-enemy.z+.5;
   this.sprites=[];
-  for(let i=0;i<6;i++){
+  // Three lanes: left, right and behind the player. Each sprite is an
+  // illustrated group, so nine sprites create the impression of a crowd
+  // without spawning expensive individual 3D characters on mobile.
+  for(let i=0;i<9;i++){
    const texture=i%2?artwork.back:artwork.front;
    const sprite=new THREE.Sprite(new THREE.SpriteMaterial({
     map:texture,transparent:true,alphaTest:.12,depthWrite:false
    }));
    sprite.name='MARSEILLE_REINFORCEMENTS_'+i;
    sprite.scale.set(3.2,3.65,1);
-   const side=i%2?-1:1;
-   sprite.position.set(side*(7.5+i*.5),1.75,this.spriteStartZ+(i%3)*1.5);
+   const lane=i%3,row=Math.floor(i/3);
+   const side=lane===0?-1:lane===1?1:0;
+   const fromX=lane===2?(row-1)*1.7:side*(7.6+row*.8);
+   const fromZ=lane===2?this.spriteStartZ+5+row*.9:this.spriteStartZ+row*.8;
+   const toX=lane===2?(row-1)*.75:side*(.8+row*.45);
+   sprite.position.set(fromX,1.75,fromZ);
    this.game.scene.add(sprite);
-   this.sprites.push({sprite,side,i});
+   this.sprites.push({sprite,side,i,fromX,fromZ,toX});
   }
   this.button.textContent='RENFORTS MARSEILLAIS !';
   this.game.ui.showFloatingText('RENFORTS MARSEILLAIS !','#82c7ff');
@@ -80,9 +87,9 @@ export class MarseilleReinforcements{
   const t=Math.min(1,this.elapsed/4.4);
   const ease=t*t*(3-2*t);
   for(const item of this.sprites){
-   const {sprite,side,i}=item;
-   sprite.position.x=side*(7.5+i*.5)*(1-ease)+side*(.6+(i%3)*.5)*ease;
-   sprite.position.z=(this.spriteStartZ+(i%3)*1.5)*(1-ease)+this.spriteTargetZ*ease;
+   const {sprite,i,fromX,fromZ,toX}=item;
+   sprite.position.x=fromX*(1-ease)+toX*ease;
+   sprite.position.z=fromZ*(1-ease)+(this.spriteTargetZ+(i%3===2?1.1:0))*ease;
    sprite.position.y=1.75+Math.abs(Math.sin(this.elapsed*11+i))*.19;
    sprite.material.opacity=t>.8?Math.max(0,(1-t)/.20):1;
   }
