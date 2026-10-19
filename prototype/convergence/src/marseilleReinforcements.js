@@ -1,182 +1,170 @@
 import * as THREE from 'three';
-import {
- createMarseilleActor3D,updateCharacterModel3D,disposeCharacterModel3D
-} from './characterModels3D.js';
-import {createMarseilleReal3D,riggedMarseilleCount} from './marseilleReal3D.js';
-
-// Dramatic, fictional arcade support arrival. Genuine shaded and articulated
-// 3D figures, not textures or billboards; no real-world tactical simulation.
-const ACTORS=12; // 4 entering from each of left, right and rear.
-const DURATION=4.4;
-const clamp=t=>Math.max(0,Math.min(1,t));
-const smooth=t=>t*t*(3-2*t);
+import {RUSH_GROUPS,RUSH_SECONDS,rushRoute,sampleRush,policeRetreat,clamp01} from './marseilleMotion.mjs';
+import {preloadMarseilleSprites,createMarseilleSprite,stepMarseilleSprite,
+ disposeMarseilleSprite,createSmokeTexture} from './marseilleSprites.js';
 
 export class MarseilleReinforcements {
  constructor(game){
   this.game=game;this.active=false;this.pending=false;this.demoCharges=0;
-  this.charges=0;this.elapsed=0;this.actors=[];this.enemy=null;
+  this.charges=0;this.elapsed=0;this.actors=[];this.enemy=null;this.police=[];this.puffs=[];
+  this.generation=0;this.impactPulse=0;
   this.button=document.createElement('button');
   this.button.id='marseille-support-button';this.button.type='button';
-  this.button.textContent='RENFORT MARSEILLAIS';
   this.button.setAttribute('aria-label','Déclencher les renforts marseillais');
   this.button.style.display='none';
   this.button.addEventListener('click',()=>this.activate());
   game.ui.container.appendChild(this.button);
+  // Preload these small shared textures while the menu is open.
+  this.preload().catch(()=>{});
  }
- async preload(){
-  // Nine existing high-detail GLB walkers supply fully articulated faces,
-  // anatomy and outfits. Remaining actors are lightweight 3D meshes.
-  const rigs=await Promise.all(
-   Array.from({length:Math.min(ACTORS,riggedMarseilleCount())},async(_,i)=>{
-    try{return await createMarseilleReal3D(i);}
-    catch(error){console.warn('3D GLB fallback',i,error.message);return null;}
-   })
-  );
-  return {geometry:'rigged-3d',rigs};
- }
- discardAssets(assets){
-  for(const rig of assets?.rigs||[])rig?.dispose?.();
- }
+ preload(){return preloadMarseilleSprites();}
+ discardAssets(){/* Cached textures live for the game session, not one attack. */}
  available(){return this.charges+this.demoCharges;}
  showButton(){
   const g=this.game;
   const visible=g.mode==='campaign' && g.state==='fighting' &&
-    (this.available()>0||this.pending||this.active);
+   (this.available()>0||this.pending||this.active);
   this.button.style.display=visible?'block':'none';
   this.button.disabled=this.pending||this.active;
-  this.button.textContent=this.active?'RENFORTS EN APPROCHE…':
-    this.pending?'VÉRIFICATION…':'RENFORT MARSEILLAIS · '+this.available();
+  this.button.textContent=this.active?'RENFORTS EN ACTION…':
+   this.pending?'VÉRIFICATION…':'RENFORT MARSEILLAIS × '+this.available();
  }
  async activate(){
   const g=this.game;
   if(g.mode!=='campaign'||g.state!=='fighting'||!g.fightingEnemy||
-    this.active||this.pending||this.available()<=0)return false;
+   this.active||this.pending||this.available()<=0)return false;
   this.pending=true;this.showButton();
-  const enemy=g.fightingEnemy,runId=g.runId;
+  const enemy=g.fightingEnemy,runId=g.runId,generation=this.generation;
+  const current=()=>g.runId===runId&&g.mode==='campaign'&&g.state==='fighting'&&
+   g.fightingEnemy===enemy&&this.generation===generation;
   try{
    const artwork=await this.preload();
-   if(!artwork||g.runId!==runId||g.state!=='fighting'){
-    this.discardAssets(artwork);return false;
-   }
+   if(!current())return false;
    const granted=await g.challengeHub.consumeMarseilleCharge();
-   if(!granted||g.runId!==runId||g.fightingEnemy!==enemy){
-    this.discardAssets(artwork);return false;
-   }
-   this.begin(enemy,artwork);
-   return true;
-  }finally{this.pending=false;this.showButton();}
+   if(!granted||!current())return false;
+   this.begin(enemy,artwork);return true;
+  }catch(error){
+   console.warn('Marseille support unavailable:',error?.message||error);
+   g.ui.showFloatingText('Renfort indisponible, réessayez.','#b5dfff');
+   return false;
+  }finally{if(this.generation===generation){this.pending=false;this.showButton();}}
  }
- begin(enemy,artwork={}){
+ begin(enemy,artwork){
   this.clear();
   this.game.lbdSystem?.clear();
-  this.active=true;this.enemy=enemy;this.elapsed=0;
-  this.startZ=-this.game.trackZ+1.0;
-  this.targetZ=-enemy.z+.5;
-  this.actors=[];
-  for(let i=0;i<ACTORS;i++){
-   const lane=i%3,row=Math.floor(i/3),side=lane===0?-1:lane===1?1:0;
-   const fromX=side?side*(6.6+row*.68):(row-1.5)*.95;
-   const fromZ=side?this.startZ+row*.64:this.startZ+3.0+row*.85;
-   const toX=side?side*(1.05+row*.34):(row-1.5)*.47;
-   const toZ=this.targetZ+.25+row*.52+(lane===2?1.0:0);
-   const rig=artwork.rigs?.[i]||null;
-   const model=rig?.model||createMarseilleActor3D(i);
-   model.position.set(fromX,0,fromZ);
-   model.rotation.y=Math.atan2(-(toX-fromX),-(toZ-fromZ));
-   this.game.scene.add(model);
-   this.actors.push({model,rig,lane,i,fromX,fromZ,toX,toZ});
+  this.active=true;this.enemy=enemy;this.artwork=artwork;this.elapsed=0;
+  this.targetZ=-enemy.z;
+  for(let i=0;i<RUSH_GROUPS;i++){
+   const actor=createMarseilleSprite(artwork,i);
+   actor.route=rushRoute(i,this.targetZ);actor.lane=actor.route.lane;actor.i=i;
+   this.game.scene.add(actor.model);this.actors.push(actor);
+   stepMarseilleSprite(actor,sampleRush(actor.route,0),0,0,artwork,this.game.camera);
   }
-  // Faint volumetric puffs are independent effects, not instructions for
-  // making real smoke devices. No particles need collision physics.
-  this.puffs=[];
-  this.puffGeo=new THREE.SphereGeometry(1,9,7);
-  this.puffMat=[
-   new THREE.MeshBasicMaterial({color:0x4b9cfc,transparent:true,opacity:.15,depthWrite:false}),
-   new THREE.MeshBasicMaterial({color:0xe0e9fa,transparent:true,opacity:.17,depthWrite:false})
-  ];
-  for(let j=0;j<12;j++){
-   const puff=new THREE.Mesh(this.puffGeo,this.puffMat[j%2]);
-   puff.name='MARSEILLE_3D_COLOR_SMOKE_'+j;
-   this.game.scene.add(puff);this.puffs.push(puff);
+  // Detach the real officers, retaining their equipped meshes and animation mixers.
+  // The ordinary casualty renderer cannot delete them while they retreat.
+  const officers=enemy.officers||(enemy.isBoss?this.game.levelGenerator.boss?.officers:[])||[];
+  for(const [i,o] of officers.entries()){
+   if(!o.parent||o.userData.combatRetired)continue;
+   const parent=o.parent,local=o.position.clone(),rotation=o.rotation.clone();
+   const scale=o.scale.clone();
+   o.updateWorldMatrix(true,true);this.game.scene.attach(o);
+   const origin={x:o.position.x,y:o.position.y,z:o.position.z,yaw:o.rotation.y};
+   o.userData.marseilleOrigin=origin;
+   const limbs=[];
+   o.traverse(b=>{
+    if(!b.isBone)return;
+    const name=b.name.toLowerCase().replace(/[^a-z0-9]/g,'');
+    if(/upperarm|leftarm|rightarm|upleg|thigh|^leftleg$|^rightleg$/.test(name))limbs.push({bone:b,
+     side:/left|^l|lupper|lthigh|lupleg/.test(name)?1:-1,arm:/arm/.test(name),knee:/^(left|right)leg$/.test(name)});
+   });
+   this.police.push({o,i,parent,local,rotation,scale,origin,limbs,started:false});
   }
-  this.game.ui.showFloatingText('RENFORTS MARSEILLAIS !','#82c7ff');
-  this.game.ui.screenShake(7);
+  this.smokeTexture=createSmokeTexture();
+  for(let i=0;i<30;i++){
+   const p=new THREE.Sprite(new THREE.SpriteMaterial({map:this.smokeTexture,
+    color:i%2?0xe9f3ff:0x318fed,transparent:true,opacity:0,depthWrite:false}));
+   p.name='MARSEILLE_BLUE_WHITE_SMOKE_'+i;
+   this.game.scene.add(p);this.puffs.push({sprite:p,age:10+i*.13,life:1.15+(i%5)*.13});
+  }
+  this.game.ui.screenShake(5);
   this.showButton();
  }
  update(dt){
   this.showButton();
   if(!this.active)return;
-  if(this.game.state!=='fighting'||this.game.fightingEnemy!==this.enemy){
+  const g=this.game;
+  if(g.state==='paused')return; // Pause never cancels or consumes an extra charge.
+  if(g.mode!=='campaign'||g.state!=='fighting'||g.fightingEnemy!==this.enemy){
    this.clear();return;
   }
-  this.elapsed+=Math.min(.06,dt);
-  const t=clamp(this.elapsed/DURATION),ease=smooth(t);
+  const delta=Math.min(.06,Math.max(0,dt));
+  this.elapsed+=delta;
+  const t=this.elapsed;
+  this.impactPulse=Math.max(0,1-Math.abs(t-3.1)/.5)*.65;
+  this.phase=t<2.5?'arrival':t<3.5?'surge':t<5.9?'breach':'exit';
   for(const actor of this.actors){
-   const {model,i,fromX,fromZ,toX,toZ}=actor;
-   model.position.x=THREE.MathUtils.lerp(fromX,toX,ease);
-   model.position.z=THREE.MathUtils.lerp(fromZ,toZ,ease);
-   model.position.y=Math.abs(Math.sin(this.elapsed*13+i))*.065;
-   if(actor.rig)actor.rig.step(Math.min(.06,dt));
-   else updateCharacterModel3D(model,this.elapsed,true);
-   if(t>.94)model.scale.setScalar(Math.max(.001,(1-t)/.06));
+   const pose=sampleRush(actor.route,t);
+   actor.pose=pose;
+   stepMarseilleSprite(actor,pose,t,delta,this.artwork,g.camera);
   }
-  for(let j=0;j<this.puffs.length;j++){
-   const a=this.actors[(j*3)%this.actors.length]?.model;
-   const puff=this.puffs[j];
-   if(!a)continue;
-   const phase=(t*2+j*.19)%1;
-   puff.position.set(a.position.x+Math.sin(this.elapsed+j)*.27,
-    1.35+phase*1.15,a.position.z+.16);
-   puff.scale.setScalar(.16+phase*.53);
-   puff.visible=t>.08&&t<.92;
-  }
-  // CRS visibly retreat before the scripted, prepaid arcade clearance.
-  // Casualty maths elsewhere remains unchanged.
-  if(t>.42){
-   const retreat=(t-.42)/.58;
-   for(const [i,o] of (this.enemy.officers||[]).entries()){
-    if(o.parent!==this.enemy.meshGroup)continue;
-    if(!o.userData.marseilleOrigin)
-     o.userData.marseilleOrigin={x:o.position.x,z:o.position.z,r:o.rotation.y};
-    const orig=o.userData.marseilleOrigin,side=i%2?-1:1;
-    o.position.x=orig.x+side*retreat*1.6;
-    o.position.z=orig.z-retreat*5.0;
-    o.rotation.y=orig.r+Math.PI*retreat;
+  for(const p of this.police){
+   const state=policeRetreat(p.i,t,p.origin);
+   p.started=state.started;
+   p.o.position.set(state.x,state.y,state.z);
+   p.o.rotation.y=state.yaw;
+   if(state.started){
+    const running=clamp01((t-2.48-p.i*.03)/.7);
+    for(const l of p.limbs){
+     const swing=Math.sin(state.phase)*l.side;
+     l.bone.rotation.x+=(l.knee?Math.max(0,-swing)*.9:swing*(l.arm?-.42:.64))*running;
+    }
+    // The fallback officers have explicit articulated limb groups.
+    p.o.userData.marseilleRetreat=true;
    }
   }
-  if(t>=1){
-   const enemy=this.enemy;
-   this.clear({restorePolice:false});
-   if(this.game.state==='fighting'&&this.game.fightingEnemy===enemy){
-    enemy.remainingCount=0;
-    this.game.fightElapsed=Math.max(this.game.fightElapsed,this.game.minFightDuration);
-    this.game.fightTimer=this.game.fightInterval;
-    this.game.updateFight(.001);
+  for(let i=0;i<this.puffs.length;i++){
+   const p=this.puffs[i],actor=this.actors[(i*7)%this.actors.length];
+   p.age+=delta;
+   if(p.age<0)continue;
+   if(p.age>p.life){
+    if(t>6.9||!actor.model.visible){p.sprite.material.opacity=0;continue;}
+    p.age=0;
+    p.sprite.position.copy(actor.model.position);
+    p.sprite.position.x+=Math.sin(i*4.1)*.7;p.sprite.position.y=.45+(i%3)*.35;
    }
+   const a=p.age/p.life;
+   if(t<.35 || !actor.model.visible){p.sprite.material.opacity=0;continue;}
+   p.sprite.position.x+=Math.sin(i*3.7)*delta*.35;
+   p.sprite.position.y+=delta*.55;p.sprite.position.z+=delta*.15;
+   p.sprite.scale.setScalar(.3+a*1.8);
+   p.sprite.material.opacity=Math.sin(a*Math.PI)*.23*clamp01((8.3-t)/1.1);
+  }
+  if(t>=RUSH_SECONDS)this.finish();
+ }
+ finish(){
+  const g=this.game,enemy=this.enemy;
+  this.clear({restorePolice:false});
+  if(g.state==='fighting'&&g.fightingEnemy===enemy){
+   enemy.remainingCount=0;
+   g.fightElapsed=Math.max(g.fightElapsed,g.minFightDuration);
+   g.fightTimer=g.fightInterval;
+   g.updateFight(.001);
   }
  }
  clear({restorePolice=true}={}){
-  if(restorePolice && this.enemy?.officers){
-   for(const o of this.enemy.officers){
-    const orig=o.userData.marseilleOrigin;
-    if(!orig)continue;
-    o.position.x=orig.x;o.position.z=orig.z;o.rotation.y=orig.r;
-    delete o.userData.marseilleOrigin;
-   }
+  this.generation++;
+  for(const p of this.police){
+   delete p.o.userData.marseilleOrigin;delete p.o.userData.marseilleRetreat;
+   if(restorePolice){
+    p.parent.add(p.o);p.o.position.copy(p.local);p.o.rotation.copy(p.rotation);p.o.scale.copy(p.scale);
+   }else {p.o.visible=false;p.o.removeFromParent();} // After their complete on-screen escape.
   }
-  this.active=false;this.pending=false;
-  for(const {model,rig} of this.actors){
-   model.parent?.remove(model);
-   if(rig)rig.dispose();
-   else disposeCharacterModel3D(model);
-  }
+  this.police=[];
+  for(const actor of this.actors)disposeMarseilleSprite(actor);
   this.actors=[];
-  for(const p of this.puffs||[])p.parent?.remove(p);
-  this.puffs=[];
-  this.puffGeo?.dispose();this.puffGeo=null;
-  for(const mat of this.puffMat||[])mat.dispose();
-  this.puffMat=[];
-  this.enemy=null;this.elapsed=0;
+  for(const p of this.puffs){p.sprite.removeFromParent();p.sprite.material.dispose();}
+  this.puffs=[];this.smokeTexture?.dispose();this.smokeTexture=null;
+  this.active=false;this.pending=false;this.enemy=null;this.elapsed=0;this.impactPulse=0;
   this.showButton();
  }
 }

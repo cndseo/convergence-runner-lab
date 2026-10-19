@@ -1,0 +1,54 @@
+
+> count-master-game@1.0.0 test
+> node --test tests/*.test.mjs
+
+(node:40868) [MODULE_TYPELESS_PACKAGE_JSON] Warning: Module type of file:///C:/CITYOS/convergence-marseille-2d/prototype/convergence/src/challengeHub.js is not specified and it doesn't parse as CommonJS.
+Reparsing as ES module because module syntax was detected. This incurs a performance overhead.
+To eliminate this warning, add "type": "module" to \\?\C:\CITYOS\convergence-marseille-2d\prototype\convergence\package.json.
+(Use `node --trace-warnings ...` to show where the warning was created)
+Ô£ö prices exactly match approved Ôé¼1.99 per character and Ôé¼2.99 per Marseille intervention (1.9094ms)
+Ô£ö paid characters are visual only, and all boosters are campaign-only consumables (0.5246ms)
+Ô£ö real first level is challenging yet has a substantial fraction of winning choices (9.8973ms)
+Ô£ö every real saved-level seed is certified across levels and upgraded crowds (1298.4122ms)
+Ô£ö certified path stays alive after each choice and each line of police (4.7265ms)
+Ô£ö alternate level seeds and long-term levels remain certified (46.0877ms)
+(node:13992) [MODULE_TYPELESS_PACKAGE_JSON] Warning: Module type of file:///C:/CITYOS/convergence-marseille-2d/prototype/convergence/src/characterModels3D.js is not specified and it doesn't parse as CommonJS.
+Reparsing as ES module because module syntax was detected. This incurs a performance overhead.
+To eliminate this warning, add "type": "module" to \\?\C:\CITYOS\convergence-marseille-2d\prototype\convergence\package.json.
+(Use `node --trace-warnings ...` to show where the warning was created)
+Ô£ö approved Spider-Man costume is articulated 3D, not a flat billboard (9.0231ms)
+Ô£ö dinosaur inflatable has depth, open mouth, eyes, feet and flexible tail (2.4171ms)
+Ô£ö 12 distinct Marseille actors contain no Sprite or image planes, all rigged for walking (6.4018ms)
+Ô£ö combat choreography transitions and recoveries are deterministic (0.9327ms)
+Ô£ö no payments enabled by default, empty daily ranking, and profiles are anonymous (71.3517ms)
+Ô£ö leaderboard validates all 10 choices on server, does not trust client score (77.1621ms)
+Ô£ö Stripe checkout uses fixed EUR catalog and grants only via verified paid webhook (77.008ms)
+Ô£ö one UTC daily seed shared across locales and changing at midnight UTC (2.3488ms)
+Ô£ö identical daily plans at same date with exactly 10 portals, proved winning (26.5783ms)
+Ô£ö forged or incomplete score submissions cannot be accepted (0.2924ms)
+Ô£ö share text displays score but not winning route or private data (0.5139ms)
+Ô£ö LBD shots can originate far from the player (1.0585ms)
+Ô£ö high velocity bullets cannot tunnel through a moving target sphere (0.4279ms)
+Ô£ö injury categories are defined and deterministic (0.351ms)
+Ô£ö support routes enter from three directions, never teleport, and exit at different times (18.2078ms)
+Ô£ö CRS react progressively, retreat continuously, and keep moving off the road (0.6263ms)
+Ô£ö real Stripe webhook grants 1/3/10 charges idempotently; one trigger consumes one (606.6365ms)
+Ô£ö intro speech happens before escape and shelter phases (0.7387ms)
+Ô£ö character cannot be caught at any non-final level or before the last CRS front falls (0.173ms)
+Ô£ö last-level contact is possible, but requires real proximity (0.1121ms)
+Ô£ö gate feedback shows exact population and protection deltas (1.4441ms)
+Ô£ö barriers and conditions explain facts without revealing optimal choices (0.9315ms)
+Ô£ö crowd cap is not mistaken for a full numeric bonus (0.2212ms)
+Ô£ö loss report distinguishes sources and provides grounded guidance (0.3437ms)
+Ô£ö victory stars are cosmetic and only count actual survivors (0.1754ms)
+Ô£ö arithmetic, rounding, conditions and shield consumption (1.6314ms)
+Ô£ö 800 generated levels: witness wins, losing routes exist, greedy loses (538.518ms)
+Ô£ö same configuration reproduces the same puzzle (1.9104ms)
+Ôä╣ tests 34
+Ôä╣ suites 0
+Ôä╣ pass 34
+Ôä╣ fail 0
+Ôä╣ cancelled 0
+Ôä╣ skipped 0
+Ôä╣ todo 0
+Ôä╣ duration_ms 1445.4609

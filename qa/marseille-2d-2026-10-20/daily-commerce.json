@@ -1,0 +1,182 @@
+{
+  "checks": [
+    {
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "type": "start",
+      "initial": {
+        "mode": "daily",
+        "level": 1,
+        "date": "2026-10-19",
+        "seed": 3080998610,
+        "actualSeed": 3080998610,
+        "count": 5,
+        "strength": 1,
+        "hasTenGates": true,
+        "payments": false,
+        "api": false,
+        "hideHub": true,
+        "campaignBackup": 1
+      }
+    },
+    {
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "type": "win",
+      "win": {
+        "state": "win",
+        "mode": "daily",
+        "level": 1,
+        "coins": 0,
+        "frames": 671,
+        "history": 10,
+        "sidePath": [
+          "right",
+          "left",
+          "left",
+          "right",
+          "right",
+          "left",
+          "right",
+          "right",
+          "left",
+          "right"
+        ],
+        "earned": 31,
+        "actual": 31,
+        "wins": true,
+        "best": 31,
+        "hubVisible": true,
+        "title": "DÉFI RÉUSSI"
+      }
+    },
+    {
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "type": "back",
+      "back": {
+        "mode": "campaign",
+        "level": 1,
+        "coins": 0,
+        "state": "menu",
+        "hubVisible": false
+      }
+    },
+    {
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "type": "premium",
+      "premium": {
+        "count": 5,
+        "disabled": true,
+        "labels": [
+          "1,99 €",
+          "1,99 €",
+          "2,99 €",
+          "8,97 €",
+          "29,90 €"
+        ],
+        "message": "Paiements désactivés. Le bouton TESTER permet de voir les personnages dans le prototype, sans achat.",
+        "heading": "PERSONNAGES ET RENFORTS"
+      }
+    },
+    {
+      "viewport": {
+        "width": 320,
+        "height": 700
+      },
+      "type": "start",
+      "initial": {
+        "mode": "daily",
+        "level": 1,
+        "date": "2026-10-19",
+        "seed": 3080998610,
+        "actualSeed": 3080998610,
+        "count": 5,
+        "strength": 1,
+        "hasTenGates": true,
+        "payments": false,
+        "api": false,
+        "hideHub": true,
+        "campaignBackup": 1
+      }
+    },
+    {
+      "viewport": {
+        "width": 320,
+        "height": 700
+      },
+      "type": "win",
+      "win": {
+        "state": "win",
+        "mode": "daily",
+        "level": 1,
+        "coins": 0,
+        "frames": 671,
+        "history": 10,
+        "sidePath": [
+          "right",
+          "left",
+          "left",
+          "right",
+          "right",
+          "left",
+          "right",
+          "right",
+          "left",
+          "right"
+        ],
+        "earned": 31,
+        "actual": 31,
+        "wins": true,
+        "best": 31,
+        "hubVisible": true,
+        "title": "DÉFI RÉUSSI"
+      }
+    },
+    {
+      "viewport": {
+        "width": 320,
+        "height": 700
+      },
+      "type": "back",
+      "back": {
+        "mode": "campaign",
+        "level": 1,
+        "coins": 0,
+        "state": "menu",
+        "hubVisible": false
+      }
+    },
+    {
+      "viewport": {
+        "width": 320,
+        "height": 700
+      },
+      "type": "premium",
+      "premium": {
+        "count": 5,
+        "disabled": true,
+        "labels": [
+          "1,99 €",
+          "1,99 €",
+          "2,99 €",
+          "8,97 €",
+          "29,90 €"
+        ],
+        "message": "Paiements désactivés. Le bouton TESTER permet de voir les personnages dans le prototype, sans achat.",
+        "heading": "PERSONNAGES ET RENFORTS"
+      }
+    }
+  ],
+  "errors": [],
+  "base": "https://fire-chat-likewise-convertible.trycloudflare.com/convergence-runner-lab/convergence/"
+}

@@ -214,6 +214,8 @@ export class ChallengeHub {
     if(this.paymentsEnabled && !owned && !this.game.qa)return;
     const game=this.game;
     game.activeCostume=id;
+    // An explicitly selected new preview starts its own single-run allowance.
+    game.demoCostumeConsumed=false;
     game.demoCostumeOnce=!owned;
     game.mode='campaign';
     game.ui.hideAllScreens();

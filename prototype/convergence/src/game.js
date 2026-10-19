@@ -355,14 +355,15 @@ export class Game {
             const enter = Math.min(1, this.fightCameraTime / .82);
             const pressure = this.fightingEnemy?.count
                 ? 1 - this.fightingEnemy.remainingCount / this.fightingEnemy.count : 0;
-            const pulse = this.combatChoreo?.impactPulse || 0;
+            const pulse = Math.max(this.combatChoreo?.impactPulse || 0, this.marseille?.impactPulse || 0);
             const shakeX = Math.sin(this.fightCameraTime * 27) * .075 * pulse;
             const shakeY = Math.cos(this.fightCameraTime * 23) * .045 * pulse;
+            const supportFrame=this.marseille?.active ? .65 : 0;
             this.fightCameraTarget ??= new THREE.Vector3();
             this.fightCameraTarget.set(
                 this.playerX * .29 + .75 * enter + shakeX,
-                6.3 - 1.15 * enter + .12 * pressure + shakeY,
-                -this.trackZ + 8.4 - .95 * enter + .1 * pressure
+                6.3 - 1.15 * enter + .12 * pressure + shakeY + supportFrame,
+                -this.trackZ + 8.4 - .95 * enter + .1 * pressure + supportFrame
             );
             this.camera.position.lerp(this.fightCameraTarget, Math.min(1, delta * 6.5));
             this.camera.lookAt(this.playerX * .28, 1.0, -this.trackZ - .9);
