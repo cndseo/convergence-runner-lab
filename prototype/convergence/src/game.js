@@ -462,6 +462,7 @@ export class Game {
             if (Math.abs(playerZ - enemyZ) < 2.0) {
                 // Start fight - switch to fighting state
                 this.state = 'fighting';
+                this.audio.playCombatVoice?.();
                 this.fightingEnemy = enemy;
                 this.fightingEnemy.remainingCount = enemy.count;
                 this.fightTimer = -0.44; // Approach and shield-ready before the first exchange
@@ -575,6 +576,7 @@ export class Game {
 
         // Start boss fight in fighting mode
         this.state = 'fighting';
+        this.audio.playCombatVoice?.();
         this.audio.playBossAppear();
         this.ui.screenShake(12);
         this.fightCameraTime = 0;
@@ -621,6 +623,7 @@ export class Game {
         if (this.state === 'win' || this.state === 'lose') return;
         this.combatChoreo?.dispose();
         this.combatChoreo=null;
+        this.audio.stopCombatVoice?.();
         this.state = 'lose';
         const earnedCoins = Math.floor(this.level * 2);
         this.coins += earnedCoins;

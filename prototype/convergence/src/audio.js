@@ -47,6 +47,38 @@ export class AudioManager {
     pauseAudio(){ return this.ctx?.suspend(); }
     resumeAudio(){ return this.ctx?.resume(); }
 
+    // Optional supplied recording during combat; gracefully skip if absent.
+    async preloadCombatVoice(){
+        if(this.combatVoiceBuffer||this.combatVoiceLoading)return this.combatVoiceLoading;
+        if(!this.initialized)this.init();
+        this.combatVoiceLoading=(async()=>{
+            try{
+                const url=import.meta.env.BASE_URL+'assets/audio/pourquoi-tu-me-frappe.ogg';
+                const response=await fetch(url);
+                if(!response.ok)throw new Error('combat recording not installed');
+                this.combatVoiceBuffer=await this.ctx.decodeAudioData(await response.arrayBuffer());
+            }catch(error){this.combatVoiceBuffer=null;}
+        })();
+        return this.combatVoiceLoading;
+    }
+    playCombatVoice(){
+        if(!this.ctx||this.ctx.state!=='running')return;
+        if(!this.combatVoiceBuffer){this.preloadCombatVoice();return;}
+        if(this.combatVoiceNode)return;
+        const source=this.ctx.createBufferSource();
+        const gain=this.ctx.createGain();
+        source.buffer=this.combatVoiceBuffer;
+        gain.gain.value=.46;
+        source.connect(gain);gain.connect(this.sfxGain);
+        this.combatVoiceNode=source;
+        source.onended=()=>{if(this.combatVoiceNode===source)this.combatVoiceNode=null;};
+        source.start();
+    }
+    stopCombatVoice(){
+        try{this.combatVoiceNode?.stop();}catch{}
+        this.combatVoiceNode=null;
+    }
+
     // ============ BACKGROUND MUSIC ============
     startMusic() {
         if (!this.initialized) this.init();
