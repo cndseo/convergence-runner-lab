@@ -123,12 +123,13 @@ export class CrowdManager {
         return group;
     }
 
-    addToPlayerCrowd(amount) {
+    addToPlayerCrowd(amount, faction=null) {
         const startIndex = this.playerCount;
         this.playerCount += amount;
 
         for (let i = 0; i < amount; i++) {
             this.addStickmanToGroup(startIndex + i);
+            if(faction)this.playerStickmen.at(-1).userData.bonusFaction=faction;
         }
         // Gate reinforcements must also become skinned walkers / LOD sprites.
         // Previously newly recruited citizens stayed as geometric placeholders.

@@ -1,5 +1,7 @@
 import * as THREE from 'three';
 import { gateLabel } from './tactics.mjs';
+import { bonusFaction } from './bonusGates.mjs';
+import { makeBonusArtwork } from './bonusGateArt.js';
 import { makeVan, makeOfficer } from './characters.js';
 import { upgradeBossVan } from './bossAssets.js';
 import { upgradeBravMotorcycle } from './motorcycleAssets.js';
@@ -7,6 +9,7 @@ import { upgradePoliceOfficer } from './policeAssets.js';
 
 const colors={blue:[0x118bea,0x68efff],red:[0xe7334b,0xff9873],gold:[0xffac19,0xfff097],purple:[0x7944e5,0xefa8ff]};
 export function createArcadeGate(data,x,z,scene,tracked) {
+ const faction=bonusFaction(data);
  const label=gateLabel(data),[base,glow]=colors[label.tone];
  const root=new THREE.Group();root.position.set(x,0,-z);root.userData.dynamic=true;
  const shell=new THREE.MeshStandardMaterial({color:base,roughness:.27,metalness:.25});
@@ -43,6 +46,10 @@ export function createArcadeGate(data,x,z,scene,tracked) {
  const map=new THREE.CanvasTexture(c);map.colorSpace=THREE.SRGBColorSpace;
  const badge=new THREE.Mesh(new THREE.PlaneGeometry(3.95,1.97),new THREE.MeshBasicMaterial({map,transparent:true,depthWrite:false}));
  badge.position.set(0,hazard?3.35:2.92,.28);root.add(badge);
+ if(faction){
+  badge.visible=false;
+  makeBonusArtwork(data,faction,root);
+ }
  const pad=new THREE.Mesh(new THREE.PlaneGeometry(4.1,2),new THREE.MeshBasicMaterial({color:base,transparent:true,opacity:.16,depthWrite:false}));
  pad.rotation.x=-Math.PI/2;pad.position.set(0,.07,.15);root.add(pad);
  if(hazard){

@@ -9,6 +9,7 @@ import { preloadMotorcycle } from './motorcycleAssets.js';
 import { preloadRunnerHumanoid } from './humanoidAssets.js';
 import { CombatChoreography } from './combatChoreography.js';
 import { LBDSystem } from './lbdSystem.js';
+import { GenzFireworks } from './genzFireworks.js';
 
 // Forward movement calibrated for a walking demonstration, not a sprint.
 const MARCH_SPEED = 3.0;
@@ -90,6 +91,7 @@ export class Game {
         this.levelGenerator = new LevelGenerator(this.scene, this);
         this.audio = new AudioManager();
         this.lbdSystem = new LBDSystem(this);
+        this.genzFireworks = new GenzFireworks(this);
         // Warm the shared CC0 asset caches while the user views the menu.
         Promise.allSettled([preloadRunnerHumanoid(),preloadPoliceHumanoid(),preloadMotorcycle()]);
         this.animate();
@@ -242,6 +244,7 @@ export class Game {
 
     clearLevel() {
         this.lbdSystem?.clear();
+        this.genzFireworks?.clear();
         this.combatChoreo?.dispose();
         this.combatChoreo=null;
         // Remove all dynamic objects
@@ -270,6 +273,7 @@ export class Game {
         this.levelGenerator.updateVisibility(this.trackZ);
         if(this.state!=='paused')updatePoliceAnimations(delta);
         this.lbdSystem?.update(delta);
+        this.genzFireworks?.update(delta);
         if (this.state === 'boss_defeated') {
             this.crowdManager.update(delta);
             this.combatChoreo?.step(delta);
@@ -383,7 +387,14 @@ export class Game {
         const after = applyChoice(before, gateData);
         this.shields = after.shields;
         const change = after.count - before.count;
-        if (change > 0) this.crowdManager.addToPlayerCrowd(change);
+        if (change > 0) {
+            this.crowdManager.addToPlayerCrowd(change,gateData.bonusFaction);
+            if(gateData.bonusFaction){
+                const added=this.crowdManager.playerStickmen.slice(-change);
+                for(const runner of added)runner.userData.bonusFaction=gateData.bonusFaction;
+                if(gateData.bonusFaction==='genz')this.genzFireworks?.addGenz(change);
+            }
+        }
         if (change < 0) this.crowdManager.removeFromPlayerCrowd(-change);
         const guard = after.shields - before.shields;
         if (change || guard) {

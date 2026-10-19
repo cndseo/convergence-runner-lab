@@ -110,16 +110,16 @@ export function generateTacticalLevel({ level = 1, seed = 1, startCount = 5, str
     // Linked choices: protection is an investment; smaller groups can qualify
     // for later conditional recruitment. No "always take the larger number".
     const pairs = [
-      [{ op: '+', value: n(8, 13) }, { op: '*', value: 2 }],
-      [{ op: 'shield', value: n(10, 18) }, { op: '+', value: n(7, 13) }],
+      [{ op: '+', value: 10 }, { op: '*', value: 2 }],
+      [{ op: 'shield', value: n(10, 18) }, { op: '+', value: 5 }],
       [damage('barrier', n(10, 17)), damage('bravm', n(28, 42), true)],
       [{ op: '/', value: 2 }, { op: '-', value: n(3, 8) }],
       [{ op: 'conditional', condition: 'atMost', threshold: n(10, 17), value: n(23, 32), elseValue: -5 }, { op: '%', value: 40 }],
       [{ op: '*', value: 2 }, { op: 'shield', value: n(14, 23) }],
       [damage('van', n(15, 24)), damage('debris', n(35, 50), true)],
       [{ op: '%', value: 50 }, { op: 'conditional', condition: 'shield', threshold: 8, value: n(22, 32), elseValue: -4 }],
-      [{ op: '+', value: n(9, 16) }, { op: 'shield', value: n(11, 19) }],
-      [{ op: 'conditional', condition: 'atLeast', threshold: n(30, 44), value: n(12, 20), elseValue: -8 }, { op: '%', value: 25 }]
+      [{ op: '+', value: 10 }, { op: 'shield', value: n(11, 19) }],
+      [{ op: '+', value: 5 }, { op: '%', value: 25 }]
     ];
     const events = [];
     pairs.forEach((pair, i) => {

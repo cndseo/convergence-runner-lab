@@ -98,7 +98,7 @@ export function attachAnimatedHumanoid(crowd) {
     runner.userData.impostor=true;runner.userData.lowDetail=true;
     runner.children.forEach(c=>{c.visible=false;});
    }else{
-    const human=createWalkingHumanoid(gltf,index);
+    const human=createWalkingHumanoid(gltf,index,runner.userData.bonusFaction||FACTIONS[index%6]);
     runner.children.forEach(c=>{c.visible=false;});
     runner.add(human.model);runner.userData.realHumanoid=human;
    }
@@ -133,7 +133,8 @@ export function updateAnimatedHumanoids(crowd,dt) {
   imp.matrix.position.set(runner.position.x,(realisticEnabled?CHARACTER_ATLAS.centerY:1.24)+runner.position.y,runner.position.z);
   imp.matrix.scale.copy(runner.scale);imp.matrix.updateMatrix();
   imp.mesh.setMatrixAt(n,imp.matrix.matrix);
-  imp.rows[n]=realisticEnabled?realisticAtlasRow(i):i%6;imp.phases[n]=(i*3.17)%12;n++;
+  const factionIndex=FACTIONS.indexOf(runner.userData.bonusFaction);
+  imp.rows[n]=realisticEnabled?realisticAtlasRow(factionIndex>=0?factionIndex:i):factionIndex>=0?factionIndex:i%6;imp.phases[n]=(i*3.17)%12;n++;
   if(imp.smoke&&realisticAtlasRow(i)===4){
    for(let puff=0;puff<12&&smokeCount<256;puff++){
     const phase=(imp.time.value*.55+puff/12+i*.17)%1,s=.07+phase*.39;
