@@ -4,6 +4,8 @@ import { clone as cloneSkeleton } from 'three/addons/utils/SkeletonUtils.js';
 import { createApprovedLeader, showWalkingLegs } from './approvedLeader.js';
 import { dressFaction, FACTIONS } from './factionOutfits.js';
 import { createRealisticWalker, realisticAtlasRow } from './realisticHumanoids.js';
+import {CHARACTER_ATLAS} from './characterCatalog.mjs';
+import {createGreenSmoke} from './referenceOutfits.js';
 
 const loader=new GLTFLoader();
 const maxAnimated=window.innerWidth<600?12:20;
@@ -40,7 +42,7 @@ function getAtlas() {
  return atlas;
 }
 function createImpostors(crowd) {
- const geometry=new THREE.PlaneGeometry(1.92,2.64);
+ const geometry=new THREE.PlaneGeometry(realisticEnabled?CHARACTER_ATLAS.planeWidth:1.92,realisticEnabled?CHARACTER_ATLAS.planeHeight:2.64);
  const rows=new Float32Array(256),phases=new Float32Array(256);
  geometry.setAttribute('factionRow',new THREE.InstancedBufferAttribute(rows,1));
  geometry.setAttribute('walkPhase',new THREE.InstancedBufferAttribute(phases,1));
@@ -50,25 +52,27 @@ function createImpostors(crowd) {
   shader.uniforms.walkTime=time;
   shader.vertexShader='attribute float factionRow; attribute float walkPhase; uniform float walkTime;\n'+shader.vertexShader;
   shader.vertexShader=shader.vertexShader.replace('#include <uv_vertex>',
-   '#include <uv_vertex>\nvMapUv.x = (uv.x + mod(floor(walkTime * 9.2 + walkPhase),12.0))/12.0;\nvMapUv.y = (uv.y + '+(realisticEnabled?'11.0':'5.0')+'-factionRow)/'+(realisticEnabled?'12.0':'6.0')+';');
+   '#include <uv_vertex>\nvMapUv.x = (uv.x + mod(floor(walkTime * 9.2 + walkPhase),12.0))/12.0;\nvMapUv.y = (uv.y + '+(realisticEnabled?(CHARACTER_ATLAS.rows-1).toFixed(1):'5.0')+'-factionRow)/'+(realisticEnabled?CHARACTER_ATLAS.rows.toFixed(1):'6.0')+';');
  };
  const mesh=new THREE.InstancedMesh(geometry,material,rows.length);
  mesh.frustumCulled=false;mesh.count=0;mesh.userData.sharedHumanoidAsset=true;
  crowd.playerGroup.add(mesh);
  const matrix=new THREE.Object3D();
- crowd.impostors={mesh,time,rows,phases,geometry,matrix};
+ const smoke=realisticEnabled?createGreenSmoke(256):null;
+ if(smoke){smoke.count=0;crowd.playerGroup.add(smoke);}
+ crowd.impostors={mesh,time,rows,phases,geometry,matrix,smoke};
 }
 async function upgradeToRealistic(crowd,runner,index,group){
  try{
   const replacement=await createRealisticWalker(index);
   if(crowd.playerGroup!==group||runner.parent!==group){
-   replacement.mixer.stopAllAction();replacement.mixer.uncacheRoot(replacement.model);
+   replacement.mixer.stopAllAction();replacement.mixer.uncacheRoot(replacement.model);replacement.dispose?.();
    replacement.model.traverse(n=>{if(n.isSkinnedMesh)n.skeleton?.dispose();});
    return;
   }
   const old=runner.userData.realHumanoid;
   if(!old||runner.userData.realisticAvatar)return;
-  old.mixer.stopAllAction();old.mixer.uncacheRoot(old.model);
+  old.mixer.stopAllAction();old.mixer.uncacheRoot(old.model);old.dispose?.();
   old.model.traverse(n=>{if(n.isSkinnedMesh)n.skeleton?.dispose();});
   runner.remove(old.model);
   runner.add(replacement.model);
@@ -116,29 +120,39 @@ export function attachAnimatedHumanoid(crowd) {
 export function updateAnimatedHumanoids(crowd,dt) {
  for(const runner of crowd.playerStickmen){
   runner.userData.realHumanoid?.mixer.update(dt);
+  runner.userData.realHumanoid?.update?.(dt);
   if(runner.userData.approvedLeader)runner.userData.approvedLeader.time.value+=dt;
  }
  const imp=crowd.impostors;if(!imp)return;
  imp.time.value+=dt;
- let n=0;
+ let n=0,smokeCount=0;
  for(const runner of crowd.playerStickmen){
   if(!runner.userData.impostor)continue;
   if(n>=imp.rows.length)break;
   const i=runner.userData.index;
-  imp.matrix.position.set(runner.position.x,1.24+runner.position.y,runner.position.z);
+  imp.matrix.position.set(runner.position.x,(realisticEnabled?CHARACTER_ATLAS.centerY:1.24)+runner.position.y,runner.position.z);
   imp.matrix.scale.copy(runner.scale);imp.matrix.updateMatrix();
   imp.mesh.setMatrixAt(n,imp.matrix.matrix);
   imp.rows[n]=realisticEnabled?realisticAtlasRow(i):i%6;imp.phases[n]=(i*3.17)%12;n++;
+  if(imp.smoke&&realisticAtlasRow(i)===4){
+   for(let puff=0;puff<12&&smokeCount<256;puff++){
+    const phase=(imp.time.value*.55+puff/12+i*.17)%1,s=.07+phase*.39;
+    imp.matrix.position.set(runner.position.x+.40+Math.sin(puff*2.4+imp.time.value*.6)*phase*.13+.15*phase,runner.position.y+1.91+phase*.72,runner.position.z+.03+phase*.06);
+    imp.matrix.scale.set(s*1.3,s,1);imp.matrix.rotation.z=puff*.73+imp.time.value*.15;imp.matrix.updateMatrix();
+    imp.smoke.setMatrixAt(smokeCount++,imp.matrix.matrix);
+   }imp.matrix.rotation.set(0,0,0);
+  }
  }
+ if(imp.smoke){imp.smoke.count=smokeCount;imp.smoke.instanceMatrix.needsUpdate=true;imp.smoke.material.uniforms.time.value=imp.time.value;}
  imp.mesh.count=n;imp.mesh.instanceMatrix.needsUpdate=true;
  imp.geometry.attributes.factionRow.needsUpdate=true;imp.geometry.attributes.walkPhase.needsUpdate=true;
 }
 export function clearHumanoids(crowd) {
  for(const runner of crowd.playerStickmen){
   const human=runner.userData.realHumanoid;
-  if(human){human.mixer.stopAllAction();human.mixer.uncacheRoot(human.model);
+  if(human){human.mixer.stopAllAction();human.mixer.uncacheRoot(human.model);human.dispose?.();
    human.model.traverse(n=>{if(n.isSkinnedMesh)n.skeleton?.dispose();if(n.userData.ownedLeaderGeometry){n.geometry.dispose();n.material.dispose();}});
   }
  }
- if(crowd.impostors){crowd.impostors.geometry.dispose();crowd.impostors.mesh.material.dispose();crowd.impostors=null;}
+ if(crowd.impostors){crowd.impostors.geometry.dispose();crowd.impostors.mesh.material.dispose();crowd.impostors.smoke?.geometry.dispose();crowd.impostors.smoke?.material.dispose();crowd.impostors=null;}
 }

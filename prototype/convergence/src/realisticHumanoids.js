@@ -3,17 +3,9 @@ import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 import { MeshoptDecoder } from 'three/addons/libs/meshopt_decoder.module.js';
 import { clone as cloneSkeleton } from 'three/addons/utils/SkeletonUtils.js';
 
-export const REALISTIC_FACTIONS = ['gilets','genz','lyceens','pompiers','infirmieres','agriculteurs'];
-// 12 genuinely different skinned bodies. Original artwork and gameplay stay unchanged.
-// Each pair has the same semantic role; genders and clothing differ by asset.
-export const REALISTIC_ROSTER = {
-  gilets: ['construction-female-01','construction-male-01'],
-  genz: ['male-adult-07','female-adult-05'],
-  lyceens: ['female-adult-12','male-adult-04'],
-  pompiers: ['fire-female-01','fire-male-01'],
-  infirmieres: ['medical-female-02','medical-male-01'],
-  agriculteurs: ['gardener-male-01','male-adult-10'],
-};
+import {CHARACTER_STYLES, characterStyle, characterRow} from './characterCatalog.mjs';
+import {dressReferenceWalker, disposeReferenceOutfit, prepareReferenceTextures} from './referenceOutfits.js';
+export {CHARACTER_STYLES};
 const loader = new GLTFLoader().setMeshoptDecoder(MeshoptDecoder);
 const cache = new Map();
 const assetUrl = id => import.meta.env.BASE_URL + 'assets/realistic/' + id + '.glb';
@@ -25,18 +17,12 @@ function getAsset(id) {
   return cache.get(id);
 }
 export function selectRealisticAvatar(index) {
-  const faction = REALISTIC_FACTIONS[index%6];
-  const variation = Math.floor(index/6)%2;
-  const id=REALISTIC_ROSTER[faction][variation];
-  return { id,faction,sex:id.includes('female')?'f':'m',variation };
+ const style=characterStyle(index);
+ return {...style,id:style.base,sex:style.base.includes('female')?'f':'m'};
 }
-export function realisticAtlasRow(index) {
-  // First six are variation 0, second six variation 1.
-  return index%12;
-}
-export async function preloadRealisticHumanoids() {
-  const ids=Object.values(REALISTIC_ROSTER).flat();
-  return Promise.all([...ids.map(getAsset),getAsset('f_walk_neutral_01'),getAsset('m_walk_neutral_01')]);
+export function realisticAtlasRow(index){return characterRow(index);}
+export async function preloadRealisticHumanoids(){
+ return Promise.all([...new Set(CHARACTER_STYLES.map(s=>s.base)),'f_walk_neutral_01','m_walk_neutral_01'].map(getAsset));
 }
 export async function createRealisticWalker(index, overrideId=null) {
   const spec = selectRealisticAvatar(index);
@@ -61,17 +47,24 @@ export async function createRealisticWalker(index, overrideId=null) {
   action.setLoop(THREE.LoopRepeat);
   action.setEffectiveTimeScale(.92);
   action.play();
-  action.time=(index%11)*.11;
+  action.time=0;
   mixer.update(.001);
   model.updateMatrixWorld(true);
   let bounds=new THREE.Box3().setFromObject(model);
   const height=bounds.getSize(new THREE.Vector3()).y;
   if(!Number.isFinite(height)||height<=.3)throw new Error('Invalid rig bounds for '+id+': '+height);
-  model.scale.setScalar(1.68/height);
+  model.scale.setScalar(spec.height/height);
   model.updateMatrixWorld(true);
   bounds=new THREE.Box3().setFromObject(model);
   const center=bounds.getCenter(new THREE.Vector3());
   model.position.set(-center.x,-bounds.min.y,-center.z);
   model.updateMatrixWorld(true);
-  return {model,mixer,action,animation:'Walk',duration:clip.duration,id,sex};
+  await prepareReferenceTextures();
+  const outfit=dressReferenceWalker(model,spec);
+  // Body width varies after attachments are fitted in metres; no P02 alteration.
+  model.scale.x*=spec.width;
+  const update=(dt,absolute)=>outfit.update(dt,absolute);
+  mixer.setTime((index%11)*.11);update(0);
+  const dispose=()=>disposeReferenceOutfit(model);
+  return {model,mixer,action,animation:'Walk',duration:clip.duration,id:spec.key,sourceId:id,sex,update,dispose};
 }

@@ -1,0 +1,581 @@
+﻿{
+    "checkedAt":  "2026-10-19T15:56:56.4735556+02:00",
+    "baseCommit":  "d10ef61",
+    "branch":  "feature/reference-characters-v2",
+    "source":  "Chrome on GMK K12",
+    "testStatus":  "passed",
+    "unitTests":  {
+                      "configurations":  800,
+                      "failed":  0,
+                      "passed":  3
+                  },
+    "productionBuild":  {
+                            "status":  "passed",
+                            "warning":  "bundle size above 500 kB (non-blocking)"
+                        },
+    "p02":  "approved leader unchanged",
+    "characters":  {
+                       "base":  "http://127.0.0.1:4318/convergence-runner-lab/convergence/",
+                       "testedAt":  "2026-10-19T13:46:06.569Z",
+                       "errors":  [
+
+                                  ],
+                       "http":  [
+
+                                ],
+                       "checks":  [
+                                      {
+                                          "reinforcements":  {
+                                                                 "count":  85,
+                                                                 "rigged":  12,
+                                                                 "impostors":  73,
+                                                                 "atlasRows":  [
+                                                                                   0,
+                                                                                   1,
+                                                                                   2,
+                                                                                   3,
+                                                                                   4,
+                                                                                   5,
+                                                                                   6,
+                                                                                   7,
+                                                                                   8,
+                                                                                   9,
+                                                                                   10,
+                                                                                   11,
+                                                                                   12
+                                                                               ],
+                                                                 "fps":  32,
+                                                                 "p95FrameMs":  32,
+                                                                 "drawCalls":  308
+                                                             }
+                                      },
+                                      {
+                                          "animation":  {
+                                                            "flag":  true,
+                                                            "smoke":  true
+                                                        }
+                                      },
+                                      {
+                                          "lossAndReinforcement":  "85 ÃƒÂ¢Ã¢â‚¬Â Ã¢â‚¬â„¢ 3 ÃƒÂ¢Ã¢â‚¬Â Ã¢â‚¬â„¢ 85 passed",
+                                          "pause":  "smoke frozen"
+                                      },
+                                      {
+                                          "visualCapture":  "roles-a",
+                                          "characters":  [
+                                                             {
+                                                                 "id":  "lyceen",
+                                                                 "walk":  "Walk",
+                                                                 "prop":  "lyceen"
+                                                             },
+                                                             {
+                                                                 "id":  "pompier",
+                                                                 "walk":  "Walk",
+                                                                 "prop":  "pompier"
+                                                             },
+                                                             {
+                                                                 "id":  "infirmiere",
+                                                                 "walk":  "Walk",
+                                                                 "prop":  "infirmiere"
+                                                             },
+                                                             {
+                                                                 "id":  "manifestante",
+                                                                 "walk":  "Walk",
+                                                                 "prop":  "manifestante"
+                                                             }
+                                                         ]
+                                      },
+                                      {
+                                          "visualCapture":  "roles-b",
+                                          "characters":  [
+                                                             {
+                                                                 "id":  "fumigene",
+                                                                 "walk":  "Walk",
+                                                                 "prop":  "fumigene"
+                                                             },
+                                                             {
+                                                                 "id":  "agriculteur",
+                                                                 "walk":  "Walk",
+                                                                 "prop":  "agriculteur"
+                                                             },
+                                                             {
+                                                                 "id":  "drapeau",
+                                                                 "walk":  "Walk",
+                                                                 "prop":  "drapeau"
+                                                             }
+                                                         ]
+                                      },
+                                      {
+                                          "visualCapture":  "gilets-a",
+                                          "characters":  [
+                                                             {
+                                                                 "id":  "gilet-rouge",
+                                                                 "walk":  "Walk",
+                                                                 "prop":  "gilet-rouge"
+                                                             },
+                                                             {
+                                                                 "id":  "gilet-blonde",
+                                                                 "walk":  "Walk",
+                                                                 "prop":  "gilet-blonde"
+                                                             },
+                                                             {
+                                                                 "id":  "gilet-bonnet",
+                                                                 "walk":  "Walk",
+                                                                 "prop":  "gilet-bonnet"
+                                                             }
+                                                         ]
+                                      },
+                                      {
+                                          "visualCapture":  "gilets-b",
+                                          "characters":  [
+                                                             {
+                                                                 "id":  "gilet-rousse",
+                                                                 "walk":  "Walk",
+                                                                 "prop":  "gilet-rousse"
+                                                             },
+                                                             {
+                                                                 "id":  "gilet-casquette",
+                                                                 "walk":  "Walk",
+                                                                 "prop":  "gilet-casquette"
+                                                             },
+                                                             {
+                                                                 "id":  "gilet-gris",
+                                                                 "walk":  "Walk",
+                                                                 "prop":  "gilet-gris"
+                                                             }
+                                                         ]
+                                      }
+                                  ]
+                   },
+    "mobile":  {
+                   "base":  "http://127.0.0.1:4318/convergence-runner-lab/convergence/",
+                   "cases":  [
+                                 {
+                                     "width":  390,
+                                     "height":  844,
+                                     "count":  5,
+                                     "rigged":  5,
+                                     "impostors":  0,
+                                     "approvedP02":  1,
+                                     "realistic":  4,
+                                     "uniqueModels":  4,
+                                     "animations":  [
+                                                        "Walk"
+                                                    ],
+                                     "fps":  32,
+                                     "p95FrameMs":  32,
+                                     "drawCalls":  282,
+                                     "triangles":  100045,
+                                     "overflow":  false,
+                                     "state":  "playing",
+                                     "shields":  0,
+                                     "proof":  {
+                                                   "winningPaths":  20,
+                                                   "totalPaths":  1024,
+                                                   "winningPath":  [
+                                                                       "right",
+                                                                       "left",
+                                                                       "right",
+                                                                       "right",
+                                                                       "left",
+                                                                       "left",
+                                                                       "left",
+                                                                       "left",
+                                                                       "right",
+                                                                       "right"
+                                                                   ],
+                                                   "greedyWins":  false,
+                                                   "minSurvivors":  3
+                                               }
+                                 },
+                                 {
+                                     "width":  390,
+                                     "height":  844,
+                                     "count":  50,
+                                     "rigged":  12,
+                                     "impostors":  38,
+                                     "approvedP02":  1,
+                                     "realistic":  11,
+                                     "uniqueModels":  11,
+                                     "animations":  [
+                                                        "Walk"
+                                                    ],
+                                     "fps":  32,
+                                     "p95FrameMs":  32,
+                                     "drawCalls":  332,
+                                     "triangles":  197179,
+                                     "overflow":  false,
+                                     "state":  "playing",
+                                     "shields":  0,
+                                     "proof":  {
+                                                   "winningPaths":  194,
+                                                   "totalPaths":  1024,
+                                                   "winningPath":  [
+                                                                       "right",
+                                                                       "right",
+                                                                       "right",
+                                                                       "right",
+                                                                       "left",
+                                                                       "left",
+                                                                       "right",
+                                                                       "right",
+                                                                       "left",
+                                                                       "right"
+                                                                   ],
+                                                   "greedyWins":  false,
+                                                   "minSurvivors":  1
+                                               }
+                                 },
+                                 {
+                                     "width":  320,
+                                     "height":  700,
+                                     "count":  5,
+                                     "rigged":  5,
+                                     "impostors":  0,
+                                     "approvedP02":  1,
+                                     "realistic":  4,
+                                     "uniqueModels":  4,
+                                     "animations":  [
+                                                        "Walk"
+                                                    ],
+                                     "fps":  32,
+                                     "p95FrameMs":  32,
+                                     "drawCalls":  282,
+                                     "triangles":  100045,
+                                     "overflow":  false,
+                                     "state":  "playing",
+                                     "shields":  0,
+                                     "proof":  {
+                                                   "winningPaths":  20,
+                                                   "totalPaths":  1024,
+                                                   "winningPath":  [
+                                                                       "right",
+                                                                       "left",
+                                                                       "right",
+                                                                       "right",
+                                                                       "left",
+                                                                       "left",
+                                                                       "left",
+                                                                       "left",
+                                                                       "right",
+                                                                       "right"
+                                                                   ],
+                                                   "greedyWins":  false,
+                                                   "minSurvivors":  3
+                                               }
+                                 },
+                                 {
+                                     "width":  320,
+                                     "height":  700,
+                                     "count":  50,
+                                     "rigged":  12,
+                                     "impostors":  38,
+                                     "approvedP02":  1,
+                                     "realistic":  11,
+                                     "uniqueModels":  11,
+                                     "animations":  [
+                                                        "Walk"
+                                                    ],
+                                     "fps":  32,
+                                     "p95FrameMs":  32,
+                                     "drawCalls":  332,
+                                     "triangles":  197179,
+                                     "overflow":  false,
+                                     "state":  "playing",
+                                     "shields":  0,
+                                     "proof":  {
+                                                   "winningPaths":  194,
+                                                   "totalPaths":  1024,
+                                                   "winningPath":  [
+                                                                       "right",
+                                                                       "right",
+                                                                       "right",
+                                                                       "right",
+                                                                       "left",
+                                                                       "left",
+                                                                       "right",
+                                                                       "right",
+                                                                       "left",
+                                                                       "right"
+                                                                   ],
+                                                   "greedyWins":  false,
+                                                   "minSurvivors":  1
+                                               }
+                                 }
+                             ],
+                   "errors":  [
+
+                              ],
+                   "failures":  [
+
+                                ],
+                   "testedAt":  "2026-10-19T13:56:01.499Z",
+                   "input":  "touch drag + pause/resume passed",
+                   "runtime":  {
+                                   "win":  {
+                                               "state":  "boss_defeated",
+                                               "count":  11,
+                                               "shields":  0,
+                                               "events":  10
+                                           },
+                                   "lose":  {
+                                                "state":  "lose",
+                                                "count":  0,
+                                                "shields":  0,
+                                                "events":  10
+                                            },
+                                   "verified":  "winning and greedy routes executed through live collisions and combat"
+                               }
+               },
+    "legacy":  {
+                   "base":  "http://127.0.0.1:4318/convergence-runner-lab/convergence/?visual=legacy",
+                   "cases":  [
+                                 {
+                                     "width":  390,
+                                     "height":  844,
+                                     "count":  5,
+                                     "rigged":  5,
+                                     "impostors":  0,
+                                     "approvedP02":  1,
+                                     "realistic":  0,
+                                     "uniqueModels":  0,
+                                     "animations":  [
+                                                        "Walk"
+                                                    ],
+                                     "fps":  32,
+                                     "p95FrameMs":  32,
+                                     "drawCalls":  324,
+                                     "triangles":  59517,
+                                     "overflow":  false,
+                                     "state":  "playing",
+                                     "shields":  0,
+                                     "proof":  {
+                                                   "winningPaths":  20,
+                                                   "totalPaths":  1024,
+                                                   "winningPath":  [
+                                                                       "right",
+                                                                       "left",
+                                                                       "right",
+                                                                       "right",
+                                                                       "left",
+                                                                       "left",
+                                                                       "left",
+                                                                       "left",
+                                                                       "right",
+                                                                       "right"
+                                                                   ],
+                                                   "greedyWins":  false,
+                                                   "minSurvivors":  3
+                                               }
+                                 },
+                                 {
+                                     "width":  390,
+                                     "height":  844,
+                                     "count":  50,
+                                     "rigged":  12,
+                                     "impostors":  38,
+                                     "approvedP02":  1,
+                                     "realistic":  0,
+                                     "uniqueModels":  0,
+                                     "animations":  [
+                                                        "Walk"
+                                                    ],
+                                     "fps":  32,
+                                     "p95FrameMs":  32,
+                                     "drawCalls":  466,
+                                     "triangles":  84493,
+                                     "overflow":  false,
+                                     "state":  "playing",
+                                     "shields":  0,
+                                     "proof":  {
+                                                   "winningPaths":  194,
+                                                   "totalPaths":  1024,
+                                                   "winningPath":  [
+                                                                       "right",
+                                                                       "right",
+                                                                       "right",
+                                                                       "right",
+                                                                       "left",
+                                                                       "left",
+                                                                       "right",
+                                                                       "right",
+                                                                       "left",
+                                                                       "right"
+                                                                   ],
+                                                   "greedyWins":  false,
+                                                   "minSurvivors":  1
+                                               }
+                                 },
+                                 {
+                                     "width":  320,
+                                     "height":  700,
+                                     "count":  5,
+                                     "rigged":  5,
+                                     "impostors":  0,
+                                     "approvedP02":  1,
+                                     "realistic":  0,
+                                     "uniqueModels":  0,
+                                     "animations":  [
+                                                        "Walk"
+                                                    ],
+                                     "fps":  32,
+                                     "p95FrameMs":  32,
+                                     "drawCalls":  324,
+                                     "triangles":  59517,
+                                     "overflow":  false,
+                                     "state":  "playing",
+                                     "shields":  0,
+                                     "proof":  {
+                                                   "winningPaths":  20,
+                                                   "totalPaths":  1024,
+                                                   "winningPath":  [
+                                                                       "right",
+                                                                       "left",
+                                                                       "right",
+                                                                       "right",
+                                                                       "left",
+                                                                       "left",
+                                                                       "left",
+                                                                       "left",
+                                                                       "right",
+                                                                       "right"
+                                                                   ],
+                                                   "greedyWins":  false,
+                                                   "minSurvivors":  3
+                                               }
+                                 },
+                                 {
+                                     "width":  320,
+                                     "height":  700,
+                                     "count":  50,
+                                     "rigged":  12,
+                                     "impostors":  38,
+                                     "approvedP02":  1,
+                                     "realistic":  0,
+                                     "uniqueModels":  0,
+                                     "animations":  [
+                                                        "Walk"
+                                                    ],
+                                     "fps":  32,
+                                     "p95FrameMs":  32,
+                                     "drawCalls":  466,
+                                     "triangles":  84493,
+                                     "overflow":  false,
+                                     "state":  "playing",
+                                     "shields":  0,
+                                     "proof":  {
+                                                   "winningPaths":  194,
+                                                   "totalPaths":  1024,
+                                                   "winningPath":  [
+                                                                       "right",
+                                                                       "right",
+                                                                       "right",
+                                                                       "right",
+                                                                       "left",
+                                                                       "left",
+                                                                       "right",
+                                                                       "right",
+                                                                       "left",
+                                                                       "right"
+                                                                   ],
+                                                   "greedyWins":  false,
+                                                   "minSurvivors":  1
+                                               }
+                                 }
+                             ],
+                   "errors":  [
+
+                              ],
+                   "failures":  [
+
+                                ],
+                   "testedAt":  "2026-10-19T13:56:06.513Z",
+                   "input":  "touch drag + pause/resume passed",
+                   "runtime":  {
+                                   "win":  {
+                                               "state":  "boss_defeated",
+                                               "count":  11,
+                                               "shields":  0,
+                                               "events":  10
+                                           },
+                                   "lose":  {
+                                                "state":  "lose",
+                                                "count":  0,
+                                                "shields":  0,
+                                                "events":  10
+                                            },
+                                   "verified":  "winning and greedy routes executed through live collisions and combat"
+                               }
+               },
+    "performance":  {
+                        "testedAt":  "2026-10-19T11:34:55.120Z",
+                        "urls":  {
+                                     "baseline":  "https://cndseo.github.io/convergence-runner-lab/convergence/?baseline=d10ef61",
+                                     "candidate":  "http://127.0.0.1:4318/convergence-runner-lab/convergence/"
+                                 },
+                        "errors":  [
+
+                                   ],
+                        "measurements":  [
+                                             {
+                                                 "version":  "baseline",
+                                                 "count":  5,
+                                                 "fps":  32,
+                                                 "p95Ms":  31.699999999999818,
+                                                 "drawCalls":  282,
+                                                 "triangles":  83817,
+                                                 "textures":  83,
+                                                 "geometries":  315
+                                             },
+                                             {
+                                                 "version":  "baseline",
+                                                 "count":  50,
+                                                 "fps":  32,
+                                                 "p95Ms":  31.699999999999818,
+                                                 "drawCalls":  306,
+                                                 "triangles":  141459,
+                                                 "textures":  149,
+                                                 "geometries":  466
+                                             },
+                                             {
+                                                 "version":  "baseline",
+                                                 "count":  85,
+                                                 "fps":  32,
+                                                 "p95Ms":  31.699999999999818,
+                                                 "drawCalls":  306,
+                                                 "triangles":  141529,
+                                                 "textures":  149,
+                                                 "geometries":  466
+                                             },
+                                             {
+                                                 "version":  "candidate",
+                                                 "count":  5,
+                                                 "fps":  32,
+                                                 "p95Ms":  31.799999999999727,
+                                                 "drawCalls":  294,
+                                                 "triangles":  98685,
+                                                 "textures":  69,
+                                                 "geometries":  328
+                                             },
+                                             {
+                                                 "version":  "candidate",
+                                                 "count":  50,
+                                                 "fps":  32,
+                                                 "p95Ms":  31.600000000000364,
+                                                 "drawCalls":  344,
+                                                 "triangles":  195807,
+                                                 "textures":  112,
+                                                 "geometries":  498
+                                             },
+                                             {
+                                                 "version":  "candidate",
+                                                 "count":  85,
+                                                 "fps":  32,
+                                                 "p95Ms":  31.600000000000364,
+                                                 "drawCalls":  344,
+                                                 "triangles":  195949,
+                                                 "textures":  112,
+                                                 "geometries":  498
+                                             }
+                                         ]
+                    }
+}

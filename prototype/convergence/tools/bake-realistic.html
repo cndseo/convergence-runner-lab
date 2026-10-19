@@ -1,25 +1,29 @@
 <!doctype html><html><head><meta charset="utf-8"><link rel="icon" href="data:,"></head><body><script type="module">
 import * as THREE from 'three';
 import {createRealisticWalker} from '../src/realisticHumanoids.js';
+import {CHARACTER_STYLES,CHARACTER_ATLAS as A} from '../src/characterCatalog.mjs';
 window.bakeRealistic=async()=>{
  const renderer=new THREE.WebGLRenderer({alpha:true,antialias:true,preserveDrawingBuffer:true});
- renderer.setSize(160,220);renderer.setClearColor(0x000000,0);
+ renderer.setSize(A.cellWidth,A.cellHeight);renderer.setClearColor(0x000000,0);
  renderer.outputColorSpace=THREE.SRGBColorSpace;renderer.toneMapping=THREE.ACESFilmicToneMapping;renderer.toneMappingExposure=1.35;
- const scene=new THREE.Scene(),camera=new THREE.OrthographicCamera(-.96,.96,1.32,-1.32,.01,20);
- camera.position.set(0,1.25,6);camera.lookAt(0,1.25,0);
+ const scene=new THREE.Scene(),camera=new THREE.OrthographicCamera(-A.planeWidth/2,A.planeWidth/2,A.planeHeight/2,-A.planeHeight/2,.01,20);
+ camera.position.set(0,A.centerY,6);camera.lookAt(0,A.centerY,0);
  scene.add(new THREE.HemisphereLight(0xe8f2ff,0x788278,2.3));
  const sun=new THREE.DirectionalLight(0xffebd4,2.7);sun.position.set(-3,6,5);scene.add(sun);
- const sheet=document.createElement('canvas');sheet.width=1920;sheet.height=2640;
+ const sheet=document.createElement('canvas');sheet.width=A.cellWidth*A.columns;sheet.height=A.cellHeight*A.rows;
  const ctx=sheet.getContext('2d');
- for(let row=0;row<12;row++){
-   const person=await createRealisticWalker(row);
+ for(let row=0;row<A.rows;row++){
+   const person=await createRealisticWalker(row+1);
    scene.add(person.model);
+   const plume=person.model.getObjectByName('animated-green-smoke');if(plume)plume.visible=false;
    for(let frame=0;frame<12;frame++){
       person.mixer.setTime(frame*person.duration/12/.92);
+      person.update(0,frame*person.duration/12/.92);
       renderer.render(scene,camera);
-      ctx.drawImage(renderer.domElement,frame*160,row*220);
+      ctx.drawImage(renderer.domElement,frame*A.cellWidth,row*A.cellHeight);
    }
    scene.remove(person.model);
+   person.dispose();
    person.mixer.stopAllAction();
    person.mixer.uncacheRoot(person.model);
    person.model.traverse(n=>{if(n.isSkinnedMesh)n.skeleton?.dispose();});

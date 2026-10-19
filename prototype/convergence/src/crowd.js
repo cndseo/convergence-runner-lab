@@ -152,7 +152,7 @@ export class CrowdManager {
                 }
                 if (i < 5) this.launchRagdoll(stickman, ragdollColor);
                 const h=stickman.userData.realHumanoid;
-                if(h){h.mixer.stopAllAction();h.mixer.uncacheRoot(h.model);}
+                if(h){h.mixer.stopAllAction();h.mixer.uncacheRoot(h.model);h.dispose?.();h.model.traverse(n=>{if(n.isSkinnedMesh)n.skeleton?.dispose();});}
                 this.playerGroup.remove(stickman);
             }
         }

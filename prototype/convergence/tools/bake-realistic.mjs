@@ -1,4 +1,5 @@
 import fs from 'node:fs';
+import {CHARACTER_STYLES,CHARACTER_ATLAS as A} from '../src/characterCatalog.mjs';
 import path from 'node:path';
 import {fileURLToPath} from 'node:url';
 import {createRequire} from 'node:module';
@@ -20,9 +21,9 @@ try{
  execFileSync(process.platform==='win32'?'python':'python3',['-c','from PIL import Image; import sys; Image.open(sys.argv[1]).save(sys.argv[2],quality=88,method=6)',tmp,path.join(out,'walk-realistic.webp')]);
  fs.unlinkSync(tmp);
  fs.writeFileSync(path.join(out,'walk-realistic.json'),JSON.stringify({
-   format:'realistic-mixed-walk-v1',image:'walk-realistic.webp',width:1920,height:2640,
-   columns:12,rows:12,animation:'Walk',license:'MIT (see assets/realistic/LICENSE.md)',
-   variation:'row=index % 12, factions=index % 6, variation=floor(index / 6) % 2'
+   format:'reference-characters-walk-v2',image:'walk-realistic.webp',width:A.cellWidth*A.columns,height:A.cellHeight*A.rows,
+   columns:A.columns,rows:A.rows,animation:'Walk',license:'MIT (see assets/realistic/LICENSE.txt)',
+   variation:'row=(crowdIndex-1) % 13; P02 remains separate',characters:CHARACTER_STYLES.map(s=>({key:s.key,source:s.base,prop:s.prop||null})),plane:A
  },null,2)+'\n');
- console.log('12 real distinct meshes x 12 Walk frames baked:',path.join(out,'walk-realistic.webp'));
+ console.log('13 dressed profiles x 12 Walk frames baked:',path.join(out,'walk-realistic.webp'));
 }finally{await browser.close();}

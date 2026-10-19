@@ -1,11 +1,87 @@
 {
-  "format": "realistic-mixed-walk-v1",
+  "format": "reference-characters-walk-v2",
   "image": "walk-realistic.webp",
   "width": 1920,
-  "height": 2640,
+  "height": 3120,
   "columns": 12,
-  "rows": 12,
+  "rows": 13,
   "animation": "Walk",
-  "license": "MIT (see assets/realistic/LICENSE.md)",
-  "variation": "row=index % 12, factions=index % 6, variation=floor(index / 6) % 2"
+  "license": "MIT (see assets/realistic/LICENSE.txt)",
+  "variation": "row=(crowdIndex-1) % 13; P02 remains separate",
+  "characters": [
+    {
+      "key": "lyceen",
+      "source": "male-adult-04",
+      "prop": "placard"
+    },
+    {
+      "key": "pompier",
+      "source": "fire-male-01",
+      "prop": "megaphone"
+    },
+    {
+      "key": "infirmiere",
+      "source": "medical-female-02",
+      "prop": null
+    },
+    {
+      "key": "manifestante",
+      "source": "female-adult-05",
+      "prop": null
+    },
+    {
+      "key": "fumigene",
+      "source": "male-adult-07",
+      "prop": "flare"
+    },
+    {
+      "key": "agriculteur",
+      "source": "gardener-male-01",
+      "prop": null
+    },
+    {
+      "key": "drapeau",
+      "source": "male-adult-10",
+      "prop": "flag"
+    },
+    {
+      "key": "gilet-rouge",
+      "source": "male-adult-04",
+      "prop": null
+    },
+    {
+      "key": "gilet-blonde",
+      "source": "female-adult-12",
+      "prop": null
+    },
+    {
+      "key": "gilet-bonnet",
+      "source": "male-adult-07",
+      "prop": null
+    },
+    {
+      "key": "gilet-rousse",
+      "source": "female-adult-05",
+      "prop": null
+    },
+    {
+      "key": "gilet-casquette",
+      "source": "male-adult-10",
+      "prop": null
+    },
+    {
+      "key": "gilet-gris",
+      "source": "male-adult-07",
+      "prop": null
+    }
+  ],
+  "plane": {
+    "columns": 12,
+    "rows": 13,
+    "cellWidth": 160,
+    "cellHeight": 240,
+    "planeWidth": 2.2,
+    "planeHeight": 3.3,
+    "centerY": 1.48
+  }
 }
