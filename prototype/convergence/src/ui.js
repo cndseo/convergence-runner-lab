@@ -220,6 +220,32 @@ export class UIManager {
         this.lbdNoticeTimeout=setTimeout(()=>{if(this.lbdNotice)this.lbdNotice.style.display='none';},1050);
     }
 
+    // Short, non-blocking feedback: appears after crossing a gate, never
+    // before a choice and never atop the police line.
+    showTacticalHint(feedback) {
+        if (!this.tacticalHint) {
+            this.tacticalHint=document.createElement('div');
+            this.tacticalHint.id='tactical-hint';
+            this.tacticalHint.setAttribute('role','status');
+            this.tacticalHint.setAttribute('aria-live','polite');
+            this.container.appendChild(this.tacticalHint);
+        }
+        this.tacticalHint.replaceChildren();
+        const title=document.createElement('strong');
+        title.textContent=feedback.title;
+        const detail=document.createElement('span');
+        detail.textContent=feedback.detail;
+        this.tacticalHint.append(title,detail);
+        this.tacticalHint.dataset.tone=feedback.tone;
+        this.tacticalHint.classList.add('visible');
+        clearTimeout(this.tacticalHintTimer);
+        this.tacticalHintTimer=setTimeout(()=>this.tacticalHint?.classList.remove('visible'),2050);
+    }
+    clearTacticalHint() {
+        clearTimeout(this.tacticalHintTimer);
+        this.tacticalHint?.classList.remove('visible');
+    }
+
     // ============ FLOATING TEXT ============
     showFloatingText(text, color) {
         const el = document.createElement('div');
@@ -253,6 +279,8 @@ export class UIManager {
 
     // ============ STANDARD UI ============
     hideAllScreens() {
+        // Do not leave victory confetti over a retry or a defeat screen.
+        this.container.querySelectorAll('.win-confetti').forEach(el=>el.remove());
         this.startScreen.classList.add('hidden');
         this.upgradeScreen.classList.add('hidden');
         this.winScreen.classList.add('hidden');
@@ -450,8 +478,18 @@ export class UIManager {
         this.renderShop();
     }
 
-    showWin(coins) {
+    showWin(coins, report) {
         this.hideAllScreens();
+        this.clearTacticalHint();
+        const el=document.getElementById('win-report');
+        if(el){
+            const medal=report?.stars?('★'.repeat(report.stars)+'☆'.repeat(3-report.stars)):'★';
+            el.replaceChildren();
+            const head=document.createElement('strong');head.textContent=medal+'  '+(report?.title||'Front franchi');
+            const info=document.createElement('span');info.textContent=report?.detail||'';
+            const tip=document.createElement('small');tip.textContent=report?.tip||'';
+            el.append(head,info,tip);
+        }
         setTimeout(() => {
             this.transitionIn(this.winScreen);
             document.getElementById('win-coins').textContent = `+${coins} 🪙`;
@@ -469,8 +507,18 @@ export class UIManager {
         document.getElementById('win-upgrade-strength-btn').textContent = `🪙 ${this.game.strengthUpgrade * 75}`;
     }
 
-    showLose() {
+    showLose(report) {
         this.hideAllScreens();
+        this.clearTacticalHint();
+        const el=document.getElementById('lose-report');
+        if(el){
+            el.replaceChildren();
+            const head=document.createElement('strong');head.textContent=report?.title||'Mobilisation stoppée';
+            const detail=document.createElement('span');detail.textContent=report?.detail||'';
+            el.append(head,detail);
+        }
+        const tip=document.getElementById('lose-tip');
+        if(tip)tip.textContent=report?.tip||'Essaie une autre combinaison de portiques.';
         setTimeout(() => {
             this.transitionIn(this.loseScreen);
         }, 300);
@@ -481,6 +529,7 @@ export class UIManager {
         const colors = ['#FF5252', '#FFD740', '#69F0AE', '#40C4FF', '#E040FB', '#FF6E40'];
         for (let i = 0; i < 40; i++) {
             const confetti = document.createElement('div');
+            confetti.classList.add('win-confetti');
             const color = colors[Math.floor(Math.random() * colors.length)];
             const left = Math.random() * 100;
             const delay = Math.random() * 0.5;

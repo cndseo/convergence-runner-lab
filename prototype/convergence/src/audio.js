@@ -279,6 +279,25 @@ export class AudioManager {
         osc.start(now);osc.stop(now+.16);
     }
 
+    // Low, brief shield contact sound panned slightly across the front.
+    // Quieter while the user's recorded voice is playing. Cosmetic only.
+    playShieldContact(exchange=0) {
+        if (!this.initialized || this.ctx?.state!=='running') return;
+        const now=this.ctx.currentTime;
+        const tone=this.ctx.createOscillator(), gain=this.ctx.createGain();
+        tone.type='triangle';
+        tone.frequency.setValueAtTime(175,now);
+        tone.frequency.exponentialRampToValueAtTime(68,now+.095);
+        gain.gain.setValueAtTime(this.combatVoiceNode?.035:.09,now);
+        gain.gain.exponentialRampToValueAtTime(.001,now+.115);
+        const stereo=this.ctx.createStereoPanner?.();
+        if(stereo){
+            stereo.pan.value=exchange%2===0?-.28:.28;
+            tone.connect(gain);gain.connect(stereo);stereo.connect(this.sfxGain);
+        } else {tone.connect(gain);gain.connect(this.sfxGain);}
+        tone.start(now);tone.stop(now+.12);
+    }
+
     playFightHit() {
         if (!this.initialized) return;
         const now = this.ctx.currentTime;
@@ -287,7 +306,7 @@ export class AudioManager {
         osc.type = 'triangle';
         osc.frequency.setValueAtTime(150 + Math.random() * 100, now);
         osc.frequency.exponentialRampToValueAtTime(40, now + 0.08);
-        gain.gain.setValueAtTime(0.25, now);
+        gain.gain.setValueAtTime(this.combatVoiceNode ? 0.09 : 0.25, now);
         gain.gain.exponentialRampToValueAtTime(0.01, now + 0.1);
         osc.connect(gain);
         gain.connect(this.sfxGain);

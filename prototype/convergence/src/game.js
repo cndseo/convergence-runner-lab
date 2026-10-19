@@ -1,5 +1,6 @@
 import * as THREE from 'three';
 import { applyChoice, sufferLoss, MAX_CROWD } from './tactics.mjs';
+import { explainGateChoice, evaluateResult } from './tacticalFeedback.mjs';
 import { LevelGenerator } from './level.js';
 import { CrowdManager } from './crowd.js';
 import { UIManager } from './ui.js';
@@ -213,6 +214,7 @@ export class Game {
         this.state = 'playing';
         this.shields = 0;
         this.gateHistory = [];
+        this.ui.clearTacticalHint?.();
         this.runId = (this.runId || 0) + 1;
         this.trackZ = 0;
         this.playerX = 0;
@@ -418,7 +420,8 @@ export class Game {
             this.ui.screenShake(good ? 2 : 4);
         } else this.ui.showFloatingText('Condition non remplie', '#ddc5ff');
         this.gateHistory.push({ choice: gateData, before, after });
-        if (after.count === 0) this.loseGame();
+        if(after.count>0)this.ui.showTacticalHint(explainGateChoice(gateData,before,after));
+        if (after.count === 0) this.loseGame('gate');
     }
 
     highlightGate(gate, side) {
@@ -458,7 +461,7 @@ export class Game {
                     this.ui.showFloatingText(`-${loss}`, '#ff5722');
 
                     if (this.crowdManager.getPlayerCount() <= 0) {
-                        this.loseGame();
+                        this.loseGame('obstacle');
                     }
                 }
             }
@@ -530,8 +533,10 @@ export class Game {
             // Enemy kills one player stickman per tick
             if (enemy.remainingCount > 0) {
                 const absorbed = this.shields > 0;
-                if (absorbed) this.shields--;
-                else this.crowdManager.removeFromPlayerCrowd(1);
+                if (absorbed) {
+                    this.shields--;
+                    this.audio.playShieldContact?.(this.combatChoreo?.exchange ?? 0);
+                } else this.crowdManager.removeFromPlayerCrowd(1);
                 // Fly-off effect for the removed stickman
                 this.crowdManager.spawnDeathEffect(this.playerX, -this.trackZ, 0x2196F3);
             }
@@ -646,6 +651,7 @@ export class Game {
     winGame() {
         if (this.state === 'win' || this.state === 'lose') return;
         this.audio.stopCombatVoice?.();
+        const report=evaluateResult({won:true,survivors:this.crowdManager.getPlayerCount(),gateHistory:this.gateHistory,level:this.level});
         this.state = 'win';
         const earnedCoins = Math.floor(this.crowdManager.getPlayerCount() * 2 + this.level * 10);
         this.coins += earnedCoins;
@@ -654,11 +660,13 @@ export class Game {
         this.audio.stopCrowdAmbience();
         this.audio.stopMusic();
         this.audio.playWin();
-        this.ui.showWin(earnedCoins);
+        this.ui.showWin(earnedCoins, report);
     }
 
-    loseGame() {
+    loseGame(source = null) {
         if (this.state === 'win' || this.state === 'lose') return;
+        const lossSource=source || (this.fightingEnemy?'combat':'unknown');
+        const report=evaluateResult({won:false,survivors:this.crowdManager.getPlayerCount(),gateHistory:this.gateHistory,lossSource,level:this.level});
         this.combatChoreo?.dispose();
         this.combatChoreo=null;
         this.audio.stopCombatVoice?.();
@@ -669,7 +677,7 @@ export class Game {
         this.audio.stopCrowdAmbience();
         this.audio.stopMusic();
         this.audio.playLose();
-        this.ui.showLose();
+        this.ui.showLose(report);
     }
 
     upgradecrowd() {
