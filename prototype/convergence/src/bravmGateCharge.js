@@ -62,7 +62,8 @@ export class BravmGateCharge {
       if(lost>0){
         // Each falling rider already emits a flash; avoid layering a giant
         // opaque explosion over the three toppled protesters.
-        // No fake punch / arcade impact noise on motorcycle collision.
+        // Real low thud and short pain reaction, not the old synthetic hit.
+        g.audio.playCombatImpact?.('body',{reaction:true});
         g.ui.screenShake(8);
         g.ui.updateCount(g.crowdManager.getPlayerCount());
       }

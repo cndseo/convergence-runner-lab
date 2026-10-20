@@ -1,4 +1,5 @@
 import {CrowdAmbience} from './crowdAmbience.js';
+import {CombatImpactSounds} from './combatImpactSounds.js';
 
 export class AudioManager {
     constructor() {
@@ -10,6 +11,7 @@ export class AudioManager {
         this.musicNodes = [];
         this.initialized = false;
         this.ambience = new CrowdAmbience(this);
+        this.combatImpacts = new CombatImpactSounds(this);
         this.ambienceMuted = false;
     }
 
@@ -29,6 +31,13 @@ export class AudioManager {
         this.sfxGain.connect(this.masterGain);
 
         this.initialized = true;
+    }
+
+    preloadCombatImpacts() {
+        return this.combatImpacts.preload(import.meta.env.BASE_URL);
+    }
+    playCombatImpact(type,options) {
+        return this.combatImpacts.play(type,options);
     }
 
     resume() {

@@ -279,6 +279,7 @@ export class Game {
         this.audio.preloadCombatVoice?.();
         this.audio.preloadMarseilleAttack?.();
         this.audio.preloadBravmMotorbike?.();
+        this.audio.preloadCombatImpacts?.();
         
         // Clear scene objects
         this.clearLevel();
@@ -652,8 +653,12 @@ export class Game {
             if (enemyKills > 0) {
                 const enemyX = (Math.random() - 0.5) * 3;
                 this.crowdManager.spawnDeathEffect(enemyX, -enemy.z, 0xf44336);
-                this.audio.playFightHit();
             }
+            // One genuine recorded hit/reaction per resolved tactical exchange.
+            // Shields stop injuries, so a blocked contact never triggers a cry.
+            const protestersLost=playerCount-this.crowdManager.getPlayerCount();
+            if(protestersLost>0)this.audio.playCombatImpact?.('baton',{reaction:true});
+            else if(enemyKills>0)this.audio.playCombatImpact?.('counter',{reaction:true});
 
             // Update enemy visual count or boss health bar
             if (enemy.isBoss) {
@@ -665,7 +670,7 @@ export class Game {
             }
             this.combatChoreo?.onExchange({
                 policeLost: enemyKills,
-                protestersLost: playerCount - this.crowdManager.getPlayerCount(),
+                protestersLost,
                 blocked: this.shields < shieldsBefore
             });
 
