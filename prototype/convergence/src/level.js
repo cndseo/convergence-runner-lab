@@ -140,12 +140,9 @@ export class LevelGenerator {
     }
 
     createGates(level, trackLength) {
-        let bonusIndex=0;
         for (const event of this.plan.events.filter(e => e.type === 'choice')) {
-            // Assign the visual faction to additive rewards without changing their math.
-            for(const choice of [event.left,event.right])if(choice.op==='+'&&choice.value>0){
-                choice.bonusFaction=['gilets','genz','pompiers','infirmieres'][bonusIndex++%4];
-            }
+            // The fixed TV catalog owns both bonus numbers and faction identity.
+            // No visual-only change to the chosen faction or computed amount.
             const gate = { z: event.z, passed: false, leftGate: event.left, rightGate: event.right };
             const gateOrder=this.gates.length*2;
             gate.leftMesh = this.createGateMesh(event.left, -2.5, event.z, gateOrder);

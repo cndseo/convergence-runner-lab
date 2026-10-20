@@ -1,0 +1,165 @@
+{
+  "version": "2026-10-20",
+  "assets": [
+    {
+      "file": "tv_bfmtv_bonus_10_renforts.png",
+      "label": "+10 RENFORTS",
+      "op": "+",
+      "size": [
+        1225,
+        818
+      ],
+      "sha256": "f4ae51885e215cb3eda0ee43819c84bec543c90b7482f3e177801b46b2cc7c46"
+    },
+    {
+      "file": "tv_bfmtv_bonus_x2_mobilisation.png",
+      "label": "×2 MOBILISATION",
+      "op": "*",
+      "size": [
+        1232,
+        794
+      ],
+      "sha256": "912cb1a9293dfbee01c8aa4660940e2cd64dd1ce815e78f12c7881781cc58479"
+    },
+    {
+      "file": "tv_bfmtv_bonus_14_protections.png",
+      "label": "+14 PROTECTIONS",
+      "op": "shield",
+      "size": [
+        1225,
+        795
+      ],
+      "sha256": "fda2245ac7f46d377a11bcf2599233862965a0010bed688b25ed26986097c29c"
+    },
+    {
+      "file": "tv_bfmtv_bonus_21_protections.png",
+      "label": "+21 PROTECTIONS",
+      "op": "shield",
+      "size": [
+        1221,
+        796
+      ],
+      "sha256": "7305e3abdba00aa180de85cdb57c91939cfe22efc8c15efe0ca9bec1b4bb86a0"
+    },
+    {
+      "file": "tv_bfmtv_bonus_5_boucliers.png",
+      "label": "+5 BOUCLIERS",
+      "op": "shield",
+      "size": [
+        1231,
+        796
+      ],
+      "sha256": "aeda9d0e8c254e8fb10044c805e965a577a4b0e8c6631c7715eb883a661b2167"
+    },
+    {
+      "file": "tv_bfmtv_bonus_50pct_ralliement.png",
+      "label": "+50% RALLIEMENT",
+      "op": "%",
+      "size": [
+        1240,
+        872
+      ],
+      "sha256": "65632ef3264dafcd724ed627dce79275f3f8400924335c7aef916144bf1cd2d8"
+    },
+    {
+      "file": "tv_cnews_bonus_6_genz.png",
+      "label": "+6 GEN Z",
+      "op": "+",
+      "size": [
+        1216,
+        720
+      ],
+      "sha256": "a6854f46a6cbb5e9477b5ae43236a7722d1b687beb0f30d5c9899de265eaeb58"
+    },
+    {
+      "file": "tv_cnews_bonus_4_pompiers.png",
+      "label": "+4 POMPIERS",
+      "op": "+",
+      "size": [
+        1216,
+        723
+      ],
+      "sha256": "760fd2d5b4be520071d7bd5f7357656c0fe44cb6ac8dc3bd73dbb468c5d01fb3"
+    },
+    {
+      "file": "tv_cnews_bonus_3_infirmieres.png",
+      "label": "+3 INFIRMIÈRES",
+      "op": "+",
+      "size": [
+        1216,
+        720
+      ],
+      "sha256": "a15284fe0fdb1acf8d3ebfa236ca1d567e1f7749a96fca50326e23537f41dbcd"
+    },
+    {
+      "file": "tv_cnews_bonus_5_gilets_jaunes.png",
+      "label": "+5 GILETS JAUNES",
+      "op": "+",
+      "size": [
+        1216,
+        723
+      ],
+      "sha256": "91cecc5830d8f7a8d11b1c175dd8120383daf0d08be50ef251a9d23ae3d85453"
+    },
+    {
+      "file": "tv_lci_malus_15_barrage.png",
+      "label": "−15 BARRAGE",
+      "op": "damage",
+      "size": [
+        681,
+        362
+      ],
+      "sha256": "84b291179893174adf66e7744f33dd569c8df7e5613180bc91e26403c2be1721"
+    },
+    {
+      "file": "tv_lci_malus_20_fourgons.png",
+      "label": "−20 FOURGONS",
+      "op": "damage",
+      "size": [
+        685,
+        362
+      ],
+      "sha256": "b2e62403e93a13bbde580e31d5e143ff0a31598f4e4c9db7bc5d542bdf2b169a"
+    },
+    {
+      "file": "tv_lci_malus_40pct_obstacles.png",
+      "label": "−40% OBSTACLES",
+      "op": "damage",
+      "size": [
+        686,
+        362
+      ],
+      "sha256": "57c6755deff813852308b5760b4d584e12c5b1d844d9506f221ceca4b5d76e56"
+    },
+    {
+      "file": "tv_lci_malus_5_departs.png",
+      "label": "−5 DÉPARTS",
+      "op": "-",
+      "size": [
+        681,
+        361
+      ],
+      "sha256": "783ee462f0efddc74c27cfe01926d28dd1bdd91702d8f63786bce031002bcdc1"
+    },
+    {
+      "file": "tv_lci_malus_div2_dispersion.png",
+      "label": "÷2 DISPERSION",
+      "op": "/",
+      "size": [
+        684,
+        362
+      ],
+      "sha256": "93edf2def13326eddf40d96a2819388d0c9e9db71d2a92a3cc89630ee75a9796"
+    },
+    {
+      "file": "tv_lci_malus_3_manifestants.png",
+      "label": "−3 MANIFESTANTS (BRAV-M)",
+      "op": "damage",
+      "size": [
+        685,
+        362
+      ],
+      "sha256": "a22d0c1f395706a10e8ea1765cf28c886b1eba5ebeb6e52a28ad8b00af0c4d47"
+    }
+  ]
+}

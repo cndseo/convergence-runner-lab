@@ -3,7 +3,7 @@ import {createRequire} from 'node:module';
 import {mkdirSync} from 'node:fs';
 const {chromium}=createRequire(import.meta.url)('playwright-core');
 const url=process.env.QA_URL||'http://127.0.0.1:4541/';
-const out='C:/CITYOS/convergence-bravm-impact/qa-bravm';
+const out=process.env.QA_OUTPUT||'C:/CITYOS/convergence-bravm-impact/qa-bravm';
 mkdirSync(out,{recursive:true});
 const browser=await chromium.launch({executablePath:'C:/Program Files/Google/Chrome/Application/chrome.exe',
  headless:true,args:['--enable-webgl','--ignore-gpu-blocklist']});
