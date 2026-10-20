@@ -1,7 +1,9 @@
 // Collision-triggered BRAV-M street attack. Uses the existing gate's real
 // reference riders, not a duplicated bike texture, and resolves damage once.
-const CHARGE_TIME=.94;
-const RECOVERY_TIME=.48;
+// A full ~3-second arrival from the visible far end of the Parisian street.
+const CHARGE_TIME=2.92;
+const RECOVERY_TIME=.34;
+const APPROACH_METRES=29;
 const smooth=x=>{const t=Math.max(0,Math.min(1,x));return t*t*(3-2*t);};
 
 export class BravmGateCharge {
@@ -17,7 +19,12 @@ export class BravmGateCharge {
       g.scene.attach(rider);
       rider.userData.dynamic=true;
       rider.visible=true;
-      actorList.push({rider,x:rider.position.x,y:rider.position.y,z:rider.position.z,index:i});
+      // Spawn about 29–32 metres up the road instead of emerging just
+      // 3–4 metres in front of the player. Keep both in visible street lanes.
+      const startX=g.playerX+(i===0?-1.95:1.95);
+      const startZ=-g.trackZ-APPROACH_METRES-i*3;
+      rider.position.set(startX,rider.position.y,startZ);
+      actorList.push({rider,x:startX,y:rider.position.y,z:startZ,index:i});
     }
     // Keep runner stationary while the motorcycle approaches. The regular
     // game update loop is frozen so no second portal or combat can resolve.
@@ -55,7 +62,7 @@ export class BravmGateCharge {
       if(lost>0){
         // Each falling rider already emits a flash; avoid layering a giant
         // opaque explosion over the three toppled protesters.
-        g.audio.playMarseilleImpact?.();
+        // No fake punch / arcade impact noise on motorcycle collision.
         g.ui.screenShake(8);
         g.ui.updateCount(g.crowdManager.getPlayerCount());
       }

@@ -200,8 +200,24 @@ export class AudioManager {
             try {
                 const response=await fetch(import.meta.env.BASE_URL+'assets/audio/bravm-motorbike-4.mp3');
                 if (!response.ok) throw new Error('motorbike asset unavailable');
-                this.bravmMotorbikeBuffer=await this.ctx.decodeAudioData(await response.arrayBuffer());
-                return this.bravmMotorbikeBuffer;
+                const buffer=await this.ctx.decodeAudioData(await response.arrayBuffer());
+                // The original public-domain field recording is very quiet
+                // (roughly -36 dBFS RMS / 0.13 peak). Normalize once in RAM
+                // without re-encoding or changing its natural engine timbre.
+                let peak=0;
+                for(let channel=0;channel<buffer.numberOfChannels;channel++){
+                    const data=buffer.getChannelData(channel);
+                    for(let i=0;i<data.length;i++)peak=Math.max(peak,Math.abs(data[i]));
+                }
+                const boost=peak>0?Math.min(8,.84/peak):1;
+                if(boost>1){
+                    for(let channel=0;channel<buffer.numberOfChannels;channel++){
+                        const data=buffer.getChannelData(channel);
+                        for(let i=0;i<data.length;i++)data[i]*=boost;
+                    }
+                }
+                this.bravmMotorbikeBuffer=buffer;
+                return buffer;
             } catch(error) {
                 console.warn('BRAV-M motorbike audio unavailable:',error?.message);
                 return null;
@@ -229,28 +245,31 @@ export class AudioManager {
         if (this.bravmMotorbikeGeneration!==generation ||
             this.ctx?.state!=='running' || !this.bravmMotorbikeBuffer || !this.sfxGain) return false;
         const ctx=this.ctx,now=ctx.currentTime;
-        // Two BRAV-M motorcycles, one reusable 3-second field recording.
-        // Slightly different pitch, start and stereo pan create a convincing
-        // two-bike approach. Fade out by the end of the 1.42-second charge.
+        // A full 3-second approach: two independently pitched motorcycles
+        // coming from opposite sides, building to a loud near-field pass.
         const bus=ctx.createGain();
         bus.gain.setValueAtTime(.001,now);
-        bus.gain.linearRampToValueAtTime(.65,now+.14);
-        bus.gain.setValueAtTime(.65,now+.87);
-        bus.gain.linearRampToValueAtTime(.001,now+1.44);
+        bus.gain.linearRampToValueAtTime(.55,now+.22);
+        bus.gain.linearRampToValueAtTime(1.12,now+1.60);
+        bus.gain.setValueAtTime(1.12,now+2.55);
+        bus.gain.linearRampToValueAtTime(.001,now+3.20);
         bus.connect(this.sfxGain);
+        // Reduce the city ambience so the real engine recording is audible.
+        if(this.musicGain)
+            this.musicGain.gain.setTargetAtTime(this.ambienceMuted?0:.10,now,.14);
         const sources=[];
-        for(const [index,rate,pan,offset] of [[0,1.03,-.47,0],[1,.94,.47,.11]]){
+        for(const [index,rate,pan,offset] of [[0,1.0,-.47,0],[1,.98,.47,.07]]){
             const source=ctx.createBufferSource(),gain=ctx.createGain();
             source.buffer=this.bravmMotorbikeBuffer;
             source.playbackRate.value=rate;
-            gain.gain.value=index===0?.62:.40;
+            gain.gain.value=index===0?.9:.72;
             source.connect(gain);
             if(ctx.createStereoPanner){
                 const stereo=ctx.createStereoPanner();stereo.pan.value=pan;
                 gain.connect(stereo);stereo.connect(bus);
             }else gain.connect(bus);
             source.start(now+offset);
-            source.stop(now+1.48);
+            source.stop(now+3.22);
             sources.push(source);
         }
         this.bravmMotorbikeNodes={sources,bus};
@@ -264,6 +283,8 @@ export class AudioManager {
         if(!active)return;
         // Natural fade: prevent a hard cut when the animation resolves early.
         const now=this.ctx?.currentTime||0;
+        if(this.musicGain)
+            this.musicGain.gain.setTargetAtTime(this.ambienceMuted?0:.35,now+.11,.24);
         active.bus.gain.cancelScheduledValues(now);
         active.bus.gain.setValueAtTime(Math.max(.001,active.bus.gain.value),now);
         active.bus.gain.linearRampToValueAtTime(.001,now+.11);

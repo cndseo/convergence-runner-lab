@@ -515,7 +515,10 @@ export class Game {
         const guard = after.shields - before.shields;
         if (change || guard) {
             const good = change > 0 || guard > 0;
-            good ? this.audio.playGateGood() : this.audio.playGateBad();
+            // BRAV-M collisions retain knockdown and camera feedback, but no
+            // synthetic negative-gate buzz on top of the motorcycle engines.
+            if(good)this.audio.playGateGood();
+            else if(gateData.kind!=='bravm')this.audio.playGateBad();
             this.ui.showFloatingText((change ? (change > 0 ? '+' : '') + change : '') +
                 (guard ? '  ◇ ' + (guard > 0 ? '+' : '') + guard : ''), good ? '#a8f0d1' : '#ff817b');
             this.ui.screenShake(good ? 2 : 4);
