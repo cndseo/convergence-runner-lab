@@ -2,6 +2,7 @@ import * as THREE from 'three';
 import { compactStaticTrack } from './staticScenery.js';
 import { generateTacticalLevel } from './tactics.mjs';
 import { createArcadeGate, animateArcadeGates } from './arcadeGates.js';
+import { disposeTVGateArtwork } from './tvGateArt.js';
 import { placeKenneyRoadFurniture } from './assetLoader.js';
 import { upgradeBossVan } from './bossAssets.js';
 import { placeKenneyCityDetails, disposeKenneyCityDetails } from './kenneyCity.js';
@@ -35,6 +36,7 @@ export class LevelGenerator {
         this.boss = null;
         this.meshes.forEach(m => {
             if (!m.isObject3D) return;
+            disposeTVGateArtwork(m);
             this.scene.remove(m);
             if (m.geometry) m.geometry.dispose();
             if (m.material) {

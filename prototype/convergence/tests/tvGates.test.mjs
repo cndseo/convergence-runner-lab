@@ -28,6 +28,20 @@ test('TV text always mirrors the exact solver operation over 800 generated level
   }
  }
 });
+test('all fifteen TV visuals are reachable across generated levels',()=>{
+ const reached=new Set();
+ for(let seed=1;seed<=40;seed++){
+  const plan=generateTacticalLevel({level:seed,seed,startCount:5+(seed%6)*7,strength:1});
+  let faction=0;
+  for(const [i,e] of plan.events.filter(x=>x.type==='choice').entries())
+   for(const [side,c] of [e.left,e.right].entries()){
+    const choice={...c};
+    if(choice.op==='+'&&choice.value>0)choice.bonusFaction=['gilets','genz','pompiers','infirmieres'][faction++%4];
+    reached.add(tvArtIndex(choice,i*2+side));
+   }
+ }
+ assert.equal(reached.size,15,'an approved asset is never stranded in the atlas');
+});
 test('faction channels select Gen Z, firefighters and nurses without fictitious values',()=>{
  for(const [faction,index] of [['genz',8],['pompiers',13],['infirmieres',1],['gilets',10]]){
   const choice={op:'+',value:10,bonusFaction:faction};

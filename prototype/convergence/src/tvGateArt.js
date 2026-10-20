@@ -48,6 +48,19 @@ function paint(ctx,choice,artIndex){
  ctx.font='800 17px Arial';ctx.fillStyle='#fff';
  ctx.fillText(type==='conditional'?('BONUS CONDITIONNEL · '+tvDisplay(choice).detail):bad?'ALERTE INFO · EFFET NÉGATIF':'ÉVEIL COLLECTIF · BONUS',256,275);
 }
+// Release GPU textures when the level is restarted; a fresh level builds
+// twenty TV panels, so retaining old CanvasTextures would grow mobile memory.
+export function disposeTVGateArtwork(root){
+ const monitor=root?.userData?.tvScreen;
+ if(!monitor)return;
+ monitor.traverse(object=>{
+  if(!object.isMesh)return;
+  object.geometry?.dispose();
+  const materials=Array.isArray(object.material)?object.material:[object.material];
+  for(const mat of materials){mat?.map?.dispose();mat?.dispose();}
+ });
+ delete root.userData.tvScreen;
+}
 export function makeTVGateArtwork(choice,root,gateIndex=0){
  const artIndex=tvArtIndex(choice,gateIndex);
  const cnv=document.createElement('canvas');cnv.width=512;cnv.height=288;

@@ -8,7 +8,7 @@ export function tvArtIndex(c, gateIndex=0) {
  if(c.bonusFaction==='genz')return 8;
  if(c.bonusFaction==='pompiers')return 13;
  if(c.bonusFaction==='infirmieres')return 1;
- if(c.bonusFaction==='gilets')return gateIndex%2?5:10;
+ if(c.bonusFaction==='gilets')return gateIndex%3===0?10:7;
  if(c.op==='shield')return gateIndex%3===0?12:6;
  if(c.kind==='debris')return 0;
  if(c.kind==='barrier')return gateIndex%2?9:3;
