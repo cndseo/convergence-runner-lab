@@ -53,6 +53,7 @@ export class MarseilleReinforcements {
   this.clear();
   this.game.lbdSystem?.clear();
   this.active=true;this.enemy=enemy;this.artwork=artwork;this.elapsed=0;
+  this.impactTriggered=false;this.nextFootfall=.65;this.footfalls=0;
   this.targetZ=-enemy.z;
   for(let i=0;i<RUSH_GROUPS;i++){
    const actor=createMarseilleSprite(artwork,i);
@@ -86,6 +87,13 @@ export class MarseilleReinforcements {
    p.name='MARSEILLE_BLUE_WHITE_SMOKE_'+i;
    this.game.scene.add(p);this.puffs.push({sprite:p,age:10+i*.13,life:1.15+(i%5)*.13});
   }
+  // One small ground shockwave at the CRS line, not a fullscreen obstruction.
+  this.impactRing=new THREE.Mesh(new THREE.RingGeometry(.90,1.22,28),
+    new THREE.MeshBasicMaterial({color:0xe3d7c1,transparent:true,opacity:0,depthWrite:false,side:THREE.DoubleSide}));
+  this.impactRing.name='MARSEILLE_GROUND_IMPACT';
+  this.impactRing.rotation.x=-Math.PI/2;
+  this.impactRing.position.set(0,.15,this.targetZ);
+  this.game.scene.add(this.impactRing);
   this.game.audio.playMarseilleAttack();
   this.game.ui.screenShake(5);
   this.showButton();
@@ -101,6 +109,20 @@ export class MarseilleReinforcements {
   const delta=Math.min(.06,Math.max(0,dt));
   this.elapsed+=delta;
   const t=this.elapsed;
+  if(t>=this.nextFootfall && t<2.55){
+    this.game.audio.playMarseilleFootfall();this.footfalls++;
+    this.nextFootfall+=.64;
+  }
+  if(t>=2.60&&!this.impactTriggered){
+    this.impactTriggered=true;
+    this.game.audio.playMarseilleImpact();
+    this.game.ui.screenShake(3);
+  }
+  if(this.impactRing){
+    const fraction=clamp01((t-2.60)/.62);
+    this.impactRing.material.opacity=t<2.60?0:(1-fraction)*.26;
+    this.impactRing.scale.setScalar(1+fraction*1.5);
+  }
   this.impactPulse=Math.max(0,1-Math.abs(t-3.1)/.5)*.65;
   this.phase=t<2.5?'arrival':t<3.5?'surge':t<5.9?'breach':'exit';
   for(const actor of this.actors){
@@ -113,6 +135,7 @@ export class MarseilleReinforcements {
    p.started=state.started;
    p.o.position.set(state.x,state.y,state.z);
    p.o.rotation.y=state.yaw;
+   p.o.rotation.z=p.rotation.z+(state.started?Math.sin((t-2.28)*8+p.i*.9)*.10*clamp01((t-2.28)/.3)*clamp01((5.8-t)/1.4):0);
    if(state.started){
     const running=clamp01((t-2.48-p.i*.03)/.7);
     for(const l of p.limbs){
@@ -166,6 +189,8 @@ export class MarseilleReinforcements {
   this.actors=[];
   for(const p of this.puffs){p.sprite.removeFromParent();p.sprite.material.dispose();}
   this.puffs=[];this.smokeTexture?.dispose();this.smokeTexture=null;
+  if(this.impactRing){this.impactRing.removeFromParent();this.impactRing.geometry.dispose();
+    this.impactRing.material.dispose();this.impactRing=null;}
   this.active=false;this.pending=false;this.enemy=null;this.elapsed=0;this.impactPulse=0;
   this.showButton();
  }

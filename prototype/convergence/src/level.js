@@ -11,6 +11,8 @@ import { upgradePoliceOfficer, resetPoliceVisualBudget } from './policeAssets.js
 import { upgradeBravMotorcycle, resetMotorcycles } from './motorcycleAssets.js';
 import { createParisStreetscape } from './parisEnvironment.js';
 import { placeUrbanDecayAssets, disposeUrbanDecayAssets } from './urbanDecayAssets.js';
+import { createStreetPatina } from './streetPatina.js';
+import { updateKenneyPoliceLights } from './kenneyCity.js';
 
 export class LevelGenerator {
     constructor(scene, game) {
@@ -60,10 +62,12 @@ export class LevelGenerator {
         placeKenneyRoadFurniture(this.scene,trackLength,this.meshes);
         placeKenneyCityDetails(this.scene,trackLength,this.meshes);
         placeUrbanDecayAssets(this.scene,trackLength,this.meshes);
+        createStreetPatina(this.scene,trackLength,this.meshes);
     }
 
     updateVisibility(progress) {
         animateArcadeGates(this.gates, progress, performance.now() / 1000);
+        updateKenneyPoliceLights(this.meshes,performance.now()/1000);
         // During an encounter, hide nearby giant choice billboards so the camera
         // can show the front line. Gate collision/solver data remain untouched.
         const combatView=['fighting','intro','final_chase','final_capture'].includes(this.game.state)
