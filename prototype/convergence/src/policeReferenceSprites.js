@@ -8,7 +8,7 @@ const widths={crs:1.55,bac:1.45,bravm:2.70};
 const loader=new THREE.TextureLoader();
 const textures=new Map();
 const active=new Set();
-function getTexture(kind){
+export function getPoliceReferenceTexture(kind){
   if(!textures.has(kind)){
     const path=import.meta.env.BASE_URL+'assets/police-reference/'+MAPS[kind];
     textures.set(kind,new Promise((ok,fail)=>loader.load(path,texture=>{
@@ -20,11 +20,11 @@ function getTexture(kind){
   return textures.get(kind);
 }
 export const REFERENCE_MODELS=Object.freeze(Object.values(MAPS));
-export function preloadReferencePolice(){return Promise.allSettled(Object.keys(MAPS).map(getTexture));}
+export function preloadReferencePolice(){return Promise.allSettled(Object.keys(MAPS).map(getPoliceReferenceTexture));}
 export function attachReferenceOfficer(officer,kind,index=0){
   if(!MAPS[kind]||officer.userData.policeReferenceRequested)return;
   officer.userData.policeReferenceRequested=true;
-  getTexture(kind).then(texture=>{
+  getPoliceReferenceTexture(kind).then(texture=>{
     if(!officer.parent)return;
     const material=new THREE.SpriteMaterial({map:texture,transparent:true,depthWrite:false,alphaTest:.10,
       color:0xffffff,sizeAttenuation:true});

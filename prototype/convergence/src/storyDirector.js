@@ -234,7 +234,7 @@ export class StoryDirector {
     }
     game.crowdManager.updatePlayerPosition(game.playerX,-game.trackZ);
     game.crowdManager.update(dt);
-    game.camera.position.lerp(new THREE.Vector3(game.playerX*.3,5.3,-game.trackZ+8),Math.min(1,dt*7));
+    game.camera.position.lerp(new THREE.Vector3(game.playerX*.3,game.crowdManager.getCameraHeight(),-game.trackZ+game.crowdManager.getCameraDistance()),Math.min(1,dt*7));
     game.camera.lookAt(game.playerX*.2,1.2,-game.trackZ-5);
     if(canCatchTarget({
       level:game.geographicLevel,finalLineDefeated:!!game.levelGenerator.boss?.defeated,

@@ -8,6 +8,7 @@ import { disposeKenneyCityDetails } from './kenneyCity.js';
 import { makeOfficer, makeVan } from './characters.js';
 import { upgradePoliceOfficer, resetPoliceVisualBudget } from './policeAssets.js';
 import { upgradeBravMotorcycle, resetMotorcycles } from './motorcycleAssets.js';
+import {StreetPresence} from './streetPresence.js';
 import { ParisEnvironment } from './parisEnvironment.js';
 import { disposeUrbanDecayAssets } from './urbanDecayAssets.js';
 import { updateKenneyPoliceLights } from './kenneyCity.js';
@@ -26,6 +27,8 @@ export class LevelGenerator {
     }
 
     clear() {
+        this.streetPresence?.dispose();
+        this.streetPresence=null;
         this.parisEnvironment?.dispose();
         this.parisEnvironment=null;
         disposeUrbanDecayAssets(this.meshes);
@@ -63,6 +66,7 @@ export class LevelGenerator {
         this.createObstacles(level, trackLength);
         this.createEnemies(level, trackLength);
         this.createBoss(level, trackLength);
+        this.streetPresence=new StreetPresence(this.scene,this.game,this.plan,this.game.geographicLevel);
         // Geography replaces only static scenery. TV, police and combat objects remain above.
     }
 
@@ -146,20 +150,18 @@ export class LevelGenerator {
     }
 
     createEnemyCrowd(enemy, z, count) {
-        // A six-person unit must actually show six officers, not sixteen.
-        // Large groups use a capped visual proxy for mobile performance.
+        // The central fighting unit keeps its tactical size; instanced patrols
+        // occupy the flanks without adding hidden combat difficulty.
         const displayCount = Math.min(Math.max(count, 1), 24);
         const group = new THREE.Group();
         group.userData.dynamic = true;
 
         for (let i = 0; i < displayCount; i++) {
-            const angle = (i / displayCount) * Math.PI * 2 + Math.random() * 0.5;
-            const radius = Math.sqrt(i / displayCount) * 2.5;
             const stickman = makeOfficer(enemy.kind,i);
             // Police kit (shields, visor and launchers) faces local +Z,
             // toward the approaching protesters. Do not reverse the officer.
             stickman.position.set(
-                (i % 8 - 3.5) * .68,
+                (i % 8 - (Math.min(8,displayCount)-1)/2) * .68,
                 0,
                 -Math.floor(i / 8) * .83
             );

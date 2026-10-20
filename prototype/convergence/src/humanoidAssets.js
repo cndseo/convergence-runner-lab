@@ -4,6 +4,7 @@ import { clone as cloneSkeleton } from 'three/addons/utils/SkeletonUtils.js';
 import { createApprovedLeader, showWalkingLegs } from './approvedLeader.js';
 import { dressFaction, FACTIONS } from './factionOutfits.js';
 import { createRealisticWalker, realisticAtlasRow } from './realisticHumanoids.js';
+import {DENSITY_LIMITS} from './humanDensity.mjs';
 import {CHARACTER_ATLAS} from './characterCatalog.mjs';
 import {createGreenSmoke} from './referenceOutfits.js';
 import {updateCharacterModel3D} from './characterModels3D.js';
@@ -43,9 +44,9 @@ function getAtlas() {
  }
  return atlas;
 }
-function createImpostors(crowd) {
+export function createMarchBatch(capacity=DENSITY_LIMITS.crowd) {
  const geometry=new THREE.PlaneGeometry(realisticEnabled?CHARACTER_ATLAS.planeWidth:1.92,realisticEnabled?CHARACTER_ATLAS.planeHeight:2.64);
- const rows=new Float32Array(256),phases=new Float32Array(256);
+ const rows=new Float32Array(capacity),phases=new Float32Array(capacity);
  geometry.setAttribute('factionRow',new THREE.InstancedBufferAttribute(rows,1));
  geometry.setAttribute('walkPhase',new THREE.InstancedBufferAttribute(phases,1));
  const material=new THREE.MeshBasicMaterial({map:getAtlas(),alphaTest:.18,side:THREE.DoubleSide});
@@ -58,11 +59,16 @@ function createImpostors(crowd) {
  };
  const mesh=new THREE.InstancedMesh(geometry,material,rows.length);
  mesh.frustumCulled=false;mesh.count=0;mesh.userData.sharedHumanoidAsset=true;
- crowd.playerGroup.add(mesh);
+ mesh.instanceMatrix.setUsage(THREE.DynamicDrawUsage);
  const matrix=new THREE.Object3D();
+ return {mesh,time,rows,phases,geometry,matrix,realistic:realisticEnabled};
+}
+function createImpostors(crowd) {
+ const batch=createMarchBatch();
+ crowd.playerGroup.add(batch.mesh);
  const smoke=realisticEnabled?createGreenSmoke(256):null;
  if(smoke){smoke.count=0;crowd.playerGroup.add(smoke);}
- crowd.impostors={mesh,time,rows,phases,geometry,matrix,smoke};
+ crowd.impostors={...batch,smoke};
 }
 async function upgradeToRealistic(crowd,runner,index,group){
  try{
@@ -152,6 +158,26 @@ export function updateAnimatedHumanoids(crowd,dt) {
    }imp.matrix.rotation.set(0,0,0);
   }
  }
+ // Hundreds of companions share the existing atlas and the same draw call.
+ // They are never actors in playerStickmen and cannot create damage, ammo or score.
+ const layout=crowd.density;
+ const slot=crowd._densitySlot??=( {x:0,z:0} );
+ const reduced=crowd.game?.experience?.reducedMotion;
+ for(let i=crowd.playerCount;i<layout.total&&n<imp.rows.length;i++){
+  crowd.getVisualPosition(i,slot);
+  const guard=i>=layout.marchers;
+  const grow=i>=crowd.previousVisualTotal ? crowd.densityGrowth : 1;
+  const scale=(.94+(i%5)*.018)*(reduced?1:Math.max(.02,grow));
+  imp.matrix.position.set(slot.x,(realisticEnabled?CHARACTER_ATLAS.centerY:1.24)*scale,
+    slot.z+(1-grow)*.65);
+  imp.matrix.scale.setScalar(scale);imp.matrix.rotation.set(0,0,0);imp.matrix.updateMatrix();
+  imp.mesh.setMatrixAt(n,imp.matrix.matrix);
+  // Protective ranks alternate the approved firefighter, medic and yellow vest.
+  const variant=(Math.imul(i+11,2654435761)>>>0);
+  imp.rows[n]=guard ? (realisticEnabled?[1,2,7][variant%3]:[3,4,0][variant%3])
+    : realisticEnabled?variant%CHARACTER_ATLAS.rows:variant%6;
+  imp.phases[n]=(i*3.17)%12;n++;
+ }
  if(imp.smoke){imp.smoke.count=smokeCount;imp.smoke.instanceMatrix.needsUpdate=true;imp.smoke.material.uniforms.time.value=imp.time.value;}
  imp.mesh.count=n;imp.mesh.instanceMatrix.needsUpdate=true;
  imp.geometry.attributes.factionRow.needsUpdate=true;imp.geometry.attributes.walkPhase.needsUpdate=true;
@@ -164,5 +190,5 @@ export function clearHumanoids(crowd) {
    human.model.traverse(n=>{if(n.isSkinnedMesh)n.skeleton?.dispose();if(n.userData.ownedLeaderGeometry){n.geometry.dispose();n.material.dispose();}});
   }
  }
- if(crowd.impostors){crowd.impostors.geometry.dispose();crowd.impostors.mesh.material.dispose();crowd.impostors.smoke?.geometry.dispose();crowd.impostors.smoke?.material.dispose();crowd.impostors=null;}
+ if(crowd.impostors){crowd.impostors.mesh.dispose();crowd.impostors.geometry.dispose();crowd.impostors.mesh.material.dispose();crowd.impostors.smoke?.geometry.dispose();crowd.impostors.smoke?.material.dispose();crowd.impostors=null;}
 }

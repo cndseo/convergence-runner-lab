@@ -349,6 +349,8 @@ export class Game {
     update(delta) {
         this.experience?.update(delta);
         this.tvBreak?.update(delta);
+        if(['playing','fighting','bravm_charge','boss_defeated','final_chase','intro'].includes(this.state))
+            this.levelGenerator.streetPresence?.update(this.trackZ,delta);
         if(['intro','final_chase','final_capture'].includes(this.state)) {
             this.levelGenerator.parisEnvironment?.update(this.state==='intro'?(this.story.line||0):this.trackZ);
             this.story?.update(delta);
@@ -397,8 +399,8 @@ export class Game {
             this.fightCameraTarget ??= new THREE.Vector3();
             this.fightCameraTarget.set(
                 this.playerX * .29 + .75 * enter + shakeX,
-                6.3 - 1.15 * enter + .12 * pressure + shakeY + supportFrame,
-                -this.trackZ + 8.4 - .95 * enter + .1 * pressure + supportFrame
+                this.crowdManager.getCameraHeight() - .65 * enter + .12 * pressure + shakeY + supportFrame,
+                -this.trackZ + this.crowdManager.getCameraDistance() - .65 * enter + .1 * pressure + supportFrame
             );
             this.camera.position.lerp(this.fightCameraTarget, Math.min(1, delta * 6.5));
             this.camera.lookAt(this.playerX * .28, 1.0, -this.trackZ - .9);
@@ -423,9 +425,12 @@ export class Game {
 
         // Update camera
         this.camera.position.x = this.playerX * 0.3;
-        this.camera.position.y = 6.3;
-        this.camera.position.z = -this.trackZ + 8.4;
-        this.camera.lookAt(this.playerX * 0.3, .8, -this.trackZ - 8.0);
+        const cameraBlend=Math.min(1,delta*3);
+        this.camera.position.y += (this.crowdManager.getCameraHeight()-this.camera.position.y)*cameraBlend;
+        this.marchCameraDistance??=8.4;
+        this.marchCameraDistance+=(this.crowdManager.getCameraDistance()-this.marchCameraDistance)*cameraBlend;
+        this.camera.position.z = -this.trackZ + this.marchCameraDistance;
+        this.camera.lookAt(this.playerX * 0.3, .8, -this.trackZ - 5.0);
 
         // Update light position to follow player
         this.directionalLight.position.set(
