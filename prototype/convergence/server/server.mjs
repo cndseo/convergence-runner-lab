@@ -11,6 +11,8 @@ export const PRODUCTS = Object.freeze({
  dinosaur:{sku:'dinosaur',name:'CONVERGENCE — Dinosaure gonflable',cents:199,description:'Personnage déguisé, sans avantage tactique'},
  marseille1:{sku:'marseille1',name:'CONVERGENCE — Renfort marseillais x1',cents:299,description:'Une intervention spéciale en campagne',charges:1},
  marseille3:{sku:'marseille3',name:'CONVERGENCE — Renfort marseillais x3',cents:897,description:'Trois interventions spéciales en campagne',charges:3},
+ genz3:{sku:'genz3',name:'CONVERGENCE - 3 tirs GenZ',cents:99,description:'3 tirs pyrotechniques virtuels (campagne)',ammo:3},
+ genz12:{sku:'genz12',name:'CONVERGENCE - 12 tirs GenZ',cents:299,description:'12 tirs pyrotechniques virtuels (campagne)',ammo:12},
  marseille10:{sku:'marseille10',name:'CONVERGENCE — Renfort marseillais x10',cents:2990,description:'Dix interventions spéciales en campagne',charges:10}
 });
 const sha=s=>crypto.createHash('sha256').update(s).digest('hex');
@@ -32,7 +34,9 @@ function database(file){
  CREATE TABLE IF NOT EXISTS orders(session_id TEXT PRIMARY KEY,player_id TEXT NOT NULL REFERENCES players(id),sku TEXT NOT NULL,created TEXT NOT NULL);
  CREATE TABLE IF NOT EXISTS inventory(player_id TEXT NOT NULL REFERENCES players(id),sku TEXT NOT NULL,created TEXT NOT NULL,PRIMARY KEY(player_id,sku));
  CREATE TABLE IF NOT EXISTS marseille_charges(player_id TEXT PRIMARY KEY REFERENCES players(id),charges INTEGER NOT NULL DEFAULT 0 CHECK(charges>=0));
- CREATE TABLE IF NOT EXISTS support_redemptions(request_id TEXT PRIMARY KEY,player_id TEXT NOT NULL REFERENCES players(id),remaining INTEGER NOT NULL,created TEXT NOT NULL);`);
+ CREATE TABLE IF NOT EXISTS support_redemptions(request_id TEXT PRIMARY KEY,player_id TEXT NOT NULL REFERENCES players(id),remaining INTEGER NOT NULL,created TEXT NOT NULL);
+ CREATE TABLE IF NOT EXISTS genz_ammo(player_id TEXT PRIMARY KEY REFERENCES players(id),charges INTEGER NOT NULL DEFAULT 0 CHECK(charges>=0));
+ CREATE TABLE IF NOT EXISTS genz_redemptions(request_id TEXT PRIMARY KEY,player_id TEXT NOT NULL REFERENCES players(id),remaining INTEGER NOT NULL,created TEXT NOT NULL);`);
  return db;
 }
 function auth(db,req){
@@ -102,7 +106,8 @@ export function createApiServer({dbPath=':memory:',clock=()=>new Date(),corsOrig
     if(!player)return json(res,401,{error:'unauthorized'});
     const owned=db.prepare('SELECT sku FROM inventory WHERE player_id=?').all(player.id).map(x=>x.sku);
     const charges=db.prepare('SELECT charges FROM marseille_charges WHERE player_id=?').get(player.id)?.charges||0;
-    return json(res,200,{owned,marseilleCharges:charges});
+    const genzAmmo=db.prepare('SELECT charges FROM genz_ammo WHERE player_id=?').get(player.id)?.charges||0;
+    return json(res,200,{owned,marseilleCharges:charges,genzAmmo});
    }
    if(req.method==='POST'&&path==='/api/v1/support/consume'){
     const player=auth(db,req);if(!player)return json(res,401,{error:'unauthorized'});
@@ -118,6 +123,20 @@ export function createApiServer({dbPath=':memory:',clock=()=>new Date(),corsOrig
       db.exec('COMMIT');return json(res,200,{remaining:updated.charges,spent:1});
     }catch(e){db.exec('ROLLBACK');throw e;}
    }
+   if(req.method==='POST'&&path==='/api/v1/genz/consume'){
+    const player=auth(db,req);if(!player)return json(res,401,{error:'unauthorized'});
+    const params=JSON.parse((await readBody(req)).toString('utf8'));
+    if(typeof params.requestId!=='string'||!/^[0-9a-f-]{36}$/.test(params.requestId))return json(res,400,{error:'invalid_request_id'});
+    db.exec('BEGIN IMMEDIATE');
+    try{
+     const previous=db.prepare('SELECT remaining FROM genz_redemptions WHERE request_id=? AND player_id=?').get(params.requestId,player.id);
+     if(previous){db.exec('COMMIT');return json(res,200,{remaining:previous.remaining,idempotent:true});}
+     const updated=db.prepare('UPDATE genz_ammo SET charges=charges-1 WHERE player_id=? AND charges>0 RETURNING charges').get(player.id);
+     if(!updated){db.exec('COMMIT');return json(res,409,{error:'no_genz_ammo'});}
+     db.prepare('INSERT INTO genz_redemptions VALUES(?,?,?,?)').run(params.requestId,player.id,updated.charges,new Date().toISOString());
+     db.exec('COMMIT');return json(res,200,{remaining:updated.charges,spent:1});
+    }catch(e){db.exec('ROLLBACK');throw e;}
+   }
    if(req.method==='POST'&&path==='/api/v1/shop/checkout'){
     if(!paymentsReady)return json(res,503,{error:'payments_disabled'});
     const player=auth(db,req);
@@ -125,7 +144,7 @@ export function createApiServer({dbPath=':memory:',clock=()=>new Date(),corsOrig
     const params=JSON.parse((await readBody(req)).toString('utf8'));
     const product=PRODUCTS[params.sku];
     if(!product)return json(res,400,{error:'unknown_product'});
-    if(!product.charges && db.prepare('SELECT sku FROM inventory WHERE player_id=? AND sku=?').get(player.id,product.sku))
+    if(!product.charges && !product.ammo && db.prepare('SELECT sku FROM inventory WHERE player_id=? AND sku=?').get(player.id,product.sku))
       return json(res,409,{error:'already_owned'});
     const session=await stripeClient.checkout.sessions.create({
       mode:'payment',
@@ -155,7 +174,9 @@ export function createApiServer({dbPath=':memory:',clock=()=>new Date(),corsOrig
       try{
        const inserted=db.prepare('INSERT OR IGNORE INTO orders VALUES(?,?,?,?)').run(session.id,pid,sku,new Date().toISOString()).changes;
        if(inserted){
-        if(PRODUCTS[sku].charges){
+        if(PRODUCTS[sku].ammo){
+         db.prepare('INSERT INTO genz_ammo(player_id,charges) VALUES(?,?) ON CONFLICT(player_id) DO UPDATE SET charges=charges+excluded.charges').run(pid,PRODUCTS[sku].ammo);
+        }else if(PRODUCTS[sku].charges){
          db.prepare('INSERT INTO marseille_charges(player_id,charges) VALUES(?,?) ON CONFLICT(player_id) DO UPDATE SET charges=charges+excluded.charges').run(pid,PRODUCTS[sku].charges);
         }else db.prepare('INSERT OR IGNORE INTO inventory VALUES(?,?,?)').run(pid,sku,new Date().toISOString());
        }

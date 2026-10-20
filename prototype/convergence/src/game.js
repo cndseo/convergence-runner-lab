@@ -20,6 +20,7 @@ import { preloadRunnerHumanoid } from './humanoidAssets.js';
 import { CombatChoreography } from './combatChoreography.js';
 import { LBDSystem } from './lbdSystem.js';
 import { GenzFireworks } from './genzFireworks.js';
+import { TearGasSystem } from './tearGasSystem.js';
 import { MarseilleReinforcements } from './marseilleReinforcements.js';
 
 // Forward movement calibrated for a walking demonstration, not a sprint.
@@ -112,6 +113,7 @@ export class Game {
         this.audio = new AudioManager();
         this.lbdSystem = new LBDSystem(this);
         this.genzFireworks = new GenzFireworks(this);
+        this.tearGasSystem = new TearGasSystem(this);
         this.marseille = new MarseilleReinforcements(this);
         this.bravmGateCharge = new BravmGateCharge(this);
         this.tvBreak = new TVBreakEffects(this);
@@ -311,6 +313,7 @@ export class Game {
         this.audio.stopCombatVoice?.();
         this.lbdSystem?.clear();
         this.genzFireworks?.clear();
+        this.tearGasSystem?.clear();
         this.marseille?.clear();
         this.bravmGateCharge?.clear();
         this.tvBreak?.clear();
@@ -351,6 +354,7 @@ export class Game {
         // Daily challenges never activate this effect.
         if(!this.marseille?.active && !this.marseille?.pending)this.lbdSystem?.update(delta);
         this.genzFireworks?.update(delta);
+        this.tearGasSystem?.update(delta);
         this.marseille?.update(delta);
         updateReferenceMotorcycleCharge(this,delta);
         if(this.state==='bravm_charge'){
@@ -406,7 +410,7 @@ export class Game {
         }
 
         // Move forward
-        this.trackZ += this.speed * (this.lbdSystem?.marchFactor ?? 1) * delta;
+        this.trackZ += this.speed * (this.lbdSystem?.marchFactor ?? 1) * (this.tearGasSystem?.slowFactor ?? 1) * delta;
 
         // Combat poses operate on individual runners, never teleport the whole group.
         this.crowdManager.updatePlayerPosition(this.playerX, -this.trackZ);
@@ -587,7 +591,7 @@ export class Game {
                 this.combatChoreo?.dispose();
                 this.combatChoreo = new CombatChoreography(this,enemy);
                 // Fireworks may be purely visual if Gen Z was recruited.
-                this.genzFireworks?.fire();
+                this.genzFireworks?.showButton();
                 this.speed = 0;
                 this.audio.playHit();
                 this.ui.screenShake(10);
@@ -739,7 +743,7 @@ export class Game {
         this.speed = 0;
         this.combatChoreo?.dispose();
         this.combatChoreo=new CombatChoreography(this,this.fightingEnemy);
-        this.genzFireworks?.fire();
+        this.genzFireworks?.showButton();
 
         // Show boss health bar
         this.ui.showBossHealthBar(boss.health);

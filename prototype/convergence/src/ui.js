@@ -39,12 +39,12 @@ export class UIManager {
             if (!['playing','fighting','bravm_charge'].includes(this.game.state)) return;
             this.game.pausedState = this.game.state;
             this.game.state = 'paused'; panel.classList.remove('hidden');
-            this.game.marseille?.showButton(); // Hide attack action immediately during pause.
+            this.game.marseille?.showButton();this.game.genzFireworks?.showButton(); // Hide attack action immediately during pause.
             this.game.audio.pauseAudio();
         });
         document.getElementById('resume-btn').addEventListener('click', () => {
             this.game.state = this.game.pausedState || 'playing'; panel.classList.add('hidden');
-            this.game.marseille?.showButton(); // Restore CTA only if attack can now be launched.
+            this.game.marseille?.showButton();this.game.genzFireworks?.showButton(); // Restore CTA only if attack can now be launched.
             this.game.audio.resumeAudio();
         });
         const soundButton=document.getElementById('ambience-toggle-btn');

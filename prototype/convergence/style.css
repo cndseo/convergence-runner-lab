@@ -706,3 +706,15 @@ html,body{width:100%;max-width:100%;overflow:hidden}
 @media (prefers-reduced-motion: reduce) {
     #start-screen .menu-actions > .btn { transition: none; }
 }
+
+/* GenZ consumable: separate from the Marseille attack, visible only when actionable. */
+#genz-ammo-button {
+ position:absolute;z-index:61;bottom:calc(180px + env(safe-area-inset-bottom,0px));
+ right:clamp(10px,3vw,24px);max-width:min(63vw,225px);min-height:52px;
+ background:linear-gradient(130deg,#116a80,#7b1b86);color:white;
+ border:2px solid #42f5eb;border-radius:15px;box-shadow:0 3px 15px #0dd7dd66;
+ padding:9px 12px;font:800 clamp(12px,3.4vw,16px)/1.15 system-ui;
+ cursor:pointer;touch-action:manipulation;
+}
+#genz-ammo-button:focus-visible{outline:3px solid white;outline-offset:3px}
+#genz-ammo-button:disabled{opacity:.6;cursor:default}

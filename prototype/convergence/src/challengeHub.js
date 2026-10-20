@@ -7,6 +7,8 @@ export const PREMIUM_CATALOG = Object.freeze([
   {id:'dinosaur',label:'Dinosaure gonflable',description:'Personnage déguisé en dinosaure',cents:199,art:'dinosaur-front.webp'},
   {id:'marseille1',label:'Renfort marseillais · 1 intervention',description:'Une intervention spéciale en mode campagne',cents:299,art:'marseille-front.webp'},
   {id:'marseille3',label:'Renfort marseillais · 3 interventions',description:'Trois interventions spéciales en mode campagne',cents:897},
+  {id:'genz3',label:'GenZ - 3 tirs pyrotechniques',description:'3 munitions virtuelles, déclenchement manuel en campagne',cents:99},
+  {id:'genz12',label:'GenZ - 12 tirs pyrotechniques',description:'12 munitions virtuelles, déclenchement manuel en campagne',cents:299},
   {id:'marseille10',label:'Renfort marseillais · 10 interventions',description:'Dix interventions spéciales en mode campagne',cents:2990}
 ]);
 
@@ -183,6 +185,10 @@ export class ChallengeHub {
       const pay=this.action(item.comingSoon?'BIENTÔT':owned?'ACQUIS':(item.cents/100).toFixed(2).replace('.',',')+' €',
         ()=>this.checkout(item.id),item.comingSoon||owned||!this.paymentsEnabled);
       row.append(info,pay);this.body.append(row);
+      if(item.id==='genz3' && (!this.paymentsEnabled || this.game.qa)){
+        const preview=this.action('TESTER 3 TIRS GENZ (DÉMO)',()=>this.previewGenz());
+        preview.classList.add('character-preview-action');this.body.append(preview);
+      }
       if(item.id==='marseille1' && (!this.paymentsEnabled || this.game.qa)){
         const preview=this.action('TESTER UNE SUPER ATTAQUE (DÉMO)',()=>this.previewMarseille());
         preview.classList.add('character-preview-action');
@@ -198,6 +204,8 @@ export class ChallengeHub {
     const charges=make('p','challenge-credit-count',
       'Interventions marseillaises disponibles : '+(this.game.marseille?.available()||0));
     this.body.append(charges);
+    this.body.append(make('p','challenge-credit-count',
+      'Munitions GenZ disponibles : '+(this.game.genzFireworks?.available()||0)));
     const warning=make('p','challenge-warning',this.paymentsEnabled
       ?'Paiement sur Stripe Checkout. Uniquement après confirmation serveur.'
       :'Paiements désactivés. Le bouton TESTER permet de voir les personnages dans le prototype, sans achat.');
@@ -221,6 +229,31 @@ export class ChallengeHub {
     game.ui.hideAllScreens();
     this.panel.classList.add('hidden');
     game.startGame();
+  }
+  previewGenz(){
+    if(this.paymentsEnabled && !this.game.qa)return;
+    const g=this.game;
+    g.genzFireworks.demoCharges=3;
+    g.mode='campaign';this.panel.classList.add('hidden');g.ui.hideAllScreens();
+    g.startGame();
+    // Preview only: spawn a recruited GenZ on the demonstration run.
+    const runner=g.crowdManager.playerStickmen[1];
+    if(runner){runner.userData.bonusFaction='genz';g.genzFireworks.addGenz(1);}
+    g.ui.showFloatingText?.('DÉMO GENZ : 3 TIRS','#26f9f0');
+  }
+  async consumeGenzAmmo(){
+    if(this.game.mode!=='campaign')return false;
+    const ammo=this.game.genzFireworks;
+    if(ammo.demoCharges>0){ammo.demoCharges--;ammo.showButton();return true;}
+    if(!this.apiBase||ammo.charges<=0)return false;
+    const token=await this.ensurePlayer();
+    const response=await fetch(this.apiBase+'/api/v1/genz/consume',{
+      method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+token},
+      body:JSON.stringify({requestId:crypto.randomUUID()})
+    });
+    if(!response.ok)return false;
+    const data=await response.json();ammo.syncPurchasedCharges(data.remaining);
+    return true;
   }
   previewMarseille(){
     const game=this.game;
@@ -269,9 +302,10 @@ export class ChallengeHub {
         headers:{'Authorization':'Bearer '+this.playerToken}
       });
       if(!response.ok)return;
-      const {owned,marseilleCharges}=await response.json();
+      const {owned,marseilleCharges,genzAmmo}=await response.json();
       this.ownedSkus=new Set(Array.isArray(owned)?owned:[]);
       if(this.game.marseille && Number.isSafeInteger(marseilleCharges))this.game.marseille.syncPurchasedCharges(marseilleCharges);
+      this.game.genzFireworks?.syncPurchasedCharges(genzAmmo);
       this.applyPremiumAppearance();
     }catch{/* Keep existing unlocked appearances when offline. */}
   }
