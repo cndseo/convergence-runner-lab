@@ -2,6 +2,9 @@ import * as THREE from 'three';
 import {districtForLevel} from './parisDistricts.mjs';
 import {ParisBatch,PALETTE as P,building,tree,lamp,bench,metro,shelter,kiosk,car,crosswalk,disposeParisGroup} from './parisArchitecture.js';
 import {landmarkSpecs,makeLandmark} from './parisMonuments.js';
+import {urbanLayer} from './parisUrbanDetails.js';
+import {texturedGround} from './parisSurface.js';
+import {districtSky,urbanBackdrop} from './parisAtmosphere.js';
 
 const CHUNK=48, AHEAD=116, BEHIND=28;
 export class ParisEnvironment {
@@ -10,18 +13,17 @@ export class ParisEnvironment {
   this.root=new THREE.Group();this.root.name='CONVERGENCE_PARIS_'+this.config.slug;
   this.root.userData.dynamic=true;scene.add(this.root);
   this.chunks=new Map();this.landmarks=new Map();this.specs=landmarkSpecs(this.config,trackLength);
+  this.backdrop=urbanBackdrop(this.config,trackLength);this.root.add(this.backdrop);
   this.lastRegion=null;this.applyAmbience();this.update(0);
  }
  applyAmbience(){
   const c=this.config,g=this.game;
   // An owned custom theme still takes precedence over the district's default sky.
   if(g.equippedTheme!=='default'){g.applyTheme();return;}
-  const canvas=document.createElement('canvas');canvas.width=1;canvas.height=256;
-  const ctx=canvas.getContext('2d'),gradient=ctx.createLinearGradient(0,0,0,256);
-  c.sky.forEach((v,i)=>gradient.addColorStop(i/2,v));ctx.fillStyle=gradient;ctx.fillRect(0,0,1,256);
   if(this.scene.background?.isTexture)this.scene.background.dispose();
-  this.scene.background=new THREE.CanvasTexture(canvas);this.scene.background.colorSpace=THREE.SRGBColorSpace;
-  this.scene.fog=new THREE.FogExp2(c.fog,c.id===11?.0035:.0048);
+  this.scene.background=districtSky(c);
+  this.scene.traverse(o=>{if(o.isHemisphereLight){o.intensity=.58;o.groundColor.set(c.id>8?0x665462:0x777352);}if(o.isAmbientLight)o.intensity=c.id>9?.67:.82;});
+  this.scene.fog=new THREE.FogExp2(c.fog,c.id===11?.0028:.0035);
   if(g.directionalLight){g.directionalLight.color.set(c.sun);g.directionalLight.intensity=c.light;}
  }
  facadeX(progress){
@@ -31,7 +33,7 @@ export class ParisEnvironment {
    const bulge=Math.sin(Math.min(1,Math.max(0,progress/this.length))*Math.PI);
    return c.facade-5+6*bulge;
   }
-  return c.facade;
+  return c.facade+([4,6].includes(c.id)?3:[2,7,12].includes(c.id)?2:0);
  }
  createChunk(index){
   const c=this.config,b=new ParisBatch('PARIS_CHUNK_'+index),start=index*CHUNK,end=start+CHUNK;
@@ -117,6 +119,13 @@ export class ParisEnvironment {
    b.sign(c.name.toUpperCase(),-7.6,3.2,-9,4.5,.65);
   }
   if(index===3)b.sign(c.exit.toUpperCase()+' →',8.5,3.1,-166,5.6,.65);
+  urbanLayer(b,c,start,end,this.length,p=>this.facadeX(p));
+  const square=[1,5,9,10].includes(c.id);
+  texturedGround(b.group,square?'cobbles':'asphalt',c.road,0,zz,c.width,CHUNK+.02,.029);
+  for(const side of [-1,1]){
+   const curb=plaza?Math.max(7,c.width/2-3):c.width/2,front=this.facadeX((start+end)/2)-3.75;
+   if(front>curb)texturedGround(b.group,'paving',0xd7d1c5,side*(curb+(front-curb)/2),zz,front-curb,CHUNK+.02,.179);
+  }
   return b.finish();
  }
  update(progress=0){
@@ -148,6 +157,7 @@ export class ParisEnvironment {
    group.traverse(o=>{if(o.userData.parisOwnedMaterial)o.material.dispose();});
    disposeParisGroup(group);
   }
+  disposeParisGroup(this.backdrop);
   this.chunks.clear();this.landmarks.clear();this.root.removeFromParent();
  }
  diagnostics(){

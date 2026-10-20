@@ -15,10 +15,10 @@ const materials=new Map(), signs=new Map();
 const dummy=new THREE.Object3D();
 export const PALETTE={cream:0xe4d4b9,stone:0xcbbda6,slate:0x455364,iron:0x243238,
  glass:0x304d62,bronze:0x47736b,gold:0xc9a457,wood:0x76563f,white:0xf1e9d4,red:0x9c443b,blue:0x2c547d,green:0x35564c};
-function material(color,glow=false){
- const key=color+':'+glow;
+function material(color,glow=false,metal=false){
+ const key=color+':'+glow+':'+metal;
  if(!materials.has(key))materials.set(key,new THREE.MeshStandardMaterial({
-  color,roughness:glow?.42:.86,metalness:color===PALETTE.gold?.48:.06,
+  color,roughness:glow?.42:.86,metalness:metal||color===PALETTE.gold?.48:.06,
   emissive:glow?color:0,emissiveIntensity:glow?.4:0
  }));
  return materials.get(key);
@@ -26,9 +26,10 @@ function material(color,glow=false){
 export class ParisBatch {
  constructor(name){this.group=new THREE.Group();this.group.name=name;this.batches=new Map();}
  part(kind,color,x,y,z,w,h,d,rx=0,ry=0,rz=0,glow=false){
-  const key=kind+':'+color+':'+glow;
-  if(!this.batches.has(key))this.batches.set(key,{kind,color,glow,items:[]});
-  this.batches.get(key).items.push([x,y,z,w,h,d,rx,ry,rz]);return this;
+  const metal=color===PALETTE.gold;
+  const key=kind+':'+(glow?color:'opaque')+':'+metal;
+  if(!this.batches.has(key))this.batches.set(key,{kind,color:glow?color:0xffffff,glow,metal,items:[]});
+  this.batches.get(key).items.push([x,y,z,w,h,d,rx,ry,rz,glow?0xffffff:color]);return this;
  }
  box(c,x,y,z,w,h,d,ry=0){return this.part('box',c,x,y,z,w,h,d,0,ry);}
  cyl(c,x,y,z,r,h){return this.part('cylinder',c,x,y,z,r,h,r);}
@@ -53,14 +54,16 @@ export class ParisBatch {
   mesh.userData.parisOwnedGeometry=true;mesh.receiveShadow=true;this.group.add(mesh);return mesh;
  }
  finish(){
-  for(const {kind,color,glow,items} of this.batches.values()){
-   const mesh=new THREE.InstancedMesh(geometry[kind],material(color,glow),items.length);
+  for(const {kind,color,glow,metal,items} of this.batches.values()){
+   const mesh=new THREE.InstancedMesh(geometry[kind],material(color,glow,metal),items.length);
    for(let i=0;i<items.length;i++){
     const [x,y,z,w,h,d,rx,ry,rz]=items[i];
     dummy.position.set(x,y,z);dummy.scale.set(w,h,d);dummy.rotation.set(rx,ry,rz);dummy.updateMatrix();
     mesh.setMatrixAt(i,dummy.matrix);
+    mesh.setColorAt(i,new THREE.Color(items[i][9]));
    }
-   mesh.instanceMatrix.needsUpdate=true;mesh.receiveShadow=true;
+   mesh.instanceMatrix.needsUpdate=true;mesh.instanceColor.needsUpdate=true;mesh.receiveShadow=true;
+   mesh.castShadow=kind==='box'||kind==='sphere';
    mesh.computeBoundingSphere();mesh.name='Paris '+kind+' '+color.toString(16);this.group.add(mesh);
   }
   this.batches.clear();return this.group;
@@ -74,6 +77,9 @@ export function tree(b,x,z,color=0x577b44,size=1){
  b.cyl(0x77604b,x,1.8,z,.18,3.6);
  b.ball(color,x,4.4,z,1.65*size,2.0*size,1.6*size);
  b.ball(color,x-.75*size,4,z+.25,1.3*size,1.45*size,1.3*size);
+ for(const s of [-1,1])b.part('cylinder',0x77604b,x+s*.35,2.85,z,.075,1.7,.075,0,0,-s*.5);
+ b.ball(color,x+.8*size,4.85,z-.45,1.1*size,1.25*size,1.15*size);
+ b.ball(0x70834c,x,5.4,z+.25,.9*size,.9*size,.9*size);
  b.box(PALETTE.iron,x,.17,z,1.5,.06,1.5);
 }
 export function lamp(b,x,z,evening=false){
@@ -146,6 +152,7 @@ export function crosswalk(b,z,width=11){
 }
 export function building(b,{x,z,side,height=16,length=12,color=0xdccbb3,seed=0,shop='CAFÉ',evening=false}){
  const {cream,slate,glass,iron}=PALETTE,w=7.5,face=x-side*w/2;
+ const shutter=[0x68786d,0x536b79,0x7e7260][seed%3];
  b.box(color,x,height/2,z,w,height,length-.4);
  b.box(cream,x,height-.1,z,w+.25,.3,length);
  b.box(cream,x,2.65,z,w+.1,.23,length);
@@ -166,17 +173,55 @@ export function building(b,{x,z,side,height=16,length=12,color=0xdccbb3,seed=0,s
    b.box(evening&&(f+Math.round(dz)+seed)%4===0?0xc6a778:glass,face-side*.14,y,z+dz,.06,1.6,.87);
    b.box(cream,face-side*.19,y,z+dz,.06,1.6,.06);
    b.box(cream,face-side*.19,y+.28,z+dz,.06,.06,.9);
+   if((seed+f)%3===0)for(const q of [-1,1]){
+    b.box(shutter,face-side*.18,y,z+dz+q*.66,.10,1.65,.32);
+    for(let sl=0;sl<4;sl++)b.box(iron,face-side*.24,y-.55+sl*.36,z+dz+q*.66,.035,.035,.30);
+   }
    if(f===0||f===floors-1){
     b.box(cream,face-side*.35,y-1.01,z+dz,.7,.12,1.4);
-    b.box(iron,face-side*.65,y-.57,z+dz,.045,.8,1.4);
-    for(const q of [-.5,0,.5])b.box(cream,face-side*.68,y-.57,z+dz+q,.05,.8,.045);
+    for(const yy of [y-.93,y-.19])b.box(iron,face-side*.65,yy,z+dz,.045,.055,1.4);
+    for(let q=-.6;q<.7;q+=.2)b.box(iron,face-side*.68,y-.57,z+dz+q,.05,.74,.035);
    }
   }
+ }
+ // All street-facing end walls now have windows, relief and ground-floor premises.
+ for(const end of [-1,1]){
+  const frontZ=z+end*length/2;
+  for(let f=0;f<floors;f++)for(let col=-1;col<=1;col++){
+   const xx=x+col*2.0,y=4.2+f*2.7;
+   b.box(cream,xx,y,frontZ,1.35,1.94,.16);
+   b.box(evening&&(f+col+seed)%4===0?0xd7b67c:glass,xx,y,frontZ+end*.1,1.02,1.62,.08);
+   b.box(cream,xx,y,frontZ+end*.15,.06,1.62,.05);
+   b.box(cream,xx,y+.26,frontZ+end*.15,1.08,.07,.05);
+   b.box(cream,xx,y-1.04,frontZ+end*.18,1.5,.14,.45);
+   if(f===0||f===floors-1){
+    b.box(iron,xx,y-.65,frontZ+end*.48,1.5,.06,.045);
+    for(let q=-.6;q<=.7;q+=.3)b.box(iron,xx+q,y-.65,frontZ+end*.48,.04,.7,.04);
+   }
+  }
+  for(const dx of [-3.6,3.6]){
+   for(let y=1;y<height-.5;y+=.65)b.box(cream,x+dx,y,frontZ,.48,.34,.26);
+  }
+  b.box(iron,x,1.45,frontZ,1.6,2.9,.15);
+  b.box(cream,x,3.0,frontZ+end*.1,1.9,.27,.3);
+  b.part('ring',cream,x,2.4,frontZ+end*.13,.86,.63,.13);
+  for(const dx of [-2.35,2.35]){
+   b.box(glass,x+dx,1.3,frontZ,1.7,2.3,.17);
+   b.box(seed%2?PALETTE.red:PALETTE.green,x+dx,2.7,frontZ+end*.6,2,.14,1.2);
+  }
+  b.box(cream,x,height-.5,frontZ+end*.10,7.8,.3,.4);
+ }
+ for(const end of [-1,1]){
+  b.box(cream,face-side*.17,height/2,z+end*(length/2-.3),.4,height,.35);
+  b.box(iron,face-side*.38,height/2,z+end*(length/2-.18),.065,height,.065);
  }
  b.box(iron,face-side*.12,1.22,z-2.2,.1,2.25,1.1);
  b.box(glass,face-side*.15,1.22,z+1.4,.08,2.2,3.2);
  const shopColor=[0x385b51,0x7c3837,0x2b526b,0x74634b][seed%4];
- b.box(shopColor,face-side*.55,2.5,z+1.4,1.15,.12,3.7);
+ b.part('box',shopColor,face-side*.74,2.65,z+1.4,1.55,.12,3.9,0,0,side*.18);
+ for(let stripe=0;stripe<8;stripe++)b.part('box',cream,face-side*.75,2.73,z-.24+stripe*.48,1.54,.025,.16,0,0,side*.18);
+ b.box(shopColor,face-side*1.45,2.43,z+1.4,.1,.28,3.9);
+ b.box(cream,face-side*.2,.28,z+1.4,.2,.13,3.5);
  b.sign(shop,face-side*.19,2.22,z+1.4,3.3,.43,-side*Math.PI/2,'#'+shopColor.toString(16));
  if(seed%3===0)b.sign('PARIS',face-side*.19,3.05,z-length/2+.7,1,.33,-side*Math.PI/2,'#174a67');
 }

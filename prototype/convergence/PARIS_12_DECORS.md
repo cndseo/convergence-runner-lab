@@ -15,3 +15,9 @@ Base : deeead2 (TV originales, cadeau Marseille manuel, renforts 2D) + menu 0843
 - Le jeu public n'est pas remplacé. Le tunnel de prévisualisation dépend du GMK allumé.
 
 Repères architecturaux : https://parcoursrevolution.paris.fr/fr/quartiers/15-le-quartier-de-la-place-de-la-nation ; https://www.elysee.fr/maison-elysee/infos .
+
+## Enrichissement visuel — 20 octobre, seconde livraison
+
+Les douze quartiers reçoivent une couche commune instanciée de passants, manifestants latéraux, stationnements, deux-roues, terrasses, mobilier, plantations et marquages, ainsi que des ensembles propres à chaque lieu. Façades et pignons : fenêtres, volets, corniches, garde-corps ajourés, encadrements, devantures et stores rayés. Sols procéduraux, ombres urbaines, ciel nuageux, arrière-plan de toitures et mise en scène des monuments. Aucun nouveau collisionneur.
+
+Les couleurs par instance réduisent les appels de dessin malgré la densité accrue : 103 à 152 dans les vues de contrôle des douze quartiers, contre 124 à 178 avant enrichissement. Géométrie visible plus dense ; les résultats ne constituent pas une mesure sur iPhone physique. Les douze scènes, le toucher, le bonus en réserve et les parcours complets 1/12 ont été vérifiés sans erreur JavaScript ni asset absent. Le gameplay, les achats, les PNG et les animations existants ne sont pas modifiés.

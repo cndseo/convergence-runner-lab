@@ -1,4 +1,5 @@
 import * as THREE from 'three';
+import {monumentPrecinct} from './parisUrbanDetails.js';
 import {ParisBatch,PALETTE as P,statue,fountain,archGeometry,car,kiosk,tree,bench} from './parisArchitecture.js';
 
 // Monuments are decorative: every playable lane is kept open at ground level.
@@ -107,7 +108,7 @@ export function landmarkSpecs(c,length){
   4:[['beaumarchais',-9,52],['beaumarchais-square',17,126]],
   5:[['republique',-10.5,110],['republique-water',16,146]],
   6:[['saint-martin',0,110],['theatre',17,152]],
-  7:[['rex',-17,51],['passage',17,126]],
+  7:[['rex',-17,99],['passage',17,126]],
   8:[['garnier',-22,136],['opera-avenues',18,64]],
   9:[['madeleine',-17,125],['flowers',14,129]],
   10:[['obelisk',-9,110],['concorde-fountains',18,148],['concorde-statues',-20,138]],
@@ -231,6 +232,7 @@ export function makeLandmark(spec,c){
  case 'elysee':elysee(b,z);break;
  default:throw new Error('Unknown Paris landmark '+type);
  }
+ monumentPrecinct(b,spec,c);
  const group=b.finish();group.userData.landmark=type;group.userData.progress=progress;
  return group;
 }
