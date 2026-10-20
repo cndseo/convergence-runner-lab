@@ -177,7 +177,7 @@ export function createApiServer({dbPath=':memory:',clock=()=>new Date(),corsOrig
      const session=event.data.object;
      if(session.payment_status==='paid'){
       const linkPair=session.payment_link?Object.entries(paymentLinks).find(([,link])=>link.id===session.payment_link):null;
-      if(session.payment_link&&!linkPair)return json(res,200,{received:true,ignored:'unrelated_payment_link'});
+      if(Object.keys(paymentLinks).length&&!linkPair)return json(res,200,{received:true,ignored:'unrelated_payment'});
       if(!linkPair&&session.metadata?.game!=='convergence')return json(res,200,{received:true,ignored:'unrelated_checkout'});
       const sku=linkPair?linkPair[0]:session.metadata.sku;
       const pid=linkPair?session.client_reference_id:session.metadata.player_id;

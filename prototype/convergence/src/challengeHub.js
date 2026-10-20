@@ -409,9 +409,9 @@ export class ChallengeHub {
         body:JSON.stringify({sku})
       });
       const json=await response.json();
-      if(!response.ok || !/^https:\/\/checkout\.stripe\.com\//.test(json.url||''))throw Error('Checkout indisponible');
+      if(!response.ok || !/^https:\/\/(?:checkout|buy)\.stripe\.com\//.test(json.url||''))throw Error('Checkout indisponible');
       location.assign(json.url);
-    }catch{this.note.textContent='Paiement test indisponible actuellement.';}
+    }catch{this.note.textContent='Paiement indisponible actuellement.';}
   }
   returnToCampaignMenu(){
     const g=this.game;
