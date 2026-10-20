@@ -1,6 +1,7 @@
 import * as THREE from 'three';
 import { updateReferenceMotorcycleCharge } from './policeReferenceSprites.js';
 import { BravmGateCharge } from './bravmGateCharge.js';
+import { TVBreakEffects } from './tvBreakEffects.js';
 import { applyChoice, sufferLoss, MAX_CROWD } from './tactics.mjs';
 import { explainGateChoice, evaluateResult } from './tacticalFeedback.mjs';
 import { FINAL_CAMPAIGN_LEVEL } from './storyRules.mjs';
@@ -110,6 +111,7 @@ export class Game {
         this.genzFireworks = new GenzFireworks(this);
         this.marseille = new MarseilleReinforcements(this);
         this.bravmGateCharge = new BravmGateCharge(this);
+        this.tvBreak = new TVBreakEffects(this);
         this.story = new StoryDirector(this);
         this.story.loadAssets();
         this.challengeHub = new ChallengeHub(this);
@@ -303,6 +305,7 @@ export class Game {
         this.genzFireworks?.clear();
         this.marseille?.clear();
         this.bravmGateCharge?.clear();
+        this.tvBreak?.clear();
         this.combatChoreo?.dispose();
         this.combatChoreo=null;
         // Remove all dynamic objects
@@ -328,6 +331,7 @@ export class Game {
     }
 
     update(delta) {
+        this.tvBreak?.update(delta);
         if(['intro','final_chase','final_capture'].includes(this.state)) {
             this.story?.update(delta);
             return;
@@ -454,6 +458,7 @@ export class Game {
                 const choice=side==='left'?gate.leftGate:gate.rightGate;
                 if(!choice)continue;
                 gate.passed=true;
+                this.tvBreak?.trigger(gate,side);
                 this.highlightGate(gate,side);
                 if(choice.op==='damage'&&choice.kind==='bravm'){
                     this.bravmGateCharge.start(gate,choice,side);
