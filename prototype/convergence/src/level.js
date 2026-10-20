@@ -2,6 +2,7 @@ import * as THREE from 'three';
 import { compactStaticTrack } from './staticScenery.js';
 import { generateTacticalLevel } from './tactics.mjs';
 import { createArcadeGate, animateArcadeGates } from './arcadeGates.js';
+import { disposeTVGateArtwork } from './tvGateArt.js';
 import { placeKenneyRoadFurniture } from './assetLoader.js';
 import { upgradeBossVan } from './bossAssets.js';
 import { placeKenneyCityDetails, disposeKenneyCityDetails } from './kenneyCity.js';
@@ -35,6 +36,7 @@ export class LevelGenerator {
         this.boss = null;
         this.meshes.forEach(m => {
             if (!m.isObject3D) return;
+            disposeTVGateArtwork(m);
             this.scene.remove(m);
             if (m.geometry) m.geometry.dispose();
             if (m.material) {
@@ -145,14 +147,15 @@ export class LevelGenerator {
                 choice.bonusFaction=['gilets','genz','pompiers','infirmieres'][bonusIndex++%4];
             }
             const gate = { z: event.z, passed: false, leftGate: event.left, rightGate: event.right };
-            gate.leftMesh = this.createGateMesh(event.left, -2.5, event.z);
-            gate.rightMesh = this.createGateMesh(event.right, 2.5, event.z);
+            const gateOrder=this.gates.length*2;
+            gate.leftMesh = this.createGateMesh(event.left, -2.5, event.z, gateOrder);
+            gate.rightMesh = this.createGateMesh(event.right, 2.5, event.z, gateOrder+1);
             this.gates.push(gate);
         }
     }
 
-    createGateMesh(data, x, z) {
-        return createArcadeGate(data, x, z, this.scene, this.meshes);
+    createGateMesh(data, x, z, ordinal=0) {
+        return createArcadeGate(data, x, z, this.scene, this.meshes,ordinal);
     }
 
     createObstacles() {

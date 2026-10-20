@@ -65,11 +65,12 @@ export class StoryDirector {
     const texture=this.textures[face];
     if(!texture)return null;
     const sprite=new THREE.Sprite(new THREE.SpriteMaterial({
-      map:texture,transparent:true,alphaTest:.16,depthWrite:false,depthTest:true
+      map:texture,transparent:true,alphaTest:.02,depthWrite:false,depthTest:face==='back'
     }));
     const ratio=texture.image?.width/texture.image?.height||.70;
     sprite.scale.set(2.7*ratio,2.7,1);
     sprite.center.set(.5,.5);
+    sprite.renderOrder=face==='front'?20:0;
     sprite.userData.storyFigure=true;
     this.game.scene.add(sprite);
     return sprite;
@@ -77,6 +78,10 @@ export class StoryDirector {
   changeFace(sprite,face){
     if(!sprite || !this.textures[face] || sprite.material.map===this.textures[face])return;
     sprite.material.map=this.textures[face];
+    // The speaking face must remain in front of the CRS line: its previous
+    // depth buffer test made skin and hair look transparent through officers.
+    sprite.material.depthTest=face==='back';
+    sprite.renderOrder=face==='front'?20:0;
     sprite.material.needsUpdate=true;
   }
   destroySprite(sprite){
