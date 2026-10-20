@@ -189,6 +189,89 @@ export class AudioManager {
             this.musicGain.gain.setTargetAtTime(this.ambienceMuted?0:.35,this.ctx.currentTime,.15);
     }
 
+    // Public-domain motorbike pass-by (ezwa / PDSounds, via Wikimedia Commons).
+    // Load once, lazily after the first user gesture, and share the unlocked
+    // Web Audio context used by all other effects. No streaming during gameplay.
+    async preloadBravmMotorbike() {
+        if (this.bravmMotorbikeBuffer) return this.bravmMotorbikeBuffer;
+        if (this.bravmMotorbikeLoading) return this.bravmMotorbikeLoading;
+        if (!this.initialized) return null;
+        this.bravmMotorbikeLoading=(async()=>{
+            try {
+                const response=await fetch(import.meta.env.BASE_URL+'assets/audio/bravm-motorbike-4.mp3');
+                if (!response.ok) throw new Error('motorbike asset unavailable');
+                this.bravmMotorbikeBuffer=await this.ctx.decodeAudioData(await response.arrayBuffer());
+                return this.bravmMotorbikeBuffer;
+            } catch(error) {
+                console.warn('BRAV-M motorbike audio unavailable:',error?.message);
+                return null;
+            } finally {this.bravmMotorbikeLoading=null;}
+        })();
+        return this.bravmMotorbikeLoading;
+    }
+
+    playBravmMotorbikeCharge() {
+        if (!this.initialized || !this.ctx) return false;
+        this.stopBravmMotorbikeCharge();
+        const generation=++this.bravmMotorbikeGeneration;
+        if (!this.bravmMotorbikeBuffer) {
+            // If still loading at first collision, start only while this
+            // charge stays active; clear() invalidates the generation token.
+            this.preloadBravmMotorbike().then(buffer=>{
+                if (buffer && this.bravmMotorbikeGeneration===generation) this.startBravmMotorbikeSample(generation);
+            });
+            return false;
+        }
+        return this.startBravmMotorbikeSample(generation);
+    }
+
+    startBravmMotorbikeSample(generation) {
+        if (this.bravmMotorbikeGeneration!==generation ||
+            this.ctx?.state!=='running' || !this.bravmMotorbikeBuffer || !this.sfxGain) return false;
+        const ctx=this.ctx,now=ctx.currentTime;
+        // Two BRAV-M motorcycles, one reusable 3-second field recording.
+        // Slightly different pitch, start and stereo pan create a convincing
+        // two-bike approach. Fade out by the end of the 1.42-second charge.
+        const bus=ctx.createGain();
+        bus.gain.setValueAtTime(.001,now);
+        bus.gain.linearRampToValueAtTime(.65,now+.14);
+        bus.gain.setValueAtTime(.65,now+.87);
+        bus.gain.linearRampToValueAtTime(.001,now+1.44);
+        bus.connect(this.sfxGain);
+        const sources=[];
+        for(const [index,rate,pan,offset] of [[0,1.03,-.47,0],[1,.94,.47,.11]]){
+            const source=ctx.createBufferSource(),gain=ctx.createGain();
+            source.buffer=this.bravmMotorbikeBuffer;
+            source.playbackRate.value=rate;
+            gain.gain.value=index===0?.62:.40;
+            source.connect(gain);
+            if(ctx.createStereoPanner){
+                const stereo=ctx.createStereoPanner();stereo.pan.value=pan;
+                gain.connect(stereo);stereo.connect(bus);
+            }else gain.connect(bus);
+            source.start(now+offset);
+            source.stop(now+1.48);
+            sources.push(source);
+        }
+        this.bravmMotorbikeNodes={sources,bus};
+        return true;
+    }
+
+    stopBravmMotorbikeCharge() {
+        this.bravmMotorbikeGeneration=(this.bravmMotorbikeGeneration||0)+1;
+        const active=this.bravmMotorbikeNodes;
+        this.bravmMotorbikeNodes=null;
+        if(!active)return;
+        // Natural fade: prevent a hard cut when the animation resolves early.
+        const now=this.ctx?.currentTime||0;
+        active.bus.gain.cancelScheduledValues(now);
+        active.bus.gain.setValueAtTime(Math.max(.001,active.bus.gain.value),now);
+        active.bus.gain.linearRampToValueAtTime(.001,now+.11);
+        for(const node of active.sources){
+            try{node.stop(now+.12);}catch{} // already ended naturally
+        }
+    }
+
     // Short synthesized steps/impact layered under the original spoken recording.
     // One-shot buffers: no asset downloads and no overlapping crowd loops.
     playMarseilleFootfall() {

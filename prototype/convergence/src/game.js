@@ -278,6 +278,7 @@ export class Game {
         this.audio.startCrowdAmbience();
         this.audio.preloadCombatVoice?.();
         this.audio.preloadMarseilleAttack?.();
+        this.audio.preloadBravmMotorbike?.();
         
         // Clear scene objects
         this.clearLevel();

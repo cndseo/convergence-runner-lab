@@ -25,6 +25,7 @@ export class BravmGateCharge {
       impactZ:-g.trackZ,impactX:g.playerX,runId:g.runId,speed:g.speed};
     g.state='bravm_charge';
     g.speed=0;
+    g.audio.playBravmMotorbikeCharge?.();
     return true;
   }
   update(dt){
@@ -73,5 +74,6 @@ export class BravmGateCharge {
       // Remove scene instances without disposing shared GLB buffers here.
     }
     this.current=null;
+    this.game.audio.stopBravmMotorbikeCharge?.();
   }
 }
