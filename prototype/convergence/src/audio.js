@@ -189,6 +189,33 @@ export class AudioManager {
             this.musicGain.gain.setTargetAtTime(this.ambienceMuted?0:.35,this.ctx.currentTime,.15);
     }
 
+    // Short synthesized steps/impact layered under the original spoken recording.
+    // One-shot buffers: no asset downloads and no overlapping crowd loops.
+    playMarseilleFootfall() {
+        if(!this.ctx||this.ctx.state!=='running'||!this.sfxGain)return false;
+        const now=this.ctx.currentTime,osc=this.ctx.createOscillator(),gain=this.ctx.createGain();
+        osc.type='sine';
+        osc.frequency.setValueAtTime(94,now);
+        osc.frequency.exponentialRampToValueAtTime(48,now+.085);
+        gain.gain.setValueAtTime(.075,now);
+        gain.gain.exponentialRampToValueAtTime(.001,now+.095);
+        osc.connect(gain);gain.connect(this.sfxGain);
+        osc.start(now);osc.stop(now+.10);
+        return true;
+    }
+    playMarseilleImpact() {
+        if(!this.ctx||this.ctx.state!=='running'||!this.sfxGain)return false;
+        const now=this.ctx.currentTime,osc=this.ctx.createOscillator(),gain=this.ctx.createGain();
+        osc.type='triangle';
+        osc.frequency.setValueAtTime(135,now);
+        osc.frequency.exponentialRampToValueAtTime(42,now+.27);
+        gain.gain.setValueAtTime(.15,now);
+        gain.gain.exponentialRampToValueAtTime(.001,now+.31);
+        osc.connect(gain);gain.connect(this.sfxGain);
+        osc.start(now);osc.stop(now+.32);
+        return true;
+    }
+
     // ============ BACKGROUND MUSIC ============
     startMusic() {
         if (!this.initialized) this.init();

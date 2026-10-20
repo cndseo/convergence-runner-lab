@@ -45,8 +45,32 @@ export function placeKenneyCityDetails(scene, trackLength, tracked) {
       obj.userData.dynamic=true;
       obj.traverse(child=>{if(child.isMesh){child.castShadow=false;child.receiveShadow=true;}});
       scene.add(obj);tracked.push(obj);
+      if(path==='car-kit/police.glb'||path==='car-kit/van.glb'){
+        // Visible alternating roof beacons use unlit emissive materials, not point lights.
+        const roof=new THREE.Box3().setFromObject(obj);
+        const bar=new THREE.Group();bar.name='KENNEY_POLICE_BEACON';bar.userData.policeLightbar=true;
+        bar.position.set((roof.min.x+roof.max.x)/2,roof.max.y+.13,(roof.min.z+roof.max.z)/2);
+        const barBase=new THREE.Mesh(new THREE.BoxGeometry(.94,.10,.28),
+          new THREE.MeshBasicMaterial({color:0x263648}));bar.add(barBase);
+        bar.userData.lamps=[];
+        for(const [color,xOffset] of [[0x197bff,-.27],[0xf32439,.27]]){
+          const core=new THREE.Mesh(new THREE.BoxGeometry(.37,.18,.27),
+            new THREE.MeshBasicMaterial({color,transparent:true,opacity:.98}));
+          core.position.set(xOffset,.125,0);bar.add(core);bar.userData.lamps.push(core);
+        }
+        bar.userData.phase=path==='car-kit/police.glb'?0:Math.PI;
+        scene.add(bar);tracked.push(bar);
+      }
       console.info('Kenney asset displayed',path);
     }).catch(err=>console.warn('Kenney optional asset failed',path,err?.message));
+  }
+}
+export function updateKenneyPoliceLights(tracked,time) {
+  for(const item of tracked){
+    if(!item?.userData?.policeLightbar)continue;
+    const pulse=Math.sin(time*11+item.userData.phase)>0;
+    item.userData.lamps[0].material.opacity=pulse?.98:.14;
+    item.userData.lamps[1].material.opacity=pulse?.14:.98;
   }
 }
 export function disposeKenneyCityDetails(tracked) {
