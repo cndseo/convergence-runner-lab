@@ -1,5 +1,26 @@
 import * as THREE from 'three';
 import {tvArtIndex,tvDisplay} from './tvGateMapping.mjs';
+import {matchingOriginalTV,ORIGINAL_TV_CHOICES} from './tvOriginalMapping.mjs';
+const originalLoader=new THREE.TextureLoader();
+const originalTextureCache=new Map();
+function acquireOriginalTexture(file){
+ let entry=originalTextureCache.get(file);
+ if(!entry){
+  const texture=originalLoader.load(import.meta.env.BASE_URL+'assets/tv-originals/'+file);
+  texture.colorSpace=THREE.SRGBColorSpace;
+  texture.minFilter=THREE.LinearMipmapLinearFilter;
+  texture.magFilter=THREE.LinearFilter;
+  texture.anisotropy=8;
+  entry={texture,users:0};originalTextureCache.set(file,entry);
+ }
+ entry.users++;return entry.texture;
+}
+function releaseOriginalTexture(file){
+ const entry=originalTextureCache.get(file);if(!entry)return;
+ entry.users--;
+ if(entry.users<=0){entry.texture.dispose();originalTextureCache.delete(file);}
+}
+
 
 const W=1024,H=576;
 function rectangle(c,x,y,w,h,color){c.fillStyle=color;c.fillRect(x,y,w,h);}
@@ -106,16 +127,57 @@ export function paintTVBroadcast(ctx,choice,artIndex,width=W,height=H){
 
 export function disposeTVGateArtwork(root){
  const tv=root?.userData?.tvScreen;if(!tv)return;
+ const originalFile=tv.userData.originalFile;
  tv.traverse(obj=>{
   if(!obj.isMesh)return;
   obj.geometry?.dispose();
   for(const mat of (Array.isArray(obj.material)?obj.material:[obj.material])){
-   mat?.map?.dispose();mat?.dispose();
+   if(!originalFile)mat?.map?.dispose();
+   mat?.dispose();
   }
  });
+ if(originalFile)releaseOriginalTexture(originalFile);
  delete root.userData.tvScreen;
 }
 export function makeTVGateArtwork(choice,root,gateIndex=0){
+ const file=matchingOriginalTV(choice);
+ if(file){
+  // The generated PNG *is* the TV (bezel, stand and picture). Do not redraw it
+  // or place another monitor/frame/number on top of the artwork.
+  const tex=acquireOriginalTexture(file);
+  const mat=new THREE.MeshBasicMaterial({
+   map:tex,transparent:true,alphaTest:.07,depthWrite:false,side:THREE.DoubleSide
+  });
+  const tv=new THREE.Group();tv.name='TV_FLAT_SCREEN';
+  const screen=new THREE.Mesh(new THREE.PlaneGeometry(1,1),mat);
+  screen.name='TV_LIVE_SCREEN';
+  const width=4.55;
+  function positionScreen(){
+   const im=tex.image;
+   const ratio=im?.width&&im?.height?im.height/im.width:.66;
+   screen.scale.set(width,width*ratio,1);
+   screen.position.set(0,width*ratio/2+.02,.14);
+   tv.userData.resolution=[im?.width||0,im?.height||0];
+  }
+  positionScreen();
+  if(!tex.image){
+   const onLoad=()=>{
+    if(!screen.parent)return;
+    positionScreen();
+   };
+   const oldUpdate=tex.onUpdate;
+   tex.onUpdate=()=>{oldUpdate?.();onLoad();tex.onUpdate=oldUpdate;};
+  }
+  tv.add(screen);
+  tv.userData={
+    tvIndex:ORIGINAL_TV_CHOICES.findIndex(x=>x.file===file),
+    tvValue:tvDisplay(choice).number,
+    texture:tex,originalFile:file,source:'original-png',
+    resolution:tv.userData.resolution
+  };
+  root.add(tv);root.userData.tvScreen=tv;
+  return tv;
+ }
  const index=tvArtIndex(choice,gateIndex);
  const canvas=document.createElement('canvas');canvas.width=W;canvas.height=H;
  paintTVBroadcast(canvas.getContext('2d'),choice,index);

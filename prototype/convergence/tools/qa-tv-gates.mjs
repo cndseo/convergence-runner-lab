@@ -3,7 +3,7 @@ import {createRequire} from 'node:module';
 import {mkdirSync} from 'node:fs';
 const {chromium}=createRequire(import.meta.url)('playwright-core');
 const url=process.env.QA_URL||'http://127.0.0.1:4551/';
-const output='C:/CITYOS/convergence-tv-hd/qa-tv';
+const output='C:/CITYOS/convergence-tv-png/qa-tv';
 mkdirSync(output,{recursive:true});
 const browser=await chromium.launch({executablePath:'C:/Program Files/Google/Chrome/Application/chrome.exe',
   headless:true,args:['--enable-webgl','--ignore-gpu-blocklist']});
@@ -12,7 +12,7 @@ try{
   const context=await browser.newContext({viewport,hasTouch:true,isMobile:true});
   const p=await context.newPage(),errors=[],tvResponses=[];
   p.on('pageerror',e=>errors.push(e.message));
-  p.on('response',r=>{if(r.url().includes('tv-approved-atlas.webp'))tvResponses.push(r.status());});
+  p.on('response',r=>{if(r.url().includes('/tv-originals/'))tvResponses.push({name:r.url().split('/').at(-1),status:r.status()});});
   await p.goto(url+'?qa=1',{waitUntil:'networkidle'});
   await p.locator('#play-btn').click();
   await p.waitForFunction(()=>window.__convergence?.levelGenerator?.gates?.length===10,{timeout:18000});
@@ -31,10 +31,11 @@ try{
     textureHeight:screens[0].userData.texture.image.height};
   });
   assert.equal(stats.screens,20);assert.equal(stats.noPlaceholders,true);
-  assert.equal(stats.noPortals,true);assert.equal(stats.textureHeight,576);
-  assert.equal(stats.visible,true);assert.equal(stats.textureWidth,1024);
+  assert.equal(stats.noPortals,true);assert.ok(stats.textureHeight>500);
+  assert.equal(stats.visible,true);assert.ok(stats.textureWidth>1000);
   assert.ok(stats.uniqueArt.length>=8,JSON.stringify(stats));
-  assert.equal(tvResponses.length,0,'no blurred low-resolution atlas requests');
+  assert.ok(tvResponses.length>=2,'opening TV source PNG files must be requested');
+  assert.ok(tvResponses.every(r=>r.status===200),'all requested original PNGs must be 200');
   await p.evaluate(()=>{
    const g=window.__convergence;g.qaManual=true;g.trackZ=1;
    g.levelGenerator.updateVisibility(1);
