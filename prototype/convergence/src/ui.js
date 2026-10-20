@@ -115,7 +115,7 @@ export class UIManager {
                     this.game.campaignComplete=false;
                     this.game.story.introSeen=false;
                     this.game.saveProgress();
-                    this.game.startWithIntro();
+                    this.game.startWithIntro({newRun:true});
                 }else this.game.startGame();
             });
         });
@@ -141,7 +141,7 @@ export class UIManager {
             if (this.game.audio.initialized) this.game.audio.playClick();
             this.transitionOut(this.loseScreen, () => {
                 if(this.game.mode==='daily')this.game.startDailyChallenge(this.game.dailyDate);
-                else this.game.startGame();
+                else this.game.startGame({newRun:true});
             });
         });
 

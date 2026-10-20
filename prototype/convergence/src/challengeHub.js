@@ -233,6 +233,7 @@ export class ChallengeHub {
   }
   async consumeMarseilleCharge(){
     if(this.game.mode!=='campaign')return false;
+    if(this.game.marseille.consumeLevelOneGift())return true;
     if(this.game.marseille.demoCharges>0){
       this.game.marseille.demoCharges--;
       return true;
@@ -246,7 +247,7 @@ export class ChallengeHub {
     });
     if(!response.ok)return false;
     const data=await response.json();
-    this.game.marseille.charges=data.remaining;
+    this.game.marseille.syncPurchasedCharges(data.remaining);
     return true;
   }
   async refreshRemoteStatus(){
@@ -270,7 +271,7 @@ export class ChallengeHub {
       if(!response.ok)return;
       const {owned,marseilleCharges}=await response.json();
       this.ownedSkus=new Set(Array.isArray(owned)?owned:[]);
-      if(this.game.marseille && Number.isSafeInteger(marseilleCharges))this.game.marseille.charges=marseilleCharges;
+      if(this.game.marseille && Number.isSafeInteger(marseilleCharges))this.game.marseille.syncPurchasedCharges(marseilleCharges);
       this.applyPremiumAppearance();
     }catch{/* Keep existing unlocked appearances when offline. */}
   }

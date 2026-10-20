@@ -1,6 +1,6 @@
 import * as THREE from 'three';
 
-const BASE=import.meta.env.BASE_URL+'assets/characters/';
+const BASE=(import.meta.env?.BASE_URL||'/')+'assets/characters/';
 let shared;
 function texture(canvas){
  const map=new THREE.CanvasTexture(canvas);

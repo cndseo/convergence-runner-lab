@@ -2,7 +2,7 @@ import * as THREE from 'three';
 import { compactStaticTrack } from './staticScenery.js';
 import { generateTacticalLevel } from './tactics.mjs';
 import { createArcadeGate, animateArcadeGates } from './arcadeGates.js';
-import { disposeTVGateArtwork } from './tvGateArt.js';
+import { disposeTVGateArtwork, makeMarseilleBonusArtwork } from './tvGateArt.js';
 import { placeKenneyRoadFurniture } from './assetLoader.js';
 import { upgradeBossVan } from './bossAssets.js';
 import { placeKenneyCityDetails, disposeKenneyCityDetails } from './kenneyCity.js';
@@ -21,6 +21,7 @@ export class LevelGenerator {
         this.scene = scene;
         this.game = game;
         this.gates = [];
+        this.marseilleBonus = null;
         this.obstacles = [];
         this.enemies = [];
         this.boss = null;
@@ -31,6 +32,7 @@ export class LevelGenerator {
         disposeUrbanDecayAssets(this.meshes);
         disposeKenneyCityDetails(this.meshes);
         this.gates = [];
+        this.marseilleBonus = null;
         this.obstacles = [];
         this.enemies = [];
         this.boss = null;
@@ -59,6 +61,7 @@ export class LevelGenerator {
         this.createTrack(trackLength);
         compactStaticTrack(this.scene, this.meshes);
         this.createGates(level, trackLength);
+        this.createMarseilleBonus(level);
         this.createObstacles(level, trackLength);
         this.createEnemies(level, trackLength);
         this.createBoss(level, trackLength);
@@ -82,6 +85,10 @@ export class LevelGenerator {
             for(const pane of [gate.leftMesh,gate.rightMesh]){
                 if(pane?.userData.root)pane.userData.root.visible=false;
             }
+        }
+        if(this.marseilleBonus){
+            const bonus=this.marseilleBonus, distance=bonus.z-progress;
+            bonus.leftMesh.userData.root.visible=!bonus.passed&&!combatView&&distance<62&&distance>-8;
         }
         // Preserve all gameplay and collision data, cull only distant visuals.
         for (const enemy of this.enemies) {
@@ -149,6 +156,18 @@ export class LevelGenerator {
             gate.rightMesh = this.createGateMesh(event.right, 2.5, event.z, gateOrder+1);
             this.gates.push(gate);
         }
+    }
+
+    createMarseilleBonus(level) {
+        if(level!==1 || this.game.mode!=='campaign' || this.game.marseille.levelOneGift.claimed)return;
+        const root=new THREE.Group();
+        root.name='MARSEILLE_BONUS_TV';root.position.set(0,0,-6);
+        root.userData.dynamic=true;
+        const art=makeMarseilleBonusArtwork(root),pane=art.getObjectByName('TV_LIVE_SCREEN');
+        pane.userData.root=root;
+        this.scene.add(root);this.meshes.push(root);
+        // Separate pickup: never an eleventh decision or a tactical reward.
+        this.marseilleBonus={z:6,passed:false,leftMesh:pane,leftGate:{op:'support',kind:'marseille'}};
     }
 
     createGateMesh(data, x, z, ordinal=0) {

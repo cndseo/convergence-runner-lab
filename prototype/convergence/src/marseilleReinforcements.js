@@ -8,6 +8,9 @@ export class MarseilleReinforcements {
   this.game=game;this.active=false;this.pending=false;this.demoCharges=0;
   this.charges=0;this.elapsed=0;this.actors=[];this.enemy=null;this.police=[];this.puffs=[];
   this.generation=0;this.impactPulse=0;
+  // Gift provenance only: its charge lives in the existing shared charges stock.
+  this.levelOneGift={claimed:false,pending:false};
+  this.restoreLevelOneGift();
   this.button=document.createElement('button');
   this.button.id='marseille-support-button';this.button.type='button';
   this.button.setAttribute('aria-label','Déclencher les renforts marseillais');
@@ -20,14 +23,48 @@ export class MarseilleReinforcements {
  preload(){return preloadMarseilleSprites();}
  discardAssets(){/* Cached textures live for the game session, not one attack. */}
  available(){return this.charges+this.demoCharges;}
+ persistLevelOneGift(){
+  try{localStorage.setItem('convergence_marseille_tv_gift_v1',JSON.stringify(this.levelOneGift));}
+  catch{/* In-memory single-claim protection still applies when storage is unavailable. */}
+ }
+ restoreLevelOneGift(){
+  try{
+   const saved=JSON.parse(localStorage.getItem('convergence_marseille_tv_gift_v1')||'null');
+   if(saved?.claimed===true){
+    this.levelOneGift={claimed:true,pending:saved.pending===true};
+    this.charges+=Number(this.levelOneGift.pending);
+   }
+  }catch{/* A malformed optional gift record never blocks the game. */}
+ }
+ resetLevelOneGift(){
+  // A new run replaces any unused gift; purchased charges stay untouched.
+  this.charges=Math.max(0,this.charges-Number(this.levelOneGift.pending));
+  this.levelOneGift={claimed:false,pending:false};this.persistLevelOneGift();
+ }
+ grantLevelOneGift(){
+  if(this.game.mode!=='campaign'||this.game.level!==1||this.levelOneGift.claimed)return false;
+  this.levelOneGift={claimed:true,pending:true};this.charges++;
+  this.persistLevelOneGift();this.showButton();return true;
+ }
+ consumeLevelOneGift(){
+  if(!this.levelOneGift.pending||this.charges<=0)return false;
+  this.levelOneGift.pending=false;this.charges--;
+  this.persistLevelOneGift();return true;
+ }
+ syncPurchasedCharges(remaining){
+  // Server inventory owns purchases; synchronizing cannot erase the local gift.
+  this.charges=remaining+Number(this.levelOneGift.pending);
+  this.showButton();
+ }
  showButton(){
   const g=this.game;
-  const visible=g.mode==='campaign' && g.state==='fighting' &&
-   (this.available()>0||this.pending||this.active);
+  const visible=g.mode==='campaign' && ['playing','fighting'].includes(g.state) &&
+   (this.available()>0||this.pending||this.active||this.levelOneGift.claimed);
   this.button.style.display=visible?'block':'none';
-  this.button.disabled=this.pending||this.active;
+  this.button.disabled=g.state!=='fighting'||this.pending||this.active||this.available()<=0;
+  this.button.title=g.state==='fighting'?'Déclencher cette attaque':'À déclencher pendant un affrontement';
   this.button.textContent=this.active?'RENFORTS EN ACTION…':
-   this.pending?'VÉRIFICATION…':'RENFORT MARSEILLAIS × '+this.available();
+   this.pending?'VÉRIFICATION…':'MARSEILLAIS · '+this.available()+' disponible'+(this.available()>1?'s':'');
  }
  async activate(){
   const g=this.game;

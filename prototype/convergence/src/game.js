@@ -230,8 +230,8 @@ export class Game {
         window.addEventListener('keyup', (e) => { this.keys[e.key] = false; });
     }
 
-    startWithIntro({force=false}={}) {
-        this.startGame();
+    startWithIntro({force=false,newRun=false}={}) {
+        this.startGame({newRun});
         const manualQA=this.qa && !new URLSearchParams(location.search).has('intro');
         if(this.level===1 && (!this.story.introSeen || force) && (!manualQA || force)){
             this.story.beginIntro();
@@ -247,7 +247,8 @@ export class Game {
         this.startGame();
     }
 
-    startGame() {
+    startGame({newRun=false}={}) {
+        if(newRun && this.mode==='campaign' && this.level===1)this.marseille.resetLevelOneGift();
         // A free visual demo lasts one playthrough, not a permanent paid unlock.
         if(this.demoCostumeConsumed && this.demoCostumeOnce){
             this.activeCostume=null;this.demoCostumeOnce=false;this.demoCostumeConsumed=false;
@@ -443,7 +444,20 @@ export class Game {
         this.ui.updateCount(this.crowdManager.getPlayerCount());
     }
 
+    checkMarseilleBonusCollision() {
+        const bonus=this.levelGenerator.marseilleBonus;
+        if(this.state!=='playing'||!bonus||bonus.passed||
+            Math.abs(this.trackZ-bonus.z)>=1||Math.abs(this.playerX)>3.05)return;
+        if(!this.marseille.grantLevelOneGift())return;
+        bonus.passed=true;
+        this.tvBreak.trigger(bonus,'left');
+        bonus.leftMesh.userData.root.visible=false;
+        this.audio.playGateGood();
+        // Reserve only: no activate(), no change to crowd, shields or gateHistory.
+    }
+
     checkGateCollisions() {
+        this.checkMarseilleBonusCollision();
         const gates = this.levelGenerator.gates;
         for (let i = gates.length - 1; i >= 0; i--) {
             const gate = gates[i];
