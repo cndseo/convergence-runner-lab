@@ -3,12 +3,13 @@ import fs from 'node:fs';
 import {createRequire} from 'node:module';
 const {chromium}=createRequire(import.meta.url)('playwright-core');
 const base=process.env.QA_URL||'https://chris-temp-homework-mothers.trycloudflare.com/convergence-runner-lab/convergence/';
-const dir='C:/CITYOS/convergence-tv-portals/qa-tv/intro-final';
+const dir=process.env.QA_OUTPUT||'C:/CITYOS/convergence-tv-portals/qa-tv/intro-final';
 fs.mkdirSync(dir,{recursive:true});
 const browser=await chromium.launch({executablePath:'C:/Program Files/Google/Chrome/Application/chrome.exe',headless:true,args:['--enable-webgl','--ignore-gpu-blocklist']});
 const report={url:base,checks:[],errors:[],badResponses:[]};
 try{
- const context=await browser.newContext({viewport:{width:390,height:844},deviceScaleFactor:1.5,isMobile:true,hasTouch:true});
+ const viewport=process.env.QA_WIDTH==='320'?{width:320,height:700}:{width:390,height:844};
+ const context=await browser.newContext({viewport,deviceScaleFactor:1.5,isMobile:true,hasTouch:true});
  const page=await context.newPage();
  page.on('pageerror',e=>report.errors.push(e.message));
  page.on('response',r=>{if(r.status()>=400)report.badResponses.push({status:r.status(),url:r.url()})});

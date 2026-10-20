@@ -1,3 +1,4 @@
+import {makeFixedPairs} from './fixedTVCatalog.mjs';
 // Pure, deterministic rules shared by the level solver and the live game.
 export const MAX_CROWD = 72;
 export const MAX_SHIELDS = 48;
@@ -146,86 +147,44 @@ function finalizeBravmPlan(plan) {
   return plan;
 }
 
-export function generateTacticalLevel({ level = 1, seed = 1, startCount = 5, strength = 1 } = {}) {
-  level = Math.max(1, Math.floor(level));
-  strength = Math.max(1, Math.floor(strength));
-  const start = initialState(startCount).count;
-  const rand = random(seed + level * 7919 + start * 31);
-  let fallback;
-  for (let attempt = 0; attempt < 96; attempt++) {
-    const n = (lo, hi) => lo + Math.floor(rand() * (hi - lo + 1));
-    const damage = (kind, value, percent = false) => ({ op: 'damage', kind, value, percent });
-    // Preserve the historical random draw so unrelated CRS/BAC groups,
-    // daily seeds and Marseille cinematics remain unchanged by this balance fix.
-    const bravmDamage = () => damage('bravm',n(28,42),true);
-    // Linked choices: protection is an investment; smaller groups can qualify
-    // for later conditional recruitment. No "always take the larger number".
-    const pairs = [
-      [{ op: '+', value: 10 }, { op: '*', value: 2 }],
-      [{ op: 'shield', value: n(10, 18) }, { op: '+', value: 5 }],
-      [damage('barrier', n(10, 17)), bravmDamage()],
-      [{ op: '/', value: 2 }, { op: '-', value: n(3, 8) }],
-      [{ op: 'conditional', condition: 'atMost', threshold: n(10, 17), value: n(23, 32), elseValue: -5 }, { op: '%', value: 40 }],
-      [{ op: '*', value: 2 }, { op: 'shield', value: n(14, 23) }],
-      [damage('van', n(15, 24)), damage('debris', n(35, 50), true)],
-      [{ op: '%', value: 50 }, { op: 'conditional', condition: 'shield', threshold: 8, value: n(22, 32), elseValue: -4 }],
-      [{ op: '+', value: 10 }, { op: 'shield', value: n(11, 19) }],
-      [{ op: '+', value: 5 }, { op: '%', value: 25 }]
-    ];
-    const events = [];
-    pairs.forEach((pair, i) => {
-      if (rand() < 0.5) pair.reverse();
-      events.push({ type: 'choice', z: 14 + i * 16, left: pair[0], right: pair[1] });
-      if (i === 4 || i === 7) events.push({
-        type: 'enemy', z: 22 + i * 16, kind: i === 4 ? 'crs' : 'bac',
-        count: n(5, 9) + Math.min(8, Math.floor(level / 3))
-      });
-    });
-    const plan = { version: 2, seed, level, startCount: start, strength, events, trackLength: 180, bossHealth: 0 };
-    const paths = solvePlan(plan,true);
-    const alive = paths.filter(p => p.count > 0).sort((a, b) => a.capacity - b.capacity);
-    if (!alive.length) continue;
-    const greedy = greedyPath(plan,true);
-    const bounds = difficultyTargets(level);
-    // All 1024 routes matter. Only the boss's HP may be adjusted;
-    // enemy line strength, risky portals and the ten real choices stay intact.
-    let choice = null, lower = 0;
-    for (const health of [...new Set(alive.map(p => p.capacity))]) {
-      while (lower < alive.length && alive[lower].capacity < health) lower++;
-      const winners = alive.length - lower, rate = winners / paths.length;
-      if (health <= greedy.capacity || winners < 2 || rate >= 0.32) continue;
-      const shortfall = Math.max(0, bounds.min - rate);
-      const excess = Math.max(0, rate - bounds.max);
-      const score = Math.abs(rate - bounds.ideal) + 5 * (shortfall + excess);
-      if (!choice || score < choice.score ||
-          (score === choice.score && health > choice.health)) {
-        choice = { health, lower, winners, rate, score };
-      }
-    }
-    if (!choice) continue;
-    plan.bossHealth = choice.health;
-    const winners = alive.slice(choice.lower);
-    // Proof must be an actual surviving route, not just a nonzero capacity.
-    const witness = winners.at(-1);
-    const survivors = replayPlan(plan, witness.path,true).count;
-    if (survivors <= 0) continue;
-    plan.proof = {
-      winningPaths: winners.length, totalPaths: paths.length,
-      winningPath: witness.path,
-      greedyWins: replayPlan(plan, greedy.path,true).count > 0,
-      minSurvivors: Math.min(...winners.map(p => applyCombat(p, plan.bossHealth, strength).count)),
-      witnessSurvivors: survivors,
-      winningRate: choice.rate,
-      difficulty: bounds
-    };
-    if (plan.proof.greedyWins) continue;
-    const adjusted=finalizeBravmPlan(plan);
-    if(!adjusted)continue;
-    if (!fallback || choice.score < fallback.score) fallback = {plan:adjusted, score: choice.score};
-    if (adjusted.proof.winningRate >= bounds.min && adjusted.proof.winningRate <= bounds.max)
-      return adjusted;
+// Fixed TV economy. The printed amounts are now the rules, NOT UI overlays.
+export function generateTacticalLevel({level=1,seed=1,startCount=5,strength=1}={}){
+ level=Math.max(1,Math.floor(level));
+ strength=Math.max(1,Math.floor(strength));
+ const start=initialState(startCount).count;
+ const rand=random(seed+level*7919+start*31);
+ const bounds=difficultyTargets(level);
+ let fallback=null;
+ for(let attempt=0;attempt<160;attempt++){
+  const n=(lo,hi)=>lo+Math.floor(rand()*(hi-lo+1));
+  const pairs=makeFixedPairs();
+  // Keep the opening recruitment/protection readable, then vary the order
+  // of whole pairs. Every approved PNG and its exact effect stay together.
+  for(let i=pairs.length-1;i>2;i--){
+   const j=n(2,i);[pairs[i],pairs[j]]=[pairs[j],pairs[i]];
   }
-  if (!fallback) throw new Error('Unable to certify a playable level');
-  // The closest verified alternative is still winning and defeats greedy play.
-  return fallback.plan;
+  const events=[];
+  pairs.forEach((pair,i)=>{
+   if(rand()<.5)pair.reverse();
+   events.push({type:'choice',z:14+i*16,left:pair[0],right:pair[1]});
+   if(i===4||i===7)events.push({
+    type:'enemy',z:22+i*16,kind:i===4?'crs':'bac',
+    // Express resistance in combat rounds, then scale health by strength.
+    // Upgrades must not collapse every route into the crowd cap.
+    count:(n(5,9)+Math.floor(start/8)+Math.min(8,Math.floor(level/3)))*strength
+   });
+  });
+  const plan={version:3,seed,level,startCount:start,strength,events,
+   trackLength:180,bossHealth:0,tvCatalog:'fixed16'};
+  const verified=finalizeBravmPlan(plan);
+  if(!verified)continue;
+  const rate=verified.proof.winningRate;
+  const penalty=6*(Math.max(0,bounds.min-rate)+Math.max(0,rate-bounds.max));
+  const score=Math.abs(rate-bounds.ideal)+penalty;
+  if(!fallback||score<fallback.score)fallback={plan:verified,score};
+  if(rate>=bounds.min&&rate<=bounds.max)return verified;
+ }
+ if(fallback?.plan?.proof?.winningRate>=bounds.min&&
+    fallback.plan.proof.winningRate<=bounds.max)return fallback.plan;
+ throw new Error('Unable to certify fixed-16-TV level at '+JSON.stringify({level,seed,startCount,strength}));
 }

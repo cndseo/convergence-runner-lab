@@ -1,0 +1,107 @@
+[
+  {
+    "name": "tv-50-ralliement.png",
+    "width": 1220,
+    "height": 816,
+    "sha256": "49c2a12fbc11998c80767570dd4493ead91d19ae0d4e8fcf74ad4428d99c11f7",
+    "bytes": 1362113
+  },
+  {
+    "name": "tv-14-barrage.png",
+    "width": 1229,
+    "height": 782,
+    "sha256": "481fc19e75da76e52c4cf42669b35e0ad339e381569005a12fd2c67108ce892c",
+    "bytes": 1316970
+  },
+  {
+    "name": "tv-21-protections.png",
+    "width": 1220,
+    "height": 791,
+    "sha256": "1d2958fcdf3018f8cc32d05ec6cb1afe01fe0a869157d2b52577095bfca3775d",
+    "bytes": 1282923
+  },
+  {
+    "name": "tv-40-obstacles.png",
+    "width": 1216,
+    "height": 799,
+    "sha256": "1379744ea00a0bb961849c1edc687ee627b6cb47059eb5149f05714695a93841",
+    "bytes": 1396869
+  },
+  {
+    "name": "tv-x2-mobilisation.png",
+    "width": 1220,
+    "height": 821,
+    "sha256": "1b54ecbf94fd24ad4382fa5d86b460f44340968062fe4b8036d0bbbeb65ec0d1",
+    "bytes": 1484454
+  },
+  {
+    "name": "tv-10-renforts.png",
+    "width": 1215,
+    "height": 785,
+    "sha256": "8af6da2f2ca6949195c00143b3a290ed646282c1e475d892b466610b147f790f",
+    "bytes": 1234375
+  },
+  {
+    "name": "tv-20-fourgon.png",
+    "width": 1226,
+    "height": 769,
+    "sha256": "17a1742dec4a4161eb1dfa53662dbd139f821f37d1df7d9e246a372576da5d81",
+    "bytes": 1246480
+  },
+  {
+    "name": "tv-5-gilets.png",
+    "width": 1216,
+    "height": 797,
+    "sha256": "e806083fee2f0decbcbfe95736ac157c1798809d44f0033bb89c3a6e1fb329bb",
+    "bytes": 1328070
+  },
+  {
+    "name": "tv-22-protections.png",
+    "width": 1228,
+    "height": 1127,
+    "sha256": "5c9d0239321dfec5512f07b1b7dbe486b74386a2126e61108f720b62622bf00e",
+    "bytes": 1242325
+  },
+  {
+    "name": "tv-5-boucliers.png",
+    "width": 1248,
+    "height": 1219,
+    "sha256": "e3e50789faa48a6f16bd858e057d9596380ddd1a8f6bca21af61232138f0137c",
+    "bytes": 1382747
+  },
+  {
+    "name": "tv-news-france.png",
+    "width": 1228,
+    "height": 1162,
+    "sha256": "aa491489d203fa46ddea340a673cbce761644fbab4808fbd2a043b76e03cb59c",
+    "bytes": 1204476
+  },
+  {
+    "name": "tv-manifestation-paris.png",
+    "width": 1212,
+    "height": 1185,
+    "sha256": "56c00c88361452d442ab4d42f0340b411e913aed972e7859f7ae274a700f6528",
+    "bytes": 1167243
+  },
+  {
+    "name": "tv-6-genz.png",
+    "width": 1218,
+    "height": 796,
+    "sha256": "fb5f06fd91b595b57d712894850d7f47a7877d47e2802473151cf2f7c1adfce9",
+    "bytes": 1406056
+  },
+  {
+    "name": "tv-4-pompiers.png",
+    "width": 1215,
+    "height": 812,
+    "sha256": "0a5c0f28ead5c0fb8cdf3486d15f42c22af7560f23359f57e2a6bc30cbf02a39",
+    "bytes": 1476542
+  },
+  {
+    "name": "tv-3-infirmieres.png",
+    "width": 1219,
+    "height": 793,
+    "sha256": "a5c4c178247901fca873230f40eed766637784d778866ff011121171df2d161f",
+    "bytes": 1341581
+  }
+]
