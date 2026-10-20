@@ -93,8 +93,25 @@ export class ChallengeHub {
     else if(kind==='result')this.renderResult();
     this.game.audio?.playClick?.();
   }
+  openPremiumInGame(){
+    const g=this.game;
+    if(g.mode!=='campaign'||!['playing','fighting'].includes(g.state))return;
+    this.resumeAfterPremium=g.state;
+    g.state='paused';
+    g.audio?.pauseAudio?.();
+    this.open('premium');
+  }
   close(){
     this.panel.classList.add('hidden');
+    if(this.resumeAfterPremium){
+      if(this.game.state==='paused'){
+        this.game.state=this.resumeAfterPremium;
+        this.game.audio?.resumeAudio?.();
+      }
+      this.resumeAfterPremium=null;
+      this.game.genzFireworks?.showButton();
+      this.game.marseille?.showButton();
+    }
     if(['win','lose'].includes(this.game.state)&&this.game.mode==='daily')this.returnToCampaignMenu();
   }
   getBest(day){
@@ -215,7 +232,7 @@ export class ChallengeHub {
       this.game.ui.hideAllScreens();
       this.game.ui.showShop();
     }));
-    this.foot.append(this.action('← RETOUR',()=>this.open('daily')));
+    this.foot.append(this.action('← RETOUR',()=>{if(this.resumeAfterPremium)this.close();else this.open('daily');}));
   }
   previewCharacter(id,owned=false){
     if(!['spiderman','dinosaur'].includes(id))return;

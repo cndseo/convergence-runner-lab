@@ -14,3 +14,10 @@ Base: 13b76f8 (12 Paris districts already densified).
 Verification: `npm test` 60/60; Vite build successful; browser mobile 390×844 passed shop + demo shot + 1-credit consumption + LBD suppression + tear-gas cloud; Paris QA traversed all 12 districts and full stages 1 and 12 without errors. Physical iPhone performance not benchmarked.
 
 Preview: local compiled server `PARIS_PREVIEW_PORT=4656 node tools/serve-paris-preview.mjs`, with `VITE_PARIS_PREVIEW=1` during build and `?qa=1&decors=1` for QA.
+
+## Mise à jour : tir libre et effet enrichi
+- Le bouton GenZ est visible pendant la marche et le combat, même avec zéro munition. Une réserve épuisée affiche un bouton grisé mais cliquable ouvrant la boutique, en mettant la partie en pause puis en la reprenant à la fermeture.
+- Le tir peut être effectué avant le front CRS, ou sans cible proche. Les munitions sont décrémentées une seule fois à chaque déclenchement. Le défi quotidien est inchangé.
+- L'ancien projectile néon est remplacé par une lumière blanche/ambre, une traînée de dix étincelles, des bouffées de fumée et un éclatement dynamique.
+- QA mobile Chrome : tir depuis playing sans GenZ recruté, décrément de 2 à 1 à 0, bouton grisé accessible, ouverture/fermeture de la boutique, aucune erreur JavaScript. QA des 12 quartiers et campagnes 1/12 réussie.
+

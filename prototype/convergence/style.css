@@ -718,3 +718,16 @@ html,body{width:100%;max-width:100%;overflow:hidden}
 }
 #genz-ammo-button:focus-visible{outline:3px solid white;outline-offset:3px}
 #genz-ammo-button:disabled{opacity:.6;cursor:default}
+
+/* Empty ammunition is deliberately still clickable: it opens the shop. */
+#genz-ammo-button.genz-empty {
+ opacity:.54;filter:grayscale(.7) saturate(.4);
+ background:linear-gradient(125deg,#49515b,#525166);
+ border-color:#c8c5d6;box-shadow:0 2px 8px #0005;
+ cursor:pointer;
+}
+#genz-ammo-button.genz-empty:active {opacity:.78;filter:none}
+#genz-ammo-button.genz-pending {opacity:.76}
+@media(max-width:380px) {
+ #genz-ammo-button {bottom:calc(174px + env(safe-area-inset-bottom,0px));min-height:48px;max-width:55vw}
+}
