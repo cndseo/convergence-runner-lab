@@ -1,4 +1,5 @@
 import * as THREE from 'three';
+import { updateReferenceMotorcycleCharge } from './policeReferenceSprites.js';
 import { applyChoice, sufferLoss, MAX_CROWD } from './tactics.mjs';
 import { explainGateChoice, evaluateResult } from './tacticalFeedback.mjs';
 import { FINAL_CAMPAIGN_LEVEL } from './storyRules.mjs';
@@ -335,6 +336,7 @@ export class Game {
         if(!this.marseille?.active && !this.marseille?.pending)this.lbdSystem?.update(delta);
         this.genzFireworks?.update(delta);
         this.marseille?.update(delta);
+        updateReferenceMotorcycleCharge(this,delta);
         if (this.state === 'boss_defeated') {
             this.crowdManager.update(delta);
             this.combatChoreo?.step(delta);

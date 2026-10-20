@@ -13,6 +13,7 @@ import { createParisStreetscape } from './parisEnvironment.js';
 import { placeUrbanDecayAssets, disposeUrbanDecayAssets } from './urbanDecayAssets.js';
 import { createStreetPatina } from './streetPatina.js';
 import { updateKenneyPoliceLights } from './kenneyCity.js';
+import { attachReferenceOfficer, resetReferencePolice } from './policeReferenceSprites.js';
 
 export class LevelGenerator {
     constructor(scene, game) {
@@ -47,6 +48,7 @@ export class LevelGenerator {
     generate(level, trackLength) {
         resetPoliceVisualBudget();
         resetMotorcycles();
+        resetReferencePolice();
         this.plan = generateTacticalLevel({
             level, seed: this.game.levelSeed ?? level * 20261019,
             startCount: this.game.getStartingCrowdSize(), strength: this.game.getEffectiveStrength()
@@ -187,6 +189,7 @@ export class LevelGenerator {
             group.add(stickman);
             upgradePoliceOfficer(stickman,enemy.kind);
             if(enemy.kind==='bravm')upgradeBravMotorcycle(stickman);
+            attachReferenceOfficer(stickman,enemy.kind,i);
         }
 
         group.position.set(0, 0, -z);
@@ -294,6 +297,7 @@ export class LevelGenerator {
             officer.position.set((i%7-3)*.66,0,Math.floor(i/7)*-.86);
             squad.add(officer);
             upgradePoliceOfficer(officer, i%5===0?'bac':'crs');
+            attachReferenceOfficer(officer,i%5===0?'bac':'crs',i);
         }
         // Two flanking motorcycle units; scenery only, no additional tactical damage.
         for(const side of [-1,1]){
@@ -304,6 +308,7 @@ export class LevelGenerator {
                 squad.add(rider);
                 upgradePoliceOfficer(rider,'bravm');
                 upgradeBravMotorcycle(rider);
+                attachReferenceOfficer(rider,'bravm',j);
             }
         }
         const vehicle=makeVan();vehicle.scale.set(.85,.85,.85);

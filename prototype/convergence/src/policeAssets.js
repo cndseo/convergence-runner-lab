@@ -125,9 +125,10 @@ export function upgradePoliceOfficer(officer,kind='crs'){
   holder.userData.lbdMuzzle=gear.userData.lbdMuzzle||null;
   // Keep the independent Kenney motorcycle if its asynchronous load completed.
   for(const part of officer.children){
-   if(!part.userData?.motorcycleVisual)part.visible=false;
+   if(!part.userData?.motorcycleVisual && !part.userData?.referenceVisual)part.visible=false;
   }
   officer.add(holder);
+  if(officer.userData.referenceSprite)holder.visible=false;
   activeMixers.push({mixer,officer});
   officer.userData.policeModel=holder;
  }).catch(e=>console.warn('Police model fallback',e?.message));
