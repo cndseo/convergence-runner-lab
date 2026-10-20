@@ -143,6 +143,52 @@ export class AudioManager {
         if(this.ctx&&this.musicGain)this.musicGain.gain.setTargetAtTime(this.ambienceMuted?0:.35,this.ctx.currentTime,.18);
     }
 
+    // Audio supplied specifically for the Marseille 2D counterattack (7.15 s).
+    // WebAudio shares the game's unlocked iPhone-compatible AudioContext.
+    async preloadMarseilleAttack() {
+        if (this.marseilleAttackBuffer) return this.marseilleAttackBuffer;
+        if (this.marseilleAttackLoading) return this.marseilleAttackLoading;
+        if (!this.initialized) this.init();
+        this.marseilleAttackLoading=(async()=>{
+            try {
+                const response=await fetch(import.meta.env.BASE_URL+'assets/audio/marseille-attack.m4a');
+                if(!response.ok)throw new Error('Marseille attack recording missing');
+                this.marseilleAttackBuffer=await this.ctx.decodeAudioData(await response.arrayBuffer());
+                return this.marseilleAttackBuffer;
+            }catch(error) {
+                console.warn('Marseille attack recording:',error?.message);
+                return null; // no impact on visuals, fighting or credits
+            }finally {this.marseilleAttackLoading=null;}
+        })();
+        return this.marseilleAttackLoading;
+    }
+    playMarseilleAttack() {
+        if(!this.marseilleAttackBuffer||!this.ctx||this.ctx.state!=='running')return false;
+        this.stopMarseilleAttack();
+        this.stopCombatVoice();
+        const source=this.ctx.createBufferSource();
+        const gain=this.ctx.createGain();
+        source.buffer=this.marseilleAttackBuffer;
+        gain.gain.value=.90;
+        source.connect(gain);
+        gain.connect(this.sfxGain);
+        this.marseilleAttackNode=source;
+        if(this.musicGain)this.musicGain.gain.setTargetAtTime(this.ambienceMuted?0:.10,this.ctx.currentTime,.12);
+        source.onended=()=>{
+            if(this.marseilleAttackNode!==source)return;
+            this.marseilleAttackNode=null;
+            if(this.musicGain)this.musicGain.gain.setTargetAtTime(this.ambienceMuted?0:.35,this.ctx.currentTime,.25);
+        };
+        source.start(0); // exactly once at the start of the attack
+        return true;
+    }
+    stopMarseilleAttack() {
+        try{this.marseilleAttackNode?.stop();}catch{}
+        this.marseilleAttackNode=null;
+        if(this.ctx&&this.musicGain)
+            this.musicGain.gain.setTargetAtTime(this.ambienceMuted?0:.35,this.ctx.currentTime,.15);
+    }
+
     // ============ BACKGROUND MUSIC ============
     startMusic() {
         if (!this.initialized) this.init();
