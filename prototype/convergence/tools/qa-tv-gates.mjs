@@ -3,7 +3,7 @@ import {createRequire} from 'node:module';
 import {mkdirSync} from 'node:fs';
 const {chromium}=createRequire(import.meta.url)('playwright-core');
 const url=process.env.QA_URL||'http://127.0.0.1:4551/';
-const output='C:/CITYOS/convergence-tv-portals/qa-tv';
+const output='C:/CITYOS/convergence-tv-hd/qa-tv';
 mkdirSync(output,{recursive:true});
 const browser=await chromium.launch({executablePath:'C:/Program Files/Google/Chrome/Application/chrome.exe',
   headless:true,args:['--enable-webgl','--ignore-gpu-blocklist']});
@@ -26,12 +26,15 @@ try{
     textureWidth:screens[0].userData.texture.image.width,
     noPlaceholders:screens.every(x=>!x.userData.tvValue.includes('(x)')),
     amount:screens[0].userData.tvValue,firstGate:gates[0].leftGate,
-    visible:screens.every(x=>x.name==='TV_FLAT_SCREEN')};
+    visible:screens.every(x=>x.name==='TV_FLAT_SCREEN'),
+    noPortals:gates.every(x=>[x.leftMesh,x.rightMesh].every(m=>m.userData.root.children.every(c=>c.name==='TV_FLAT_SCREEN'||c.isGroup))),
+    textureHeight:screens[0].userData.texture.image.height};
   });
   assert.equal(stats.screens,20);assert.equal(stats.noPlaceholders,true);
-  assert.equal(stats.visible,true);assert.equal(stats.textureWidth,512);
+  assert.equal(stats.noPortals,true);assert.equal(stats.textureHeight,576);
+  assert.equal(stats.visible,true);assert.equal(stats.textureWidth,1024);
   assert.ok(stats.uniqueArt.length>=8,JSON.stringify(stats));
-  assert.ok(tvResponses.includes(200),JSON.stringify(tvResponses));
+  assert.equal(tvResponses.length,0,'no blurred low-resolution atlas requests');
   await p.evaluate(()=>{
    const g=window.__convergence;g.qaManual=true;g.trackZ=1;
    g.levelGenerator.updateVisibility(1);
