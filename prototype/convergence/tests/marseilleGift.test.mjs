@@ -69,3 +69,31 @@ test('purchased attacks keep the existing consume endpoint and 299 cent price',a
  assert.ok(JSON.parse(requests[0].options.body).requestId);
  assert.equal(PREMIUM_CATALOG.find(p=>p.id==='marseille1').cents,299);
 });
+
+test('attack action is visible only when combat allows manual use',()=>{
+ const {game,reserve}=fixture(0);
+ delete reserve.showButton; // Remove the fixture's empty stub to test the real method.
+ const classes=new Set();
+ reserve.button={style:{display:'none'},disabled:true,title:'',textContent:'',
+  classList:{toggle:(name,enabled)=>enabled?classes.add(name):classes.delete(name)}};
+ reserve.grantLevelOneGift();
+ game.state='playing';game.fightingEnemy=null;reserve.showButton();
+ assert.equal(reserve.button.style.display,'none');
+ game.state='fighting';game.fightingEnemy={kind:'crs'};
+ reserve.showButton();
+ assert.equal(reserve.button.style.display,'block');
+ assert.match(reserve.button.textContent,/TOUCHE ICI POUR ATTAQUER/);
+ assert.match(reserve.button.textContent,/1 disponible/);
+ assert.equal(reserve.button.disabled,false);
+ assert.ok(classes.has('marseille-attack-ready'));
+ game.state='paused';reserve.showButton();
+ assert.equal(reserve.button.style.display,'none');
+ game.state='fighting';reserve.pending=true;reserve.showButton();
+ assert.equal(reserve.button.style.display,'none');
+ reserve.pending=false;reserve.active=true;reserve.showButton();
+ assert.equal(reserve.button.style.display,'none');
+ reserve.active=false;reserve.consumeLevelOneGift();reserve.showButton();
+ assert.equal(reserve.button.style.display,'none');
+ assert.equal(reserve.button.disabled,true);
+ assert.equal(classes.has('marseille-attack-ready'),false);
+});

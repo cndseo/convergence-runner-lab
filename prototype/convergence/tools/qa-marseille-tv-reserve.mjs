@@ -4,7 +4,7 @@ import {mkdirSync,writeFileSync,readFileSync} from 'node:fs';
 import {createHash} from 'node:crypto';
 const {chromium}=createRequire(import.meta.url)('playwright-core');
 const base=process.env.QA_URL||'http://127.0.0.1:4612/convergence-runner-lab/convergence/';
-const out=process.env.QA_OUTPUT||'C:/CITYOS/convergence-marseille-tv-reserve/qa-reserve';
+const out=process.env.QA_OUTPUT||'C:/CITYOS/convergence-marseille-crs-tutorial/qa-reserve';
 mkdirSync(out,{recursive:true});
 const expectedHash='5119ef75fb8d7ebc096506bf45372c7f19d0271dc87f413a38fd694b6caeeb35';
 assert.equal(createHash('sha256').update(readFileSync('public/assets/marseille-bonus/tv-marseille-attack.png')).digest('hex'),expectedHash);
@@ -40,16 +40,26 @@ try{
   assert.equal(createHash('sha256').update(await response.body()).digest('hex'),expectedHash);
   const initial=await page.evaluate(()=>{
    const g=window.__convergence,b=g.levelGenerator.marseilleBonus;
-   g.trackZ=0;g.crowdManager.updatePlayerPosition(0,0);g.levelGenerator.updateVisibility(0);
-   g.camera.position.set(0,6.3,8.4);g.camera.lookAt(0,.8,-8);g.renderer.render(g.scene,g.camera);
+   const crs=g.levelGenerator.enemies.find(e=>e.kind==='crs');
+   const before=g.levelGenerator.gates.filter(p=>p.z<b.z).at(-1);
+   g.trackZ=b.z-13;g.crowdManager.updatePlayerPosition(0,-g.trackZ);
+   g.levelGenerator.updateVisibility(g.trackZ);
+   g.camera.position.set(0,6.3,-g.trackZ+8.4);
+   g.camera.lookAt(0,.8,-g.trackZ-8);g.renderer.render(g.scene,g.camera);
    return {charges:g.marseille.available(),pairs:g.levelGenerator.gates.length,
-    art:b.leftMesh.userData.root.userData.tvScreen.userData.source,children:b.leftMesh.userData.root.children.length};
+    art:b.leftMesh.userData.root.userData.tvScreen.userData.source,
+    children:b.leftMesh.userData.root.children.length,
+    deltaToCRS:crs.z-b.z,deltaFromPrior:b.z-before.z};
   });
-  assert.deepEqual(initial,{charges:0,pairs:10,art:'bonus-png',children:1});
+  assert.deepEqual(initial,{charges:0,pairs:10,art:'bonus-png',children:1,
+    deltaToCRS:4,deltaFromPrior:4});
+  assert.equal(await page.locator('#marseille-support-button').isHidden(),true,
+   'button must stay hidden while marching before gift pickup');
   await page.screenshot({path:out+'/before-'+viewport.width+'.png'});
   const collect=await page.evaluate(()=>{
    const g=window.__convergence;
-   g.trackZ=6;g.playerX=0;g.checkGateCollisions();g.checkGateCollisions();
+   g.trackZ=g.levelGenerator.marseilleBonus.z;
+   g.playerX=0;g.checkGateCollisions();g.checkGateCollisions();
    return {available:g.marseille.available(),charges:g.marseille.charges,demo:g.marseille.demoCharges,
     active:g.marseille.active,pending:g.marseille.pending,count:g.crowdManager.getPlayerCount(),
     history:g.gateHistory.length,breaks:g.tvBreak.total,passed:g.levelGenerator.marseilleBonus.passed,
@@ -58,7 +68,9 @@ try{
   assert.equal(collect.available,1);assert.equal(collect.charges,1);assert.equal(collect.demo,0);
   assert.equal(collect.active,false);assert.equal(collect.pending,false);assert.equal(collect.audio,false);
   assert.equal(collect.count,5);assert.equal(collect.history,0);assert.equal(collect.breaks,1);assert.ok(collect.passed);
-  assert.match(collect.text,/1 disponible/);assert.deepEqual(commerce,[]);
+  assert.equal(collect.text,'','the attack button remains hidden after pickup');
+  assert.equal(await page.locator('#marseille-support-button').isHidden(),true);
+  assert.deepEqual(commerce,[]);
   await page.screenshot({path:out+'/reserve-'+viewport.width+'.png'});
   await page.evaluate(()=>window.__convergence.challengeHub.open('premium'));
   assert.match(await page.locator('.challenge-credit-count').innerText(),/1$/);
@@ -72,6 +84,20 @@ try{
    claimed:window.__convergence.marseille.levelOneGift.claimed}));
   assert.deepEqual(resumed,{stock:1,bonus:false,claimed:true});
   await fight();
+  assert.equal(await page.locator('#marseille-support-button').isVisible(),true,
+    'call to action appears during CRS encounter');
+  assert.match(await page.locator('#marseille-support-button').innerText(),/TOUCHE ICI POUR ATTAQUER/);
+  assert.match(await page.locator('#marseille-support-button').innerText(),/1 disponible/);
+  assert.equal(await page.locator('#marseille-support-button').isEnabled(),true);
+  assert.equal(await page.locator('#marseille-support-button').evaluate(x=>x.classList.contains('marseille-attack-ready')),true);
+  await page.locator('#pause-btn').click();
+  assert.equal(await page.locator('#marseille-support-button').isHidden(),true,'pause hides attack control');
+  await page.locator('#resume-btn').click();
+  assert.equal(await page.locator('#marseille-support-button').isVisible(),true,'resume restores available attack');
+  const layout=await page.locator('#marseille-support-button').boundingBox();
+  assert.ok(layout&&layout.x>=0&&layout.y>=0&&layout.x+layout.width<=viewport.width+1&&
+     layout.y+layout.height<=viewport.height+1,'action fits on mobile screen');
+  await page.screenshot({path:out+'/ready-'+viewport.width+'.png'});
   await page.locator('#marseille-support-button').click();
   await page.waitForFunction(()=>window.__convergence.marseille.active);
   const activated=await page.evaluate(()=>{
@@ -92,14 +118,14 @@ try{
   await page.evaluate(()=>{const g=window.__convergence;for(let i=0;i<240&&g.marseille.active;i++)g.update(.05)});
   await fight(1);
   assert.equal(await page.evaluate(()=>window.__convergence.marseille.activate()),false);
-  assert.equal(await page.locator('#marseille-support-button').isDisabled(),true);
-  assert.match(await page.locator('#marseille-support-button').innerText(),/0 disponible/);
+  assert.equal(await page.locator('#marseille-support-button').isHidden(),true,
+   'button must disappear after using the only available attack');
   await page.screenshot({path:out+'/empty-'+viewport.width+'.png'});
   // A new attempt restores eligibility, without banking the previous free charge.
   const newRun=await page.evaluate(()=>{
    const g=window.__convergence;g.level=1;g.startGame({newRun:true});
    const before={stock:g.marseille.available(),bonus:!!g.levelGenerator.marseilleBonus};
-   g.trackZ=6;g.playerX=0;g.checkGateCollisions();
+   g.trackZ=g.levelGenerator.marseilleBonus.z;g.playerX=0;g.checkGateCollisions();
    g.startGame({newRun:true});
    return {before,after:g.marseille.available(),bonus:!!g.levelGenerator.marseilleBonus};
   });
@@ -116,7 +142,7 @@ try{
   });
   const mixed=await page.evaluate(async()=>{
    const g=window.__convergence;g.challengeHub.apiBase=location.origin+'/qa-api';g.challengeHub.playerToken='qa-contract-token';
-   g.trackZ=6;g.playerX=0;g.checkGateCollisions();
+   g.trackZ=g.levelGenerator.marseilleBonus.z;g.playerX=0;g.checkGateCollisions();
    await g.challengeHub.syncInventory();await g.challengeHub.syncInventory();
    return {stock:g.marseille.available(),demo:g.marseille.demoCharges};
   });
@@ -132,7 +158,7 @@ try{
   assert.equal(await page.evaluate(()=>window.__convergence.marseille.available()),1);
   const progression=await page.evaluate(()=>{
    const g=window.__convergence;g.level=1;g.startGame({newRun:true});
-   g.trackZ=6;g.playerX=0;g.checkGateCollisions();
+   g.trackZ=g.levelGenerator.marseilleBonus.z;g.playerX=0;g.checkGateCollisions();
    const before=g.marseille.available();
    g.level=2;g.startGame();g.saveProgress();
    return {before,after:g.marseille.available(),bonus:!!g.levelGenerator.marseilleBonus,pairs:g.levelGenerator.gates.length};
