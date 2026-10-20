@@ -1,5 +1,6 @@
 import * as THREE from 'three';
 import { updateReferenceMotorcycleCharge } from './policeReferenceSprites.js';
+import { BravmGateCharge } from './bravmGateCharge.js';
 import { applyChoice, sufferLoss, MAX_CROWD } from './tactics.mjs';
 import { explainGateChoice, evaluateResult } from './tacticalFeedback.mjs';
 import { FINAL_CAMPAIGN_LEVEL } from './storyRules.mjs';
@@ -108,6 +109,7 @@ export class Game {
         this.lbdSystem = new LBDSystem(this);
         this.genzFireworks = new GenzFireworks(this);
         this.marseille = new MarseilleReinforcements(this);
+        this.bravmGateCharge = new BravmGateCharge(this);
         this.story = new StoryDirector(this);
         this.story.loadAssets();
         this.challengeHub = new ChallengeHub(this);
@@ -300,6 +302,7 @@ export class Game {
         this.lbdSystem?.clear();
         this.genzFireworks?.clear();
         this.marseille?.clear();
+        this.bravmGateCharge?.clear();
         this.combatChoreo?.dispose();
         this.combatChoreo=null;
         // Remove all dynamic objects
@@ -337,6 +340,12 @@ export class Game {
         this.genzFireworks?.update(delta);
         this.marseille?.update(delta);
         updateReferenceMotorcycleCharge(this,delta);
+        if(this.state==='bravm_charge'){
+            this.bravmGateCharge.update(delta);
+            this.crowdManager.update(delta);
+            this.ui.updateCount(this.crowdManager.getPlayerCount());
+            return;
+        }
         if (this.state === 'boss_defeated') {
             this.crowdManager.update(delta);
             this.combatChoreo?.step(delta);
@@ -441,15 +450,15 @@ export class Game {
 
             if (Math.abs(playerZ - gateZ) < 1.0) {
                 // Check if player is on left or right gate
-                if (this.playerX < 0 && gate.leftGate) {
-                    this.applyGate(gate.leftGate,'left');
-                    gate.passed = true;
-                    this.highlightGate(gate, 'left');
-                } else if (this.playerX >= 0 && gate.rightGate) {
-                    this.applyGate(gate.rightGate,'right');
-                    gate.passed = true;
-                    this.highlightGate(gate, 'right');
-                }
+                const side=this.playerX<0?'left':'right';
+                const choice=side==='left'?gate.leftGate:gate.rightGate;
+                if(!choice)continue;
+                gate.passed=true;
+                this.highlightGate(gate,side);
+                if(choice.op==='damage'&&choice.kind==='bravm'){
+                    this.bravmGateCharge.start(gate,choice,side);
+                }else this.applyGate(choice,side);
+                return;
             }
         }
     }
@@ -467,7 +476,8 @@ export class Game {
                 if(gateData.bonusFaction==='genz')this.genzFireworks?.addGenz(change);
             }
         }
-        if (change < 0) this.crowdManager.removeFromPlayerCrowd(-change);
+        if (change < 0) this.crowdManager.removeFromPlayerCrowd(-change,
+            {knockdown:gateData.kind==='bravm'});
         const guard = after.shields - before.shields;
         if (change || guard) {
             const good = change > 0 || guard > 0;

@@ -40,7 +40,7 @@ try{
   await page.waitForFunction(()=>window.__convergence.marseille.active);
   assert.equal(await page.evaluate(()=>window.__convergence.marseille.activate()),false);
   const frames=[];
-  for(const seconds of [0.5,1.3,2.1,2.8,3.5,4.3,5.3,6.4,7.4,8.6,9.7]){
+  for(const seconds of [0.5,1.3,2.1,2.55,2.8,3.5,4.3,5.3,6.4,7.4,8.6,9.7]){
    const frame=await page.evaluate(seconds=>{
     const g=window.__convergence;
     const current=g.marseille.elapsed;

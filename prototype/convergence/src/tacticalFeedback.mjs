@@ -30,7 +30,8 @@ export function explainGateChoice(choice, before, after) {
   } else if (choice.op === 'shield') {
     reason = 'Les protections absorbent les pertes suivantes';
   } else if (choice.op === 'damage') {
-    reason = protection < 0 ? 'Les protections ont limité les pertes' : 'Barrage traversé';
+    reason = choice.kind==='bravm' ? 'Charge BRAV-M : trois manifestants renversés' :
+      protection < 0 ? 'Les protections ont limité les pertes' : 'Barrage traversé';
   } else if (after.count === 72 && before.count < 72) {
     reason = 'Plafond de foule atteint : 72';
   } else if (choice.op === '/' || choice.op === '-') {

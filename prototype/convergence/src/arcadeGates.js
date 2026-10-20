@@ -6,6 +6,7 @@ import { makeVan, makeOfficer } from './characters.js';
 import { upgradeBossVan } from './bossAssets.js';
 import { upgradeBravMotorcycle } from './motorcycleAssets.js';
 import { upgradePoliceOfficer } from './policeAssets.js';
+import { attachReferenceOfficer } from './policeReferenceSprites.js';
 
 const colors={blue:[0x118bea,0x68efff],red:[0xe7334b,0xff9873],gold:[0xffac19,0xfff097],purple:[0x7944e5,0xefa8ff]};
 export function createArcadeGate(data,x,z,scene,tracked) {
@@ -56,8 +57,17 @@ export function createArcadeGate(data,x,z,scene,tracked) {
   if(data.kind==='van'){
    const vehicle=makeVan();vehicle.scale.setScalar(.78);vehicle.position.y=.05;root.add(vehicle);upgradeBossVan(root,vehicle);
   }else if(data.kind==='bravm'){
-   const rider=makeOfficer('bravm',0);rider.rotation.y=Math.PI/2;rider.position.y=.04;root.add(rider);
-   upgradePoliceOfficer(rider,'bravm');upgradeBravMotorcycle(rider);
+   // Two forward-facing motorcycles, not the former sideways Kenney bike.
+   root.userData.bravmRiders=[];
+   for(let i=0;i<2;i++){
+    const rider=makeOfficer('bravm',i);
+    rider.position.set(i===0?-.83:.83,.04,-3.7-i*.65);
+    rider.rotation.y=0;
+    root.add(rider);
+    upgradePoliceOfficer(rider,'bravm');upgradeBravMotorcycle(rider);
+    attachReferenceOfficer(rider,'bravm',i);
+    root.userData.bravmRiders.push(rider);
+   }
   }else{
    box(3.45,.85,.48,0,.68,0,new THREE.MeshStandardMaterial({color:0x586575,roughness:.8}));
    const yellow=new THREE.MeshStandardMaterial({color:0xffd260});

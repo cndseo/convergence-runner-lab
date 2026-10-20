@@ -34,7 +34,7 @@ export class UIManager {
         this.tacticalStatus = document.getElementById('tactical-status');
         const pause = document.getElementById('pause-btn'), panel = document.getElementById('pause-panel');
         pause.addEventListener('click', () => {
-            if (!['playing','fighting'].includes(this.game.state)) return;
+            if (!['playing','fighting','bravm_charge'].includes(this.game.state)) return;
             this.game.pausedState = this.game.state;
             this.game.state = 'paused'; panel.classList.remove('hidden');
             this.game.audio.pauseAudio();
