@@ -1,3 +1,5 @@
+import {districtForLevel} from './parisDistricts.mjs';
+
 export class UIManager {
     constructor(game) {
         this.game = game;
@@ -114,6 +116,7 @@ export class UIManager {
                 if(this.game.mode==='daily')this.game.challengeHub.returnToCampaignMenu();
                 else if(this.game.campaignComplete){
                     this.game.level=1;
+                    this.game.parisLevel=1;
                     this.game.campaignComplete=false;
                     this.game.story.introSeen=false;
                     this.game.saveProgress();
@@ -311,7 +314,7 @@ export class UIManager {
     }
 
     updateHUDInfo() {
-        this.levelDisplay.textContent = this.game.mode==='daily'?'Défi du jour':`Étape ${this.game.level}`;
+        this.levelDisplay.textContent = this.game.mode==='daily'?'Défi du jour':this.game.geographicLevel+'/12 · '+districtForLevel(this.game.geographicLevel).short;
         this.coinDisplay.textContent = `🪙 ${this.game.coins}`;
     }
 
@@ -496,7 +499,7 @@ export class UIManager {
         const portrait=document.getElementById('final-portrait');
         if(portrait)portrait.hidden=!completed;
         document.getElementById('next-btn').textContent=completed?'↻ REJOUER LA CAMPAGNE':'ÉTAPE SUIVANTE →';
-        if(completed)report={...report,title:'PERSONNAGE RATTRAPÉ !',tip:'Il ne peut être rejoint qu’après le front du niveau 10. Tu as terminé la campagne.'};
+        if(completed)report={...report,title:'PERSONNAGE RATTRAPÉ !',tip:'Il ne peut être rejoint qu’après le front du niveau 12. Tu as terminé la campagne.'};
         this.clearTacticalHint();
         const el=document.getElementById('win-report');
         if(el){
@@ -507,7 +510,9 @@ export class UIManager {
             const tip=document.createElement('small');tip.textContent=report?.tip||'';
             el.append(head,info,tip);
         }
+        const completedRunId=this.game.runId;
         setTimeout(() => {
+            if(this.game.runId!==completedRunId || this.game.state!=='win')return;
             this.transitionIn(this.winScreen);
             document.getElementById('win-coins').textContent = `+${coins} 🪙`;
             this.updateWinUpgradeInfo();

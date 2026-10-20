@@ -182,9 +182,9 @@ export class StoryDirector {
   }
   prepareFinalTarget(){
     this.destroySprite(this.finalTarget);this.finalTarget=null;
-    if(this.game.level!==FINAL_CAMPAIGN_LEVEL)return;
+    if(this.game.geographicLevel!==FINAL_CAMPAIGN_LEVEL)return;
     const create=()=>{
-      if(this.game.level!==FINAL_CAMPAIGN_LEVEL || this.game.state==='menu')return;
+      if(this.game.geographicLevel!==FINAL_CAMPAIGN_LEVEL || this.game.state==='menu')return;
       this.finalTarget=this.makeSprite('back');
       if(this.finalTarget){
         this.finalTarget.position.set(0,1.3,-this.game.trackLength-8.0);
@@ -196,7 +196,7 @@ export class StoryDirector {
   }
   beginFinalChase(){
     const game=this.game;
-    if(game.level!==FINAL_CAMPAIGN_LEVEL || !game.levelGenerator.boss?.defeated)return false;
+    if(game.geographicLevel!==FINAL_CAMPAIGN_LEVEL || !game.levelGenerator.boss?.defeated)return false;
     this.hideOverlay();
     this.phase='final-chase';
     this.elapsed=0;
@@ -208,7 +208,7 @@ export class StoryDirector {
     this.targetX=game.playerX>=0?-1.8:1.8;
     if(!this.finalTarget)this.finalTarget=this.makeSprite('back');
     this.showOverlay({
-      stage:'NIVEAU 10 · RÉCOMPENSE FINALE',
+      stage:'NIVEAU 12 · RÉCOMPENSE FINALE',
       heading:'IL EST À PORTÉE !',
       subtitle:'Glisse pour rejoindre le personnage et le rattraper.',
       skip:false
@@ -237,7 +237,7 @@ export class StoryDirector {
     game.camera.position.lerp(new THREE.Vector3(game.playerX*.3,5.3,-game.trackZ+8),Math.min(1,dt*7));
     game.camera.lookAt(game.playerX*.2,1.2,-game.trackZ-5);
     if(canCatchTarget({
-      level:game.level,finalLineDefeated:!!game.levelGenerator.boss?.defeated,
+      level:game.geographicLevel,finalLineDefeated:!!game.levelGenerator.boss?.defeated,
       playerProgress:game.trackZ,targetProgress:this.targetProgress,
       playerX:game.playerX,targetX:this.targetX
     })) {
@@ -249,7 +249,7 @@ export class StoryDirector {
     this.phase='capture';
     this.elapsed=0;
     this.game.state='final_capture';
-    this.setSubtitle('OBJECTIF FINAL ATTEINT','Le personnage est rattrapé. La campagne est terminée.');
+    this.setSubtitle('OBJECTIF FINAL ATTEINT','L’Élysée est atteint. La prise symbolique et fictive clôt la marche.');
     if(this.finalTarget)this.changeFace(this.finalTarget,'front');
     this.game.audio.playWin?.();
   }

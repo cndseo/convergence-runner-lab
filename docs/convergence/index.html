@@ -6,8 +6,8 @@
     <title>CONVERGENCE — Mobilisation</title>
     <meta name="description" content="Prototype vertical mobile : manifestants face aux CRS, BRAV-M et BAC">
     <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🏃</text></svg>">
-  <script type="module" crossorigin src="/convergence-runner-lab/convergence/assets/index-CbtsYCoJ.js"></script>
-  <link rel="stylesheet" crossorigin href="/convergence-runner-lab/convergence/assets/index-CRK1K4qp.css">
+  <script type="module" crossorigin src="/convergence-runner-lab/convergence/assets/index-BpzEM9tD.js"></script>
+  <link rel="stylesheet" crossorigin href="/convergence-runner-lab/convergence/assets/index-By4keI0M.css">
 </head>
 <body>
     <div id="game-container">
@@ -21,14 +21,26 @@
             <div id="count-display">★ 3</div>
         </div>
 
-        <!-- Start Screen -->
+        <!-- Branded start screen: keep stable button IDs for all existing flows. -->
         <div id="start-screen" class="screen">
-            <img class="p02-hero" src="assets/approved/P02.webp" alt="Gilet jaune au drapeau, personnage de CONVERGENCE" width="140" height="200">
-            <div class="edition">ÉDITION TACTIQUE · MOBILE 3D</div><h1>CONVERGENCE</h1>
-            <p>MANIFESTANTS VS FORCES DE L’ORDRE</p><p class="instructions">Glisse le doigt pour rallier du monde, franchir les portails et atteindre le front CRS.</p>
-            <button id="play-btn" class="btn">▶ MANIFESTER</button>
-            <button id="shop-btn" hidden class="btn btn-secondary">APPARENCES</button>
-            <button id="upgrade-btn" class="btn btn-secondary">RENFORTS</button>
+            <header class="menu-top">
+                <div class="menu-brand" aria-label="CONVERGENCE">
+                    <span class="menu-brand-mark" aria-hidden="true">C↗</span>
+                    <span class="menu-brand-name">CONVER<span>GENCE</span></span>
+                </div>
+                <span class="menu-top-caption">LE JEU MOBILE 3D SATIRIQUE</span>
+            </header>
+            <div class="menu-panel">
+                <div class="menu-kicker">LA RUE EST À VOUS <span aria-hidden="true"></span> ÉDITION TACTIQUE</div>
+                <h1>LA POURSUITE <span>CHANGE DE CAMP.</span></h1>
+                <p class="instructions">Rassemble ta foule. Brise les écrans. Franchis les barrages.</p>
+                <div class="menu-actions">
+                    <button id="play-btn" class="btn" type="button">▶ JOUER GRATUITEMENT <span aria-hidden="true">↗</span></button>
+                    <button id="shop-btn" hidden class="btn btn-secondary" type="button">APPARENCES</button>
+                    <button id="upgrade-btn" class="btn btn-secondary" type="button">RENFORTS</button>
+                </div>
+                <p class="menu-footnote">GRATUIT POUR JOUER <span aria-hidden="true">·</span> MOBILE & ORDINATEUR</p>
+            </div>
         </div>
 
         <!-- Shop Screen -->

@@ -1,18 +1,14 @@
 import * as THREE from 'three';
-import { compactStaticTrack } from './staticScenery.js';
 import { generateTacticalLevel } from './tactics.mjs';
 import { createArcadeGate, animateArcadeGates } from './arcadeGates.js';
 import { disposeTVGateArtwork, makeMarseilleBonusArtwork } from './tvGateArt.js';
-import { placeKenneyRoadFurniture } from './assetLoader.js';
 import { upgradeBossVan } from './bossAssets.js';
-import { placeKenneyCityDetails, disposeKenneyCityDetails } from './kenneyCity.js';
+import { disposeKenneyCityDetails } from './kenneyCity.js';
 import { makeOfficer, makeVan } from './characters.js';
-import { makeAsphaltTexture } from './roadTexture.js';
 import { upgradePoliceOfficer, resetPoliceVisualBudget } from './policeAssets.js';
 import { upgradeBravMotorcycle, resetMotorcycles } from './motorcycleAssets.js';
-import { createParisStreetscape } from './parisEnvironment.js';
-import { placeUrbanDecayAssets, disposeUrbanDecayAssets } from './urbanDecayAssets.js';
-import { createStreetPatina } from './streetPatina.js';
+import { ParisEnvironment } from './parisEnvironment.js';
+import { disposeUrbanDecayAssets } from './urbanDecayAssets.js';
 import { updateKenneyPoliceLights } from './kenneyCity.js';
 import { attachReferenceOfficer, resetReferencePolice } from './policeReferenceSprites.js';
 
@@ -29,6 +25,8 @@ export class LevelGenerator {
     }
 
     clear() {
+        this.parisEnvironment?.dispose();
+        this.parisEnvironment=null;
         disposeUrbanDecayAssets(this.meshes);
         disposeKenneyCityDetails(this.meshes);
         this.gates = [];
@@ -58,21 +56,17 @@ export class LevelGenerator {
             startCount: this.game.getStartingCrowdSize(), strength: this.game.getEffectiveStrength()
         });
         trackLength = this.plan.trackLength;
-        this.createTrack(trackLength);
-        compactStaticTrack(this.scene, this.meshes);
+        this.parisEnvironment = new ParisEnvironment(this.scene, this.game, trackLength, this.game.geographicLevel);
         this.createGates(level, trackLength);
         this.createMarseilleBonus(level);
         this.createObstacles(level, trackLength);
         this.createEnemies(level, trackLength);
         this.createBoss(level, trackLength);
-        createParisStreetscape(this.scene,trackLength,this.meshes);
-        placeKenneyRoadFurniture(this.scene,trackLength,this.meshes);
-        placeKenneyCityDetails(this.scene,trackLength,this.meshes);
-        placeUrbanDecayAssets(this.scene,trackLength,this.meshes);
-        createStreetPatina(this.scene,trackLength,this.meshes);
+        // Geography replaces only static scenery. TV, police and combat objects remain above.
     }
 
     updateVisibility(progress) {
+        this.parisEnvironment?.update(progress);
         animateArcadeGates(this.gates, progress, performance.now() / 1000);
         updateKenneyPoliceLights(this.meshes,performance.now()/1000);
         // During an encounter, hide nearby giant choice billboards so the camera
@@ -101,48 +95,6 @@ export class LevelGenerator {
             const show=this.boss.isDefeating || (this.boss.z-progress)<75;
             if(this.boss.meshGroup)this.boss.meshGroup.visible=show;
             if(this.boss.labelMesh)this.boss.labelMesh.visible=show;
-        }
-    }
-
-    createTrack(trackLength) {
-        // City boulevard / bridge. All geometry is procedural; no image downloads.
-        const mesh=(geometry,color,x,y,z,shadow=false)=>{
-            const obj=new THREE.Mesh(geometry,new THREE.MeshStandardMaterial({color,roughness:.87}));
-            obj.position.set(x,y,z);obj.userData.dynamic=true;obj.receiveShadow=true;
-            obj.castShadow=shadow;this.scene.add(obj);this.meshes.push(obj);return obj;
-        };
-        const surface=mesh(new THREE.PlaneGeometry(11,trackLength+24),0x68717b,0,.025,-trackLength/2);
-        surface.rotation.x=-Math.PI/2;
-        surface.material.color.set(0xffffff);
-        surface.material.map=makeAsphaltTexture(trackLength);
-        surface.material.roughness=.96;
-        const river=mesh(new THREE.PlaneGeometry(220,trackLength+70),0x426784,0,-1.65,-trackLength/2);
-        river.rotation.x=-Math.PI/2;
-        river.material.roughness=.30;
-        river.material.metalness=.12;
-        for(let side of [-1,1]){
-            // Raised concrete verge and metal bridge railings
-            mesh(new THREE.BoxGeometry(.7,.36,trackLength+18),0x9eabb0,side*5.55,.18,-trackLength/2);
-            mesh(new THREE.BoxGeometry(.14,.12,trackLength+18),0x374858,side*5.65,1.24,-trackLength/2);
-            mesh(new THREE.BoxGeometry(.10,.10,trackLength+18),0x516277,side*5.65,.77,-trackLength/2);
-            for(let z=0;z<trackLength+6;z+=5){
-                mesh(new THREE.BoxGeometry(.11,1.3,.10),0x384d5f,side*5.65,.7,-z);
-            }
-        }
-        for(let z=0;z<trackLength+6;z+=8){
-            const dash=mesh(new THREE.PlaneGeometry(.13,3),0xe7e9e4,0,.055,-z);
-            dash.rotation.x=-Math.PI/2;
-        }
-        // Along the far banks: abstract southern-French buildings with tiled roofs
-        for(let z=0;z<trackLength+35;z+=17){
-            for(const side of [-1,1]){
-                const h=4+(Math.floor(z/17)%4)*1.8;
-                const house=mesh(new THREE.BoxGeometry(7.5,h,9),[0xe0c7a0,0xd8b2a1,0xc8b5a6,0xd7c6af][Math.floor(z/17)%4],side*(16+Math.abs(z%3)),h/2-1.5,-z);
-                mesh(new THREE.BoxGeometry(7.8,.45,9.3),0x536475,side*(16+Math.abs(z%3)),h-1.5,-z);
-                for(let floor=1;floor<h/2;floor++)for(let zz of [-2.6,1.8]){
-                    mesh(new THREE.BoxGeometry(.10,.9,.85),0x45586c,side*(16+Math.abs(z%3))-side*3.82,floor*1.55-1.2,-z+zz);
-                }
-            }
         }
     }
 

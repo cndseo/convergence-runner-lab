@@ -5,6 +5,8 @@ import { TVBreakEffects } from './tvBreakEffects.js';
 import { applyChoice, sufferLoss, MAX_CROWD } from './tactics.mjs';
 import { explainGateChoice, evaluateResult } from './tacticalFeedback.mjs';
 import { FINAL_CAMPAIGN_LEVEL } from './storyRules.mjs';
+import { migrateParisProgress } from './parisDistricts.mjs';
+import { ParisJourney } from './parisJourney.js';
 import { StoryDirector } from './storyDirector.js';
 import { ChallengeHub } from './challengeHub.js';
 import { DAILY_START_COUNT,DAILY_STRENGTH,dailyChallengeSeed,utcChallengeDate } from './dailyChallenge.mjs';
@@ -34,6 +36,7 @@ export class Game {
         // Game state
         this.state = 'menu'; // menu, playing, fighting, win, lose
         this.level = 1;
+        this.parisLevel = 1;
         this.mode = 'campaign';
         this.activeCostume = null; // Prototype preview only; never grants paid entitlement.
         this.dailyDate = null;
@@ -115,6 +118,7 @@ export class Game {
         this.story = new StoryDirector(this);
         this.story.loadAssets();
         this.challengeHub = new ChallengeHub(this);
+        this.parisJourney = new ParisJourney(this);
         // Warm the shared CC0 asset caches while the user views the menu.
         Promise.allSettled([preloadRunnerHumanoid(),preloadPoliceHumanoid(),preloadMotorcycle()]);
         this.animate();
@@ -230,6 +234,8 @@ export class Game {
         window.addEventListener('keyup', (e) => { this.keys[e.key] = false; });
     }
 
+    get geographicLevel() { return this.mode==='daily'?1:this.parisLevel; }
+
     startWithIntro({force=false,newRun=false}={}) {
         this.startGame({newRun});
         const manualQA=this.qa && !new URLSearchParams(location.search).has('intro');
@@ -288,6 +294,7 @@ export class Game {
         
         this.ui.showHUD();
         this.ui.updateCount(startCount);
+        this.parisJourney?.announce();
     }
 
     getStartingCrowdSize() {
@@ -334,6 +341,7 @@ export class Game {
     update(delta) {
         this.tvBreak?.update(delta);
         if(['intro','final_chase','final_capture'].includes(this.state)) {
+            this.levelGenerator.parisEnvironment?.update(this.state==='intro'?(this.story.line||0):this.trackZ);
             this.story?.update(delta);
             return;
         }
@@ -675,7 +683,7 @@ export class Game {
                     const runId = this.runId;
                     setTimeout(() => {
                         if(this.runId!==runId || this.state!=='boss_defeated')return;
-                        if(this.level===FINAL_CAMPAIGN_LEVEL)this.story.beginFinalChase();
+                        if(this.mode==='campaign'&&this.geographicLevel===FINAL_CAMPAIGN_LEVEL)this.story.beginFinalChase();
                         else this.winGame();
                     }, 1200);
                     this.state = 'boss_defeated';
@@ -705,7 +713,7 @@ export class Game {
     checkBossFight() {
         const boss = this.levelGenerator.boss;
         if (!boss || boss.defeated) {
-            if(this.level===FINAL_CAMPAIGN_LEVEL && !this.finalCaptured)this.story.beginFinalChase();
+            if(this.mode==='campaign' && this.geographicLevel===FINAL_CAMPAIGN_LEVEL && !this.finalCaptured)this.story.beginFinalChase();
             else this.winGame();
             return;
         }
@@ -746,7 +754,7 @@ export class Game {
 
     winGame() {
         if (this.state === 'win' || this.state === 'lose') return;
-        if(this.level===FINAL_CAMPAIGN_LEVEL && !this.finalCaptured){
+        if(this.mode==='campaign' && this.geographicLevel===FINAL_CAMPAIGN_LEVEL && !this.finalCaptured){
             if(this.levelGenerator.boss?.defeated)this.story.beginFinalChase();
             return;
         }
@@ -760,8 +768,8 @@ export class Game {
         this.state = 'win';
         const earnedCoins = Math.floor(this.crowdManager.getPlayerCount() * 2 + this.level * 10);
         this.coins += earnedCoins;
-        if(this.level===FINAL_CAMPAIGN_LEVEL && this.finalCaptured)this.campaignComplete=true;
-        else this.level++;
+        if(this.geographicLevel===FINAL_CAMPAIGN_LEVEL && this.finalCaptured)this.campaignComplete=true;
+        else { this.level++; this.parisLevel=Math.min(12,this.parisLevel+1); }
         this.saveProgress();
         this.audio.stopCrowdAmbience();
         this.audio.stopMusic();
@@ -887,12 +895,15 @@ export class Game {
         skyCtx.fillStyle = gradient;
         skyCtx.fillRect(0, 0, 1, 512);
         const skyTexture = new THREE.CanvasTexture(skyCanvas);
+        if(this.scene.background?.isTexture)this.scene.background.dispose();
         this.scene.background = skyTexture;
         this.scene.fog = new THREE.FogExp2(theme.fog, 0.006);
     }
 
     saveProgress() {
+        if(this.parisDevSelection)return; // Never overwrite campaign saves while jumping between preview districts.
         const data = {
+            parisVersion: 1, parisLevel: this.parisLevel,
             level: this.level,
             campaignComplete: this.campaignComplete,
             coins: this.coins,
@@ -911,7 +922,7 @@ export class Game {
         if (data) {
             const parsed = JSON.parse(data);
             this.level = Math.max(1,Math.min(FINAL_CAMPAIGN_LEVEL,parsed.level||1));
-            this.campaignComplete=!!parsed.campaignComplete;
+            Object.assign(this,migrateParisProgress(parsed));
             this.coins = parsed.coins || 0;
             this.crowdUpgrade = parsed.crowdUpgrade || 1;
             this.strengthUpgrade = parsed.strengthUpgrade || 1;

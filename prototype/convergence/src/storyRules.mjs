@@ -1,6 +1,6 @@
 // Finite campaign structure and deterministic story animation helpers.
 // Pure math: level solver and casualty model remain independent.
-export const FINAL_CAMPAIGN_LEVEL = 10;
+export const FINAL_CAMPAIGN_LEVEL = 12;
 export const INTRO_AUDIO_SECONDS = 3.733;
 export const INTRO_SPEECH_DELAY = .6;
 export const INTRO_ESCAPE_SECONDS = 3.35;
