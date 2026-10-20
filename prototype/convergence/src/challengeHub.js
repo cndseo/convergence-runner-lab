@@ -1,6 +1,7 @@
 import {
   utcChallengeDate, validChallengeDate, dailyChallengeSeed, computeDailyScore, formatChallengeShare
 } from './dailyChallenge.mjs';
+import {createResultCard,shareResultCard,downloadBlob} from './resultSharing.mjs';
 import { verifiedStripeCheckoutUrl } from './stripeCheckoutUrl.mjs';
 
 export const PREMIUM_CATALOG = Object.freeze([
@@ -46,7 +47,7 @@ export class ChallengeHub {
     this.dailyButton.type='button';
     this.dailyButton.addEventListener('click',()=>this.open('daily'));
     play.insertAdjacentElement('afterend',this.dailyButton);
-    this.premiumButton=make('button','btn btn-secondary','PERSONNAGES ET RENFORTS');
+    this.premiumButton=make('button','btn btn-secondary','BOUTIQUE · COSMÉTIQUES ET CONSOMMABLES');
     this.premiumButton.id='premium-btn';
     this.premiumButton.type='button';
     document.getElementById('upgrade-btn').insertAdjacentElement('afterend',this.premiumButton);
@@ -83,7 +84,8 @@ export class ChallengeHub {
     button.addEventListener('click',fn);
     return button;
   }
-  open(kind='daily'){
+  open(kind='daily',section='all'){
+    if(kind==='premium'){this.shopSection=section;this.game.experience?.telemetry.track('store_open',{source:section});}
     this.panel.classList.remove('hidden');
     this.kind=kind;
     this.foot.replaceChildren();
@@ -94,13 +96,13 @@ export class ChallengeHub {
     else if(kind==='result')this.renderResult();
     this.game.audio?.playClick?.();
   }
-  openPremiumInGame(){
+  openPremiumInGame(section='marseille'){
     const g=this.game;
     if(g.mode!=='campaign'||!['playing','fighting'].includes(g.state))return;
     this.resumeAfterPremium=g.state;
     g.state='paused';
     g.audio?.pauseAudio?.();
-    this.open('premium');
+    this.open('premium',section);
   }
   close(){
     this.panel.classList.add('hidden');
@@ -140,6 +142,8 @@ export class ChallengeHub {
       ?'Pas encore de record enregistré sur cet appareil'
       :'Ton record local : '+this.getBest(this.date)+' survivants');
     this.body.append(seed,record);
+    const duel=this.game.experience?.duel;
+    if(duel?.day===this.date)this.body.prepend(make('p','challenge-record','Objectif de ton ami : '+duel.score+' survivants. Score partagé, non certifié.'));
     this.foot.append(
       this.action('▶ RELEVER LE DÉFI',()=>{this.panel.classList.add('hidden');this.game.startDailyChallenge(this.date);}),
       this.action('CLASSEMENT',()=>this.open('ranking'))
@@ -149,7 +153,12 @@ export class ChallengeHub {
     const result=this.lastResult;
     if(!result)return this.renderDaily();
     this.heading.textContent=result.won?'DÉFI RÉUSSI':'DÉFI À RELEVER';
-    this.note.textContent='Défi UTC '+result.day+' · '+(result.won?'Parcours gagnant certifié':'Une autre combinaison permet de gagner');
+    this.note.textContent='Défi UTC '+result.day+' · '+(result.won?'Parcours vérifié localement':'Une autre combinaison permet de gagner');
+    const duel=this.game.experience?.duel;
+    if(duel?.day===result.day)this.note.textContent+=' · '+(result.survivors>duel.score?'Objectif partagé dépassé !':result.survivors===duel.score?'Égalité avec l’objectif partagé.':'Objectif partagé : '+duel.score);
+    const cardResult={...result,mode:'daily'};
+    this.resultCard=null;
+    if(result.won)createResultCard(cardResult,location.origin+location.pathname).then(blob=>{if(this.lastResult===result)this.resultCard=blob;}).catch(()=>{});
     this.body.append(
       make('div','challenge-stat',result.won?result.survivors+' survivants':'Mobilisation arrêtée'),
       make('p','challenge-record',this.getBest(result.day)===null
@@ -157,7 +166,8 @@ export class ChallengeHub {
       make('p','challenge-explain',this.connected?'Classement : synchronisation en cours…':'Classement mondial non connecté. Le score reste sur cet appareil.')
     );
     this.foot.append(
-      this.action('PARTAGER LE RÉSULTAT',()=>this.shareResult(result)),
+      this.action('DÉFIER MES AMIS',()=>this.shareResult(result)),
+      this.action('ENREGISTRER LA CARTE',()=>{if(this.resultCard)downloadBlob(this.resultCard,'convergence-defi.png');else this.note.textContent='La carte est disponible après une victoire.';}),
       this.action('REJOUER LE DÉFI',()=>{this.panel.classList.add('hidden');this.game.startDailyChallenge(result.day);}),
       this.action('RETOUR',()=>this.returnToCampaignMenu())
     );
@@ -187,12 +197,19 @@ export class ChallengeHub {
   }
   renderPremium(){
     this.body.replaceChildren();this.foot.replaceChildren();
-    this.heading.textContent='PERSONNAGES ET RENFORTS';
-    this.note.textContent='Personnages à 1,99 € · Renfort marseillais à 2,99 € par intervention. Réservé à la campagne, sans avantage dans le défi quotidien.';
-    for(const item of PREMIUM_CATALOG){
+    this.heading.textContent='BOUTIQUE';
+    this.note.textContent='Cosmétiques permanents ou consommables de campagne. Tous les niveaux restent gagnables gratuitement. Aucun avantage dans le défi du jour.';
+    const tabs=make('nav','shop-categories');tabs.setAttribute('aria-label','Catégories de la boutique');
+    for(const [id,label] of [['all','Tout'],['genz','Tirs GenZ'],['marseille','Renforts'],['costumes','Costumes']]){
+      const button=this.action(label,()=>{this.shopSection=id;this.renderPremium();});
+      button.setAttribute('aria-pressed',String((this.shopSection||'all')===id));tabs.append(button);
+    }
+    this.body.append(tabs);
+    const category=item=>item.id.startsWith('genz')?'genz':item.id.startsWith('marseille')?'marseille':'costumes';
+    for(const item of PREMIUM_CATALOG.filter(item=>!this.shopSection||this.shopSection==='all'||category(item)===this.shopSection)){
       const row=make('div','challenge-product');
       const info=make('div','');
-      info.append(make('strong','',item.label),make('span','',item.description));
+      info.append(make('strong','',item.label),make('span','',item.description),make('small','product-kind',category(item)==='costumes'?'COSMÉTIQUE PERMANENT':'CONSOMMABLE · S’ÉPUISE À L’UTILISATION'));
       if(item.art){
         const img=make('img','character-product-thumb');
         img.src=import.meta.env.BASE_URL+'assets/characters/'+item.art;
@@ -390,13 +407,7 @@ export class ChallengeHub {
     this.submitResult(result);
   }
   async shareResult(result){
-    const text=formatChallengeShare(result.day,result.survivors,location.origin+location.pathname);
-    if(navigator.share){
-      try{await navigator.share({title:'CONVERGENCE · Défi du jour',text,url:location.origin+location.pathname+'?daily='+result.day});return;}
-      catch(e){if(e.name==='AbortError')return;}
-    }
-    try{await navigator.clipboard.writeText(text);this.note.textContent='Résultat copié : colle-le sur WhatsApp ou Facebook.';}
-    catch{this.note.textContent=text;}
+    this.note.textContent=await shareResultCard({...result,mode:'daily'},location.origin+location.pathname,this.resultCard,this.game.experience?.telemetry);
   }
   async checkout(sku){
     const button=[...this.body.querySelectorAll('button[data-sku]')].find(el=>el.dataset.sku===sku);
@@ -405,6 +416,7 @@ export class ChallengeHub {
       return;
     }
     if(button?.disabled)return;
+    this.game.experience?.telemetry.track('checkout_start',{source:sku});
     if(button){
       button.disabled=true;
       button.textContent='OUVERTURE…';
@@ -427,6 +439,7 @@ export class ChallengeHub {
       direct.setAttribute('aria-label','Ouvrir le paiement sécurisé Stripe');
       button?.replaceWith(direct);
       this.note.textContent='Paiement sécurisé Stripe. Si la page ne s’ouvre pas, touchez OUVRIR STRIPE.';
+      this.game.experience?.telemetry.track('checkout_redirect',{source:sku});
       window.location.assign(stripeUrl);
     }catch(error){
       if(button){
@@ -435,11 +448,13 @@ export class ChallengeHub {
           .toFixed(2).replace('.',',')+' €';
       }
       this.note.textContent='Ouverture Stripe impossible. Réessayez dans quelques instants.';
+      this.game.experience?.telemetry.track('checkout_failed',{source:sku});
       console.warn('CONVERGENCE checkout:',error?.message||error);
     }
   }
   returnToCampaignMenu(){
     const g=this.game;
+    g.experience?.abandon('menu');
     g.mode='campaign';g.dailyDate=null;g.levelSeed=null;
     g.clearLevel();g.state='menu';
     g.level=g.campaignLevelBackup??g.level;

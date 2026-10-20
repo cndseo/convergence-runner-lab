@@ -35,14 +35,14 @@ export function explainGateChoice(choice, before, after) {
   } else if (after.count === 72 && before.count < 72) {
     reason = 'Plafond de foule atteint : 72';
   } else if (choice.op === '/' || choice.op === '-') {
-    reason = 'Une petite foule peut débloquer d’autres conditions';
+    reason = choice.op==='/'?'La foule est divisée, arrondie à l’entier inférieur':'Ces départs retirent directement des manifestants';
   } else if (choice.op === '*') {
     reason = 'Mobilisation multipliée, limitée à 72';
   } else {
     reason = 'Chaque choix influence les rencontres suivantes';
   }
   if (!pieces.length) pieces.push('Effectif inchangé');
-  return { title: pieces.join(' · '), detail: reason, tone };
+  return { title: pieces.join(' · '), detail: `${before.count} → ${after.count} manifestants · ${reason}`, tone };
 }
 
 export function evaluateResult({won, survivors, gateHistory = [], lossSource = 'unknown', level = 1}) {
@@ -57,7 +57,7 @@ export function evaluateResult({won, survivors, gateHistory = [], lossSource = '
       stars, title: ['','Front franchi','Bonne mobilisation','Mobilisation remarquable'][stars],
       detail: `${remaining} survivant${remaining>1?'s':''} · ${decisions} choix · ${shieldsObtained} protections recrutées`,
       tip: stars === 3 ? 'Essaie de conserver autant de monde à l’étape suivante.' :
-        'Rejoue pour sauver davantage de manifestants et obtenir 3 étoiles.'
+        'Cap sur le prochain quartier. Les protections aident à préserver la foule.'
     };
   }
   let reason = 'La mobilisation s’est arrêtée.';
