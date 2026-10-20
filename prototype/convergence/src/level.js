@@ -1,5 +1,6 @@
 import * as THREE from 'three';
 import { generateTacticalLevel } from './tactics.mjs';
+import { generateCampaignLevel } from './campaignPlan.mjs';
 import { createArcadeGate, animateArcadeGates } from './arcadeGates.js';
 import { disposeTVGateArtwork, makeMarseilleBonusArtwork } from './tvGateArt.js';
 import { upgradeBossVan } from './bossAssets.js';
@@ -51,7 +52,7 @@ export class LevelGenerator {
         resetPoliceVisualBudget();
         resetMotorcycles();
         resetReferencePolice();
-        this.plan = generateTacticalLevel({
+        this.plan = (this.game.mode==='daily'?generateTacticalLevel:generateCampaignLevel)({
             level, seed: this.game.levelSeed ?? level * 20261019,
             startCount: this.game.getStartingCrowdSize(), strength: this.game.getEffectiveStrength()
         });

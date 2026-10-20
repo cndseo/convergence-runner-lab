@@ -199,6 +199,7 @@ export class UIManager {
 
     // ============ SCREEN SHAKE ============
     screenShake(intensity) {
+        if(this.game.experience?.reducedMotion)return;
         this.shakeIntensity = Math.max(this.shakeIntensity, intensity);
     }
 
@@ -321,8 +322,8 @@ export class UIManager {
     updateCount(count) {
         if (this.tacticalStatus && this.game.levelGenerator?.plan) {
             const done = this.game.levelGenerator.gates.filter(g => g.passed).length;
-            this.tacticalStatus.textContent = '◇ ' + (this.game.shields || 0) + ' protections · Front ' +
-                this.game.levelGenerator.plan.bossHealth + ' · ' + done + '/10';
+            const text = '◇ '+(this.game.shields||0)+' protections · '+done+'/10 TV · Arrivée '+Math.round(Math.min(1,this.game.trackZ/this.game.trackLength)*100)+' %';
+            if(this.tacticalStatus.textContent!==text)this.tacticalStatus.textContent=text;
         }
         this.countDisplay.textContent = `👥 ${count}`;
         // Pulse the count display when count changes significantly
@@ -443,35 +444,23 @@ export class UIManager {
         });
     }
 
-    onSkinClick(skin) {
+    async onSkinClick(skin) {
         if (skin.id === this.game.equippedSkin) return;
         if (skin.owned) {
             this.game.equipSkin(skin.id);
             if (this.game.audio.initialized) this.game.audio.playClick();
         } else if (skin.shareUnlock) {
-            // Use native share if available, otherwise copy link
-            const shareData = {
-                title: 'Count Masters: Stickman Games',
-                text: 'Check out this awesome stickman runner game!',
-                url: window.location.href
-            };
-            if (navigator.share) {
-                navigator.share(shareData).then(() => {
-                    this.game.shareForSkin(skin.id);
-                    if (this.game.audio.initialized) this.game.audio.playGateGood();
-                    this.floatingText('+🎨 Rainbow unlocked!', '#4CAF50');
-                    this.renderShop();
-                }).catch(() => {});
-            } else {
-                navigator.clipboard.writeText(`${shareData.text} ${shareData.url}`).catch(() => {});
+            const shareData = {title:'CONVERGENCE',text:'Rassemble ta foule dans Paris. Rejoins le défi du jour !',url:location.origin+location.pathname+'?from=skin'};
+            try {
+                if(navigator.share){await navigator.share(shareData);this.showFloatingText('Invitation transmise · Rainbow débloqué', '#4CAF50');}
+                else {await navigator.clipboard.writeText(shareData.text+' '+shareData.url);this.showFloatingText('Lien copié · Rainbow débloqué', '#4CAF50');}
                 this.game.shareForSkin(skin.id);
-                if (this.game.audio.initialized) this.game.audio.playGateGood();
-                this.floatingText('Link copied + 🎨 Rainbow!', '#4CAF50');
-            }
+                if(this.game.audio.initialized)this.game.audio.playGateGood();
+            } catch(error) {if(error.name!=='AbortError')this.showFloatingText('Partage indisponible. Réessaie plus tard.', '#ffcc38');}
         } else {
             if (this.game.buySkin(skin.id)) {
                 if (this.game.audio.initialized) this.game.audio.playGateGood();
-                this.floatingText(`-${skin.price} 🪙`, '#ffd700');
+                this.showFloatingText(`-${skin.price} 🪙`, '#ffd700');
             }
         }
         this.renderShop();
@@ -485,7 +474,7 @@ export class UIManager {
         } else {
             if (this.game.buyTheme(theme.id)) {
                 if (this.game.audio.initialized) this.game.audio.playGateGood();
-                this.floatingText(`-${theme.price} 🪙`, '#ffd700');
+                this.showFloatingText(`-${theme.price} 🪙`, '#ffd700');
             }
         }
         this.renderShop();
@@ -548,6 +537,7 @@ export class UIManager {
 
     // ============ CONFETTI ============
     spawnConfetti() {
+        if(this.game.experience?.reducedMotion)return;
         const colors = ['#FF5252', '#FFD740', '#69F0AE', '#40C4FF', '#E040FB', '#FF6E40'];
         for (let i = 0; i < 40; i++) {
             const confetti = document.createElement('div');

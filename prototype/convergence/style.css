@@ -787,3 +787,36 @@ html,body{width:100%;max-width:100%;overflow:hidden}
   touch-action:manipulation;background:linear-gradient(135deg,#ffd36d,#d49530);
   color:#1c2a39;border-radius:12px;font-weight:850;cursor:pointer}
 .challenge-product .challenge-pay-link{flex:0 0 auto}
+
+/* Player experience: compact prompts, optional goals, readable mobile results. */
+.player-coach{position:absolute;bottom:calc(72px + env(safe-area-inset-bottom,0px));left:12px;right:82px;max-width:390px;z-index:38;padding:9px 12px;border-radius:9px;border:1px solid #ffce3866;background:#102031e8;color:#fff0c2;font:700 13px/1.4 system-ui;pointer-events:none;text-align:center}
+.player-coach[hidden]{display:none}
+.menu-intro,.result-download{background:transparent;color:#e5ce91;border:0;text-decoration:underline;text-underline-offset:4px;font:700 12px/1.35 system-ui;cursor:pointer;min-height:36px;padding:6px 10px}
+#start-screen .menu-intro{align-self:center}
+#win-screen{overflow-y:auto;justify-content:flex-start;padding-top:max(22px,env(safe-area-inset-top,0px));gap:8px}
+#win-screen h2{font-size:clamp(23px,6vw,34px);margin:0}
+#win-screen #win-coins{font-size:24px;margin:0}
+#win-screen .run-report{padding:10px;gap:5px}
+#win-screen .run-report small{display:none}
+#win-upgrades{width:min(100%,360px)}
+#win-upgrades .upgrade-item{padding:5px 10px;margin:4px 0;font-size:12px}
+#win-upgrades .btn{padding:8px 12px;font-size:12px}
+#win-screen>.btn{width:min(100%,360px);padding:13px 12px;font-size:14px;flex-shrink:0}
+#win-screen>#next-btn{order:0}
+.quarter-summary{font:650 12px/1.4 system-ui;color:#f9db87;text-align:center;max-width:350px;margin:3px 0}
+.quarter-map{display:grid;grid-template-columns:repeat(12,1fr);width:min(100%,350px);gap:3px}
+.quarter-map span{padding:6px 0;border-radius:4px;background:#243b50;text-align:center;font:750 11px system-ui;color:#bed0df}
+.quarter-map .done{background:#f2c632;color:#152435}
+.result-notice{font:600 12px/1.45 system-ui;color:#f4e7c8;text-align:center;overflow-wrap:anywhere;max-width:360px;margin:0}
+.shop-categories{display:flex;flex-wrap:wrap;gap:6px}
+.shop-categories .btn{padding:9px 10px;min-height:40px;font-size:12px;border:1px solid #c3d0dc44;background:#243c53;color:#f7e8c4;box-shadow:none}
+.shop-categories [aria-pressed=true]{background:#f2c632;color:#152435}
+.product-kind{font:650 9px/1.5 system-ui;color:#f9d586}
+#pause-panel{overflow:auto;gap:10px;padding:22px 14px}
+#pause-panel>.btn{min-height:42px;padding:10px 12px;font-size:12px;width:min(100%,340px)}
+#pause-panel p{font-size:13px;margin:5px 0}
+.diagnostics-note{font:500 11px/1.45 system-ui;color:#c6d6e5;max-width:320px}
+#diagnostics-export:disabled{opacity:.4}
+body:has(.screen:not(.hidden)) #gesture-hint,body:has(#challenge-hub:not(.hidden)) #gesture-hint,body:has(#pause-panel:not(.hidden)) #gesture-hint{display:none}
+.motion-reduced *, .motion-reduced *::before, .motion-reduced *::after{animation-duration:.001ms!important;transition-duration:.001ms!important}
+@media(max-height:740px){#win-screen{gap:5px}#win-screen .result-download{min-height:30px;font-size:11px}#win-screen .run-report span{font-size:12px}#win-screen .run-report strong{font-size:15px}}

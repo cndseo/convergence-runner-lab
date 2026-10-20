@@ -78,7 +78,7 @@ export class GenzFireworks {
   if(this.countBadge.textContent!==remaining)this.countBadge.textContent=remaining;
  }
  openShop(){
-  this.game.challengeHub?.openPremiumInGame();
+  this.game.challengeHub?.openPremiumInGame('genz');
  }
  findShooter(){
   const runners=this.game.crowdManager?.playerStickmen?.filter((r,i)=>i>0&&r.parent)||[];

@@ -1,4 +1,5 @@
 import * as THREE from 'three';
+import { PlayerExperience } from './playerExperience.js';
 import { updateReferenceMotorcycleCharge } from './policeReferenceSprites.js';
 import { BravmGateCharge } from './bravmGateCharge.js';
 import { TVBreakEffects } from './tvBreakEffects.js';
@@ -121,6 +122,7 @@ export class Game {
         this.story.loadAssets();
         this.challengeHub = new ChallengeHub(this);
         this.parisJourney = new ParisJourney(this);
+        this.experience = new PlayerExperience(this);
         // Warm the shared CC0 asset caches while the user views the menu.
         Promise.allSettled([preloadRunnerHumanoid(),preloadPoliceHumanoid(),preloadMotorcycle()]);
         this.animate();
@@ -240,8 +242,8 @@ export class Game {
 
     startWithIntro({force=false,newRun=false}={}) {
         this.startGame({newRun});
-        const manualQA=this.qa && !new URLSearchParams(location.search).has('intro');
-        if(this.level===1 && (!this.story.introSeen || force) && (!manualQA || force)){
+        // The story remains available on demand; Play starts with a real decision.
+        if(force && this.level===1){
             this.story.beginIntro();
         }
     }
@@ -299,6 +301,7 @@ export class Game {
         this.ui.showHUD();
         this.ui.updateCount(startCount);
         this.parisJourney?.announce();
+        this.experience?.start();
     }
 
     getStartingCrowdSize() {
@@ -344,6 +347,7 @@ export class Game {
     }
 
     update(delta) {
+        this.experience?.update(delta);
         this.tvBreak?.update(delta);
         if(['intro','final_chase','final_capture'].includes(this.state)) {
             this.levelGenerator.parisEnvironment?.update(this.state==='intro'?(this.story.line||0):this.trackZ);
@@ -386,7 +390,7 @@ export class Game {
             const enter = Math.min(1, this.fightCameraTime / .82);
             const pressure = this.fightingEnemy?.count
                 ? 1 - this.fightingEnemy.remainingCount / this.fightingEnemy.count : 0;
-            const pulse = Math.max(this.combatChoreo?.impactPulse || 0, this.marseille?.impactPulse || 0);
+            const pulse = this.experience?.reducedMotion?0:Math.max(this.combatChoreo?.impactPulse || 0, this.marseille?.impactPulse || 0);
             const shakeX = Math.sin(this.fightCameraTime * 27) * .075 * pulse;
             const shakeY = Math.cos(this.fightCameraTime * 23) * .045 * pulse;
             const supportFrame=this.marseille?.active ? .65 : 0;
@@ -525,6 +529,7 @@ export class Game {
             this.ui.screenShake(good ? 2 : 4);
         } else this.ui.showFloatingText('Condition non remplie', '#ddc5ff');
         this.gateHistory.push({ choice: gateData, before, after, side });
+        this.experience?.gate(before,after);
         if(after.count>0)this.ui.showTacticalHint(explainGateChoice(gateData,before,after));
         if (after.count === 0) this.loseGame('gate');
     }
@@ -773,10 +778,12 @@ export class Game {
         }
         this.audio.stopCombatVoice?.();
         if(this.mode==='daily'){
+            this.experience?.finish(true);
             const report=evaluateResult({won:true,survivors:this.crowdManager.getPlayerCount(),gateHistory:this.gateHistory,level:1});
             this.state='win';this.audio.stopCrowdAmbience();this.audio.stopMusic();this.audio.playWin();
             this.ui.showWin(0,report);this.challengeHub.complete(true);return;
         }
+        this.experience?.finish(true);
         const report=evaluateResult({won:true,survivors:this.crowdManager.getPlayerCount(),gateHistory:this.gateHistory,level:this.level});
         this.state = 'win';
         const earnedCoins = Math.floor(this.crowdManager.getPlayerCount() * 2 + this.level * 10);
@@ -793,7 +800,10 @@ export class Game {
     loseGame(source = null) {
         if (this.state === 'win' || this.state === 'lose') return;
         const lossSource=source || (this.fightingEnemy?'combat':'unknown');
+        this.experience?.finish(false,lossSource);
         const report=evaluateResult({won:false,survivors:this.crowdManager.getPlayerCount(),gateHistory:this.gateHistory,lossSource,level:this.level});
+        if(lossSource==='combat'&&this.fightingEnemy?.remainingCount>0)report.detail+=' Il restait '+this.fightingEnemy.remainingCount+' adversaires au front.';
+        if(lossSource==='gate'&&this.gateHistory.length){const last=this.gateHistory.at(-1);report.detail+=' Dernière TV : '+last.before.count+' → '+last.after.count+' manifestants.';}
         this.combatChoreo?.dispose();
         this.combatChoreo=null;
         this.audio.stopCombatVoice?.();
@@ -952,7 +962,9 @@ export class Game {
 
     animate() {
         requestAnimationFrame(() => this.animate());
-        const delta = Math.min(this.clock.getDelta(), 0.05);
+        const frameDelta = this.clock.getDelta();
+        this.experience?.sampleFrame(frameDelta);
+        const delta = Math.min(frameDelta, 0.05);
         if (!this.qaManual) this.update(delta);
         this.renderer.render(this.scene, this.camera);
     }
