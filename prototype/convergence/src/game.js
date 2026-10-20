@@ -453,6 +453,8 @@ export class Game {
         this.tvBreak.trigger(bonus,'left');
         bonus.leftMesh.userData.root.visible=false;
         this.audio.playGateGood();
+        this.ui.showFloatingText('MARSEILLAIS +1 EN RÉSERVE','#ffe18b');
+        // The flashing action button appears only during a real CRS/BAC fight.
         // Reserve only: no activate(), no change to crowd, shields or gateHistory.
     }
 

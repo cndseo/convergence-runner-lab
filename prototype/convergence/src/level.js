@@ -160,14 +160,19 @@ export class LevelGenerator {
 
     createMarseilleBonus(level) {
         if(level!==1 || this.game.mode!=='campaign' || this.game.marseille.levelOneGift.claimed)return;
+        // Place the special reward immediately before the first CRS unit,
+        // *after* the preceding mathematical TV pair (no 11th tactical gate).
+        const firstCRS=this.plan.events.find(e=>e.type==='enemy'&&e.kind==='crs');
+        if(!firstCRS)return;
+        const z=firstCRS.z-4;
         const root=new THREE.Group();
-        root.name='MARSEILLE_BONUS_TV';root.position.set(0,0,-6);
+        root.name='MARSEILLE_BONUS_TV';root.position.set(0,0,-z);
         root.userData.dynamic=true;
         const art=makeMarseilleBonusArtwork(root),pane=art.getObjectByName('TV_LIVE_SCREEN');
         pane.userData.root=root;
         this.scene.add(root);this.meshes.push(root);
         // Separate pickup: never an eleventh decision or a tactical reward.
-        this.marseilleBonus={z:6,passed:false,leftMesh:pane,leftGate:{op:'support',kind:'marseille'}};
+        this.marseilleBonus={z,passed:false,leftMesh:pane,leftGate:{op:'support',kind:'marseille'}};
     }
 
     createGateMesh(data, x, z, ordinal=0) {

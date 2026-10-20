@@ -58,13 +58,17 @@ export class MarseilleReinforcements {
  }
  showButton(){
   const g=this.game;
-  const visible=g.mode==='campaign' && ['playing','fighting'].includes(g.state) &&
-   (this.available()>0||this.pending||this.active||this.levelOneGift.claimed);
-  this.button.style.display=visible?'block':'none';
-  this.button.disabled=g.state!=='fighting'||this.pending||this.active||this.available()<=0;
-  this.button.title=g.state==='fighting'?'Déclencher cette attaque':'À déclencher pendant un affrontement';
-  this.button.textContent=this.active?'RENFORTS EN ACTION…':
-   this.pending?'VÉRIFICATION…':'MARSEILLAIS · '+this.available()+' disponible'+(this.available()>1?'s':'');
+  // A call-to-action is useful only when it can be pressed *now*.
+  // Do not show a disabled purchase/attack control during the march or pause.
+  const ready=g.mode==='campaign'&&g.state==='fighting'&&!!g.fightingEnemy&&
+   !this.pending&&!this.active&&this.available()>0;
+  this.button.style.display=ready?'block':'none';
+  this.button.disabled=!ready;
+  this.button.classList.toggle('marseille-attack-ready',ready);
+  this.button.title=ready?'Appuie maintenant pour lancer les Marseillais':'';
+  this.button.textContent=ready
+   ?'⚡ TOUCHE ICI POUR ATTAQUER\nMARSEILLAIS · '+this.available()+' disponible'+(this.available()>1?'s':'')
+   :'';
  }
  async activate(){
   const g=this.game;
