@@ -1,4 +1,5 @@
 import * as THREE from 'three';
+import {crowdDensity,crowdSlot} from './humanDensity.mjs';
 import { makeCitizen } from './characters.js';
 import { attachAnimatedHumanoid, updateAnimatedHumanoids, clearHumanoids } from './humanoidAssets.js';
 import { applyCostumeToCrowd, disposeRunnerCostume } from './characterCostumes.js';
@@ -11,6 +12,9 @@ export class CrowdManager {
         this.playerGroup = null;
         this.playerCount = 0;
         this.animTime = 0;
+        this.density = crowdDensity(0);
+        this.densityGrowth = 1;
+        this.previousVisualTotal = 0;
         this.flyingBodies = [];    // Ragdoll stickmen flying away
         this.fallingOfficers = []; // Retain the real equipped CRS models during a fall
         this.impactFlashes = [];   // Impact burst rings
@@ -30,6 +34,9 @@ export class CrowdManager {
         this.playerStickmen = [];
         this.playerGroup = null;
         this.playerCount = 0;
+        this.density = crowdDensity(0);
+        this.previousVisualTotal = 0;
+        this.densityGrowth = 1;
         
         // Clean up effects
         this.fallingOfficers.forEach(f => { this.scene.remove(f.officer); });
@@ -47,6 +54,7 @@ export class CrowdManager {
     createPlayerCrowd(count) {
         this.clear();
         this.playerCount = count;
+        this.refreshDensity();
         this.playerGroup = new THREE.Group();
         this.playerGroup.userData.dynamic = true;
 
@@ -84,29 +92,37 @@ export class CrowdManager {
         this.playerStickmen.push(stickman);
     }
 
-    getFormationPosition(index) {
-        if(index === 0) return {x:0, z:1.05};
-        index--;
-        const cols = this.playerCount > 8 ? 5 : 3;
-        const row = Math.floor(index / cols);
-        return { x: (index % cols - (cols - 1) / 2) * .53, z: .55 - row * .70 };
+    refreshDensity() {
+        const shields=Math.max(0,Math.min(48,Math.floor(this.game?.shields||0)));
+        if(this.playerCount===this.density.count && (this.playerCount?shields*2:0)===this.density.protectors)return;
+        const next=crowdDensity(this.playerCount,shields);
+        if(next.count!==this.density.count||next.protectors!==this.density.protectors){
+            this.previousVisualTotal=this.density.total;
+            this.densityGrowth=next.total>this.density.total ? 0 : 1;
+            this.density=next;
+        }
     }
 
-    // During a fight the visible front rank must remain physically opposite
-    // the officers, regardless of how long the marching crowd has become.
-    // This changes display positions only, never the collision/solver state.
-    getCombatFormationPosition(index) {
-        const enemy = this.game?.fightingEnemy;
-        if (!enemy) return this.getFormationPosition(index);
-        const cols = this.playerCount > 8 ? 5 : 3;
-        if (index === 0) return {x:0, z:this.game.trackZ-enemy.z+.68};
-        const rank = index - 1;
-        const row = Math.floor(rank / cols);
-        return {
-            x:(rank % cols - (cols - 1) / 2) * .58,
-            z:this.game.trackZ-enemy.z+.8+row*.67
-        };
+    getFormationPosition(index,out={}) {
+        return crowdSlot(index,this.density,out);
     }
+
+    getCombatFormationPosition(index,out={}) {
+        const enemy=this.game?.fightingEnemy;
+        if(!enemy)return this.getFormationPosition(index,out);
+        crowdSlot(index,this.density,out);
+        out.z+=this.game.trackZ-enemy.z+1.33;
+        return out;
+    }
+
+    getVisualPosition(index,out={}) {
+        return this.game?.state==='fighting'
+            ? this.getCombatFormationPosition(index,out) : this.getFormationPosition(index,out);
+    }
+
+    getCameraExpansion(){return Math.max(0,this.density.depth-1.4);}
+    getCameraHeight(){return 6.3+this.getCameraExpansion()*.72;}
+    getCameraDistance(){return 8.4+this.getCameraExpansion()*1.45+Math.max(0,this.density.columns-7)*.4;}
 
     createStickman(color) {
         const group = new THREE.Group();
@@ -152,6 +168,7 @@ export class CrowdManager {
     addToPlayerCrowd(amount, faction=null) {
         const startIndex = this.playerCount;
         this.playerCount += amount;
+        this.refreshDensity();
 
         for (let i = 0; i < amount; i++) {
             this.addStickmanToGroup(startIndex + i);
@@ -185,6 +202,7 @@ export class CrowdManager {
             }
         }
         this.playerCount = Math.max(0, this.playerCount - amount);
+        this.refreshDensity();
     }
 
     launchOfficerFall(officer) {
@@ -376,12 +394,14 @@ export class CrowdManager {
     }
 
     update(delta) {
-        updateAnimatedHumanoids(this,delta);
+        this.refreshDensity();
+        this.densityGrowth=Math.min(1,this.densityGrowth+delta*3);
         if(this.playerStickmen.some(r=>!r.userData.realHumanoid&&!r.userData.lowDetail))attachAnimatedHumanoid(this);
         this.animTime += delta * 2.6; // Measured walking cadence for fallback low-detail citizens
         
         // Animate low-detail demonstrators walking
         if (this.playerStickmen.length > 0) {
+            const slot=this._formationTarget??={x:0,z:0};
             this.playerStickmen.forEach((stickman, i) => {
                 // Spawn pop-in animation
                 if (stickman.userData.spawning) {
@@ -400,8 +420,8 @@ export class CrowdManager {
                 }
 
                 const target = this.game?.state==='fighting'
-                    ? this.getCombatFormationPosition(i)
-                    : this.getFormationPosition(i);
+                    ? this.getCombatFormationPosition(i,slot)
+                    : this.getFormationPosition(i,slot);
                 stickman.position.x += (target.x - stickman.position.x) * Math.min(1, delta * 8);
                 stickman.position.z += (target.z - stickman.position.z) * Math.min(1, delta * 8);
                 const offset = i * 0.7;
@@ -437,6 +457,8 @@ export class CrowdManager {
                 }
             });
         }
+
+        updateAnimatedHumanoids(this,delta);
 
         // Update all effects
         this.updateFlyingBodies(delta);

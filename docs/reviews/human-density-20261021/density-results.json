@@ -1,0 +1,1539 @@
+{
+  "base": "https://foule-convergence.72-61-167-161.sslip.io/",
+  "scope": "Chrome desktop, mobile viewport; draw statistics, not phone frame rate",
+  "frames": [
+    {
+      "name": "start",
+      "density": {
+        "count": 5,
+        "marchers": 28,
+        "protectors": 0,
+        "total": 28,
+        "columns": 7,
+        "depth": 1.92
+      },
+      "actualVisible": 28,
+      "bounds": {
+        "minX": -0.6510127739856603,
+        "maxX": 0.6423865125174419,
+        "minY": -0.6425012871995505,
+        "maxY": -0.35888721001017315
+      },
+      "full": {
+        "calls": 112,
+        "triangles": 282370
+      },
+      "base": {
+        "calls": 107,
+        "triangles": 282006
+      },
+      "addedCalls": 5,
+      "addedTriangles": 364,
+      "patrols": {
+        "groups": 54,
+        "visible": {
+          "crs": 41,
+          "bac": 22,
+          "bravm": 10,
+          "spectators": 86
+        },
+        "drawCalls": 4,
+        "limits": {
+          "crowd": 312,
+          "crs": 192,
+          "bac": 128,
+          "bravm": 64,
+          "spectators": 192
+        }
+      },
+      "logical": {
+        "count": 5,
+        "shields": 0,
+        "gates": 0
+      }
+    },
+    {
+      "name": "protection",
+      "density": {
+        "count": 5,
+        "marchers": 28,
+        "protectors": 16,
+        "total": 44,
+        "columns": 7,
+        "depth": 3.39
+      },
+      "actualVisible": 44,
+      "bounds": {
+        "minX": -0.6322465629497358,
+        "maxX": 0.586253250930741,
+        "minY": -0.6836486402739724,
+        "maxY": -0.3016324436132639
+      },
+      "full": {
+        "calls": 112,
+        "triangles": 282402
+      },
+      "base": {
+        "calls": 107,
+        "triangles": 282006
+      },
+      "addedCalls": 5,
+      "addedTriangles": 396,
+      "patrols": {
+        "groups": 54,
+        "visible": {
+          "crs": 41,
+          "bac": 22,
+          "bravm": 10,
+          "spectators": 86
+        },
+        "drawCalls": 4,
+        "limits": {
+          "crowd": 312,
+          "crs": 192,
+          "bac": 128,
+          "bravm": 64,
+          "spectators": 192
+        }
+      },
+      "logical": {
+        "count": 5,
+        "shields": 8,
+        "gates": 0
+      }
+    },
+    {
+      "name": "march",
+      "density": {
+        "count": 24,
+        "marchers": 108,
+        "protectors": 24,
+        "total": 132,
+        "columns": 13,
+        "depth": 5.3500000000000005
+      },
+      "actualVisible": 132,
+      "bounds": {
+        "minX": -0.907929387629772,
+        "maxX": 0.8652967372295914,
+        "minY": -0.562686663898598,
+        "maxY": -0.20779973634072432
+      },
+      "full": {
+        "calls": 180,
+        "triangles": 442456
+      },
+      "base": {
+        "calls": 176,
+        "triangles": 441808
+      },
+      "addedCalls": 4,
+      "addedTriangles": 648,
+      "patrols": {
+        "groups": 54,
+        "visible": {
+          "crs": 60,
+          "bac": 25,
+          "bravm": 15,
+          "spectators": 116
+        },
+        "drawCalls": 4,
+        "limits": {
+          "crowd": 312,
+          "crs": 192,
+          "bac": 128,
+          "bravm": 64,
+          "spectators": 192
+        }
+      },
+      "logical": {
+        "count": 24,
+        "shields": 12,
+        "gates": 0
+      }
+    },
+    {
+      "name": "maximum",
+      "density": {
+        "count": 72,
+        "marchers": 216,
+        "protectors": 96,
+        "total": 312,
+        "columns": 13,
+        "depth": 11.719999999999999
+      },
+      "actualVisible": 312,
+      "bounds": {
+        "minX": -0.6555063055044639,
+        "maxX": 0.6496980895721765,
+        "minY": -0.6856312534443711,
+        "maxY": -0.14144559969349033
+      },
+      "full": {
+        "calls": 189,
+        "triangles": 386284
+      },
+      "base": {
+        "calls": 185,
+        "triangles": 385322
+      },
+      "addedCalls": 4,
+      "addedTriangles": 962,
+      "patrols": {
+        "groups": 54,
+        "visible": {
+          "crs": 82,
+          "bac": 43,
+          "bravm": 16,
+          "spectators": 100
+        },
+        "drawCalls": 4,
+        "limits": {
+          "crowd": 312,
+          "crs": 192,
+          "bac": 128,
+          "bravm": 64,
+          "spectators": 192
+        }
+      },
+      "logical": {
+        "count": 72,
+        "shields": 48,
+        "gates": 0
+      }
+    }
+  ],
+  "errors": [],
+  "badAssets": [],
+  "shieldGate": {
+    "choice": {
+      "op": "shield",
+      "value": 14,
+      "tvKey": "protections14"
+    },
+    "before": {
+      "count": 5,
+      "shields": 0,
+      "total": 28
+    },
+    "after": {
+      "count": 5,
+      "shields": 14,
+      "total": 56
+    }
+  },
+  "districts": [
+    {
+      "id": 1,
+      "stats": [
+        {
+          "groups": 54,
+          "visible": {
+            "crs": 41,
+            "bac": 22,
+            "bravm": 10,
+            "spectators": 86
+          },
+          "drawCalls": 4,
+          "limits": {
+            "crowd": 312,
+            "crs": 192,
+            "bac": 128,
+            "bravm": 64,
+            "spectators": 192
+          }
+        },
+        {
+          "groups": 54,
+          "visible": {
+            "crs": 60,
+            "bac": 25,
+            "bravm": 15,
+            "spectators": 116
+          },
+          "drawCalls": 4,
+          "limits": {
+            "crowd": 312,
+            "crs": 192,
+            "bac": 128,
+            "bravm": 64,
+            "spectators": 192
+          }
+        },
+        {
+          "groups": 54,
+          "visible": {
+            "crs": 70,
+            "bac": 34,
+            "bravm": 14,
+            "spectators": 116
+          },
+          "drawCalls": 4,
+          "limits": {
+            "crowd": 312,
+            "crs": 192,
+            "bac": 128,
+            "bravm": 64,
+            "spectators": 192
+          }
+        },
+        {
+          "groups": 54,
+          "visible": {
+            "crs": 61,
+            "bac": 41,
+            "bravm": 12,
+            "spectators": 106
+          },
+          "drawCalls": 4,
+          "limits": {
+            "crowd": 312,
+            "crs": 192,
+            "bac": 128,
+            "bravm": 64,
+            "spectators": 192
+          }
+        },
+        {
+          "groups": 54,
+          "visible": {
+            "crs": 54,
+            "bac": 17,
+            "bravm": 6,
+            "spectators": 60
+          },
+          "drawCalls": 4,
+          "limits": {
+            "crowd": 312,
+            "crs": 192,
+            "bac": 128,
+            "bravm": 64,
+            "spectators": 192
+          }
+        },
+        {
+          "groups": 54,
+          "visible": {
+            "crs": 41,
+            "bac": 22,
+            "bravm": 10,
+            "spectators": 86
+          },
+          "drawCalls": 4,
+          "limits": {
+            "crowd": 312,
+            "crs": 192,
+            "bac": 128,
+            "bravm": 64,
+            "spectators": 192
+          }
+        }
+      ],
+      "invalid": 0,
+      "roots": 1
+    },
+    {
+      "id": 2,
+      "stats": [
+        {
+          "groups": 54,
+          "visible": {
+            "crs": 36,
+            "bac": 20,
+            "bravm": 12,
+            "spectators": 92
+          },
+          "drawCalls": 4,
+          "limits": {
+            "crowd": 312,
+            "crs": 192,
+            "bac": 128,
+            "bravm": 64,
+            "spectators": 192
+          }
+        },
+        {
+          "groups": 54,
+          "visible": {
+            "crs": 66,
+            "bac": 26,
+            "bravm": 14,
+            "spectators": 124
+          },
+          "drawCalls": 4,
+          "limits": {
+            "crowd": 312,
+            "crs": 192,
+            "bac": 128,
+            "bravm": 64,
+            "spectators": 192
+          }
+        },
+        {
+          "groups": 54,
+          "visible": {
+            "crs": 68,
+            "bac": 35,
+            "bravm": 14,
+            "spectators": 124
+          },
+          "drawCalls": 4,
+          "limits": {
+            "crowd": 312,
+            "crs": 192,
+            "bac": 128,
+            "bravm": 64,
+            "spectators": 192
+          }
+        },
+        {
+          "groups": 54,
+          "visible": {
+            "crs": 64,
+            "bac": 39,
+            "bravm": 14,
+            "spectators": 112
+          },
+          "drawCalls": 4,
+          "limits": {
+            "crowd": 312,
+            "crs": 192,
+            "bac": 128,
+            "bravm": 64,
+            "spectators": 192
+          }
+        },
+        {
+          "groups": 54,
+          "visible": {
+            "crs": 56,
+            "bac": 11,
+            "bravm": 9,
+            "spectators": 64
+          },
+          "drawCalls": 4,
+          "limits": {
+            "crowd": 312,
+            "crs": 192,
+            "bac": 128,
+            "bravm": 64,
+            "spectators": 192
+          }
+        },
+        {
+          "groups": 54,
+          "visible": {
+            "crs": 36,
+            "bac": 20,
+            "bravm": 12,
+            "spectators": 92
+          },
+          "drawCalls": 4,
+          "limits": {
+            "crowd": 312,
+            "crs": 192,
+            "bac": 128,
+            "bravm": 64,
+            "spectators": 192
+          }
+        }
+      ],
+      "invalid": 0,
+      "roots": 1
+    },
+    {
+      "id": 3,
+      "stats": [
+        {
+          "groups": 54,
+          "visible": {
+            "crs": 39,
+            "bac": 17,
+            "bravm": 11,
+            "spectators": 98
+          },
+          "drawCalls": 4,
+          "limits": {
+            "crowd": 312,
+            "crs": 192,
+            "bac": 128,
+            "bravm": 64,
+            "spectators": 192
+          }
+        },
+        {
+          "groups": 54,
+          "visible": {
+            "crs": 52,
+            "bac": 27,
+            "bravm": 14,
+            "spectators": 132
+          },
+          "drawCalls": 4,
+          "limits": {
+            "crowd": 312,
+            "crs": 192,
+            "bac": 128,
+            "bravm": 64,
+            "spectators": 192
+          }
+        },
+        {
+          "groups": 54,
+          "visible": {
+            "crs": 64,
+            "bac": 33,
+            "bravm": 15,
+            "spectators": 132
+          },
+          "drawCalls": 4,
+          "limits": {
+            "crowd": 312,
+            "crs": 192,
+            "bac": 128,
+            "bravm": 64,
+            "spectators": 192
+          }
+        },
+        {
+          "groups": 54,
+          "visible": {
+            "crs": 61,
+            "bac": 38,
+            "bravm": 13,
+            "spectators": 120
+          },
+          "drawCalls": 4,
+          "limits": {
+            "crowd": 312,
+            "crs": 192,
+            "bac": 128,
+            "bravm": 64,
+            "spectators": 192
+          }
+        },
+        {
+          "groups": 54,
+          "visible": {
+            "crs": 62,
+            "bac": 11,
+            "bravm": 6,
+            "spectators": 68
+          },
+          "drawCalls": 4,
+          "limits": {
+            "crowd": 312,
+            "crs": 192,
+            "bac": 128,
+            "bravm": 64,
+            "spectators": 192
+          }
+        },
+        {
+          "groups": 54,
+          "visible": {
+            "crs": 39,
+            "bac": 17,
+            "bravm": 11,
+            "spectators": 98
+          },
+          "drawCalls": 4,
+          "limits": {
+            "crowd": 312,
+            "crs": 192,
+            "bac": 128,
+            "bravm": 64,
+            "spectators": 192
+          }
+        }
+      ],
+      "invalid": 0,
+      "roots": 1
+    },
+    {
+      "id": 4,
+      "stats": [
+        {
+          "groups": 54,
+          "visible": {
+            "crs": 41,
+            "bac": 22,
+            "bravm": 10,
+            "spectators": 80
+          },
+          "drawCalls": 4,
+          "limits": {
+            "crowd": 312,
+            "crs": 192,
+            "bac": 128,
+            "bravm": 64,
+            "spectators": 192
+          }
+        },
+        {
+          "groups": 54,
+          "visible": {
+            "crs": 60,
+            "bac": 25,
+            "bravm": 15,
+            "spectators": 108
+          },
+          "drawCalls": 4,
+          "limits": {
+            "crowd": 312,
+            "crs": 192,
+            "bac": 128,
+            "bravm": 64,
+            "spectators": 192
+          }
+        },
+        {
+          "groups": 54,
+          "visible": {
+            "crs": 70,
+            "bac": 34,
+            "bravm": 14,
+            "spectators": 108
+          },
+          "drawCalls": 4,
+          "limits": {
+            "crowd": 312,
+            "crs": 192,
+            "bac": 128,
+            "bravm": 64,
+            "spectators": 192
+          }
+        },
+        {
+          "groups": 54,
+          "visible": {
+            "crs": 61,
+            "bac": 41,
+            "bravm": 12,
+            "spectators": 98
+          },
+          "drawCalls": 4,
+          "limits": {
+            "crowd": 312,
+            "crs": 192,
+            "bac": 128,
+            "bravm": 64,
+            "spectators": 192
+          }
+        },
+        {
+          "groups": 54,
+          "visible": {
+            "crs": 54,
+            "bac": 17,
+            "bravm": 6,
+            "spectators": 56
+          },
+          "drawCalls": 4,
+          "limits": {
+            "crowd": 312,
+            "crs": 192,
+            "bac": 128,
+            "bravm": 64,
+            "spectators": 192
+          }
+        },
+        {
+          "groups": 54,
+          "visible": {
+            "crs": 41,
+            "bac": 22,
+            "bravm": 10,
+            "spectators": 80
+          },
+          "drawCalls": 4,
+          "limits": {
+            "crowd": 312,
+            "crs": 192,
+            "bac": 128,
+            "bravm": 64,
+            "spectators": 192
+          }
+        }
+      ],
+      "invalid": 0,
+      "roots": 1
+    },
+    {
+      "id": 5,
+      "stats": [
+        {
+          "groups": 54,
+          "visible": {
+            "crs": 36,
+            "bac": 20,
+            "bravm": 12,
+            "spectators": 86
+          },
+          "drawCalls": 4,
+          "limits": {
+            "crowd": 312,
+            "crs": 192,
+            "bac": 128,
+            "bravm": 64,
+            "spectators": 192
+          }
+        },
+        {
+          "groups": 54,
+          "visible": {
+            "crs": 66,
+            "bac": 26,
+            "bravm": 14,
+            "spectators": 116
+          },
+          "drawCalls": 4,
+          "limits": {
+            "crowd": 312,
+            "crs": 192,
+            "bac": 128,
+            "bravm": 64,
+            "spectators": 192
+          }
+        },
+        {
+          "groups": 54,
+          "visible": {
+            "crs": 68,
+            "bac": 35,
+            "bravm": 14,
+            "spectators": 116
+          },
+          "drawCalls": 4,
+          "limits": {
+            "crowd": 312,
+            "crs": 192,
+            "bac": 128,
+            "bravm": 64,
+            "spectators": 192
+          }
+        },
+        {
+          "groups": 54,
+          "visible": {
+            "crs": 64,
+            "bac": 39,
+            "bravm": 14,
+            "spectators": 106
+          },
+          "drawCalls": 4,
+          "limits": {
+            "crowd": 312,
+            "crs": 192,
+            "bac": 128,
+            "bravm": 64,
+            "spectators": 192
+          }
+        },
+        {
+          "groups": 54,
+          "visible": {
+            "crs": 56,
+            "bac": 11,
+            "bravm": 9,
+            "spectators": 60
+          },
+          "drawCalls": 4,
+          "limits": {
+            "crowd": 312,
+            "crs": 192,
+            "bac": 128,
+            "bravm": 64,
+            "spectators": 192
+          }
+        },
+        {
+          "groups": 54,
+          "visible": {
+            "crs": 36,
+            "bac": 20,
+            "bravm": 12,
+            "spectators": 86
+          },
+          "drawCalls": 4,
+          "limits": {
+            "crowd": 312,
+            "crs": 192,
+            "bac": 128,
+            "bravm": 64,
+            "spectators": 192
+          }
+        }
+      ],
+      "invalid": 0,
+      "roots": 1
+    },
+    {
+      "id": 6,
+      "stats": [
+        {
+          "groups": 54,
+          "visible": {
+            "crs": 39,
+            "bac": 17,
+            "bravm": 11,
+            "spectators": 92
+          },
+          "drawCalls": 4,
+          "limits": {
+            "crowd": 312,
+            "crs": 192,
+            "bac": 128,
+            "bravm": 64,
+            "spectators": 192
+          }
+        },
+        {
+          "groups": 54,
+          "visible": {
+            "crs": 52,
+            "bac": 27,
+            "bravm": 14,
+            "spectators": 124
+          },
+          "drawCalls": 4,
+          "limits": {
+            "crowd": 312,
+            "crs": 192,
+            "bac": 128,
+            "bravm": 64,
+            "spectators": 192
+          }
+        },
+        {
+          "groups": 54,
+          "visible": {
+            "crs": 64,
+            "bac": 33,
+            "bravm": 15,
+            "spectators": 124
+          },
+          "drawCalls": 4,
+          "limits": {
+            "crowd": 312,
+            "crs": 192,
+            "bac": 128,
+            "bravm": 64,
+            "spectators": 192
+          }
+        },
+        {
+          "groups": 54,
+          "visible": {
+            "crs": 61,
+            "bac": 38,
+            "bravm": 13,
+            "spectators": 112
+          },
+          "drawCalls": 4,
+          "limits": {
+            "crowd": 312,
+            "crs": 192,
+            "bac": 128,
+            "bravm": 64,
+            "spectators": 192
+          }
+        },
+        {
+          "groups": 54,
+          "visible": {
+            "crs": 62,
+            "bac": 11,
+            "bravm": 6,
+            "spectators": 64
+          },
+          "drawCalls": 4,
+          "limits": {
+            "crowd": 312,
+            "crs": 192,
+            "bac": 128,
+            "bravm": 64,
+            "spectators": 192
+          }
+        },
+        {
+          "groups": 54,
+          "visible": {
+            "crs": 39,
+            "bac": 17,
+            "bravm": 11,
+            "spectators": 92
+          },
+          "drawCalls": 4,
+          "limits": {
+            "crowd": 312,
+            "crs": 192,
+            "bac": 128,
+            "bravm": 64,
+            "spectators": 192
+          }
+        }
+      ],
+      "invalid": 0,
+      "roots": 1
+    },
+    {
+      "id": 7,
+      "stats": [
+        {
+          "groups": 54,
+          "visible": {
+            "crs": 41,
+            "bac": 22,
+            "bravm": 10,
+            "spectators": 98
+          },
+          "drawCalls": 4,
+          "limits": {
+            "crowd": 312,
+            "crs": 192,
+            "bac": 128,
+            "bravm": 64,
+            "spectators": 192
+          }
+        },
+        {
+          "groups": 54,
+          "visible": {
+            "crs": 60,
+            "bac": 25,
+            "bravm": 15,
+            "spectators": 132
+          },
+          "drawCalls": 4,
+          "limits": {
+            "crowd": 312,
+            "crs": 192,
+            "bac": 128,
+            "bravm": 64,
+            "spectators": 192
+          }
+        },
+        {
+          "groups": 54,
+          "visible": {
+            "crs": 70,
+            "bac": 34,
+            "bravm": 14,
+            "spectators": 132
+          },
+          "drawCalls": 4,
+          "limits": {
+            "crowd": 312,
+            "crs": 192,
+            "bac": 128,
+            "bravm": 64,
+            "spectators": 192
+          }
+        },
+        {
+          "groups": 54,
+          "visible": {
+            "crs": 61,
+            "bac": 41,
+            "bravm": 12,
+            "spectators": 120
+          },
+          "drawCalls": 4,
+          "limits": {
+            "crowd": 312,
+            "crs": 192,
+            "bac": 128,
+            "bravm": 64,
+            "spectators": 192
+          }
+        },
+        {
+          "groups": 54,
+          "visible": {
+            "crs": 54,
+            "bac": 17,
+            "bravm": 6,
+            "spectators": 68
+          },
+          "drawCalls": 4,
+          "limits": {
+            "crowd": 312,
+            "crs": 192,
+            "bac": 128,
+            "bravm": 64,
+            "spectators": 192
+          }
+        },
+        {
+          "groups": 54,
+          "visible": {
+            "crs": 41,
+            "bac": 22,
+            "bravm": 10,
+            "spectators": 98
+          },
+          "drawCalls": 4,
+          "limits": {
+            "crowd": 312,
+            "crs": 192,
+            "bac": 128,
+            "bravm": 64,
+            "spectators": 192
+          }
+        }
+      ],
+      "invalid": 0,
+      "roots": 1
+    },
+    {
+      "id": 8,
+      "stats": [
+        {
+          "groups": 54,
+          "visible": {
+            "crs": 36,
+            "bac": 20,
+            "bravm": 12,
+            "spectators": 80
+          },
+          "drawCalls": 4,
+          "limits": {
+            "crowd": 312,
+            "crs": 192,
+            "bac": 128,
+            "bravm": 64,
+            "spectators": 192
+          }
+        },
+        {
+          "groups": 54,
+          "visible": {
+            "crs": 66,
+            "bac": 26,
+            "bravm": 14,
+            "spectators": 108
+          },
+          "drawCalls": 4,
+          "limits": {
+            "crowd": 312,
+            "crs": 192,
+            "bac": 128,
+            "bravm": 64,
+            "spectators": 192
+          }
+        },
+        {
+          "groups": 54,
+          "visible": {
+            "crs": 68,
+            "bac": 35,
+            "bravm": 14,
+            "spectators": 108
+          },
+          "drawCalls": 4,
+          "limits": {
+            "crowd": 312,
+            "crs": 192,
+            "bac": 128,
+            "bravm": 64,
+            "spectators": 192
+          }
+        },
+        {
+          "groups": 54,
+          "visible": {
+            "crs": 64,
+            "bac": 39,
+            "bravm": 14,
+            "spectators": 98
+          },
+          "drawCalls": 4,
+          "limits": {
+            "crowd": 312,
+            "crs": 192,
+            "bac": 128,
+            "bravm": 64,
+            "spectators": 192
+          }
+        },
+        {
+          "groups": 54,
+          "visible": {
+            "crs": 56,
+            "bac": 11,
+            "bravm": 9,
+            "spectators": 56
+          },
+          "drawCalls": 4,
+          "limits": {
+            "crowd": 312,
+            "crs": 192,
+            "bac": 128,
+            "bravm": 64,
+            "spectators": 192
+          }
+        },
+        {
+          "groups": 54,
+          "visible": {
+            "crs": 36,
+            "bac": 20,
+            "bravm": 12,
+            "spectators": 80
+          },
+          "drawCalls": 4,
+          "limits": {
+            "crowd": 312,
+            "crs": 192,
+            "bac": 128,
+            "bravm": 64,
+            "spectators": 192
+          }
+        }
+      ],
+      "invalid": 0,
+      "roots": 1
+    },
+    {
+      "id": 9,
+      "stats": [
+        {
+          "groups": 54,
+          "visible": {
+            "crs": 39,
+            "bac": 17,
+            "bravm": 11,
+            "spectators": 86
+          },
+          "drawCalls": 4,
+          "limits": {
+            "crowd": 312,
+            "crs": 192,
+            "bac": 128,
+            "bravm": 64,
+            "spectators": 192
+          }
+        },
+        {
+          "groups": 54,
+          "visible": {
+            "crs": 52,
+            "bac": 27,
+            "bravm": 14,
+            "spectators": 116
+          },
+          "drawCalls": 4,
+          "limits": {
+            "crowd": 312,
+            "crs": 192,
+            "bac": 128,
+            "bravm": 64,
+            "spectators": 192
+          }
+        },
+        {
+          "groups": 54,
+          "visible": {
+            "crs": 64,
+            "bac": 33,
+            "bravm": 15,
+            "spectators": 116
+          },
+          "drawCalls": 4,
+          "limits": {
+            "crowd": 312,
+            "crs": 192,
+            "bac": 128,
+            "bravm": 64,
+            "spectators": 192
+          }
+        },
+        {
+          "groups": 54,
+          "visible": {
+            "crs": 61,
+            "bac": 38,
+            "bravm": 13,
+            "spectators": 106
+          },
+          "drawCalls": 4,
+          "limits": {
+            "crowd": 312,
+            "crs": 192,
+            "bac": 128,
+            "bravm": 64,
+            "spectators": 192
+          }
+        },
+        {
+          "groups": 54,
+          "visible": {
+            "crs": 62,
+            "bac": 11,
+            "bravm": 6,
+            "spectators": 60
+          },
+          "drawCalls": 4,
+          "limits": {
+            "crowd": 312,
+            "crs": 192,
+            "bac": 128,
+            "bravm": 64,
+            "spectators": 192
+          }
+        },
+        {
+          "groups": 54,
+          "visible": {
+            "crs": 39,
+            "bac": 17,
+            "bravm": 11,
+            "spectators": 86
+          },
+          "drawCalls": 4,
+          "limits": {
+            "crowd": 312,
+            "crs": 192,
+            "bac": 128,
+            "bravm": 64,
+            "spectators": 192
+          }
+        }
+      ],
+      "invalid": 0,
+      "roots": 1
+    },
+    {
+      "id": 10,
+      "stats": [
+        {
+          "groups": 54,
+          "visible": {
+            "crs": 41,
+            "bac": 22,
+            "bravm": 10,
+            "spectators": 92
+          },
+          "drawCalls": 4,
+          "limits": {
+            "crowd": 312,
+            "crs": 192,
+            "bac": 128,
+            "bravm": 64,
+            "spectators": 192
+          }
+        },
+        {
+          "groups": 54,
+          "visible": {
+            "crs": 60,
+            "bac": 25,
+            "bravm": 15,
+            "spectators": 124
+          },
+          "drawCalls": 4,
+          "limits": {
+            "crowd": 312,
+            "crs": 192,
+            "bac": 128,
+            "bravm": 64,
+            "spectators": 192
+          }
+        },
+        {
+          "groups": 54,
+          "visible": {
+            "crs": 70,
+            "bac": 34,
+            "bravm": 14,
+            "spectators": 124
+          },
+          "drawCalls": 4,
+          "limits": {
+            "crowd": 312,
+            "crs": 192,
+            "bac": 128,
+            "bravm": 64,
+            "spectators": 192
+          }
+        },
+        {
+          "groups": 54,
+          "visible": {
+            "crs": 61,
+            "bac": 41,
+            "bravm": 12,
+            "spectators": 112
+          },
+          "drawCalls": 4,
+          "limits": {
+            "crowd": 312,
+            "crs": 192,
+            "bac": 128,
+            "bravm": 64,
+            "spectators": 192
+          }
+        },
+        {
+          "groups": 54,
+          "visible": {
+            "crs": 54,
+            "bac": 17,
+            "bravm": 6,
+            "spectators": 64
+          },
+          "drawCalls": 4,
+          "limits": {
+            "crowd": 312,
+            "crs": 192,
+            "bac": 128,
+            "bravm": 64,
+            "spectators": 192
+          }
+        },
+        {
+          "groups": 54,
+          "visible": {
+            "crs": 41,
+            "bac": 22,
+            "bravm": 10,
+            "spectators": 92
+          },
+          "drawCalls": 4,
+          "limits": {
+            "crowd": 312,
+            "crs": 192,
+            "bac": 128,
+            "bravm": 64,
+            "spectators": 192
+          }
+        }
+      ],
+      "invalid": 0,
+      "roots": 1
+    },
+    {
+      "id": 11,
+      "stats": [
+        {
+          "groups": 54,
+          "visible": {
+            "crs": 36,
+            "bac": 20,
+            "bravm": 12,
+            "spectators": 98
+          },
+          "drawCalls": 4,
+          "limits": {
+            "crowd": 312,
+            "crs": 192,
+            "bac": 128,
+            "bravm": 64,
+            "spectators": 192
+          }
+        },
+        {
+          "groups": 54,
+          "visible": {
+            "crs": 66,
+            "bac": 26,
+            "bravm": 14,
+            "spectators": 132
+          },
+          "drawCalls": 4,
+          "limits": {
+            "crowd": 312,
+            "crs": 192,
+            "bac": 128,
+            "bravm": 64,
+            "spectators": 192
+          }
+        },
+        {
+          "groups": 54,
+          "visible": {
+            "crs": 68,
+            "bac": 35,
+            "bravm": 14,
+            "spectators": 132
+          },
+          "drawCalls": 4,
+          "limits": {
+            "crowd": 312,
+            "crs": 192,
+            "bac": 128,
+            "bravm": 64,
+            "spectators": 192
+          }
+        },
+        {
+          "groups": 54,
+          "visible": {
+            "crs": 64,
+            "bac": 39,
+            "bravm": 14,
+            "spectators": 120
+          },
+          "drawCalls": 4,
+          "limits": {
+            "crowd": 312,
+            "crs": 192,
+            "bac": 128,
+            "bravm": 64,
+            "spectators": 192
+          }
+        },
+        {
+          "groups": 54,
+          "visible": {
+            "crs": 56,
+            "bac": 11,
+            "bravm": 9,
+            "spectators": 68
+          },
+          "drawCalls": 4,
+          "limits": {
+            "crowd": 312,
+            "crs": 192,
+            "bac": 128,
+            "bravm": 64,
+            "spectators": 192
+          }
+        },
+        {
+          "groups": 54,
+          "visible": {
+            "crs": 36,
+            "bac": 20,
+            "bravm": 12,
+            "spectators": 98
+          },
+          "drawCalls": 4,
+          "limits": {
+            "crowd": 312,
+            "crs": 192,
+            "bac": 128,
+            "bravm": 64,
+            "spectators": 192
+          }
+        }
+      ],
+      "invalid": 0,
+      "roots": 1
+    },
+    {
+      "id": 12,
+      "stats": [
+        {
+          "groups": 54,
+          "visible": {
+            "crs": 39,
+            "bac": 17,
+            "bravm": 11,
+            "spectators": 80
+          },
+          "drawCalls": 4,
+          "limits": {
+            "crowd": 312,
+            "crs": 192,
+            "bac": 128,
+            "bravm": 64,
+            "spectators": 192
+          }
+        },
+        {
+          "groups": 54,
+          "visible": {
+            "crs": 52,
+            "bac": 27,
+            "bravm": 14,
+            "spectators": 108
+          },
+          "drawCalls": 4,
+          "limits": {
+            "crowd": 312,
+            "crs": 192,
+            "bac": 128,
+            "bravm": 64,
+            "spectators": 192
+          }
+        },
+        {
+          "groups": 54,
+          "visible": {
+            "crs": 64,
+            "bac": 33,
+            "bravm": 15,
+            "spectators": 108
+          },
+          "drawCalls": 4,
+          "limits": {
+            "crowd": 312,
+            "crs": 192,
+            "bac": 128,
+            "bravm": 64,
+            "spectators": 192
+          }
+        },
+        {
+          "groups": 54,
+          "visible": {
+            "crs": 61,
+            "bac": 38,
+            "bravm": 13,
+            "spectators": 98
+          },
+          "drawCalls": 4,
+          "limits": {
+            "crowd": 312,
+            "crs": 192,
+            "bac": 128,
+            "bravm": 64,
+            "spectators": 192
+          }
+        },
+        {
+          "groups": 54,
+          "visible": {
+            "crs": 62,
+            "bac": 11,
+            "bravm": 6,
+            "spectators": 56
+          },
+          "drawCalls": 4,
+          "limits": {
+            "crowd": 312,
+            "crs": 192,
+            "bac": 128,
+            "bravm": 64,
+            "spectators": 192
+          }
+        },
+        {
+          "groups": 54,
+          "visible": {
+            "crs": 39,
+            "bac": 17,
+            "bravm": 11,
+            "spectators": 80
+          },
+          "drawCalls": 4,
+          "limits": {
+            "crowd": 312,
+            "crs": 192,
+            "bac": 128,
+            "bravm": 64,
+            "spectators": 192
+          }
+        }
+      ],
+      "invalid": 0,
+      "roots": 1
+    }
+  ],
+  "pause": {
+    "before": 0.4800000000000003,
+    "after": 0.4800000000000003
+  }
+}
