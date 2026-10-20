@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {readFile} from 'node:fs/promises';
-import {ORIGINAL_TV_CHOICES,matchingOriginalTV} from '../src/tvOriginalMapping.mjs';
+import {ORIGINAL_TV_CHOICES,matchingOriginalTV,templateOriginalTV} from '../src/tvOriginalMapping.mjs';
 import {generateTacticalLevel,gateLabel} from '../src/tactics.mjs';
 
 test('all 15 original TV graphics are native transparent PNGs, no placeholders',async()=>{
@@ -36,4 +36,23 @@ test('current generated levels keep 10 gates and use real original PNG art for b
    assert.equal(['+10','×2'].includes(gateLabel(c).title),true);
   }
  }
+});
+
+
+test('all 20 gate screens select one of the real original PNG templates over 800 level seeds',()=>{
+ const approved=new Set(ORIGINAL_TV_CHOICES.map(x=>x.file));
+ let total=0,adapted=0;
+ for(let seed=1;seed<=800;seed++){
+  const plan=generateTacticalLevel({seed,level:1+seed%9,startCount:5,strength:1});
+  for(const [i,pair] of plan.events.filter(e=>e.type==='choice').entries()){
+   for(const choice of [pair.left,pair.right]){
+    const png=templateOriginalTV(choice,i);
+    assert.ok(approved.has(png),JSON.stringify({seed,choice,png}));
+    if(!matchingOriginalTV(choice))adapted++;
+    total++;
+   }
+  }
+ }
+ assert.equal(total,16000);
+ assert.ok(adapted>0,'adapted PNGs cover formerly reconstructed TV screens');
 });
