@@ -49,6 +49,7 @@ export function upgradeBravMotorcycle(officer){
   const screen=new THREE.Mesh(new THREE.BoxGeometry(.45,.29,.025),windscreen);
   screen.position.set(0,.91,.31);screen.rotation.x=-.3;holder.add(screen);
   officer.add(holder);
+  if(officer.userData.referenceSprite)holder.visible=false;
   // The last procedural child is the old temporary motorcycle.
   for(const child of officer.children){
    if(child.userData?.legacyMotorcycle)child.visible=false;
