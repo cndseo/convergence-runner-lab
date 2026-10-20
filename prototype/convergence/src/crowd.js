@@ -162,7 +162,7 @@ export class CrowdManager {
         attachAnimatedHumanoid(this);
     }
 
-    removeFromPlayerCrowd(amount) {
+    removeFromPlayerCrowd(amount, {knockdown=false}={}) {
         amount = Math.min(amount, this.playerCount);
         if (amount <= 0) return;
 
@@ -177,7 +177,7 @@ export class CrowdManager {
                 } else {
                     ragdollColor = this.game ? this.game.getPlayerColor() : 0x2196F3;
                 }
-                if (i < 5) this.launchRagdoll(stickman, ragdollColor);
+                if (i < 5) this.launchRagdoll(stickman, ragdollColor, null, {knockdown});
                 const h=stickman.userData.realHumanoid;
                 if(h){h.mixer.stopAllAction();h.mixer.uncacheRoot(h.model);h.dispose?.();h.model.traverse(n=>{if(n.isSkinnedMesh)n.skeleton?.dispose();});}
                 disposeRunnerCostume(stickman);
@@ -238,7 +238,7 @@ export class CrowdManager {
     }
 
     // ============ RAGDOLL FLYING STICKMAN ============
-    launchRagdoll(stickman, color, parentGroup) {
+    launchRagdoll(stickman, color, parentGroup, {knockdown=false}={}) {
         // Get world position of the stickman
         const worldPos = new THREE.Vector3();
         stickman.getWorldPosition(worldPos);
@@ -253,16 +253,14 @@ export class CrowdManager {
         const launchPower = 4 + Math.random() * 6;
         const upPower = 6 + Math.random() * 5;
 
-        ragdoll.userData.velocity = new THREE.Vector3(
-            Math.cos(launchAngle) * launchPower,
-            upPower,
-            Math.sin(launchAngle) * launchPower
-        );
-        ragdoll.userData.angularVel = new THREE.Vector3(
-            (Math.random() - 0.5) * 15,
-            (Math.random() - 0.5) * 10,
-            (Math.random() - 0.5) * 15
-        );
+        ragdoll.userData.velocity = knockdown
+            ? new THREE.Vector3(Math.cos(launchAngle)*2.6,2.8,3.5)
+            : new THREE.Vector3(Math.cos(launchAngle)*launchPower,upPower,
+                Math.sin(launchAngle)*launchPower);
+        ragdoll.userData.angularVel = knockdown
+            ? new THREE.Vector3(7,(Math.random()-.5)*2,4)
+            : new THREE.Vector3((Math.random()-.5)*15,(Math.random()-.5)*10,
+                (Math.random()-.5)*15);
         ragdoll.userData.life = 1.5;
         ragdoll.userData.maxLife = 1.5;
         ragdoll.userData.color = color;
