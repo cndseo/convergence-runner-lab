@@ -38,7 +38,7 @@ export class MarseilleReinforcements {
   const current=()=>g.runId===runId&&g.mode==='campaign'&&g.state==='fighting'&&
    g.fightingEnemy===enemy&&this.generation===generation;
   try{
-   const artwork=await this.preload();
+   const [artwork]=await Promise.all([this.preload(),g.audio.preloadMarseilleAttack()]);
    if(!current())return false;
    const granted=await g.challengeHub.consumeMarseilleCharge();
    if(!granted||!current())return false;
@@ -86,6 +86,7 @@ export class MarseilleReinforcements {
    p.name='MARSEILLE_BLUE_WHITE_SMOKE_'+i;
    this.game.scene.add(p);this.puffs.push({sprite:p,age:10+i*.13,life:1.15+(i%5)*.13});
   }
+  this.game.audio.playMarseilleAttack();
   this.game.ui.screenShake(5);
   this.showButton();
  }
@@ -152,6 +153,7 @@ export class MarseilleReinforcements {
   }
  }
  clear({restorePolice=true}={}){
+  this.game.audio.stopMarseilleAttack();
   this.generation++;
   for(const p of this.police){
    delete p.o.userData.marseilleOrigin;delete p.o.userData.marseilleRetreat;

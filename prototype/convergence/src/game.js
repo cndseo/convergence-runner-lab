@@ -263,6 +263,7 @@ export class Game {
         this.audio.resume();
         this.audio.startCrowdAmbience();
         this.audio.preloadCombatVoice?.();
+        this.audio.preloadMarseilleAttack?.();
         
         // Clear scene objects
         this.clearLevel();
