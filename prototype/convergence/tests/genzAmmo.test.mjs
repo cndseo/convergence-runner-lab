@@ -26,7 +26,7 @@ test('GenZ virtual ammo checkout grants only on signed paid webhook and spends e
   const player=(await req('/api/v1/players',{})).data,token=player.token;
   assert.equal((await req('/api/v1/genz/consume',{requestId:randomUUID()},token)).status,409);
   let total=0,serial=0;
-  for(const [sku,qty] of [['genz3',3],['genz12',12]]){
+  for(const [sku,qty] of [['genz3',6],['genz12',24]]){
    assert.equal((await req('/api/v1/shop/checkout',{sku,amount:1},token)).status,200);
    assert.equal(checkout.line_items[0].price_data.unit_amount,PRODUCTS[sku].cents);
    const session={id:'cs_test_genz_'+(++serial),metadata:{game:'convergence',sku,player_id:player.playerId},

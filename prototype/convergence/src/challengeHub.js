@@ -7,8 +7,8 @@ export const PREMIUM_CATALOG = Object.freeze([
   {id:'dinosaur',label:'Dinosaure gonflable',description:'Personnage déguisé en dinosaure',cents:199,art:'dinosaur-front.webp'},
   {id:'marseille1',label:'Renfort marseillais · 1 intervention',description:'Une intervention spéciale en mode campagne',cents:299,art:'marseille-front.webp'},
   {id:'marseille3',label:'Renfort marseillais · 3 interventions',description:'Trois interventions spéciales en mode campagne',cents:897},
-  {id:'genz3',label:'GenZ - 3 tirs pyrotechniques',description:'3 munitions virtuelles, déclenchement manuel en campagne',cents:99},
-  {id:'genz12',label:'GenZ - 12 tirs pyrotechniques',description:'12 munitions virtuelles, déclenchement manuel en campagne',cents:299},
+  {id:'genz3',label:'GenZ - 6 tirs pyrotechniques',description:'6 munitions virtuelles, déclenchement manuel en campagne',cents:99},
+  {id:'genz12',label:'GenZ - 24 tirs pyrotechniques',description:'24 munitions virtuelles, déclenchement manuel en campagne',cents:299},
   {id:'marseille10',label:'Renfort marseillais · 10 interventions',description:'Dix interventions spéciales en mode campagne',cents:2990}
 ]);
 
@@ -307,7 +307,7 @@ export class ChallengeHub {
       if(!r.ok)throw Error('Offline');
       const data=await r.json();
       this.connected=!!data.leaderboard;
-      this.paymentsEnabled=data.payments==='test';
+      this.paymentsEnabled=data.payments==='test'||data.payments==='live';
       if(this.playerToken)await this.syncInventory();
       if(this.kind==='premium')this.renderPremium();
     }catch{this.connected=false;this.paymentsEnabled=false;}

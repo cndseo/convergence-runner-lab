@@ -24,8 +24,8 @@ test('paid characters are visual only, and all boosters are campaign-only consum
 });
 
 test('GenZ bundles are server-priced consumables, independently from Marseille support',()=>{
- assert.equal(PRODUCTS.genz3.ammo,3);
- assert.equal(PRODUCTS.genz12.ammo,12);
+ assert.equal(PRODUCTS.genz3.ammo,6);
+ assert.equal(PRODUCTS.genz12.ammo,24);
  assert.equal(PRODUCTS.genz3.cents,99);
  assert.equal(PRODUCTS.genz12.cents,299);
  assert.equal(PRODUCTS.genz3.charges,undefined);

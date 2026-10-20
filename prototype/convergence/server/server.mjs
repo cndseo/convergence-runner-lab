@@ -11,8 +11,8 @@ export const PRODUCTS = Object.freeze({
  dinosaur:{sku:'dinosaur',name:'CONVERGENCE — Dinosaure gonflable',cents:199,description:'Personnage déguisé, sans avantage tactique'},
  marseille1:{sku:'marseille1',name:'CONVERGENCE — Renfort marseillais x1',cents:299,description:'Une intervention spéciale en campagne',charges:1},
  marseille3:{sku:'marseille3',name:'CONVERGENCE — Renfort marseillais x3',cents:897,description:'Trois interventions spéciales en campagne',charges:3},
- genz3:{sku:'genz3',name:'CONVERGENCE - 3 tirs GenZ',cents:99,description:'3 tirs pyrotechniques virtuels (campagne)',ammo:3},
- genz12:{sku:'genz12',name:'CONVERGENCE - 12 tirs GenZ',cents:299,description:'12 tirs pyrotechniques virtuels (campagne)',ammo:12},
+ genz3:{sku:'genz3',name:'CONVERGENCE - 6 tirs GenZ',cents:99,description:'6 tirs pyrotechniques virtuels (campagne)',ammo:6},
+ genz12:{sku:'genz12',name:'CONVERGENCE - 24 tirs GenZ',cents:299,description:'24 tirs pyrotechniques virtuels (campagne)',ammo:24},
  marseille10:{sku:'marseille10',name:'CONVERGENCE — Renfort marseillais x10',cents:2990,description:'Dix interventions spéciales en campagne',charges:10}
 });
 const sha=s=>crypto.createHash('sha256').update(s).digest('hex');
@@ -53,8 +53,10 @@ async function readBody(req){
 export function createApiServer({dbPath=':memory:',clock=()=>new Date(),corsOrigins=[],
  gameUrl='http://127.0.0.1:4320/convergence-runner-lab/convergence/',stripeClient=null,
  webhookSecret='',paymentsMode='disabled'}={}){
- if(!['disabled','test'].includes(paymentsMode))throw Error('Only explicitly configured test payments are permitted');
- const paymentsReady=paymentsMode==='test'&&!!stripeClient&&!!webhookSecret;
+ if(!['disabled','test','live'].includes(paymentsMode))throw Error('Invalid payments mode');
+ if(paymentsMode==='live' && (!stripeClient||!webhookSecret||!gameUrl.startsWith('https://')))
+  throw Error('Live payments require HTTPS game URL, Stripe client and webhook signature');
+ const paymentsReady=['test','live'].includes(paymentsMode)&&!!stripeClient&&!!webhookSecret;
  const db=database(dbPath);
  const origins=new Set([...corsOrigins,new URL(gameUrl).origin,'http://127.0.0.1:4320','http://localhost:4320']);
  const server=http.createServer(async(req,res)=>{
@@ -70,7 +72,7 @@ export function createApiServer({dbPath=':memory:',clock=()=>new Date(),corsOrig
   try{
    const uri=new URL(req.url,'http://localhost'),path=uri.pathname;
    if(req.method==='GET'&&path==='/api/v1/health')
-    return json(res,200,{ok:true,leaderboard:true,payments:paymentsReady?'test':'disabled',currency:'eur'});
+    return json(res,200,{ok:true,leaderboard:true,payments:paymentsReady?paymentsMode:'disabled',currency:'eur'});
    if(req.method==='POST'&&path==='/api/v1/players'){
     const id=crypto.randomUUID(),token=crypto.randomBytes(32).toString('base64url');
     db.prepare('INSERT INTO players VALUES(?,?,?)').run(id,sha(token),new Date().toISOString());
@@ -99,7 +101,7 @@ export function createApiServer({dbPath=':memory:',clock=()=>new Date(),corsOrig
     return json(res,200,{certified:true,day:params.day,survivors:current.survivors});
    }
    if(req.method==='GET'&&path==='/api/v1/shop/catalog')
-    return json(res,200,{currency:'eur',payments:paymentsReady?'test':'disabled',
+    return json(res,200,{currency:'eur',payments:paymentsReady?paymentsMode:'disabled',
       items:Object.values(PRODUCTS).map(p=>({sku:p.sku,name:p.name,price_cents:p.cents,description:p.description}))});
    if(req.method==='GET'&&path==='/api/v1/shop/inventory'){
     const player=auth(db,req);
@@ -196,9 +198,17 @@ export function createApiServer({dbPath=':memory:',clock=()=>new Date(),corsOrig
 }
 if(process.argv[1]&&resolve(process.argv[1])===fileURLToPath(import.meta.url)){
  const key=process.env.STRIPE_SECRET_KEY||'';
- if(key&&!/^(sk_test_|rk_test_)/.test(key)){
-  console.error('Refusing non-test Stripe key');process.exit(2);
+ const mode=process.env.PAYMENTS_MODE||'disabled';
+ const gameUrl=process.env.GAME_URL||'http://127.0.0.1:4320/convergence-runner-lab/convergence/';
+ const webhookSecret=process.env.STRIPE_WEBHOOK_SECRET||'';
+ const allowed=mode==='live'?/^(sk_live_|rk_live_)/:mode==='test'?/^(sk_test_|rk_test_)/:null;
+ if(!['disabled','test','live'].includes(mode)||
+    (mode!=='disabled'&&(!allowed.test(key)||!/^whsec_/.test(webhookSecret)))||
+    (mode==='live'&&(!gameUrl.startsWith('https://')||
+      !process.env.ALLOWED_ORIGINS?.split(',').map(s=>s.trim()).includes(new URL(gameUrl).origin)))){
+  console.error('Stripe configuration invalid: refusing to start with a non-matching key, missing signed webhook or insecure live origin');process.exit(2);
  }
+ if(mode==='disabled'&&key){console.error('Stripe key present while payments disabled: refusing unsafe configuration');process.exit(2);}
  let stripeClient=null;
  if(key){
   const {default:Stripe}=await import('stripe');
@@ -207,9 +217,9 @@ if(process.argv[1]&&resolve(process.argv[1])===fileURLToPath(import.meta.url)){
  const app=createApiServer({
   dbPath:process.env.DB_PATH||resolve('data/convergence.sqlite'),
   corsOrigins:process.env.ALLOWED_ORIGINS?.split(',').map(s=>s.trim())||[],
-  gameUrl:process.env.GAME_URL||'http://127.0.0.1:4320/convergence-runner-lab/convergence/',
-  stripeClient,webhookSecret:process.env.STRIPE_WEBHOOK_SECRET||'',
-  paymentsMode:process.env.PAYMENTS_MODE==='test'?'test':'disabled'
+  gameUrl,
+  stripeClient,webhookSecret,
+  paymentsMode:mode
  });
  const port=Number(process.env.PORT||4319);
  app.server.listen(port,'127.0.0.1',()=>console.log('CONVERGENCE API listening on port '+port));

@@ -6,7 +6,7 @@ Base: 13b76f8 (12 Paris districts already densified).
 - Reused native Three.js, existing GenZ/LBD modules, and current audio pipeline; no runtime dependency added.
 - GenZ fireworks are now triggered manually during campaign fights when a GenZ character is recruited and a paid or preview charge is available. Each shot has a visual arcade trail/burst and temporarily suppresses the next LBD shot; it does not add arbitrary police losses to the certified solver.
 - FDO can deploy an arcade-only lacrymogène effect: a stylized projectile, persistent smoke cloud and temporary walking slowdown. Medics mitigate the slowdown. Campaign only; daily competitive mode untouched.
-- Two new server-side-priced Stripe SKUs: `genz3` (3 charges, 99 cents) and `genz12` (12 charges, 299 cents). Inventory is separate from Marseille support charges. Consuming a shot uses an authenticated, idempotent SQLite transaction.
+- Two new server-side-priced Stripe SKUs: `genz3` (6 charges, 99 cents) and `genz12` (24 charges, 299 cents). Inventory is separate from Marseille support charges. Consuming a shot uses an authenticated, idempotent SQLite transaction.
 - A `TESTER 3 TIRS GENZ (DÉMO)` button works while real payments are disabled, without minting any paid server credits.
 - Real Stripe payments are still disabled; test webhooks only.
 - Previous Marseille credits, bonus TVs, costumes, 12 Paris districts and final campaign stage remain intact.
