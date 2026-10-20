@@ -731,3 +731,10 @@ html,body{width:100%;max-width:100%;overflow:hidden}
 @media(max-width:380px) {
  #genz-ammo-button {bottom:calc(174px + env(safe-area-inset-bottom,0px));min-height:48px;max-width:55vw}
 }
+
+/* Stripe fallback stays touchable when the mobile in-app browser blocks navigation. */
+.challenge-pay-link{display:inline-flex;align-items:center;justify-content:center;
+  min-width:105px;min-height:44px;white-space:nowrap;text-decoration:none;
+  touch-action:manipulation;background:linear-gradient(135deg,#ffd36d,#d49530);
+  color:#1c2a39;border-radius:12px;font-weight:850;cursor:pointer}
+.challenge-product .challenge-pay-link{flex:0 0 auto}

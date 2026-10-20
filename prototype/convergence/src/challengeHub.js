@@ -1,6 +1,7 @@
 import {
   utcChallengeDate, validChallengeDate, dailyChallengeSeed, computeDailyScore, formatChallengeShare
 } from './dailyChallenge.mjs';
+import { verifiedStripeCheckoutUrl } from './stripeCheckoutUrl.mjs';
 
 export const PREMIUM_CATALOG = Object.freeze([
   {id:'spiderman',label:'Spider-Man manifestant',description:'Personnage déguisé, avec les deux vues fournies',cents:199,art:'spiderman-front.webp'},
@@ -201,6 +202,8 @@ export class ChallengeHub {
       const owned=this.ownedSkus.has(item.id);
       const pay=this.action(item.comingSoon?'BIENTÔT':owned?'ACQUIS':(item.cents/100).toFixed(2).replace('.',',')+' €',
         ()=>this.checkout(item.id),item.comingSoon||owned||!this.paymentsEnabled||!this.buyableSkus?.has(item.id));
+      pay.dataset.sku=item.id;
+      pay.setAttribute('aria-label','Acheter '+item.label+' avec Stripe');
       row.append(info,pay);this.body.append(row);
       if(item.id==='genz3' && (!this.paymentsEnabled || this.game.qa)){
         const preview=this.action('TESTER 3 TIRS GENZ (DÉMO)',()=>this.previewGenz());
@@ -227,11 +230,6 @@ export class ChallengeHub {
       ?'Paiement sur Stripe Checkout. Uniquement après confirmation serveur.'
       :'Paiements désactivés. Le bouton TESTER permet de voir les personnages dans le prototype, sans achat.');
     this.body.append(warning);
-    this.foot.append(this.action('PERSONNALISER MA FOULE',()=>{
-      this.panel.classList.add('hidden');
-      this.game.ui.hideAllScreens();
-      this.game.ui.showShop();
-    }));
     this.foot.append(this.action('← RETOUR',()=>{if(this.resumeAfterPremium)this.close();else this.open('daily');}));
   }
   previewCharacter(id,owned=false){
@@ -401,17 +399,44 @@ export class ChallengeHub {
     catch{this.note.textContent=text;}
   }
   async checkout(sku){
-    if(!this.paymentsEnabled || !this.apiBase)return;
+    const button=[...this.body.querySelectorAll('button[data-sku]')].find(el=>el.dataset.sku===sku);
+    if(!this.paymentsEnabled || !this.apiBase){
+      this.note.textContent='Paiement indisponible : connexion au serveur Stripe impossible.';
+      return;
+    }
+    if(button?.disabled)return;
+    if(button){
+      button.disabled=true;
+      button.textContent='OUVERTURE…';
+    }
     try{
       const token=await this.ensurePlayer();
       const response=await fetch(this.apiBase+'/api/v1/shop/checkout',{
         method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+token},
         body:JSON.stringify({sku})
       });
-      const json=await response.json();
-      if(!response.ok || !/^https:\/\/(?:checkout|buy)\.stripe\.com\//.test(json.url||''))throw Error('Checkout indisponible');
-      location.assign(json.url);
-    }catch{this.note.textContent='Paiement indisponible actuellement.';}
+      const data=await response.json();
+      const stripeUrl=verifiedStripeCheckoutUrl(data.url);
+      if(!response.ok || !stripeUrl)throw Error(data.error||'checkout_unavailable');
+
+      // A real link remains clickable even when an in-app iPhone browser
+      // blocks an asynchronous cross-site redirect.
+      const direct=make('a','btn btn-small challenge-pay-link','OUVRIR STRIPE');
+      direct.href=stripeUrl;
+      direct.rel='noreferrer';
+      direct.setAttribute('aria-label','Ouvrir le paiement sécurisé Stripe');
+      button?.replaceWith(direct);
+      this.note.textContent='Paiement sécurisé Stripe. Si la page ne s’ouvre pas, touchez OUVRIR STRIPE.';
+      window.location.assign(stripeUrl);
+    }catch(error){
+      if(button){
+        button.disabled=false;
+        button.textContent=(PREMIUM_CATALOG.find(item=>item.id===sku)?.cents/100||0)
+          .toFixed(2).replace('.',',')+' €';
+      }
+      this.note.textContent='Ouverture Stripe impossible. Réessayez dans quelques instants.';
+      console.warn('CONVERGENCE checkout:',error?.message||error);
+    }
   }
   returnToCampaignMenu(){
     const g=this.game;
