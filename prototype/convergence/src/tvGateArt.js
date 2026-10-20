@@ -6,11 +6,11 @@ import {gateLabel} from './tactics.mjs';
 // strip, NO fallback television artwork: generator must use one of 16 TV keys.
 const loader=new THREE.TextureLoader();
 const cached=new Map();
-function acquire(file){
+function acquire(file,folder='tv-final'){
  let item=cached.get(file);
  if(!item){
   item={refs:0,loaded:false,subscribers:new Set(),texture:null};
-  item.texture=loader.load(import.meta.env.BASE_URL+'assets/tv-final/'+file,()=>{
+  item.texture=loader.load(import.meta.env.BASE_URL+'assets/'+folder+'/'+file,()=>{
    item.loaded=true;
    for(const cb of item.subscribers)cb(item.texture.image);
    item.subscribers.clear();
@@ -33,7 +33,18 @@ function release(file){
 }
 export function makeTVGateArtwork(choice,root){
  const file=fixedTVFile(choice); // throws on an image/number mismatch
- const item=acquire(file);
+ return makePNGTVArtwork(file,root,{
+  tvKey:choice.tvKey,tvValue:gateLabel(choice).title,
+  tvIndex:FIXED_TV_KEYS.indexOf(choice.tvKey)
+ });
+}
+export function makeMarseilleBonusArtwork(root){
+ // Native file including its transparent margins; only position/scale change.
+ return makePNGTVArtwork('tv-marseille-attack.png',root,
+  {source:'bonus-png',bonus:'marseille'},'marseille-bonus',4.8,1065/1254);
+}
+function makePNGTVArtwork(file,root,metadata,folder='tv-final',width=3.2,anchor=1){
+ const item=acquire(file,folder);
  const mat=new THREE.MeshBasicMaterial({
   map:item.texture,alphaTest:.16,transparent:false,
   depthWrite:true,depthTest:true,side:THREE.DoubleSide
@@ -41,22 +52,18 @@ export function makeTVGateArtwork(choice,root){
  const monitor=new THREE.Group();monitor.name='TV_FLAT_SCREEN';
  const screen=new THREE.Mesh(new THREE.PlaneGeometry(1,1),mat);
  screen.name='TV_LIVE_SCREEN';monitor.add(screen);
- // Keep both complete PNG silhouettes readable in the narrow mobile viewport.
- const width=3.2;
  const place=image=>{
   if(!screen.parent||!image)return;
   const ratio=image.height/image.width;
   screen.scale.set(width,width*ratio,1);
-  screen.position.set(0,width*ratio/2+.025,.15);
+  screen.position.set(0,width*ratio*(anchor-.5)+.025,.15);
   monitor.userData.resolution=[image.width,image.height];
   monitor.userData.ready=true;
  };
  monitor.userData={
   source:'fixed-png',originalFile:file,adapted:false,
   texture:item.texture,
-  tvKey:choice.tvKey,
-  tvValue:gateLabel(choice).title,
-  tvIndex:FIXED_TV_KEYS.indexOf(choice.tvKey),
+  ...metadata,
   ready:false,resolution:[0,0]
  };
  root.add(monitor);root.userData.tvScreen=monitor;

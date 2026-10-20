@@ -3,7 +3,7 @@ import {createRequire} from 'node:module';
 import {mkdirSync} from 'node:fs';
 const {chromium}=createRequire(import.meta.url)('playwright-core');
 const url=process.env.QA_URL||'http://127.0.0.1:4551/';
-const output='C:/CITYOS/convergence-tv-fixed16/qa-tv';
+const output=process.env.QA_OUTPUT||'C:/CITYOS/convergence-tv-fixed16/qa-tv';
 mkdirSync(output,{recursive:true});
 const browser=await chromium.launch({executablePath:'C:/Program Files/Google/Chrome/Application/chrome.exe',
   headless:true,args:['--enable-webgl','--ignore-gpu-blocklist']});
