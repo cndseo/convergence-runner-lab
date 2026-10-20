@@ -200,7 +200,7 @@ export class ChallengeHub {
       }
       const owned=this.ownedSkus.has(item.id);
       const pay=this.action(item.comingSoon?'BIENTÔT':owned?'ACQUIS':(item.cents/100).toFixed(2).replace('.',',')+' €',
-        ()=>this.checkout(item.id),item.comingSoon||owned||!this.paymentsEnabled);
+        ()=>this.checkout(item.id),item.comingSoon||owned||!this.paymentsEnabled||!this.buyableSkus?.has(item.id));
       row.append(info,pay);this.body.append(row);
       if(item.id==='genz3' && (!this.paymentsEnabled || this.game.qa)){
         const preview=this.action('TESTER 3 TIRS GENZ (DÉMO)',()=>this.previewGenz());
@@ -308,6 +308,11 @@ export class ChallengeHub {
       const data=await r.json();
       this.connected=!!data.leaderboard;
       this.paymentsEnabled=data.payments==='test'||data.payments==='live';
+      if(this.paymentsEnabled){
+        const catalog=await fetch(this.apiBase+'/api/v1/shop/catalog');
+        const info=await catalog.json();
+        this.buyableSkus=new Set((info.items||[]).filter(item=>item.buyable).map(item=>item.sku));
+      }else this.buyableSkus=new Set();
       if(this.playerToken)await this.syncInventory();
       if(this.kind==='premium')this.renderPremium();
     }catch{this.connected=false;this.paymentsEnabled=false;}

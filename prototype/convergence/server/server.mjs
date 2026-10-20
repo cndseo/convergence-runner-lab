@@ -36,7 +36,8 @@ function database(file){
  CREATE TABLE IF NOT EXISTS marseille_charges(player_id TEXT PRIMARY KEY REFERENCES players(id),charges INTEGER NOT NULL DEFAULT 0 CHECK(charges>=0));
  CREATE TABLE IF NOT EXISTS support_redemptions(request_id TEXT PRIMARY KEY,player_id TEXT NOT NULL REFERENCES players(id),remaining INTEGER NOT NULL,created TEXT NOT NULL);
  CREATE TABLE IF NOT EXISTS genz_ammo(player_id TEXT PRIMARY KEY REFERENCES players(id),charges INTEGER NOT NULL DEFAULT 0 CHECK(charges>=0));
- CREATE TABLE IF NOT EXISTS genz_redemptions(request_id TEXT PRIMARY KEY,player_id TEXT NOT NULL REFERENCES players(id),remaining INTEGER NOT NULL,created TEXT NOT NULL);`);
+ CREATE TABLE IF NOT EXISTS genz_redemptions(request_id TEXT PRIMARY KEY,player_id TEXT NOT NULL REFERENCES players(id),remaining INTEGER NOT NULL,created TEXT NOT NULL);
+ CREATE TABLE IF NOT EXISTS unclaimed_orders(session_id TEXT PRIMARY KEY,sku TEXT NOT NULL,created TEXT NOT NULL);`);
  return db;
 }
 function auth(db,req){
@@ -52,10 +53,13 @@ async function readBody(req){
 
 export function createApiServer({dbPath=':memory:',clock=()=>new Date(),corsOrigins=[],
  gameUrl='http://127.0.0.1:4320/convergence-runner-lab/convergence/',stripeClient=null,
- webhookSecret='',paymentsMode='disabled'}={}){
+ webhookSecret='',paymentsMode='disabled',paymentLinks={}}={}){
  if(!['disabled','test','live'].includes(paymentsMode))throw Error('Invalid payments mode');
- if(paymentsMode==='live' && (!stripeClient||!webhookSecret||!gameUrl.startsWith('https://')))
-  throw Error('Live payments require HTTPS game URL, Stripe client and webhook signature');
+ if(paymentsMode==='live' && ((!stripeClient&&!Object.keys(paymentLinks).length)||!webhookSecret||!gameUrl.startsWith('https://')))
+  throw Error('Live payments require HTTPS game URL, Checkout or Payment Links, and webhook signature');
+ const validLinks=Object.entries(paymentLinks).every(([sku,link])=>
+  !!PRODUCTS[sku]&&/^plink_[\w]+$/.test(link.id||'')&&/^https:\/\/buy\.stripe\.com\//.test(link.url||''));
+ if(!validLinks)throw Error('Invalid Payment Links configuration');
  const paymentsReady=['test','live'].includes(paymentsMode)&&!!stripeClient&&!!webhookSecret;
  const db=database(dbPath);
  const origins=new Set([...corsOrigins,new URL(gameUrl).origin,'http://127.0.0.1:4320','http://localhost:4320']);
@@ -102,7 +106,7 @@ export function createApiServer({dbPath=':memory:',clock=()=>new Date(),corsOrig
    }
    if(req.method==='GET'&&path==='/api/v1/shop/catalog')
     return json(res,200,{currency:'eur',payments:paymentsReady?paymentsMode:'disabled',
-      items:Object.values(PRODUCTS).map(p=>({sku:p.sku,name:p.name,price_cents:p.cents,description:p.description}))});
+      items:Object.values(PRODUCTS).map(p=>({sku:p.sku,name:p.name,price_cents:p.cents,description:p.description,buyable:paymentsReady&&(!Object.keys(paymentLinks).length||!!paymentLinks[p.sku])}))});
    if(req.method==='GET'&&path==='/api/v1/shop/inventory'){
     const player=auth(db,req);
     if(!player)return json(res,401,{error:'unauthorized'});
@@ -146,8 +150,14 @@ export function createApiServer({dbPath=':memory:',clock=()=>new Date(),corsOrig
     const params=JSON.parse((await readBody(req)).toString('utf8'));
     const product=PRODUCTS[params.sku];
     if(!product)return json(res,400,{error:'unknown_product'});
+    if(Object.keys(paymentLinks).length&&!paymentLinks[product.sku])return json(res,503,{error:'product_not_yet_available'});
     if(!product.charges && !product.ammo && db.prepare('SELECT sku FROM inventory WHERE player_id=? AND sku=?').get(player.id,product.sku))
       return json(res,409,{error:'already_owned'});
+    if(paymentLinks[product.sku]){
+      const url=new URL(paymentLinks[product.sku].url);
+      url.searchParams.set('client_reference_id',player.id);
+      return json(res,200,{url:url.toString()});
+    }
     const session=await stripeClient.checkout.sessions.create({
       mode:'payment',
       line_items:[{price_data:{currency:'eur',unit_amount:product.cents,
@@ -165,10 +175,19 @@ export function createApiServer({dbPath=':memory:',clock=()=>new Date(),corsOrig
     const event=stripeClient.webhooks.constructEvent(raw,req.headers['stripe-signature'],webhookSecret);
     if(['checkout.session.completed','checkout.session.async_payment_succeeded'].includes(event.type)){
      const session=event.data.object;
-     if(session.payment_status==='paid'&&session.metadata?.game==='convergence'){
-      const sku=session.metadata.sku,pid=session.metadata.player_id;
-      if(!PRODUCTS[sku]||!db.prepare('SELECT id FROM players WHERE id=?').get(pid))
-       return json(res,400,{error:'invalid_metadata'});
+     if(session.payment_status==='paid'){
+      const linkPair=session.payment_link?Object.entries(paymentLinks).find(([,link])=>link.id===session.payment_link):null;
+      if(session.payment_link&&!linkPair)return json(res,200,{received:true,ignored:'unrelated_payment_link'});
+      if(!linkPair&&session.metadata?.game!=='convergence')return json(res,200,{received:true,ignored:'unrelated_checkout'});
+      const sku=linkPair?linkPair[0]:session.metadata.sku;
+      const pid=linkPair?session.client_reference_id:session.metadata.player_id;
+      if(!PRODUCTS[sku])return json(res,400,{error:'invalid_sku'});
+      if(!db.prepare('SELECT id FROM players WHERE id=?').get(pid)){
+       // A paid link opened without a player reference must never disappear.
+       // Track it for manual reconciliation by Stripe session ID.
+       db.prepare('INSERT OR IGNORE INTO unclaimed_orders VALUES(?,?,?)').run(session.id,sku,new Date().toISOString());
+       return json(res,200,{received:true,fulfillment:'needs_reconciliation'});
+      }
       // A signed event must also match our fixed-price Checkout session.
       if(session.amount_total!==PRODUCTS[sku].cents||session.currency!=='eur'||session.client_reference_id!==pid)
        return json(res,400,{error:'checkout_mismatch'});
@@ -199,28 +218,31 @@ export function createApiServer({dbPath=':memory:',clock=()=>new Date(),corsOrig
 if(process.argv[1]&&resolve(process.argv[1])===fileURLToPath(import.meta.url)){
  const key=process.env.STRIPE_SECRET_KEY||'';
  const mode=process.env.PAYMENTS_MODE||'disabled';
+ const paymentLinks=process.env.PAYMENT_LINKS_JSON?JSON.parse(process.env.PAYMENT_LINKS_JSON):{};
  const gameUrl=process.env.GAME_URL||'http://127.0.0.1:4320/convergence-runner-lab/convergence/';
  const webhookSecret=process.env.STRIPE_WEBHOOK_SECRET||'';
  const allowed=mode==='live'?/^(sk_live_|rk_live_)/:mode==='test'?/^(sk_test_|rk_test_)/:null;
  if(!['disabled','test','live'].includes(mode)||
-    (mode!=='disabled'&&(!allowed.test(key)||!/^whsec_/.test(webhookSecret)))||
+    (mode!=='disabled'&&(!/^whsec_/.test(webhookSecret)||
+       (key&&!allowed.test(key))||(!key&&!Object.keys(paymentLinks).length)))||
     (mode==='live'&&(!gameUrl.startsWith('https://')||
       !process.env.ALLOWED_ORIGINS?.split(',').map(s=>s.trim()).includes(new URL(gameUrl).origin)))){
   console.error('Stripe configuration invalid: refusing to start with a non-matching key, missing signed webhook or insecure live origin');process.exit(2);
  }
  if(mode==='disabled'&&key){console.error('Stripe key present while payments disabled: refusing unsafe configuration');process.exit(2);}
  let stripeClient=null;
- if(key){
+ if(key||mode!=='disabled'){
   const {default:Stripe}=await import('stripe');
-  stripeClient=new Stripe(key,{apiVersion:'2026-08-26.dahlia'});
+  // In Payment Links mode Stripe only verifies signatures; no API calls are made.
+  stripeClient=new Stripe(key||'sk_test_local_webhook_verification_only',{apiVersion:'2026-08-26.dahlia'});
  }
  const app=createApiServer({
   dbPath:process.env.DB_PATH||resolve('data/convergence.sqlite'),
   corsOrigins:process.env.ALLOWED_ORIGINS?.split(',').map(s=>s.trim())||[],
   gameUrl,
   stripeClient,webhookSecret,
-  paymentsMode:mode
+  paymentsMode:mode,paymentLinks
  });
  const port=Number(process.env.PORT||4319);
- app.server.listen(port,'127.0.0.1',()=>console.log('CONVERGENCE API listening on port '+port));
+ app.server.listen(port,process.env.HOST||'0.0.0.0',()=>console.log('CONVERGENCE API listening on port '+port));
 }
