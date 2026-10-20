@@ -3,7 +3,7 @@ import {createRequire} from 'node:module';
 import {mkdirSync} from 'node:fs';
 const {chromium}=createRequire(import.meta.url)('playwright-core');
 const url=process.env.QA_URL||'http://127.0.0.1:4551/';
-const output='C:/CITYOS/convergence-tv-png/qa-tv';
+const output='C:/CITYOS/convergence-tv-complete/qa-tv';
 mkdirSync(output,{recursive:true});
 const browser=await chromium.launch({executablePath:'C:/Program Files/Google/Chrome/Application/chrome.exe',
   headless:true,args:['--enable-webgl','--ignore-gpu-blocklist']});
@@ -18,6 +18,8 @@ try{
   await p.waitForFunction(()=>window.__convergence?.levelGenerator?.gates?.length===10,{timeout:18000});
   await p.waitForFunction(()=>{const g=window.__convergence;const root=g.levelGenerator.gates[0].leftMesh.userData.root;
     return !!root.userData.tvScreen?.userData.texture?.image;},{timeout:14000});
+  await p.waitForFunction(()=>window.__convergence.levelGenerator.gates.every(g=>[g.leftMesh,g.rightMesh].every(m=>
+    m.userData.root.userData.tvScreen?.userData.ready)),{timeout:22000});
   const stats=await p.evaluate(()=>{
    const g=window.__convergence;
    const gates=g.levelGenerator.gates;
@@ -28,9 +30,24 @@ try{
     amount:screens[0].userData.tvValue,firstGate:gates[0].leftGate,
     visible:screens.every(x=>x.name==='TV_FLAT_SCREEN'),
     noPortals:gates.every(x=>[x.leftMesh,x.rightMesh].every(m=>m.userData.root.children.every(c=>c.name==='TV_FLAT_SCREEN'||c.isGroup))),
-    textureHeight:screens[0].userData.texture.image.height};
+    textureHeight:screens[0].userData.texture.image.height,
+    originalPNG:screens.filter(x=>x.userData.source==='original-png').length,
+    adapted:screens.filter(x=>x.userData.adapted).length,
+    fullyOccluding:screens.every(x=>{
+     const m=x.getObjectByName('TV_LIVE_SCREEN').material;
+     return m.depthWrite&&m.depthTest&&m.alphaTest>.1&&!m.transparent;
+    }),
+    behindBikesHidden:gates.filter(g=>[g.leftMesh,g.rightMesh].some(m=>m.userData.root.userData.bravmRiders))
+      .every(g=>[g.leftMesh,g.rightMesh].every(m=>!m.userData.root.userData.bravmRiders||
+       m.userData.root.userData.bravmRiders.every(r=>!r.visible))),
+    allTextureWidths:screens.map(x=>x.userData.texture.image.width)};
   });
   assert.equal(stats.screens,20);assert.equal(stats.noPlaceholders,true);
+  assert.equal(stats.originalPNG,20,'no reconstructed TV remains in any of the 10 pairs');
+  assert.ok(stats.adapted>=1,'variable numeric choices stay mathematically faithful');
+  assert.equal(stats.fullyOccluding,true,'all TV screens must block depth');
+  assert.equal(stats.behindBikesHidden,true,'BRAV-M pilots hidden until actual charge');
+  assert.ok(stats.allTextureWidths.every(x=>x>=1100),'every TV uses native-size PNG image');
   assert.equal(stats.noPortals,true);assert.ok(stats.textureHeight>500);
   assert.equal(stats.visible,true);assert.ok(stats.textureWidth>1000);
   assert.ok(stats.uniqueArt.length>=8,JSON.stringify(stats));

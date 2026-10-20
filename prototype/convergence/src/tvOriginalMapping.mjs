@@ -1,5 +1,6 @@
-// Exact generated PNG references. Never associate a printed value with a
-// different mathematical operation: these files contain baked-in lettering.
+// Preserve every actual generated TV image. A printed value is retained only
+// when it matches the game's exact operation; otherwise we re-label this SAME
+// TV PNG within its own screen (never fall back to a cartoon TV).
 export const ORIGINAL_TV_CHOICES=Object.freeze([
  {file:'tv-50-ralliement.png',choice:{op:'%',value:50}},
  {file:'tv-14-barrage.png',choice:{op:'damage',kind:'barrier',value:14,percent:false}},
@@ -19,14 +20,30 @@ export const ORIGINAL_TV_CHOICES=Object.freeze([
 ]);
 export function matchingOriginalTV(choice){
  if(!choice||choice.op==='conditional')return null;
- // Compare only properties that matter to math/label; no loosely similar TV.
  for(const entry of ORIGINAL_TV_CHOICES){
-   const target=entry.choice;
-   if(Object.entries(target).every(([key,val])=>choice[key]===val)&&
-      // Prevent branded character bonus when the gate has no matching faction.
-      (!('bonusFaction' in target)?true:choice.bonusFaction===target.bonusFaction)){ 
-       return entry.file;
-   }
+  const target=entry.choice;
+  if(Object.entries(target).every(([key,val])=>choice[key]===val))return entry.file;
  }
  return null;
+}
+export function templateOriginalTV(choice,index=0){
+ const exact=matchingOriginalTV(choice);
+ if(exact)return exact;
+ const faction=choice?.bonusFaction;
+ if(faction==='genz')return 'tv-6-genz.png';
+ if(faction==='pompiers')return 'tv-4-pompiers.png';
+ if(faction==='infirmieres')return 'tv-3-infirmieres.png';
+ if(faction==='gilets')return 'tv-5-gilets.png';
+ if(choice?.op==='shield')return index%2?'tv-5-boucliers.png':'tv-21-protections.png';
+ if(choice?.kind==='bravm')return 'tv-manifestation-paris.png';
+ if(choice?.kind==='barrier')return 'tv-14-barrage.png';
+ if(choice?.kind==='debris')return 'tv-40-obstacles.png';
+ if(choice?.kind==='van')return 'tv-20-fourgon.png';
+ if(choice?.op==='*')return 'tv-x2-mobilisation.png';
+ if(choice?.op==='%')return 'tv-50-ralliement.png';
+ if(choice?.op==='conditional')return 'tv-news-france.png';
+ if(choice?.op==='-')return 'tv-22-protections.png';
+ if(choice?.op==='/')return 'tv-22-protections.png';
+ if(choice?.op==='+')return index%3===0?'tv-news-france.png':'tv-10-renforts.png';
+ return 'tv-10-renforts.png';
 }

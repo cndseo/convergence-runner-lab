@@ -23,6 +23,9 @@ export function createArcadeGate(data,x,z,scene,tracked,ordinal=0) {
    root.add(rider);
    upgradePoliceOfficer(rider,'bravm');upgradeBravMotorcycle(rider);
    attachReferenceOfficer(rider,'bravm',i);
+   // Bikes are collision actors, not decorative objects to draw THROUGH TV.
+   // BravmGateCharge.start() detaches them and makes them visible at impact.
+   rider.visible=false;
    root.userData.bravmRiders.push(rider);
   }
  }
