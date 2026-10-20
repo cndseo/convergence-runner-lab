@@ -707,29 +707,78 @@ html,body{width:100%;max-width:100%;overflow:hidden}
     #start-screen .menu-actions > .btn { transition: none; }
 }
 
-/* GenZ consumable: separate from the Marseille attack, visible only when actionable. */
+/* Compact right-edge GenZ action: always visible during campaign gameplay. */
 #genz-ammo-button {
- position:absolute;z-index:61;bottom:calc(180px + env(safe-area-inset-bottom,0px));
- right:clamp(10px,3vw,24px);max-width:min(63vw,225px);min-height:52px;
- background:linear-gradient(130deg,#116a80,#7b1b86);color:white;
- border:2px solid #42f5eb;border-radius:15px;box-shadow:0 3px 15px #0dd7dd66;
- padding:9px 12px;font:800 clamp(12px,3.4vw,16px)/1.15 system-ui;
- cursor:pointer;touch-action:manipulation;
-}
-#genz-ammo-button:focus-visible{outline:3px solid white;outline-offset:3px}
-#genz-ammo-button:disabled{opacity:.6;cursor:default}
-
-/* Empty ammunition is deliberately still clickable: it opens the shop. */
-#genz-ammo-button.genz-empty {
- opacity:.54;filter:grayscale(.7) saturate(.4);
- background:linear-gradient(125deg,#49515b,#525166);
- border-color:#c8c5d6;box-shadow:0 2px 8px #0005;
+ position:absolute;
+ z-index:61;
+ top:58%;
+ right:max(8px, env(safe-area-inset-right, 0px));
+ bottom:auto;
+ transform:translateY(-50%);
+ box-sizing:border-box;
+ width:72px;
+ height:72px;
+ min-width:72px;
+ min-height:72px;
+ max-width:72px;
+ max-height:72px;
+ padding:4px;
+ border-radius:50%;
+ border:2px solid rgba(255,255,255,.28);
+ background:linear-gradient(180deg,#1f3f63 0%,#10253d 100%);
+ color:#fff;
+ font:800 12px/1.05 system-ui,sans-serif;
+ text-align:center;
+ box-shadow:0 8px 22px rgba(0,0,0,.28);
  cursor:pointer;
+ touch-action:manipulation;
+ -webkit-tap-highlight-color:transparent;
 }
-#genz-ammo-button.genz-empty:active {opacity:.78;filter:none}
-#genz-ammo-button.genz-pending {opacity:.76}
-@media(max-width:380px) {
- #genz-ammo-button {bottom:calc(174px + env(safe-area-inset-bottom,0px));min-height:48px;max-width:55vw}
+#genz-ammo-button .genz-fire-label {
+ display:flex;
+ align-items:center;
+ justify-content:center;
+ width:100%;
+ height:100%;
+ white-space:nowrap;
+ pointer-events:none;
+}
+#genz-ammo-button .genz-ammo-count {
+ position:absolute;
+ right:-4px;
+ bottom:-4px;
+ min-width:24px;
+ height:24px;
+ box-sizing:border-box;
+ display:flex;
+ justify-content:center;
+ align-items:center;
+ padding:0 5px;
+ border-radius:999px;
+ background:#f1c24f;
+ color:#10253d;
+ font:900 12px/1 system-ui,sans-serif;
+ font-variant-numeric:tabular-nums;
+ box-shadow:0 4px 10px rgba(0,0,0,.25);
+ pointer-events:none;
+}
+#genz-ammo-button.genz-empty {
+ opacity:.55;
+ filter:grayscale(.2);
+ background:linear-gradient(180deg,#465365,#394350);
+ border-color:rgba(255,255,255,.26);
+ cursor:pointer; /* Zero ammo opens the shop, not a disabled control. */
+}
+#genz-ammo-button.genz-empty:active {opacity:.82}
+#genz-ammo-button.genz-pending {opacity:.72}
+#genz-ammo-button:focus-visible {outline:3px solid #fff;outline-offset:3px}
+#genz-ammo-button:disabled {cursor:default}
+@media (max-width:380px) {
+ #genz-ammo-button {
+  width:66px;height:66px;min-width:66px;min-height:66px;
+  max-width:66px;max-height:66px;
+  font-size:11px;
+ }
 }
 
 /* Stripe fallback stays touchable when the mobile in-app browser blocks navigation. */

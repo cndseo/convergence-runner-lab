@@ -43,6 +43,14 @@ export class GenzFireworks {
    transparent:true,opacity:.45,depthWrite:false});
   this.button=document.createElement('button');
   this.button.id='genz-ammo-button';this.button.type='button';
+  this.label=document.createElement('span');
+  this.label.className='genz-fire-label';
+  this.label.textContent='GenZ 🧨';
+  this.countBadge=document.createElement('span');
+  this.countBadge.className='genz-ammo-count';
+  this.countBadge.setAttribute('aria-hidden','true');
+  this.countBadge.textContent='0';
+  this.button.append(this.label,this.countBadge);
   this.button.style.display='none';
   this.button.addEventListener('click',()=>this.activate());
   game.ui.container.appendChild(this.button);
@@ -66,9 +74,8 @@ export class GenzFireworks {
   this.button.setAttribute('aria-label',empty
    ?'Munitions GenZ épuisées, ouvrir la boutique'
    :'Tirer un feu d’artifice GenZ, '+this.available()+' munitions');
-  this.button.textContent=empty?'GENZ · 0  RECHARGER'
-   :this.pending?'GENZ · PRÉPARATION…'
-   :'GENZ · TIRER  ×'+this.available();
+  const remaining=String(this.available());
+  if(this.countBadge.textContent!==remaining)this.countBadge.textContent=remaining;
  }
  openShop(){
   this.game.challengeHub?.openPremiumInGame();
