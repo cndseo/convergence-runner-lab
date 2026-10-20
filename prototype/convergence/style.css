@@ -496,3 +496,197 @@ html,body{width:100%;max-width:100%;overflow:hidden}
 #marseille-support-button:disabled{opacity:.65;cursor:default}
 .challenge-credit-count{margin:0;text-align:center;background:#2a4b67;border:1px solid #8bb8df88;
  border-radius:10px;padding:9px 7px;color:#d6f2ff;font:750 12px/1.3 system-ui}
+
+
+/* CONVERGENCE brand menu · 2026-10-20 */
+/* Only the start menu: gameplay, HUD, challenge panels and other screens remain unchanged. */
+#start-screen {
+    --conv-orange: #ff592f;
+    --conv-navy: #0a1425;
+    box-sizing: border-box;
+    width: 100%;
+    min-height: 100%;
+    padding: calc(19px + env(safe-area-inset-top, 0px)) clamp(15px, 4vw, 36px)
+             calc(16px + env(safe-area-inset-bottom, 0px));
+    justify-content: space-between;
+    align-items: center;
+    gap: 16px;
+    isolation: isolate;
+    background-color: var(--conv-navy);
+    background-image:
+        linear-gradient(180deg, rgba(3, 9, 23, .67) 0%, rgba(5, 12, 25, .12) 27%,
+                        rgba(5, 11, 23, .03) 46%, rgba(5, 11, 23, .68) 69%,
+                        #071120 99%),
+        url('/assets/brand/menu-mobile.webp');
+    background-position: center center, center 34%;
+    background-size: cover;
+    background-repeat: no-repeat;
+    overscroll-behavior: contain;
+}
+#start-screen .menu-top {
+    position: relative;
+    z-index: 1;
+    width: min(100%, 490px);
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+    flex: 0 0 auto;
+    text-shadow: 0 2px 12px #000a;
+}
+#start-screen .menu-brand {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    color: #fff;
+    font: 950 clamp(25px, 6.7vw, 34px)/1 Impact, 'Arial Narrow', system-ui, sans-serif;
+    letter-spacing: -.012em;
+}
+#start-screen .menu-brand-mark {
+    display: grid;
+    place-items: center;
+    width: 42px;
+    height: 42px;
+    flex: 0 0 auto;
+    border: 2px solid #ffe0c5;
+    box-shadow: 4px 4px 0 #fff4e6, 0 4px 15px #0006;
+    background: var(--conv-orange);
+    transform: skew(-5deg);
+    font: 900 19px/1 system-ui, sans-serif;
+}
+#start-screen .menu-brand-name span { color: var(--conv-orange); }
+#start-screen .menu-top-caption {
+    padding: 5px 0 5px 12px;
+    border-left: 4px solid var(--conv-orange);
+    color: #f7f2e9;
+    font: 850 clamp(9px, 2.6vw, 11px)/1.3 system-ui, sans-serif;
+    letter-spacing: .16em;
+}
+#start-screen .menu-panel {
+    position: relative;
+    z-index: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    gap: clamp(7px, 1.4vh, 12px);
+    width: min(100%, 490px);
+    margin-top: auto;
+    border-radius: 19px;
+    padding: clamp(15px, 3.7vw, 25px);
+    background: linear-gradient(155deg, rgba(8, 20, 37, .87), rgba(5, 12, 26, .96));
+    border: 1px solid rgba(255, 228, 205, .23);
+    box-shadow: 0 14px 60px #030714bd;
+    -webkit-backdrop-filter: blur(12px);
+    backdrop-filter: blur(12px);
+}
+#start-screen .menu-kicker {
+    color: #ffe1c4;
+    letter-spacing: .135em;
+    font: 850 clamp(9px, 2.5vw, 11px)/1.2 system-ui, sans-serif;
+}
+#start-screen .menu-kicker span { display: inline-block; width: 5px; height: 5px; background: var(--conv-orange); border-radius: 50%; vertical-align: middle; margin: 0 3px; }
+#start-screen h1 {
+    align-self: stretch;
+    text-align: left;
+    margin: 0;
+    max-width: 100%;
+    color: #fff8e9;
+    font: 950 clamp(28px, 8vw, 43px)/.98 Impact, 'Arial Narrow', 'Arial Black', sans-serif;
+    letter-spacing: .005em;
+    text-shadow: 0 3px 12px #000a;
+    animation: none;
+}
+#start-screen h1 span { display: block; color: var(--conv-orange); }
+#start-screen .instructions {
+    margin: 0;
+    max-width: none;
+    color: #ecedf2;
+    text-align: left;
+    font: 550 clamp(12px, 3vw, 14px)/1.45 system-ui, sans-serif;
+}
+#start-screen .menu-actions {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 9px;
+    margin-top: 4px;
+}
+#start-screen .menu-actions > .btn {
+    box-sizing: border-box;
+    min-width: 0;
+    width: 100%;
+    margin: 0;
+    min-height: 47px;
+    padding: 10px 8px;
+    border-radius: 10px;
+    font: 850 clamp(10px, 3vw, 13px)/1.18 system-ui, sans-serif;
+    letter-spacing: .02em;
+    animation: none;
+    box-shadow: 0 5px 16px #0004;
+    text-shadow: none;
+}
+#start-screen #play-btn {
+    grid-column: 1 / -1;
+    min-height: 57px;
+    border: 1px solid #ffb68f;
+    background: var(--conv-orange) !important;
+    color: #fff !important;
+    font-size: clamp(14px, 4vw, 17px);
+    box-shadow: 0 6px 0 #b52d14, 0 12px 25px #0009;
+}
+#start-screen #play-btn span { margin-left: 5px; font-size: 20px; }
+#start-screen #daily-btn {
+    grid-column: 1 / -1;
+    background: #f4eee5 !important;
+    color: #17253a !important;
+    border: 1px solid #f8e7d0 !important;
+    min-height: 46px;
+}
+#start-screen #upgrade-btn,
+#start-screen #premium-btn {
+    background: rgba(31, 48, 68, .95) !important;
+    color: #fff5ea !important;
+    border: 1px solid rgba(255, 222, 192, .48) !important;
+}
+#start-screen #premium-btn { border-color: var(--conv-orange) !important; }
+#start-screen .menu-actions > .btn:focus-visible {
+    outline: 3px solid #fff;
+    outline-offset: 3px;
+}
+#start-screen .menu-actions > .btn:active { transform: translateY(2px); }
+#start-screen .menu-footnote {
+    margin: 2px 0 0;
+    color: #f0d5c4;
+    font: 800 clamp(9px, 2.6vw, 11px)/1.3 system-ui, sans-serif;
+    letter-spacing: .06em;
+}
+#start-screen .menu-footnote span { color: var(--conv-orange); padding: 0 3px; }
+@media (min-width: 740px) {
+    #start-screen {
+        background-image:
+            linear-gradient(90deg, rgba(5, 11, 24, .78) 0%, rgba(5, 11, 24, .2) 65%),
+            url('/assets/brand/menu-desktop.webp');
+        background-position: center, center 42%;
+        align-items: flex-start;
+        padding-left: clamp(26px, 7vw, 110px);
+    }
+    #start-screen .menu-top { width: min(100%, 550px); }
+    #start-screen .menu-panel { width: min(46vw, 490px); }
+}
+@media (max-height: 700px) {
+    #start-screen { gap: 8px; padding-top: calc(10px + env(safe-area-inset-top, 0px)); padding-bottom: calc(8px + env(safe-area-inset-bottom, 0px)); }
+    #start-screen .menu-top { gap: 5px; }
+    #start-screen .menu-brand-mark { width: 33px; height: 33px; font-size: 16px; }
+    #start-screen .menu-panel { padding: 12px 14px; gap: 6px; }
+    #start-screen h1 { font-size: clamp(25px, 7.4vw, 37px); }
+    #start-screen .menu-actions { gap: 6px; margin-top: 0; }
+    #start-screen .menu-actions > .btn { min-height: 39px; padding: 7px 6px; }
+    #start-screen #play-btn { min-height: 47px; }
+}
+@media (max-height: 570px) {
+    #start-screen .menu-top-caption,
+    #start-screen .menu-footnote,
+    #start-screen .instructions { display: none; }
+}
+@media (prefers-reduced-motion: reduce) {
+    #start-screen .menu-actions > .btn { transition: none; }
+}
