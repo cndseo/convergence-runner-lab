@@ -498,7 +498,10 @@ export class Game {
 
     highlightGate(gate, side) {
         const mesh = side === 'left' ? gate.leftMesh : gate.rightMesh;
-        if (mesh) {
+        // HD television uses MeshBasicMaterial: injecting an emissive property
+        // here corrupts WebGL uniforms. Its dedicated glass-shatter FX already
+        // provides collision feedback without changing the TV material.
+        if (mesh?.material?.isMeshStandardMaterial) {
             mesh.material.emissive = new THREE.Color(0xffffff);
             mesh.material.emissiveIntensity = 0.5;
             setTimeout(() => {
