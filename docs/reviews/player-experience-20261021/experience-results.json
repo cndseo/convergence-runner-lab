@@ -1,0 +1,139 @@
+{
+  "base": "https://experience-convergence.72-61-167-161.sslip.io/",
+  "checks": [
+    {
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "result": {
+        "result": {
+          "won": true,
+          "mode": "campaign",
+          "level": 1,
+          "district": "Nation",
+          "survivors": 29,
+          "badge": true,
+          "bestGain": 10
+        },
+        "level": 2,
+        "badge": {
+          "won": true,
+          "badge": true,
+          "best": 29
+        },
+        "events": [
+          "session_start",
+          "quit_before_level_end",
+          "tap_play",
+          "store_open",
+          "first_gate_seen",
+          "gate_choice",
+          "gate_choice",
+          "gate_choice",
+          "gate_choice",
+          "gate_choice",
+          "first_front",
+          "gate_choice",
+          "gate_choice",
+          "gate_choice",
+          "gate_choice",
+          "gate_choice",
+          "level_complete"
+        ]
+      },
+      "daily": {
+        "result": {
+          "day": "2026-10-21",
+          "seed": 2812703801,
+          "survivors": 19,
+          "shields": 8,
+          "won": true,
+          "path": [
+            "right",
+            "right",
+            "left",
+            "left",
+            "right",
+            "left",
+            "right",
+            "right",
+            "left",
+            "right"
+          ],
+          "totalChoices": 10,
+          "winningRoutes": 215
+        },
+        "level": 2
+      }
+    },
+    {
+      "viewport": {
+        "width": 320,
+        "height": 700
+      },
+      "result": {
+        "result": {
+          "won": true,
+          "mode": "campaign",
+          "level": 1,
+          "district": "Nation",
+          "survivors": 29,
+          "badge": true,
+          "bestGain": 10
+        },
+        "level": 2,
+        "badge": {
+          "won": true,
+          "badge": true,
+          "best": 29
+        },
+        "events": [
+          "session_start",
+          "quit_before_level_end",
+          "tap_play",
+          "store_open",
+          "first_gate_seen",
+          "gate_choice",
+          "gate_choice",
+          "gate_choice",
+          "gate_choice",
+          "gate_choice",
+          "first_front",
+          "gate_choice",
+          "gate_choice",
+          "gate_choice",
+          "gate_choice",
+          "gate_choice",
+          "level_complete"
+        ]
+      },
+      "daily": {
+        "result": {
+          "day": "2026-10-21",
+          "seed": 2812703801,
+          "survivors": 19,
+          "shields": 8,
+          "won": true,
+          "path": [
+            "right",
+            "right",
+            "left",
+            "left",
+            "right",
+            "left",
+            "right",
+            "right",
+            "left",
+            "right"
+          ],
+          "totalChoices": 10,
+          "winningRoutes": 215
+        },
+        "level": 2
+      }
+    }
+  ],
+  "errors": [],
+  "badAssets": []
+}
