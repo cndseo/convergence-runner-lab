@@ -820,3 +820,24 @@ html,body{width:100%;max-width:100%;overflow:hidden}
 body:has(.screen:not(.hidden)) #gesture-hint,body:has(#challenge-hub:not(.hidden)) #gesture-hint,body:has(#pause-panel:not(.hidden)) #gesture-hint{display:none}
 .motion-reduced *, .motion-reduced *::before, .motion-reduced *::after{animation-duration:.001ms!important;transition-duration:.001ms!important}
 @media(max-height:740px){#win-screen{gap:5px}#win-screen .result-download{min-height:30px;font-size:11px}#win-screen .run-report span{font-size:12px}#win-screen .run-report strong{font-size:15px}}
+
+
+/* Intentional TV choice: original approved PNGs, never auto-triggered by crowd width. */
+.tv-choice-dialog:not([hidden]){
+ position:absolute;inset:0;z-index:90;display:flex;align-items:center;justify-content:center;
+ background:rgba(4,10,19,.82);backdrop-filter:blur(8px);padding:18px;
+}
+.tv-choice-panel{width:min(100%,550px);color:#f8f3e7;text-align:center;border-radius:20px;
+ border:1px solid #b99b67;background:linear-gradient(160deg,#162532,#0b121c);
+ padding:20px 13px 16px;box-shadow:0 18px 60px #000a}
+.tv-choice-eyebrow{color:#e1c184;font-size:11px;letter-spacing:.15em;font-weight:700}
+.tv-choice-panel h2{font-size:clamp(22px,6vw,32px);margin:8px auto;font-weight:800}
+.tv-choice-caption,.tv-choice-foot{font-size:13px;color:#ced8e1;line-height:1.45}
+.tv-choice-options{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:19px 0}
+.tv-choice-option{appearance:none;display:flex;flex-direction:column;align-items:center;justify-content:space-between;
+ gap:10px;border:2px solid #4a6274;border-radius:14px;background:#223140;color:#f4ead7;
+ min-width:0;padding:10px 5px 12px;min-height:175px;cursor:pointer;touch-action:manipulation}
+.tv-choice-option:active,.tv-choice-option:focus-visible{border-color:#ffdf9b;background:#334453;outline:2px solid #f4c87b}
+.tv-choice-option img{width:100%;height:clamp(130px,29vh,235px);object-fit:contain;pointer-events:none}
+.tv-choice-option span{font-size:12px;font-weight:800;letter-spacing:.08em}
+@media(max-height:620px){.tv-choice-panel{padding:12px}.tv-choice-options{margin:9px 0}.tv-choice-option img{height:112px}.tv-choice-option{min-height:135px}}

@@ -1,0 +1,54 @@
+{
+  "base": "http://127.0.0.1:4701/",
+  "errors": [],
+  "assetsFailed": [],
+  "steps": [
+    {
+      "state": "playing",
+      "passed": true,
+      "history": 1,
+      "side": "right",
+      "applied": "renforts10",
+      "tactical": 45,
+      "rendered": 190
+    },
+    {
+      "state": "playing",
+      "history": 2,
+      "side": "left",
+      "applied": "gilets5"
+    }
+  ],
+  "rates": [
+    {
+      "level": 1,
+      "rate": 0.326171875,
+      "winningPaths": 334
+    },
+    {
+      "level": 2,
+      "rate": 0.2099609375,
+      "winningPaths": 215
+    },
+    {
+      "level": 3,
+      "rate": 0.2373046875,
+      "winningPaths": 243
+    },
+    {
+      "level": 6,
+      "rate": 0.1748046875,
+      "winningPaths": 179
+    },
+    {
+      "level": 9,
+      "rate": 0.1669921875,
+      "winningPaths": 171
+    },
+    {
+      "level": 12,
+      "rate": 0.13671875,
+      "winningPaths": 140
+    }
+  ]
+}
