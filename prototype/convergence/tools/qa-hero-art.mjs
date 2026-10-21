@@ -14,4 +14,3 @@ try{
  }
  writeFileSync(file('results.json'),JSON.stringify({stats,errors},null,2));if(errors.length)throw Error(errors.join('\n'));console.log(JSON.stringify({ok:true,profiles:ids.length,stats:stats.map(({id,drawCalls,triangles})=>({id,drawCalls,triangles}))}));
 }catch(e){console.error(errors);throw e;}finally{await b.close();}
-
