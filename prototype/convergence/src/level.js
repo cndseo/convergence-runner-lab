@@ -22,6 +22,7 @@ export class LevelGenerator {
         this.marseilleBonus = null;
         this.obstacles = [];
         this.enemies = [];
+        this.patrols = [];
         this.boss = null;
         this.meshes = [];
     }
@@ -37,6 +38,7 @@ export class LevelGenerator {
         this.marseilleBonus = null;
         this.obstacles = [];
         this.enemies = [];
+        this.patrols = [];
         this.boss = null;
         this.meshes.forEach(m => {
             if (!m.isObject3D) return;
@@ -65,6 +67,7 @@ export class LevelGenerator {
         this.createMarseilleBonus(level);
         this.createObstacles(level, trackLength);
         this.createEnemies(level, trackLength);
+        this.patrols=this.plan.events.filter(e=>e.type==='patrol').map(e=>({...e,passed:false}));
         this.createBoss(level, trackLength);
         this.streetPresence=new StreetPresence(this.scene,this.game,this.plan,this.game.geographicLevel);
         // Geography replaces only static scenery. TV, police and combat objects remain above.

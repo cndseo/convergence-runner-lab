@@ -1,5 +1,6 @@
 import {makeFixedPairs} from './fixedTVCatalog.mjs';
-import {initialState,solvePlan,replayPlan,greedyPath,applyCombat} from './tactics.mjs';
+import {initialState,solvePlan,replayPlan,greedyPath} from './tactics.mjs';
+import {applyCampaignCombat} from './campaignCombatRules.mjs';
 
 // Campaign-only rules. The daily generator and its server verifier stay v3.
 export function campaignTargets(level){
@@ -21,24 +22,27 @@ export function generateCampaignLevel({level=1,seed=1,startCount=5,strength=1}={
   const rand=random(seed+level*7919),bounds=campaignTargets(level);
   let selected=null;
   // Always balance a free, unupgraded crowd first. Earned upgrades never raise resistance.
-  for(let attempt=0;attempt<96;attempt++){
+  for(let attempt=0;attempt<56;attempt++){
     const pairs=makeFixedPairs();
-    // Nation teaches recruitment, protection, then manageable losses in that order.
-    // Later districts mix situations after the same two readable opening choices.
+    // Five side patrols and four substantive roadblocks. The same events drive
+    // the solver, gameplay casualties and the street formation's lunging units.
     if(level>1)for(let i=pairs.length-1;i>2;i--){const j=2+Math.floor(rand()*(i-1));[pairs[i],pairs[j]]=[pairs[j],pairs[i]];}
     const events=[];
     pairs.forEach((pair,i)=>{
       if(rand()<.5)pair.reverse();
       events.push({type:'choice',z:14+i*16,left:pair[0],right:pair[1]});
-      if(i===4||i===7)events.push({type:'enemy',z:22+i*16,kind:i===4?'crs':'bac',
-        count:2+Math.floor((level-1)/3)+(i===7?1:0)});
+      if((level===1?[3,6,9]:[1,3,5,7,9]).includes(i))
+        events.push({type:'patrol',kind:i%3===0?'bac':'crs',z:21+i*16,side:i%2?'right':'left'});
+      if((level===1?[4,7]:[2,4,6,8]).includes(i))
+        events.push({type:'enemy',kind:i%3===0?'bac':'crs',z:23+i*16,
+          count:(level===1?6+(i===7?2:0):10+(i%4)*2)});
     });
-    const plan={version:4,ruleset:'campaign-20261021',seed,level,startCount:5,strength:1,
+    const plan={version:4,ruleset:'campaign-patrol-20261021',seed,level,startCount:5,strength:1,
       events,trackLength:180,bossHealth:0,tvCatalog:'fixed16'};
     const paths=solvePlan(plan),greedy=greedyPath(plan);
-    for(let health=4;health<=65;health++){
-      if(level<=3&&applyCombat(greedy,health).count===0)continue;
-      const rate=paths.filter(p=>applyCombat(p,health).count>0).length/paths.length;
+    for(let health=9;health<=90;health++){
+      if(level<=3&&applyCampaignCombat(greedy,health).count===0)continue;
+      const rate=paths.filter(p=>applyCampaignCombat(p,health).count>0).length/paths.length;
       if(rate<bounds.min)continue;
       const score=Math.abs(rate-bounds.ideal);
       if(!selected||score<selected.score)selected={plan:{...plan,bossHealth:health},score};

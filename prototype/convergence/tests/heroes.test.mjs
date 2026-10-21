@@ -3,7 +3,8 @@ import assert from 'node:assert/strict';
 import {HERO_PROFILES,HERO_COMMUNITIES} from '../src/heroCatalog.mjs';
 import {normalizeHeroSave,selectHero,equipHero,awardHeroRun,heroLevel,familyRoster,changeRoster,rosterSummary,atlasRowForFamily} from '../src/heroRules.mjs';
 import {generateCampaignLevel} from '../src/campaignPlan.mjs';
-import {applyChoice,applyCombat,replayPlan} from '../src/tactics.mjs';
+import {applyChoice,replayPlan} from '../src/tactics.mjs';
+import {applyCampaignCombat,applyCampaignPatrol} from '../src/campaignCombatRules.mjs';
 test('twenty stable identities, four per family, and bounded atlas rows',()=>{
  assert.equal(new Set(HERO_PROFILES.map(p=>p.id)).size,20);
  for(const f of HERO_COMMUNITIES){assert.equal(HERO_PROFILES.filter(p=>p.family===f.id).length,4);for(let i=0;i<312;i++)assert.ok(atlasRowForFamily(f.id,i)<20);}
@@ -34,6 +35,6 @@ test('all twelve districts have a free route with hero baseline and preserve act
   const plan=generateCampaignLevel({level,seed:level,startCount:level===1?5:11,strength:1});
   assert.ok(replayPlan(plan,plan.proof.winningPath).count>0);
   let state={count:plan.startCount,shields:0},roster=familyRoster(plan.startCount,family.id),i=0;
-  for(const e of plan.events){const choice=e.type==='choice'?e[plan.proof.winningPath[i++]]:null;state=choice?applyChoice(state,choice):applyCombat(state,e.count,1);roster=changeRoster(roster,state.count,choice,family.id);assert.equal(Object.values(rosterSummary(roster)).reduce((a,b)=>a+b,0),state.count);}
+  for(const e of plan.events){const choice=e.type==='choice'?e[plan.proof.winningPath[i++]]:null;state=choice?applyChoice(state,choice):e.type==='patrol'?applyCampaignPatrol(state,plan.level):applyCampaignCombat(state,e.count,1);roster=changeRoster(roster,state.count,choice,family.id);assert.equal(Object.values(rosterSummary(roster)).reduce((a,b)=>a+b,0),state.count);}
  }
 });
