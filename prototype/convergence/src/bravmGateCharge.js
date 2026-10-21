@@ -1,6 +1,10 @@
 // Collision-triggered BRAV-M street attack. Uses the existing gate's real
 // reference riders, not a duplicated bike texture, and resolves damage once.
 // A full ~3-second arrival from the visible far end of the Parisian street.
+import {policeResponse} from './policeResponse.mjs';
+import {makeOfficer} from './characters.js';
+import {upgradeBravMotorcycle} from './motorcycleAssets.js';
+import {attachReferenceOfficer} from './policeReferenceSprites.js';
 const CHARGE_TIME=2.92;
 const RECOVERY_TIME=.34;
 const APPROACH_METRES=29;
@@ -11,7 +15,17 @@ export class BravmGateCharge {
   start(gate,choice,side){
     if(this.current)return false;
     const g=this.game,root=(side==='left'?gate.leftMesh:gate.rightMesh)?.userData?.root;
-    const bikes=root?.userData?.bravmRiders||[];
+    const bikes=[...(root?.userData?.bravmRiders||[])];
+    const required=bikes.length?policeResponse(g.crowdManager.getPlayerCount(),g.shields||0).motorcycles:0;
+    // The original two collision actors stay intact. Extra bikes are visual
+    // reinforcements only: one impact event and the certified -3 rule remain.
+    for(let i=bikes.length;i<required;i++){
+      const rider=makeOfficer('bravm',i);
+      g.scene.add(rider);
+      upgradeBravMotorcycle(rider);
+      attachReferenceOfficer(rider,'bravm',i);
+      bikes.push(rider);
+    }
     const actorList=[];
     for(let i=0;i<bikes.length;i++){
       const rider=bikes[i];
@@ -21,7 +35,8 @@ export class BravmGateCharge {
       rider.visible=true;
       // Spawn about 29–32 metres up the road instead of emerging just
       // 3–4 metres in front of the player. Keep both in visible street lanes.
-      const startX=g.playerX+(i===0?-1.95:1.95);
+      const offset=required===2?(i===0?-1.95:1.95):(i-(required-1)/2)*.77;
+      const startX=Math.max(-3.1,Math.min(3.1,g.playerX+offset));
       const startZ=-g.trackZ-APPROACH_METRES-i*3;
       rider.position.set(startX,rider.position.y,startZ);
       actorList.push({rider,x:startX,y:rider.position.y,z:startZ,index:i});
@@ -43,7 +58,8 @@ export class BravmGateCharge {
     const t=c.elapsed,u=smooth(t/CHARGE_TIME);
     for(const unit of c.actors){
       const {rider,x,y,z,index}=unit;
-      const targetX=c.impactX+(index===0?-.54:.54);
+      const offset=c.actors.length===2?(index===0?-.54:.54):(index-(c.actors.length-1)/2)*.66;
+      const targetX=Math.max(-3.0,Math.min(3.0,c.impactX+offset));
       // Final position is just ahead of the player, not through their body.
       const targetZ=c.impactZ-.52-(index*.18);
       const advance=u;

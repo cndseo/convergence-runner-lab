@@ -389,6 +389,9 @@ export class CrowdManager {
         this.spawnSparks(pos, color, 4);
     }
 
+    // The real rendered formation: animated actors and GPU instances together.
+    getDisplayedCount() { return this.density.total; }
+
     getPlayerCount() {
         return this.playerCount;
     }

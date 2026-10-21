@@ -3,6 +3,7 @@ import {getPoliceReferenceTexture} from './policeReferenceSprites.js';
 import {createMarchBatch} from './humanoidAssets.js';
 import {CHARACTER_ATLAS} from './characterCatalog.mjs';
 import {DENSITY_LIMITS,streetRoster,streetDetail} from './humanDensity.mjs';
+import {policeResponse} from './policeResponse.mjs';
 
 // Four batches for the entire route, independent of the combat actor roster.
 // Alpha testing writes depth: people cannot show through buildings or TV screens.
@@ -13,7 +14,7 @@ export class StreetPresence {
     this.root.userData.dynamic=true;scene.add(this.root);
     this.roster=streetRoster(plan.trackLength,district);
     for(const front of [...plan.events.filter(e=>e.type==='enemy'),{kind:'crs',z:plan.trackLength}]){
-      for(const side of [-1,1])this.roster.push({kind:front.kind,count:front.z===plan.trackLength?16:8,
+      for(const side of [-1,1])this.roster.push({kind:front.kind,frontReserve:true,count:front.z===plan.trackLength?16:8,
         z:front.z+2.5,side,x:side*5.7,phase:front.z});
     }
     this.batches={};this.matrix=new THREE.Object3D();this.counts={};
@@ -45,12 +46,16 @@ export class StreetPresence {
     const reduced=this.game.experience?.reducedMotion;
     const time=reduced?0:this.elapsed;
     for(const kind of Object.keys(this.batches))this.counts[kind]=0;
+    const scale=policeResponse(this.game.crowdManager?.getPlayerCount?.()??this.game.getStartingCrowdSize(),this.game.shields||0);
     for(const group of this.roster){
       const distance=group.z-progress,step=streetDetail(distance);
       if(!step)continue;
       const batch=this.batches[group.kind],bike=group.kind==='bravm',civ=group.kind==='spectators';
       const cols=bike?1:civ?4:3,spacing=bike?1.65:civ?.48:.62;
-      for(let i=0;i<group.count;i+=step){
+      // Reserve units gather near the active front as the procession grows;
+      // they are instanced scenery, not additional hits in the tactical solver.
+      const displayCount=group.frontReserve?(group.kind==='bravm'?scale.streetMotorcycles:group.kind==='bac'?Math.ceil(scale.crsPerFlank*.6):scale.crsPerFlank):group.count;
+      for(let i=0;i<displayCount;i+=step){
         const n=this.counts[group.kind];if(n>=DENSITY_LIMITS[group.kind])break;
         const row=Math.floor(i/cols),col=i%cols;
         const patrol=group.kind==='bac'&&distance<35?Math.sin(time*.65+group.phase)*.55:0;

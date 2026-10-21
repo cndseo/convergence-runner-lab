@@ -320,14 +320,17 @@ export class UIManager {
     }
 
     updateCount(count) {
+        const visible = this.game.crowdManager?.getDisplayedCount?.() ?? count;
+        this.countDisplay.title = visible+' participants représentés dans le cortège ; '+count+' unités tactiques actives';
+        this.countDisplay.setAttribute('aria-label',this.countDisplay.title);
         if (this.tacticalStatus && this.game.levelGenerator?.plan) {
             const done = this.game.levelGenerator.gates.filter(g => g.passed).length;
             const text = '◇ '+(this.game.shields||0)+' protections · '+done+'/10 TV · Arrivée '+Math.round(Math.min(1,this.game.trackZ/this.game.trackLength)*100)+' %';
             if(this.tacticalStatus.textContent!==text)this.tacticalStatus.textContent=text;
         }
-        this.countDisplay.textContent = `👥 ${count}`;
+        this.countDisplay.textContent = '👥 '+visible;
         // Pulse the count display when count changes significantly
-        if (Math.abs(count - this.prevCount) > 2) {
+        if (Math.abs(visible - this.prevCount) > 2) {
             this.countDisplay.style.transform = 'scale(1.3)';
             this.countDisplay.style.transition = 'transform 0.15s ease';
             setTimeout(() => {
@@ -335,7 +338,7 @@ export class UIManager {
                 setTimeout(() => { this.countDisplay.style.transition = ''; }, 150);
             }, 150);
         }
-        this.prevCount = count;
+        this.prevCount = visible;
     }
 
     showUpgrades() {
