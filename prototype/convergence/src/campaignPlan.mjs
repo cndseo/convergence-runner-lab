@@ -4,7 +4,7 @@ import {applyCampaignCombat} from './campaignCombatRules.mjs';
 
 // Campaign-only rules. The daily generator and its server verifier stay v3.
 export function campaignTargets(level){
-  return level<=1?{min:.40,ideal:.52}:level<=3?{min:.32,ideal:.43}:{min:.23,ideal:.32};
+  return level<=1?{min:.25,ideal:.32}:level<=3?{min:.15,ideal:.23}:{min:.09,ideal:.17};
 }
 function random(seed){let a=seed>>>0;return()=>{a+=0x6D2B79F5;let t=a;t=Math.imul(t^t>>>15,t|1);t^=t+Math.imul(t^t>>>7,t|61);return((t^t>>>14)>>>0)/4294967296;};}
 function certify(plan){

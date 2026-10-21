@@ -5,6 +5,7 @@ import { updateReferenceMotorcycleCharge } from './policeReferenceSprites.js';
 import { BravmGateCharge } from './bravmGateCharge.js';
 import {campaignCombatExchange,applyCampaignPatrol} from './campaignCombatRules.mjs';
 import { TVBreakEffects } from './tvBreakEffects.js';
+import { TVChoice } from './tvChoice.js';
 import { applyChoice, sufferLoss, MAX_CROWD } from './tactics.mjs';
 import { explainGateChoice, evaluateResult } from './tacticalFeedback.mjs';
 import { FINAL_CAMPAIGN_LEVEL } from './storyRules.mjs';
@@ -111,6 +112,7 @@ export class Game {
         this.setupInput();
         
         this.ui = new UIManager(this);
+        this.tvChoice = new TVChoice(this);
         this.crowdManager = new CrowdManager(this.scene, this);
         this.levelGenerator = new LevelGenerator(this.scene, this);
         this.audio = new AudioManager();
@@ -303,6 +305,7 @@ export class Game {
         if(this.demoCostumeOnce)this.demoCostumeConsumed=true;
         
         this.ui.showHUD();
+        document.getElementById('gesture-hint').textContent=this.mode==='campaign'?'GLISSER POUR DIRIGER · TOUCHER UNE TV POUR CHOISIR':'GLISSER POUR CHOISIR';
         this.ui.updateCount(startCount);
         this.parisJourney?.announce();
         this.experience?.start();
@@ -319,6 +322,7 @@ export class Game {
     }
 
     clearLevel() {
+        this.tvChoice?.close();
         this.story?.clear();
         this.audio.stopCombatVoice?.();
         this.lbdSystem?.clear();
@@ -352,6 +356,8 @@ export class Game {
     }
 
     update(delta) {
+        // Choosing a TV pauses movement, police contacts and ambient hazards.
+        if(this.state==='tv_choice')return;
         this.experience?.update(delta);
         this.heroes?.update(delta);
         this.tvBreak?.update(delta);
@@ -500,7 +506,12 @@ export class Game {
             const gateZ = -gate.z;
             const playerZ = -this.trackZ;
 
+            if (this.mode==='campaign' && gate.z-this.trackZ<6 && gate.z-this.trackZ>-2) {
+                if(this.tvChoice.open(gate))return;
+            }
             if (Math.abs(playerZ - gateZ) < 1.0) {
+                // Campaign must never auto-collect TV bonuses via the crowd's width.
+                if(this.mode==='campaign')return;
                 // Check if player is on left or right gate
                 const side=this.playerX<0?'left':'right';
                 const choice=side==='left'?gate.leftGate:gate.rightGate;

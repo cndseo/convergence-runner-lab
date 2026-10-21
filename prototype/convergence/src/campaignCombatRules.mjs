@@ -3,9 +3,9 @@ import {sufferLoss} from './tactics.mjs';
 // Campaign only. The daily mode and the published tactical solver stay unchanged.
 // One combat exchange is deterministic and shared by the solver and Game.updateFight.
 export const campaignPlayerStrike=(participants,strength=1)=>
- Math.max(1,Math.floor(Math.max(0,participants)/7))*Math.max(1,Math.floor(strength));
+ Math.max(1,Math.floor(Math.max(0,participants)/8))*Math.max(1,Math.floor(strength));
 export const campaignOfficerStrike=remaining=>
- Math.max(1,Math.ceil(Math.max(0,remaining)/11));
+ Math.max(1,Math.ceil(Math.max(0,remaining)/10));
 
 export function campaignCombatExchange(state,remaining,strength=1){
  const killed=Math.min(remaining,campaignPlayerStrike(state.count,strength));
@@ -27,7 +27,7 @@ export function applyCampaignCombat(state,health,strength=1){
 // the first blows; crowd attrition increases with procession size and district.
 export function campaignPatrolDamage(participants,level=1){
  if(participants<=0)return 0;
- return Math.min(6,Math.max(1,Math.ceil(participants/18)+Math.floor((level-1)/5)));
+ return Math.min(8,Math.max(2,Math.ceil(participants/18)+Math.floor((level-1)/5)+1));
 }
 export function applyCampaignPatrol(state,level=1){
  return sufferLoss(state,campaignPatrolDamage(state.count,level));

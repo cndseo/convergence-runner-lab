@@ -5,23 +5,23 @@ import {solvePlan,replayPlan,greedyPath,sufferLoss} from '../src/tactics.mjs';
 import {applyCampaignCombat,applyCampaignPatrol,campaignPatrolDamage,campaignCombatExchange} from '../src/campaignCombatRules.mjs';
 
 test('patrol strikes remove real tactical protesters and first exhaust protection',()=>{
- assert.deepEqual(applyCampaignPatrol({count:30,shields:0},4),{count:28,shields:0});
- assert.deepEqual(applyCampaignPatrol({count:30,shields:1},4),{count:29,shields:0});
- assert.deepEqual(applyCampaignPatrol({count:30,shields:8},4),{count:30,shields:6});
+ assert.deepEqual(applyCampaignPatrol({count:30,shields:0},4),{count:27,shields:0});
+ assert.deepEqual(applyCampaignPatrol({count:30,shields:1},4),{count:28,shields:0});
+ assert.deepEqual(applyCampaignPatrol({count:30,shields:8},4),{count:30,shields:5});
  assert.ok(campaignPatrolDamage(70,12)>campaignPatrolDamage(5,1));
  assert.deepEqual(applyCampaignPatrol({count:0,shields:4},12),{count:0,shields:4});
 });
 
 test('large real barrages exchange blows with strength proportional to crowd',()=>{
  const big=campaignCombatExchange({count:30,shields:0},14,1);
- assert.equal(big.killed,4);assert.equal(big.remaining,10);
- assert.equal(big.hits,1);assert.equal(big.lost,1);
+ assert.equal(big.killed,3);assert.equal(big.remaining,11);
+ assert.equal(big.hits,2);assert.equal(big.lost,2);
  const stronger=campaignCombatExchange({count:72,shields:0},14,1);
  assert.ok(stronger.killed>big.killed);
  assert.ok(applyCampaignCombat({count:30,shields:0},14).count<30);
  assert.ok(applyCampaignCombat({count:30,shields:0},14).count>0);
  const guard=campaignCombatExchange({count:30,shields:3},14,1);
- assert.equal(guard.lost,0);assert.equal(guard.absorbed,1);
+ assert.equal(guard.lost,0);assert.equal(guard.absorbed,2);
 });
 
 test('five active flank patrols and four substantive barrages per advanced level with certified path',()=>{

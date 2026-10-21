@@ -25,7 +25,7 @@ try{
   await page.evaluate(id=>{window.__convergence.parisJourney.playDistrict(id);},id);
   for(let batch=0;batch<100;batch++){
    const state=await page.evaluate(()=>{const g=window.__convergence,path=g.levelGenerator.plan.proof.winningPath;
-    for(let i=0;i<120;i++){if(g.state==='playing')g.playerX=(path[g.gateHistory.length]||'left')==='left'?-2.5:2.5;if(g.state==='final_chase')g.playerX=g.story.targetX;g.update(.05);if(['win','lose','boss_defeated'].includes(g.state))break;}return g.state;});
+    for(let i=0;i<120;i++){if(g.state==='tv_choice')g.tvChoice.choose(path[g.gateHistory.length]||'left');if(g.state==='playing')g.playerX=(path[g.gateHistory.length]||'left')==='left'?-2.5:2.5;if(g.state==='final_chase')g.playerX=g.story.targetX;g.update(.05);if(['win','lose','boss_defeated'].includes(g.state))break;}return g.state;});
    if(state==='boss_defeated')await page.waitForTimeout(1300);if(state==='lose')throw Error('District '+id+' lost');if(state==='win')break;
   }
   const result=await page.evaluate(()=>{const g=window.__convergence;return {state:g.state,survivors:g.crowdManager.playerCount,start:g.levelGenerator.plan.startCount,gates:g.gateHistory.length};});assert.equal(result.state,'win');assert.equal(result.gates,10);assert.equal(result.start,id===1?5:11);report.districts.push({id,...result});
