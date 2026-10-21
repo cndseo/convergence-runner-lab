@@ -1,0 +1,18 @@
+<!doctype html><html lang="fr"><head><meta charset="utf-8"><link rel="icon" href="data:,"><title>CONVERGENCE · revue artistique</title><style>body{margin:0;background:#d6d9dc}canvas{display:block}</style></head><body><script type="module">
+import * as T from 'three';
+import {createHeroModel,disposeHero} from '../src/heroModels.js';
+import {HERO_PROFILES} from '../src/heroCatalog.mjs';
+const renderer=new T.WebGLRenderer({antialias:true,preserveDrawingBuffer:true});renderer.setSize(600,800);renderer.outputColorSpace=T.SRGBColorSpace;renderer.toneMapping=T.ACESFilmicToneMapping;renderer.toneMappingExposure=1.05;document.body.append(renderer.domElement);
+const scene=new T.Scene();scene.background=new T.Color('#d6d9dc');scene.add(new T.HemisphereLight(0xf4f4ff,0x747069,2));
+const light=new T.DirectionalLight(0xfff0df,3);light.position.set(-3,5,5);scene.add(light);
+const rim=new T.DirectionalLight(0xd5e5ff,1.2);rim.position.set(3,3,-3);scene.add(rim);
+const camera=new T.PerspectiveCamera(30,.75,.01,30);let human;
+window.artReview=async(id,angle=0,close=false)=>{
+ if(human){scene.remove(human.model);disposeHero(human);}
+ const p=HERO_PROFILES.find(p=>p.id===id);human=await createHeroModel(p);human.mixer.setTime(.1);human.update(0);human.model.rotation.y=angle;scene.add(human.model);human.model.updateMatrixWorld(true);
+ if(close){const head=human.model.getObjectByName('Bip01_Head').getWorldPosition(new T.Vector3());camera.position.set(0,head.y+.06,1.06);camera.lookAt(0,head.y+.06,0);}else{camera.position.set(0,1.05,4.15);camera.lookAt(0,.94,0);}
+ window.reviewHuman=human;renderer.render(scene,camera);
+ const meshes=[];human.model.traverse(n=>{if(n.isMesh&&n.visible)meshes.push({name:n.name,material:n.material.name,triangles:(n.geometry.index?.count||n.geometry.attributes.position.count)/3});});
+ return {id,drawCalls:renderer.info.render.calls,triangles:renderer.info.render.triangles,meshes};
+};window.profiles=HERO_PROFILES;
+</script></body></html>

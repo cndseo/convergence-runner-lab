@@ -1,3 +1,4 @@
+import {HERO_ART} from './heroArt.mjs';
 // Stable identities from the five supplied boards. Render recipes are adaptations,
 // not claims of a faithful sculpt of the reference faces.
 export const HERO_COMMUNITIES=Object.freeze([
@@ -8,8 +9,10 @@ export const HERO_COMMUNITIES=Object.freeze([
  {id:'lyceens',name:'Lycéens',color:'#ad8ae8',caption:'Faire entendre sa voix et mobiliser',rows:[0,3]}
 ]);
 const profile=(id,name,family,role,base,height,width,look={})=>({id,name,family,role,
- quality:'adaptation-3d',model:{key:'hero-'+id,faction:family,base,height,width,
- top:0x29303c,pants:0x27323e,hood:true,pack:'school',bag:0x252b33,...look}});
+ quality:'reference-sculpt-pass',model:{key:'hero-'+id,faction:family,base,height,width,
+ top:0x29303c,pants:0x27323e,hood:true,pack:'school',bag:0x252b33,...look,bag:HERO_ART[id].bag,airTank:false,
+ top:family==='genz'||family==='lyceens'?0x262b32:(look.top||0x29303c),
+ pack:HERO_ART[id].tank||HERO_ART[id].stretcher||HERO_ART[id].hipBag?null:(look.pack||'school') }});
 export const HERO_PROFILES=Object.freeze([
  profile('genz-lea','Léa','genz','Déterminée · engagée','female-adult-05',1.67,1.02,{top:0x7e2533,hair:'ponytail'}),
  profile('genz-emma','Emma','genz','Curieuse · audacieuse','female-adult-12',1.70,.98,{top:0x2c64a3,pants:0xbfc2c8,hair:'blonde',pack:'sport'}),
@@ -24,13 +27,13 @@ export const HERO_PROFILES=Object.freeze([
  profile('soignants-yann','Yann','infirmieres','Brancardier · 28 ans','medical-male-01',1.82,1.14,{top:0xe7e8e5,pants:0xd6dae0,hood:false,bag:0x333b43,pack:'rescue',medicalKit:true,beard:true}),
  profile('soignants-carine','Carine','infirmieres','Aide-soignante · 45 ans','medical-female-02',1.64,1.15,{top:0xe6e8e8,pants:0xd4d8df,hood:false,bag:0x324a63,pack:'compact',medicalKit:true,hair:'ponytail'}),
  profile('pompiers-hugo','Hugo','pompiers','Sapeur-pompier · 24 ans','fire-male-01',1.82,1.05,{top:0x232c38,pants:0x202b37,hood:false,pack:'rescue',airTank:true}),
- profile('pompiers-chloe','Chloé','pompiers','Sapeur-pompier · 32 ans','fire-female-01',1.72,1.02,{top:0x202b37,pants:0x222c37,hood:false,pack:'rescue',airTank:true,hair:'ponytail'}),
+ profile('pompiers-chloe','Chloé','pompiers','Sapeur-pompier · 32 ans','female-adult-05',1.72,1.02,{top:0x202b37,pants:0x222c37,hood:false,pack:'rescue',airTank:true,hair:'ponytail'}),
  profile('pompiers-pierre','Pierre','pompiers','Caporal-chef · 42 ans','fire-male-01',1.85,1.16,{top:0x222a33,pants:0x24303a,hood:false,pack:'rescue',airTank:true,beard:true}),
  profile('pompiers-samir','Samir','pompiers','Secours routier · 28 ans','fire-male-01',1.77,1.12,{top:0x26303b,pants:0x222e38,hood:false,pack:'rescue',bag:0xb32d31,beard:true}),
  profile('lyceens-julie','Julie','lyceens','Étudiante · 17 ans','female-adult-05',1.62,.96,{top:0x30333e,pants:0x64768b,bag:0x6a4b83,hair:'ponytail',headphones:true}),
- profile('lyceens-mathis','Mathis','lyceens','Sportif · 17 ans','male-adult-04',1.75,1.02,{top:0x285f9a,bag:0x264a71,pack:'sport',headphones:true}),
- profile('lyceens-leo','Léo','lyceens','Créatif · 18 ans','male-adult-07',1.73,.97,{top:0x375b39,bag:0x565440,pack:'leather',headphones:true,prop:'placard'}),
- profile('lyceens-manon','Manon','lyceens','Confiante · 16 ans','female-adult-12',1.61,.98,{top:0x9c4e77,pants:0xcac7cb,hair:'blonde',bag:0x573442})
+ profile('lyceens-mathis','Mathis','lyceens','Sportif · 17 ans','male-adult-10',1.75,1.02,{top:0x285f9a,bag:0x264a71,pack:'sport',headphones:true}),
+ profile('lyceens-leo','Léo','lyceens','Créatif · 18 ans','male-adult-07',1.73,.97,{top:0x375b39,bag:0x565440,pack:'leather',headphones:true}),
+ profile('lyceens-manon','Manon','lyceens','Confiante · 16 ans','female-adult-12',1.61,.98,{top:0x9c4e77,pants:0xcac7cb,hair:'blonde',bag:0x272730})
 ]);
 export const heroById=id=>HERO_PROFILES.find(p=>p.id===id)||null;
 export const communityById=id=>HERO_COMMUNITIES.find(p=>p.id===id)||null;
