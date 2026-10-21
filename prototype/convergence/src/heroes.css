@@ -10,3 +10,20 @@
 .hero-reward{font-size:12px;line-height:1.5;color:#e8c789;max-width:320px;text-align:center;margin:10px auto}.hero-reward[hidden]{display:none}
 
 .hero-zoom{position:absolute;right:10px;top:34px;z-index:2;padding:8px 12px;border:1px solid #ffffff55;border-radius:18px;background:#14202ee8;color:#f0f4f6;font:600 11px system-ui;cursor:pointer}.hero-zoom:focus-visible{outline:2px solid #bba5ff;outline-offset:3px}
+
+
+/* Authentic 2D character wardrobe — the gameplay still uses its GLB avatars. */
+.hero-stage{height:398px;background:radial-gradient(ellipse at 49% 45%,#22313e 0%,#121f2b 69%,#0b141f 100%)}
+.hero-viewport{position:absolute;inset:0;overflow:hidden;pointer-events:none}
+.hero-art-figure{position:absolute;height:100%;width:auto;max-width:62%;object-fit:contain;bottom:0;left:49%;transform:translateX(-50%);filter:drop-shadow(0 3px 16px #0007)}
+.hero-art-face{position:absolute;right:12px;top:41px;width:104px;height:117px;object-fit:cover;border:1px solid #d1ac73;border-radius:10px;box-shadow:0 8px 28px #0009}
+.hero-drag{left:15px;right:auto;top:12px;color:#e0bf8d;font-size:10px;font-weight:700}
+.hero-description{bottom:0;left:0;right:0;padding:48px 16px 16px;background:linear-gradient(transparent,#0b141ff0);z-index:2}
+.hero-profiles{gap:7px;margin:12px 0}
+.hero-profile{display:flex;align-items:center;flex-direction:column;gap:4px;padding:6px 3px 8px;min-height:113px;line-height:1.1}
+.hero-profile img{display:block;width:51px;height:52px;object-fit:cover;border-radius:7px;border:1px solid #59707f;background:#101923}
+.hero-profile strong{font-size:12px}
+.hero-profile small{margin:0;font-size:9px}
+.hero-profile[aria-pressed=true] img{border-color:#e8c789}
+@media(max-height:740px){.hero-stage{height:320px}.hero-profile{min-height:104px}.hero-profile img{height:45px;width:45px}}
+@media(min-width:700px){.hero-stage{height:475px}.hero-art-face{right:24px;top:50px;width:135px;height:152px}.hero-art-figure{max-width:50%}}
