@@ -1,6 +1,6 @@
 import {HERO_COMMUNITIES,HERO_EQUIPMENT,profilesFor,heroById,communityById} from './heroCatalog.mjs';
 import {HERO_RULES,HERO_SAVE_KEY,normalizeHeroSave,selectHero,equipHero,awardHeroRun,heroLevel,rosterSummary} from './heroRules.mjs';
-import {HeroViewer} from './heroViewer.js';
+import {HeroPortrait,portraitUrl} from './heroPortrait.js';
 import {downloadBlob} from './resultSharing.mjs';
 import {applyChoice} from './tactics.mjs';
 import './heroes.css';
@@ -82,9 +82,9 @@ export class HeroSystem {
   const close=el('button','hero-close','×');close.type='button';close.setAttribute('aria-label','Fermer');close.addEventListener('click',()=>this.close());header.append(eyebrow,close,title);inner.append(header);
   const families=el('div','hero-families','');families.setAttribute('aria-label','Communautés');inner.append(families);
   const stage=el('div','hero-stage','');inner.append(stage);
-  this.status=el('p','hero-status','Chargement du personnage…');this.status.setAttribute('role','status');stage.append(this.status);
+  this.status=el('p','hero-status','Chargement de l’illustration…');this.status.setAttribute('role','status');stage.append(this.status);
   const viewport=el('div','hero-viewport','');stage.append(viewport);
-  const drag=el('span','hero-drag','GLISSE POUR TOURNER');stage.append(drag);
+  const drag=el('span','hero-drag','ILLUSTRATION ORIGINALE');stage.append(drag);
   this.description=el('div','hero-description','');stage.append(this.description);
   this.cards=el('div','hero-profiles','');inner.append(this.cards);
   this.gear=el('div','hero-equipment','');inner.append(this.gear);
@@ -107,8 +107,8 @@ export class HeroSystem {
     this.persist(normalizeHeroSave(raw));this.equipment=this.save.equipment;this.chooseFamily(this.profile.family);
    }catch(e){this.note.textContent=e.message;}finally{input.value='';}
   });
-  const portrait=el('button','result-download','ENREGISTRER MON PORTRAIT 3D');portrait.type='button';portrait.addEventListener('click',async()=>{const blob=await this.viewer?.portrait();if(blob)downloadBlob(blob,'convergence-'+this.selected.id+'.png');});inner.append(portrait);
-  this.game.ui.container.append(dialog);this.viewer=new HeroViewer(viewport);
+  const portrait=el('button','result-download','TÉLÉCHARGER LE PERSONNAGE PNG');portrait.type='button';portrait.addEventListener('click',async()=>{const blob=await this.viewer?.portrait();if(blob)downloadBlob(blob,'convergence-'+this.selected.id+'.png');});inner.append(portrait);
+  this.game.ui.container.append(dialog);this.viewer=new HeroPortrait(viewport);
   this.equipment=this.save.equipment;
   for(const family of HERO_COMMUNITIES){
    const b=el('button','hero-family',family.name);b.type='button';b.dataset.family=family.id;b.style.setProperty('--family',family.color);
@@ -123,7 +123,7 @@ export class HeroSystem {
  chooseFamily(family){
   this.dialog.querySelectorAll('.hero-family').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.family===family)));
   this.cards.replaceChildren();for(const p of profilesFor(family)){
-   const b=el('button','hero-profile',p.name);b.type='button';b.dataset.hero=p.id;b.disabled=!!this.profile&&this.profile.id!==p.id;b.append(el('small','',p.role));b.addEventListener('click',()=>this.select(p));this.cards.append(b);
+   const b=el('button','hero-profile','');b.type='button';b.dataset.hero=p.id;b.disabled=!!this.profile&&this.profile.id!==p.id;const image=document.createElement('img');image.src=portraitUrl(p.id,true);image.alt='';image.loading='lazy';b.append(image,el('strong','',p.name),el('small','',p.role));b.addEventListener('click',()=>this.select(p));this.cards.append(b);
   }
   this.select(this.profile||profilesFor(family)[0]);
  }
@@ -131,15 +131,15 @@ export class HeroSystem {
   this.selected=p;const family=communityById(p.family),level=heroLevel(this.save.xp);this.confirm.disabled=true;
   this.cards.querySelectorAll('button').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.hero===p.id)));
   this.description.replaceChildren(el('strong','',p.name),el('span','',family.name+' · '+p.role));
-  this.status.textContent='Chargement du modèle 3D…';this.status.hidden=false;
+  this.status.textContent='Chargement de la planche originale…';this.status.hidden=false;
   this.confirm.textContent=this.profile?'ENREGISTRER MON ÉQUIPEMENT':'CHOISIR '+p.name.toLocaleUpperCase('fr')+' ET CONTINUER';
   this.note.textContent=this.profile?'Niveau '+level+' · '+this.save.xp+' XP · '+(HERO_RULES.xpPerLevel-(this.save.xp%HERO_RULES.xpPerLevel))+' XP avant le prochain niveau.':'Niveau 2 : ton héros et 10 membres de sa communauté. Ce choix sera conservé.';
-  this.note.textContent+=' Adaptation 3D des planches. Barème XP provisoire. '+(this.lab?'Pouvoir d’essai : '+powerNotes[p.family]+' Une utilisation par parcours.':'Les capacités spéciales sont encore en préparation.');
+  this.note.textContent+=' Portrait original de la planche. Le héros reste en 3D pendant la partie. Barème XP provisoire. '+(this.lab?'Pouvoir d’essai : '+powerNotes[p.family]+' Une utilisation par parcours.':'Les capacités spéciales sont encore en préparation.');
   this.gear.replaceChildren();if(this.profile)for(const item of HERO_EQUIPMENT){
    const b=el('button','hero-item',item.name+(level<item.level?' · niv. '+item.level:''));b.type='button';b.disabled=level<item.level;b.setAttribute('aria-pressed',String(item.id===this.equipment));b.addEventListener('click',()=>{this.equipment=item.id;this.select(p);});this.gear.append(b);
   }
   try{if(await this.viewer.show(p,this.equipment)){this.status.hidden=true;this.confirm.disabled=false;}}
-  catch(e){if(this.dialog&&this.selected===p){this.status.textContent='Le modèle n’a pas pu charger. Réessaie en touchant ce profil.';}console.warn('Hero model',p.id,e.message);}
+  catch(e){if(this.dialog&&this.selected===p){this.status.textContent='Le portrait n’a pas pu charger. Réessaie en touchant ce profil.';}console.warn('Hero model',p.id,e.message);}
  }
  close(){
   if(!this.dialog)return;this.viewer.dispose();this.viewer=null;this.dialog.remove();this.dialog=null;
