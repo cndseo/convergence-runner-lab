@@ -23,4 +23,32 @@ export const HERO_ART=Object.freeze({
  'lyceens-leo':look(0xd6a082,0x553724,'waves','young',{accent:0x41663d,hood:0xd0d1c9,bag:0x66513f,bagAccent:0x9b845d,neckphones:true,book:0x937d60,messenger:true,pins:true}),
  'lyceens-manon':look(0xe4b39d,0xb6935d,'pony','young',{accent:0x2b2e38,hood:0xb8668c,bag:0x272730,bagAccent:0xb95d8a,pins:true})
 });
-export const artFor=spec=>HERO_ART[spec.key?.replace(/^hero-/,'')];
+// Distinct close-range face/groom recipes, modeled on the twenty approved sheets.
+// The source artwork is not modified; these values intentionally affect only 3D rendering.
+export const HERO_REFINEMENTS=Object.freeze({
+ 'genz-lea':{style:'low-bun',jaw:-.08,cheek:.01,chin:.00,eye:.02},
+ 'genz-emma':{style:'high-pony',jaw:-.14,cheek:.03,chin:-.03,eye:.04},
+ 'genz-kay':{style:'afro',jaw:.11,cheek:.10,chin:.01,eye:-.02},
+ 'genz-noah':{style:'crop',cap:false,jaw:.03,cheek:-.09,chin:.02},
+ 'gilets-thomas':{style:'short',jaw:.13,cheek:-.06,chin:.01},
+ 'gilets-marcel':{style:'beanie',jaw:-.07,cheek:-.09,chin:.08},
+ 'gilets-sophie':{style:'bun',jaw:-.05,cheek:.04,chin:-.02},
+ 'gilets-nadia':{style:'high-pony',jaw:.08,cheek:.14,chin:-.01},
+ 'soignants-lucas':{style:'waves',jaw:-.07,cheek:.00,chin:-.05},
+ 'soignants-amina':{style:'coils-bun',jaw:.16,cheek:.19,chin:-.02},
+ 'soignants-yann':{style:'fade',jaw:.17,cheek:-.04,chin:.01},
+ 'soignants-carine':{style:'side-bun',jaw:.02,cheek:.06,chin:.02},
+ 'pompiers-hugo':{style:'waves',jaw:.03,cheek:.00,chin:-.03},
+ 'pompiers-chloe':{style:'twist',jaw:-.06,cheek:.08,chin:-.02},
+ 'pompiers-pierre':{style:'short',jaw:.16,cheek:-.06,chin:.02},
+ 'pompiers-samir':{style:'fade',jaw:.09,cheek:.07,chin:.02},
+ 'lyceens-julie':{style:'low-bun',jaw:-.15,cheek:.03,chin:-.04},
+ 'lyceens-mathis':{style:'curls',jaw:-.10,cheek:.06,chin:-.04},
+ 'lyceens-leo':{style:'waves',jaw:-.13,cheek:-.01,chin:-.04},
+ 'lyceens-manon':{style:'high-pony',jaw:-.15,cheek:.06,chin:-.05}
+});
+export const artFor=spec=>{
+ const key=spec?.key?.replace(/^hero-/,'');
+ const base=HERO_ART[key];
+ return base?{...base,...HERO_REFINEMENTS[key]}:null;
+};

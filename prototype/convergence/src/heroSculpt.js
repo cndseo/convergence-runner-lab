@@ -48,6 +48,12 @@ export function sculptHero(model,spec){
     const face=1-smooth(z,-.015,.065),jaw=1-smooth(y,-.005,.07),cheek=Math.exp(-(((y-.025)/.048)**2));
     q.x+=x*((round?.14:young?-.065:square?.055:aged?-.035:-.045)*jaw*face+(round?.075:young?.035:0)*cheek);
     q.y+=y*(young?-.018:aged?.012:0);
+    // Individual face proportions applied to the actual skinned head mesh.
+    const jawZone=1-smooth(y,-.043,.014);
+    const cheekZone=Math.exp(-(((y-.028)/.041)**2));
+    const chinZone=1-smooth(y,-.094,-.036);
+    q.x+=x*((art.jaw||0)*jawZone+(art.cheek||0)*cheekZone);
+    q.y+=chinZone*(art.chin||0)*.075;
     const nose=Math.exp(-((x/.026)**2)-((y-.035)/.032)**2)*face;
     q.x+=x*nose*((art.nose||1)-1);
     q.z-=nose*(square?.003:young?-.003:0);
@@ -114,9 +120,12 @@ export function sculptHero(model,spec){
     diffuseColor.rgb=mix(diffuseColor.rgb,vec3(.32,.36,.38),bands);`:''}
     float lum=dot(tex,vec3(.299,.587,.114));
     // Exclude sclera, teeth, pupils and dark hair from skin coloration.
-    float warm=smoothstep(.008,.045,tex.r-tex.b)*smoothstep(.022,.065,lum);
+    float warm=smoothstep(.008,.045,tex.r-tex.b)*smoothstep(.05,.16,lum);
     float skinMask=warm*vHeroArt.x;
-    ${isHead||isHair?`skinMask*=1.0-smoothstep(.145,.19,vHeroArt.y);
+    ${isHead||isHair?`skinMask=max(skinMask,.66*smoothstep(.14,.25,lum));
+      float eyeWhite=(1.0-smoothstep(.035,.075,abs(tex.r-tex.b)))*smoothstep(.72,.90,lum);
+      skinMask*=1.0-eyeWhite*.90;
+      skinMask*=1.0-smoothstep(.145,.19,vHeroArt.y);
       float scalp=max(max(smoothstep(.106,.12,vHeroArt.y),smoothstep(.065,.082,abs(vHeroArt.z))*smoothstep(.03,.07,vHeroArt.y)),smoothstep(.015,.04,vHeroArt.w)*smoothstep(-.06,-.03,vHeroArt.y));
       float hairMask=scalp*(1.0-smoothstep(.14,.35,lum));
       skinMask*=1.0-hairMask;
@@ -124,15 +133,18 @@ export function sculptHero(model,spec){
     float detail=clamp(lum/${spec.base==='male-adult-04'?'.075':'.35'},${young||art.shape==='oval'?'.72,1.24':'.55,1.40'});
     diffuseColor.rgb=mix(diffuseColor.rgb,heroSkin*detail,skinMask);
     ${art.age>=65&&(isHead||isHair)?`float forehead=smoothstep(.11,.13,vHeroArt.y)*(1.0-smoothstep(.15,.17,vHeroArt.y))*(1.0-smoothstep(-.065,-.03,vHeroArt.w));
-    float creases=pow(max(0.0,sin(vHeroArt.y*780.0+cos(vHeroArt.z*36.0))),12.0);
+    float creases=pow(max(0.0,sin(vHeroArt.y*135.0+cos(vHeroArt.z*39.0))),12.0);
     diffuseColor.rgb*=1.0-forehead*creases*.12;`:''}
-    ${art.beard&&(isHead||isHair)?`float beardMask=(1.0-smoothstep(.053,.083,vHeroArt.y))*smoothstep(-.018,.005,vHeroArt.y)*(1.0-smoothstep(-.075,-.035,vHeroArt.w));
-    beardMask*=max(smoothstep(.030,.045,abs(vHeroArt.z)),1.0-smoothstep(.005,.012,vHeroArt.y));
-    diffuseColor.rgb=mix(diffuseColor.rgb,heroHair*(.7+lum),beardMask*(.68+.18*sin(vHeroArt.z*3200.0+sin(vHeroArt.y*130.0))));`:''}
+    ${art.beard&&(isHead||isHair)?`float jawHair=(1.0-smoothstep(-.024,.012,vHeroArt.y))*smoothstep(-.121,-.092,vHeroArt.y);
+    float sideHair=smoothstep(.058,.083,abs(vHeroArt.z))*(1.0-smoothstep(-.022,.034,vHeroArt.y));
+    float moustache=(1.0-smoothstep(.008,.022,abs(vHeroArt.y+.030)))*(1.0-smoothstep(.046,.075,abs(vHeroArt.z)));
+    float beardMask=clamp(max(max(jawHair,sideHair),moustache*.65),0.0,1.0);
+    float whisker=.72+.07*sin(vHeroArt.z*117.0+vHeroArt.y*84.0);
+    diffuseColor.rgb=mix(diffuseColor.rgb,heroHair*(.42+lum*.31),beardMask*whisker);`:''}
     ${art.gloves&&isBody?`diffuseColor.rgb=mix(diffuseColor.rgb,vec3(.04,.22,.42)*(.8+lum),smoothstep(.3,.8,vHeroArt.z));`:''}
    `);
   };
-  material.customProgramCacheKey=()=>`hero-sculpt-v1-${spec.key}-${isHead?'head':isHair?'opacity':'body'}`;
+  material.customProgramCacheKey=()=>`hero-sculpt-v2-${spec.key}-${isHead?'head':isHair?'opacity':'body'}`;
   cache.set(key,{geometry,material});n.geometry=geometry;n.material=material;
  });
  model.updateMatrixWorld(true);

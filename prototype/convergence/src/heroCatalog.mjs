@@ -17,7 +17,7 @@ export const HERO_PROFILES=Object.freeze([
  profile('genz-lea','Léa','genz','Déterminée · engagée','female-adult-05',1.67,1.02,{top:0x7e2533,hair:'ponytail'}),
  profile('genz-emma','Emma','genz','Curieuse · audacieuse','female-adult-12',1.70,.98,{top:0x2c64a3,pants:0xbfc2c8,hair:'blonde',pack:'sport'}),
  profile('genz-kay','Kay','genz','Stratège · loyal','male-adult-04',1.79,1.08,{top:0x24559a,skinTone:0x77513f,headphones:true,pack:'sport'}),
- profile('genz-noah','Noah','genz','Ingénieux · visionnaire','male-adult-07',1.75,1,{top:0x3d5f36,cap:0x253b29,pack:'hiking'}),
+ profile('genz-noah','Noah','genz','Ingénieux · visionnaire','male-adult-07',1.75,1,{top:0x3d5f36,pack:'hiking'}),
  profile('gilets-thomas','Thomas','gilets','Entrepreneur · 35 ans','male-adult-10',1.80,1.12,{vest:true,top:0x333a2b,beard:true,pack:'hiking'}),
  profile('gilets-marcel','Marcel','gilets','Retraité · 70 ans','male-adult-07',1.73,1.04,{vest:true,top:0x414442,pants:0x31506c,hair:'beanie',beard:true,grey:true,scarf:0x8d9191,pack:'leather'}),
  profile('gilets-sophie','Sophie','gilets','Mère au foyer · 32 ans','female-adult-05',1.64,1.06,{vest:true,top:0xbfc0c4,hair:'ponytail',scarf:0x9a6b7a}),
