@@ -1,4 +1,5 @@
 import {makeFixedPairs} from './fixedTVCatalog.mjs';
+import {applyCampaignCombat,applyCampaignPatrol} from './campaignCombatRules.mjs';
 // Pure, deterministic rules shared by the level solver and the live game.
 export const MAX_CROWD = 72;
 export const MAX_SHIELDS = 48;
@@ -71,10 +72,14 @@ function random(seed) {
   return () => { a += 0x6D2B79F5; let t = a; t = Math.imul(t ^ t >>> 15, t | 1); t ^= t + Math.imul(t ^ t >>> 7, t | 61); return ((t ^ t >>> 14) >>> 0) / 4294967296; };
 }
 export function solvePlan(plan, legacyBravm=false) {
+  const campaign=plan.ruleset==='campaign-patrol-20261021';
+  const combat=campaign?applyCampaignCombat:applyCombat;
   let states = [{ ...initialState(plan.startCount), path: [] }];
   for (const event of plan.events) {
     if (event.type === 'enemy') {
-      states = states.map(s => ({ ...applyCombat(s, event.count, plan.strength), path: s.path }));
+      states = states.map(s => ({ ...combat(s, event.count, plan.strength), path: s.path }));
+    } else if(event.type==='patrol') {
+      states = states.map(s=>({...applyCampaignPatrol(s,plan.level),path:s.path}));
     } else {
       states = states.flatMap(s => ['left', 'right'].map(side => ({
         ...applyChoice(s, event[side],legacyBravm), path: [...s.path, side]
@@ -84,14 +89,17 @@ export function solvePlan(plan, legacyBravm=false) {
   return states.map(s => ({
     ...s,
     capacity: s.count > 0 ? (s.count + s.shields) * plan.strength : 0,
-    survivors: plan.bossHealth ? applyCombat(s, plan.bossHealth, plan.strength).count : s.count
+    survivors: plan.bossHealth ? combat(s, plan.bossHealth, plan.strength).count : s.count
   }));
 }
 export function replayPlan(plan, path, legacyBravm=false) {
+  const campaign=plan.ruleset==='campaign-patrol-20261021';
+  const combat=campaign?applyCampaignCombat:applyCombat;
   let state = initialState(plan.startCount), i = 0;
   for (const e of plan.events) state = e.type === 'enemy'
-    ? applyCombat(state, e.count, plan.strength) : applyChoice(state, e[path[i++]],legacyBravm);
-  return applyCombat(state, plan.bossHealth, plan.strength);
+    ? combat(state,e.count,plan.strength) : e.type === 'patrol'
+    ? applyCampaignPatrol(state,plan.level) : applyChoice(state,e[path[i++]],legacyBravm);
+  return combat(state,plan.bossHealth,plan.strength);
 }
 // Difficulty is measured against all 2^10 legal routes, not just routes
 // that survive the intermediate police lines. Never publish a near-impossible
@@ -103,9 +111,12 @@ export function difficultyTargets(level) {
   return { min: 0.08, ideal: 0.13, max: 0.19 };
 }
 export function greedyPath(plan, legacyBravm=false) {
+  const campaign=plan.ruleset==='campaign-patrol-20261021';
+  const combat=campaign?applyCampaignCombat:applyCombat;
   let state = initialState(plan.startCount), path = [];
   for (const e of plan.events) {
-    if (e.type === 'enemy') { state = applyCombat(state, e.count, plan.strength); continue; }
+    if (e.type === 'enemy') { state = combat(state, e.count, plan.strength); continue; }
+    if (e.type === 'patrol') {state=applyCampaignPatrol(state,plan.level);continue;}
     const l = applyChoice(state, e.left,legacyBravm), r = applyChoice(state, e.right,legacyBravm);
     const side = l.count >= r.count ? 'left' : 'right';
     state = side === 'left' ? l : r;

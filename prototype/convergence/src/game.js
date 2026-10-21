@@ -3,6 +3,7 @@ import { HeroSystem } from './heroSystem.js';
 import { PlayerExperience } from './playerExperience.js';
 import { updateReferenceMotorcycleCharge } from './policeReferenceSprites.js';
 import { BravmGateCharge } from './bravmGateCharge.js';
+import {campaignCombatExchange,applyCampaignPatrol} from './campaignCombatRules.mjs';
 import { TVBreakEffects } from './tvBreakEffects.js';
 import { applyChoice, sufferLoss, MAX_CROWD } from './tactics.mjs';
 import { explainGateChoice, evaluateResult } from './tacticalFeedback.mjs';
@@ -454,6 +455,9 @@ export class Game {
         this.checkObstacleCollisions();
         if (this.state !== 'playing') return;
 
+        // Flank patrols are real, deterministic encounters in campaign mode.
+        this.checkPatrolCollisions();
+        if (this.state !== 'playing') return;
         // Check enemy collisions
         this.checkEnemyCollisions();
         if (this.state !== 'playing') return;
@@ -591,6 +595,28 @@ export class Game {
         }
     }
 
+    checkPatrolCollisions() {
+        if(this.mode!=='campaign')return;
+        for(const patrol of this.levelGenerator.patrols||[]){
+            if(patrol.passed || this.trackZ<patrol.z-.6)continue;
+            // Register before mutating the party: a frame drop cannot cause a double hit.
+            patrol.passed=true;
+            const before={count:this.crowdManager.getPlayerCount(),shields:this.shields};
+            const after=applyCampaignPatrol(before,this.geographicLevel);
+            const lost=before.count-after.count,blocked=before.shields-after.shields;
+            this.shields=after.shields;
+            if(lost>0)this.crowdManager.removeFromPlayerCrowd(lost,{knockdown:true});
+            this.levelGenerator.streetPresence?.triggerPatrol(patrol.z);
+            this.audio.playCombatImpact?.('baton',{reaction:lost>0});
+            this.ui.screenShake(lost?6:3);
+            this.crowdManager.spawnImpactFlash(new THREE.Vector3(this.playerX,1,-this.trackZ),0xf1bf85);
+            this.ui.showFloatingText('PATROUILLE '+(lost?'-'+lost:'BLOQUÉ')+(blocked?' / -'+blocked+' protections':''),lost?'#ff817b':'#f5d591');
+            this.ui.updateCount(this.crowdManager.getPlayerCount());
+            if(after.count<=0){this.loseGame('patrol');return;}
+            return;
+        }
+    }
+
     checkEnemyCollisions() {
         const enemies = this.levelGenerator.enemies;
         for (const enemy of enemies) {
@@ -606,7 +632,8 @@ export class Game {
                 this.fightingEnemy.remainingCount = enemy.count;
                 this.fightTimer = -0.44; // Approach and shield-ready before the first exchange
                 this.fightElapsed = 0;
-                this.fightInterval = Math.max(0.30, (this.minFightDuration - 0.44) / Math.ceil(enemy.count / Math.max(1, this.getEffectiveStrength())));
+                const initialStrike=this.mode==='campaign'?Math.max(1,Math.floor(this.crowdManager.getPlayerCount()/7))*this.getEffectiveStrength():this.getEffectiveStrength();
+                this.fightInterval = Math.max(0.30, (this.minFightDuration - 0.44) / Math.ceil(enemy.count / Math.max(1, initialStrike)));
                 this.fightCameraTime = 0;
                 this.combatChoreo?.dispose();
                 this.combatChoreo = new CombatChoreography(this,enemy);
@@ -649,19 +676,26 @@ export class Game {
             const shieldsBefore = this.shields;
             const strength = this.getEffectiveStrength();
 
-            // Player kills enemy stickmen (strength determines how many enemy die per tick)
-            const enemyKills = Math.min(strength, enemy.remainingCount);
-            enemy.remainingCount -= enemyKills;
-
-            // Enemy kills one player stickman per tick
-            if (enemy.remainingCount > 0) {
-                const absorbed = this.shields > 0;
-                if (absorbed) {
-                    this.shields--;
-                    this.audio.playShieldContact?.(this.combatChoreo?.exchange ?? 0);
-                } else this.crowdManager.removeFromPlayerCrowd(1);
-                // Fly-off effect for the removed stickman
-                this.crowdManager.spawnDeathEffect(this.playerX, -this.trackZ, 0x2196F3);
+            let enemyKills=0;
+            if(this.mode==='campaign'&&this.levelGenerator.plan?.ruleset==='campaign-patrol-20261021'){
+                // Exactly the same exchange as the certified campaign solver.
+                const result=campaignCombatExchange({count:playerCount,shields:this.shields},enemy.remainingCount,strength);
+                enemyKills=result.killed;
+                enemy.remainingCount=result.remaining;
+                this.shields=result.after.shields;
+                if(result.lost>0)this.crowdManager.removeFromPlayerCrowd(result.lost,{knockdown:true});
+                if(result.absorbed>0)this.audio.playShieldContact?.(this.combatChoreo?.exchange??0);
+                if(result.hits>0)this.crowdManager.spawnDeathEffect(this.playerX,-this.trackZ,0x2196F3);
+            }else{
+                // Legacy daily rules must match the original verified solver.
+                enemyKills=Math.min(strength,enemy.remainingCount);
+                enemy.remainingCount-=enemyKills;
+                if(enemy.remainingCount>0){
+                    const absorbed=this.shields>0;
+                    if(absorbed){this.shields--;this.audio.playShieldContact?.(this.combatChoreo?.exchange??0);}
+                    else this.crowdManager.removeFromPlayerCrowd(1);
+                    this.crowdManager.spawnDeathEffect(this.playerX,-this.trackZ,0x2196F3);
+                }
             }
 
             // Spawn red death effect for enemy dying
