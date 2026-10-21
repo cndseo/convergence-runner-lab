@@ -76,7 +76,7 @@ export class LevelGenerator {
         updateKenneyPoliceLights(this.meshes,performance.now()/1000);
         // During an encounter, hide nearby giant choice billboards so the camera
         // can show the front line. Gate collision/solver data remain untouched.
-        const combatView=['fighting','intro','final_chase','final_capture'].includes(this.game.state)
+        const combatView=['fighting','intro','bravm_charge','final_chase','final_capture'].includes(this.game.state)
             ||(this.game.state==='paused'&&this.game.pausedState==='fighting');
         if(combatView)for(const gate of this.gates){
             // Even portals 30m ahead can cover an encounter in portrait mode.
