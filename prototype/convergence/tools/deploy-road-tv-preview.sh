@@ -26,7 +26,7 @@ test "$(git -C "$SRC" rev-parse HEAD)" = "$REV"
 cp -a "$PARENT/prototype/convergence/node_modules" "$SRC/prototype/convergence/node_modules"
 docker run --rm --network none --user "$(id -u):$(id -g)" --memory 768m --cpus 1.5 \
  -v "$SRC:/work" -w /work/prototype/convergence \
- -e VITE_PLAYER_PREVIEW=1 -e VITE_PARIS_PREVIEW=1 node:24-bookworm \
+ -e VITE_PLAYER_PREVIEW=1 -e VITE_PARIS_PREVIEW=1 node:24-alpine \
  npm run build -- --base /tv-parcours/ --outDir /work/_road_tv_preview
 mkdir -p "$WEB"
 cp -a "$SRC/_road_tv_preview/." "$WEB/"
