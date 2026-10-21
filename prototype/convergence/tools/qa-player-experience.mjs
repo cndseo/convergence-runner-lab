@@ -78,6 +78,9 @@ try{
     const unlock=await page.evaluate(async()=>{const g=window.__convergence,skin=g.skins.find(s=>s.id==='rainbow');skin.owned=false;Object.defineProperty(navigator,'clipboard',{configurable:true,value:{writeText:async()=>{throw Error('denied');}}});await g.ui.onSkinClick(skin);return skin.owned;});assert.equal(unlock,false);
     // Continue from the actual result button, without losing saved campaign progress.
     await page.locator('#next-btn').click();await page.waitForTimeout(400);
+    await page.waitForSelector('#hero-dialog');
+    await page.waitForFunction(()=>!document.getElementById('hero-confirm').disabled);
+    await page.locator('#hero-confirm').click();
     assert.equal(await page.evaluate(()=>window.__convergence.experience.run.level),2);
     await page.evaluate(()=>{const g=window.__convergence;g.loseGame('gate');});await page.waitForTimeout(650);
     assert.equal(await page.locator('#lose-screen').isVisible(),true);

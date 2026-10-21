@@ -1,4 +1,5 @@
 import * as THREE from 'three';
+import { HeroSystem } from './heroSystem.js';
 import { PlayerExperience } from './playerExperience.js';
 import { updateReferenceMotorcycleCharge } from './policeReferenceSprites.js';
 import { BravmGateCharge } from './bravmGateCharge.js';
@@ -123,6 +124,7 @@ export class Game {
         this.challengeHub = new ChallengeHub(this);
         this.parisJourney = new ParisJourney(this);
         this.experience = new PlayerExperience(this);
+        this.heroes = new HeroSystem(this);
         // Warm the shared CC0 asset caches while the user views the menu.
         Promise.allSettled([preloadRunnerHumanoid(),preloadPoliceHumanoid(),preloadMotorcycle()]);
         this.animate();
@@ -258,6 +260,7 @@ export class Game {
     }
 
     startGame({newRun=false}={}) {
+        if(this.heroes?.needsChoice()){this.heroes.open(true);return;}
         if(newRun && this.mode==='campaign' && this.level===1)this.marseille.resetLevelOneGift();
         // A free visual demo lasts one playthrough, not a permanent paid unlock.
         if(this.demoCostumeConsumed && this.demoCostumeOnce){
@@ -302,11 +305,12 @@ export class Game {
         this.ui.updateCount(startCount);
         this.parisJourney?.announce();
         this.experience?.start();
+        this.heroes?.start();
     }
 
     getStartingCrowdSize() {
         if(this.mode==='daily')return DAILY_START_COUNT;
-        return Math.min(MAX_CROWD, 5 + (this.crowdUpgrade - 1) * 3);
+        return Math.min(MAX_CROWD, (this.heroes?.active?11:5) + (this.crowdUpgrade - 1) * 3);
     }
 
     getEffectiveStrength(){
@@ -348,6 +352,7 @@ export class Game {
 
     update(delta) {
         this.experience?.update(delta);
+        this.heroes?.update(delta);
         this.tvBreak?.update(delta);
         if(['playing','fighting','bravm_charge','boss_defeated','final_chase','intro'].includes(this.state))
             this.levelGenerator.streetPresence?.update(this.trackZ,delta);
@@ -418,7 +423,7 @@ export class Game {
         }
 
         // Move forward
-        this.trackZ += this.speed * (this.lbdSystem?.marchFactor ?? 1) * (this.tearGasSystem?.slowFactor ?? 1) * delta;
+        this.trackZ += this.speed * (this.heroes?.speedFactor??1) * (this.heroes?.effect==='cohesion'?1:(this.lbdSystem?.marchFactor ?? 1)) * (this.heroes?.effect==='smoke-guard'?1:(this.tearGasSystem?.slowFactor ?? 1)) * delta;
 
         // Combat poses operate on individual runners, never teleport the whole group.
         this.crowdManager.updatePlayerPosition(this.playerX, -this.trackZ);
@@ -513,7 +518,7 @@ export class Game {
         this.shields = after.shields;
         const change = after.count - before.count;
         if (change > 0) {
-            this.crowdManager.addToPlayerCrowd(change,gateData.bonusFaction);
+            this.crowdManager.addToPlayerCrowd(change,gateData.bonusFaction,gateData);
             if(gateData.bonusFaction){
                 const added=this.crowdManager.playerStickmen.slice(-change);
                 for(const runner of added)runner.userData.bonusFaction=gateData.bonusFaction;
@@ -789,6 +794,7 @@ export class Game {
             this.ui.showWin(0,report);this.challengeHub.complete(true);return;
         }
         this.experience?.finish(true);
+        this.heroes?.finish(true);
         const report=evaluateResult({won:true,survivors:this.crowdManager.getPlayerCount(),gateHistory:this.gateHistory,level:this.level});
         this.state = 'win';
         const earnedCoins = Math.floor(this.crowdManager.getPlayerCount() * 2 + this.level * 10);
@@ -800,12 +806,14 @@ export class Game {
         this.audio.stopMusic();
         this.audio.playWin();
         this.ui.showWin(earnedCoins, report);
+        this.heroes?.result();
     }
 
     loseGame(source = null) {
         if (this.state === 'win' || this.state === 'lose') return;
         const lossSource=source || (this.fightingEnemy?'combat':'unknown');
         this.experience?.finish(false,lossSource);
+        this.heroes?.finish(false);
         const report=evaluateResult({won:false,survivors:this.crowdManager.getPlayerCount(),gateHistory:this.gateHistory,lossSource,level:this.level});
         if(lossSource==='combat'&&this.fightingEnemy?.remainingCount>0)report.detail+=' Il restait '+this.fightingEnemy.remainingCount+' adversaires au front.';
         if(lossSource==='gate'&&this.gateHistory.length){const last=this.gateHistory.at(-1);report.detail+=' Dernière TV : '+last.before.count+' → '+last.after.count+' manifestants.';}
@@ -968,6 +976,7 @@ export class Game {
     animate() {
         requestAnimationFrame(() => this.animate());
         const frameDelta = this.clock.getDelta();
+        if(this.heroes?.dialog)return; // Only the visible wardrobe renders while it is open.
         this.experience?.sampleFrame(frameDelta);
         const delta = Math.min(frameDelta, 0.05);
         if (!this.qaManual) this.update(delta);

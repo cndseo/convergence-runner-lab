@@ -1,0 +1,200 @@
+{
+  "base": "https://heros-convergence.72-61-167-161.sslip.io/",
+  "environment": "Chrome on Windows GMK; mobile viewport, not physical iPhone",
+  "profiles": [
+    {
+      "id": "hero-genz-lea",
+      "source": "female-adult-05",
+      "meshes": 3,
+      "bones": 240,
+      "triangles": 12502,
+      "drawCalls": 6
+    },
+    {
+      "id": "hero-genz-emma",
+      "source": "female-adult-12",
+      "meshes": 3,
+      "bones": 240,
+      "triangles": 13588,
+      "drawCalls": 6
+    },
+    {
+      "id": "hero-genz-kay",
+      "source": "male-adult-04",
+      "meshes": 3,
+      "bones": 240,
+      "triangles": 13690,
+      "drawCalls": 6
+    },
+    {
+      "id": "hero-genz-noah",
+      "source": "male-adult-07",
+      "meshes": 3,
+      "bones": 240,
+      "triangles": 12982,
+      "drawCalls": 6
+    },
+    {
+      "id": "hero-gilets-thomas",
+      "source": "male-adult-10",
+      "meshes": 3,
+      "bones": 240,
+      "triangles": 13742,
+      "drawCalls": 7
+    },
+    {
+      "id": "hero-gilets-marcel",
+      "source": "male-adult-07",
+      "meshes": 3,
+      "bones": 240,
+      "triangles": 16570,
+      "drawCalls": 7
+    },
+    {
+      "id": "hero-gilets-sophie",
+      "source": "female-adult-05",
+      "meshes": 3,
+      "bones": 240,
+      "triangles": 15382,
+      "drawCalls": 7
+    },
+    {
+      "id": "hero-gilets-nadia",
+      "source": "female-adult-12",
+      "meshes": 3,
+      "bones": 240,
+      "triangles": 15268,
+      "drawCalls": 7
+    },
+    {
+      "id": "hero-soignants-lucas",
+      "source": "medical-male-01",
+      "meshes": 3,
+      "bones": 240,
+      "triangles": 12631,
+      "drawCalls": 5
+    },
+    {
+      "id": "hero-soignants-amina",
+      "source": "medical-female-02",
+      "meshes": 4,
+      "bones": 320,
+      "triangles": 14914,
+      "drawCalls": 5
+    },
+    {
+      "id": "hero-soignants-yann",
+      "source": "medical-male-01",
+      "meshes": 3,
+      "bones": 240,
+      "triangles": 12919,
+      "drawCalls": 5
+    },
+    {
+      "id": "hero-soignants-carine",
+      "source": "medical-female-02",
+      "meshes": 4,
+      "bones": 320,
+      "triangles": 14314,
+      "drawCalls": 5
+    },
+    {
+      "id": "hero-pompiers-hugo",
+      "source": "fire-male-01",
+      "meshes": 3,
+      "bones": 240,
+      "triangles": 15593,
+      "drawCalls": 10
+    },
+    {
+      "id": "hero-pompiers-chloe",
+      "source": "fire-female-01",
+      "meshes": 6,
+      "bones": 480,
+      "triangles": 19630,
+      "drawCalls": 11
+    },
+    {
+      "id": "hero-pompiers-pierre",
+      "source": "fire-male-01",
+      "meshes": 3,
+      "bones": 240,
+      "triangles": 15881,
+      "drawCalls": 10
+    },
+    {
+      "id": "hero-pompiers-samir",
+      "source": "fire-male-01",
+      "meshes": 3,
+      "bones": 240,
+      "triangles": 15201,
+      "drawCalls": 10
+    },
+    {
+      "id": "hero-lyceens-julie",
+      "source": "female-adult-05",
+      "meshes": 3,
+      "bones": 240,
+      "triangles": 13294,
+      "drawCalls": 6
+    },
+    {
+      "id": "hero-lyceens-mathis",
+      "source": "male-adult-04",
+      "meshes": 3,
+      "bones": 240,
+      "triangles": 13690,
+      "drawCalls": 6
+    },
+    {
+      "id": "hero-lyceens-leo",
+      "source": "male-adult-07",
+      "meshes": 3,
+      "bones": 240,
+      "triangles": 14734,
+      "drawCalls": 6
+    },
+    {
+      "id": "hero-lyceens-manon",
+      "source": "female-adult-12",
+      "meshes": 3,
+      "bones": 240,
+      "triangles": 12988,
+      "drawCalls": 6
+    }
+  ],
+  "checks": [
+    "L1 real win → 20 model previews → L2 11 members → two free wins → XP cosmetic → reload → visible equipment → 312 silhouettes → daily isolation"
+  ],
+  "errors": [],
+  "badAssets": [],
+  "start": {
+    "count": 11,
+    "roster": [
+      "genz",
+      "genz",
+      "genz",
+      "genz",
+      "genz",
+      "genz",
+      "genz",
+      "genz",
+      "genz",
+      "genz",
+      "genz"
+    ],
+    "visual": 57,
+    "hero": {
+      "version": 1,
+      "heroId": "genz-lea",
+      "xp": 0,
+      "equipment": "standard",
+      "completedRunIds": []
+    }
+  },
+  "maximum": {
+    "count": 72,
+    "roster": 72,
+    "visual": 312
+  }
+}

@@ -24,8 +24,8 @@ export function realisticAtlasRow(index){return characterRow(index);}
 export async function preloadRealisticHumanoids(){
  return Promise.all([...new Set(CHARACTER_STYLES.map(s=>s.base)),'f_walk_neutral_01','m_walk_neutral_01'].map(getAsset));
 }
-export async function createRealisticWalker(index, overrideId=null) {
-  const spec = selectRealisticAvatar(index);
+export async function createRealisticWalker(index, overrideId=null, style=null) {
+  const spec = style ? {...style,id:style.base} : selectRealisticAvatar(index);
   const id=overrideId||spec.id;
   const sex=id.includes('female')?'f':'m';
   const [asset,walk]=await Promise.all([getAsset(id),getAsset(sex+'_walk_neutral_01')]);

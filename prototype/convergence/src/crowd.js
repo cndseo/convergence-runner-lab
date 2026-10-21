@@ -1,4 +1,5 @@
 import * as THREE from 'three';
+import {familyRoster,changeRoster} from './heroRules.mjs';
 import {crowdDensity,crowdSlot} from './humanDensity.mjs';
 import { makeCitizen } from './characters.js';
 import { attachAnimatedHumanoid, updateAnimatedHumanoids, clearHumanoids } from './humanoidAssets.js';
@@ -54,6 +55,7 @@ export class CrowdManager {
     createPlayerCrowd(count) {
         this.clear();
         this.playerCount = count;
+        this.roster=this.game?.heroes?.active?familyRoster(count,this.game.heroes.profile.family):[];
         this.refreshDensity();
         this.playerGroup = new THREE.Group();
         this.playerGroup.userData.dynamic = true;
@@ -84,6 +86,8 @@ export class CrowdManager {
         const pos = this.getFormationPosition(index);
         stickman.position.set(pos.x, 0, pos.z);
         stickman.userData.index = index;
+        if(this.roster?.[index]){stickman.userData.community=this.roster[index];stickman.userData.bonusFaction=this.roster[index];}
+        if(index===0&&this.game?.heroes?.active)stickman.userData.heroProfile=this.game.heroes.profile;
         // Start with a pop-in scale animation
         stickman.scale.set(0, 0, 0);
         stickman.userData.spawnTime = this.animTime;
@@ -165,9 +169,10 @@ export class CrowdManager {
         return group;
     }
 
-    addToPlayerCrowd(amount, faction=null) {
+    addToPlayerCrowd(amount, faction=null, choice=null) {
         const startIndex = this.playerCount;
         this.playerCount += amount;
+        if(this.game?.heroes?.active)this.roster=changeRoster(this.roster,this.playerCount,choice||{bonusFaction:faction},this.game.heroes.profile.family);
         this.refreshDensity();
 
         for (let i = 0; i < amount; i++) {
@@ -202,6 +207,7 @@ export class CrowdManager {
             }
         }
         this.playerCount = Math.max(0, this.playerCount - amount);
+        if(this.roster)this.roster=this.roster.slice(0,this.playerCount);
         this.refreshDensity();
     }
 

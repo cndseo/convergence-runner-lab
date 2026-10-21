@@ -4,6 +4,8 @@ import { clone as cloneSkeleton } from 'three/addons/utils/SkeletonUtils.js';
 import { createApprovedLeader, showWalkingLegs } from './approvedLeader.js';
 import { dressFaction, FACTIONS } from './factionOutfits.js';
 import { createRealisticWalker, realisticAtlasRow } from './realisticHumanoids.js';
+import {createHeroModel,createCommunityMember,disposeHero} from './heroModels.js';
+import {atlasRowForFamily} from './heroRules.mjs';
 import {DENSITY_LIMITS} from './humanDensity.mjs';
 import {CHARACTER_ATLAS} from './characterCatalog.mjs';
 import {createGreenSmoke} from './referenceOutfits.js';
@@ -14,7 +16,7 @@ const loader=new GLTFLoader();
 const maxAnimated=window.innerWidth<600?12:20;
 // ?visual=legacy preserves the verified Quaternius crowd without changing P02.
 const realisticEnabled=new URLSearchParams(window.location.search).get('visual')!=='legacy';
-let shared,atlas;
+let shared,atlas,heroAtlas;
 export function preloadRunnerHumanoid() {
  if(!shared)shared=loader.loadAsync(import.meta.env.BASE_URL+'assets/quaternius/animated-human.glb').catch(e=>{shared=null;throw e;});
  return shared;
@@ -44,19 +46,25 @@ function getAtlas() {
  }
  return atlas;
 }
-export function createMarchBatch(capacity=DENSITY_LIMITS.crowd) {
+export function createMarchBatch(capacity=DENSITY_LIMITS.crowd,heroes=false) {
+ if(heroes&&!heroAtlas){
+  heroAtlas=new THREE.TextureLoader().load(import.meta.env.BASE_URL+'assets/crowd/walk-heroes.webp');
+  heroAtlas.colorSpace=THREE.SRGBColorSpace;heroAtlas.magFilter=THREE.LinearFilter;
+ }
+ const rowCount=heroes?20:CHARACTER_ATLAS.rows;
  const geometry=new THREE.PlaneGeometry(realisticEnabled?CHARACTER_ATLAS.planeWidth:1.92,realisticEnabled?CHARACTER_ATLAS.planeHeight:2.64);
  const rows=new Float32Array(capacity),phases=new Float32Array(capacity);
  geometry.setAttribute('factionRow',new THREE.InstancedBufferAttribute(rows,1));
  geometry.setAttribute('walkPhase',new THREE.InstancedBufferAttribute(phases,1));
- const material=new THREE.MeshBasicMaterial({map:getAtlas(),alphaTest:.18,side:THREE.DoubleSide});
+ const material=new THREE.MeshBasicMaterial({map:heroes?heroAtlas:getAtlas(),alphaTest:.18,side:THREE.DoubleSide});
  const time={value:0};
  material.onBeforeCompile=shader=>{
   shader.uniforms.walkTime=time;
   shader.vertexShader='attribute float factionRow; attribute float walkPhase; uniform float walkTime;\n'+shader.vertexShader;
   shader.vertexShader=shader.vertexShader.replace('#include <uv_vertex>',
-   '#include <uv_vertex>\nvMapUv.x = (uv.x + mod(floor(walkTime * 9.2 + walkPhase),12.0))/12.0;\nvMapUv.y = (uv.y + '+(realisticEnabled?(CHARACTER_ATLAS.rows-1).toFixed(1):'5.0')+'-factionRow)/'+(realisticEnabled?CHARACTER_ATLAS.rows.toFixed(1):'6.0')+';');
+   '#include <uv_vertex>\nvMapUv.x = (uv.x + mod(floor(walkTime * 9.2 + walkPhase),12.0))/12.0;\nvMapUv.y = (uv.y + '+(realisticEnabled?(rowCount-1).toFixed(1):'5.0')+'-factionRow)/'+(realisticEnabled?rowCount.toFixed(1):'6.0')+';');
  };
+ material.customProgramCacheKey=()=> 'march-atlas-'+(realisticEnabled?rowCount:6);
  const mesh=new THREE.InstancedMesh(geometry,material,rows.length);
  mesh.frustumCulled=false;mesh.count=0;mesh.userData.sharedHumanoidAsset=true;
  mesh.instanceMatrix.setUsage(THREE.DynamicDrawUsage);
@@ -64,7 +72,7 @@ export function createMarchBatch(capacity=DENSITY_LIMITS.crowd) {
  return {mesh,time,rows,phases,geometry,matrix,realistic:realisticEnabled};
 }
 function createImpostors(crowd) {
- const batch=createMarchBatch();
+ const batch=createMarchBatch(DENSITY_LIMITS.crowd,!!crowd.game?.heroes?.active&&realisticEnabled);
  crowd.playerGroup.add(batch.mesh);
  const smoke=realisticEnabled?createGreenSmoke(256):null;
  if(smoke){smoke.count=0;crowd.playerGroup.add(smoke);}
@@ -72,7 +80,7 @@ function createImpostors(crowd) {
 }
 async function upgradeToRealistic(crowd,runner,index,group){
  try{
-  const replacement=await createRealisticWalker(index);
+  const replacement=runner.userData.community?await createCommunityMember(runner.userData.community,index):await createRealisticWalker(index);
   if(crowd.playerGroup!==group||runner.parent!==group){
    replacement.mixer.stopAllAction();replacement.mixer.uncacheRoot(replacement.model);replacement.dispose?.();
    replacement.model.traverse(n=>{if(n.isSkinnedMesh)n.skeleton?.dispose();});
@@ -96,6 +104,17 @@ export function attachAnimatedHumanoid(crowd) {
   if(crowd.playerGroup!==group)return;
   for(const [index,runner] of crowd.playerStickmen.entries()){
    if(!runner.parent||runner.userData.realHumanoid||runner.userData.impostor||runner.userData.approvedLeader)continue;
+   if(runner.userData.heroProfile){
+    if(!runner.userData.heroLoading){
+     runner.userData.heroLoading=true;runner.userData.lowDetail=true;
+     createHeroModel(runner.userData.heroProfile,crowd.game.heroes.save.equipment).then(human=>{
+      if(crowd.playerGroup!==group||runner.parent!==group){disposeHero(human);return;}
+      runner.children.forEach(c=>{c.visible=false;});runner.add(human.model);
+      runner.userData.realHumanoid=human;runner.userData.realisticAvatar=human.id;
+     }).catch(e=>{runner.userData.heroLoading=false;console.warn('Hero fallback',e.message);});
+    }
+    continue;
+   }
    if(runner.userData.costumeAvatar){
     runner.userData.lowDetail=true; // Volumetric costume owns its animation.
     continue;
@@ -148,8 +167,8 @@ export function updateAnimatedHumanoids(crowd,dt) {
   imp.matrix.scale.copy(runner.scale);imp.matrix.updateMatrix();
   imp.mesh.setMatrixAt(n,imp.matrix.matrix);
   const factionIndex=FACTIONS.indexOf(runner.userData.bonusFaction);
-  imp.rows[n]=realisticEnabled?realisticAtlasRow(factionIndex>=0?factionIndex:i):factionIndex>=0?factionIndex:i%6;imp.phases[n]=(i*3.17)%12;n++;
-  if(imp.smoke&&realisticAtlasRow(i)===4){
+  imp.rows[n]=realisticEnabled?(runner.userData.community?atlasRowForFamily(runner.userData.community,i):realisticAtlasRow(factionIndex>=0?factionIndex:i)):factionIndex>=0?factionIndex:i%6;imp.phases[n]=(i*3.17)%12;n++;
+  if(imp.smoke&&!crowd.roster?.length&&realisticAtlasRow(i)===4){
    for(let puff=0;puff<12&&smokeCount<256;puff++){
     const phase=(imp.time.value*.55+puff/12+i*.17)%1,s=.07+phase*.39;
     imp.matrix.position.set(runner.position.x+.40+Math.sin(puff*2.4+imp.time.value*.6)*phase*.13+.15*phase,runner.position.y+1.91+phase*.72,runner.position.z+.03+phase*.06);
@@ -174,8 +193,8 @@ export function updateAnimatedHumanoids(crowd,dt) {
   imp.mesh.setMatrixAt(n,imp.matrix.matrix);
   // Protective ranks alternate the approved firefighter, medic and yellow vest.
   const variant=(Math.imul(i+11,2654435761)>>>0);
-  imp.rows[n]=guard ? (realisticEnabled?[1,2,7][variant%3]:[3,4,0][variant%3])
-    : realisticEnabled?variant%CHARACTER_ATLAS.rows:variant%6;
+  imp.rows[n]=guard ? (realisticEnabled?(crowd.roster?.length?[12,8,4][variant%3]:[1,2,7][variant%3]):[3,4,0][variant%3])
+    : realisticEnabled?(crowd.roster?.length?atlasRowForFamily(crowd.roster[i%crowd.roster.length],i):variant%CHARACTER_ATLAS.rows):variant%6;
   imp.phases[n]=(i*3.17)%12;n++;
  }
  if(imp.smoke){imp.smoke.count=smokeCount;imp.smoke.instanceMatrix.needsUpdate=true;imp.smoke.material.uniforms.time.value=imp.time.value;}

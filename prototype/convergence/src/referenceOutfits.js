@@ -124,7 +124,7 @@ function paintBody(model,spec){
    const mask=new Float32Array(pos.count*3);
    model.updateMatrixWorld(true);
    for(let i=0;i<pos.count;i++){
-    const p=V().fromBufferAttribute(pos,i).applyMatrix4(n.matrixWorld);
+    const p=(spec.key.startsWith('hero-')?n.getVertexPosition(i,V()):V().fromBufferAttribute(pos,i)).applyMatrix4(n.matrixWorld);
     let hand=0,arm=0,leg=0,foot=0;
     for(let j=0;j<4;j++){
      const name=n.skeleton.bones[indices.getComponent(i,j)]?.name||'',w=weights.getComponent(i,j);
@@ -224,7 +224,7 @@ export function dressReferenceWalker(model,spec){
   body.ellipsoid([.125,.085,.065],[0,.245,.12],spec.top);
  }
  if(spec.bag!==undefined)backpack(body,spec.bag,spec);
- if(spec.key==='pompier'){
+ if(spec.key==='pompier'||spec.faction==='pompiers'){
   // The detailed original fire uniform and helmet are retained and dressed in red.
   for(const y of [-.20,.08]){
    const g=new T.CylinderGeometry(.22,.235,.052,24,1,true);g.scale(1,1,.80);
@@ -301,6 +301,38 @@ export function dressReferenceWalker(model,spec){
     head.tube(.04,.015,[.01,.055,.132],dark,[Math.PI/2,0,0]);
    }
   }
+ }
+ // Hero accessories are real bone-attached geometry, shared by all profiles.
+ if(spec.headphones){
+  head.add(new T.TorusGeometry(.139,.012,6,16,Math.PI),dark,[0,.10,0]);
+  for(const x of [-.137,.137])head.box([.04,.08,.065],[x,.075,0],dark,.018);
+ }
+ if(spec.beard)head.ellipsoid([.066,.037,.038],[0,-.035,-.072],spec.grey?0x90918b:0x40332c);
+ if(spec.scarf||spec.heroEquipment==='solidarity-scarf'){
+  const col=spec.heroEquipment==='solidarity-scarf'?0xc44858:spec.scarf;
+  body.add(new T.TorusGeometry(.09,.025,6,16),col,[0,.23,0],[Math.PI/2,0,0]);
+  body.box([.075,.21,.035],[.055,.12,-.13],col,.015,[0,0,-.2]);
+ }
+ if(spec.medicalKit){
+  for(const x of [-.06,.06])line(body,[x,.24,-.13],[x,.06,-.17],.008,0x293344);
+  body.add(new T.TorusGeometry(.06,.008,6,16,Math.PI),0x293344,[0,.06,-.17],[0,0,Math.PI]);
+  body.ellipsoid([.025,.025,.008],[.06,.02,-.18],0xb6c1c7);
+  body.box([.055,.075,.014],[-.12,.10,-.17],0x72b5c7,.005);
+  body.box([.13,.09,.015],[0,.015,.349],0xe6eaec,.005);
+  // Blue care badge deliberately avoids protected humanitarian emblems.
+  body.box([.08,.02,.018],[0,.015,.36],0x539db9,.004);
+ }
+ if(spec.airTank){
+  body.tube(.075,.40,[0,-.02,.36],0xc6c5a6);
+  for(const y of [-.12,.10])body.box([.16,.035,.022],[0,y,.435],dark,.004);
+  body.tube(.025,.055,[0,.205,.36],dark);
+ }
+ if(spec.heroEquipment==='reflective-pack'){
+  for(const y of [-.12,.06])body.box([.27,.04,.018],[0,y,.36],0xe6eeaf,.004);
+ }
+ if(spec.heroEquipment==='armband'){
+  const arm=builder(model,'L_UpperArm',wp(bone(model,'L_UpperArm')).lerp(wp(bone(model,'L_Forearm')),.6),'hero-armband');
+  arm.add(new T.CylinderGeometry(.073,.073,.075,12,1,true),0xeead5e);arm.finish();
  }
  body.finish();head.finish();
  const dynamic=[];let smoke=null,flag=null;
