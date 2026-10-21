@@ -83,7 +83,7 @@ export class PlayerExperience {
     if(g.state==='fighting'&&!r.firstFront){r.firstFront=true;this.telemetry.track('first_front',{level:r.level,mode:r.mode,elapsed:r.elapsed,count:g.crowdManager.getPlayerCount()});}
     let text='';const gates=g.gateHistory.length;
     if(r.mode==='campaign'){
-      if(r.level===1&&gates===0&&g.state==='playing')text='Glisse à gauche ou à droite pour choisir une TV';
+      if(r.level===1&&gates===0&&g.state==='playing')text='Touche une TV pour la casser · Glisse pour diriger';
       else if(r.level===1&&gates===1&&g.trackZ>22&&g.state==='playing')text='Les protections absorbent les pertes des barrages';
       else if(r.level===1&&gates===2&&g.trackZ>38&&g.trackZ<45)text='Vise la perte la plus faible pour garder ta foule';
       else if(g.state==='playing'&&gates===0)text='Objectif facultatif : '+this.mission.label;

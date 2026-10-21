@@ -10,7 +10,7 @@ import {PlayerTelemetry} from '../src/playerTelemetry.mjs';
 test('all twelve campaign districts have certified free routes without paid support',()=>{
   for(let level=1;level<=12;level++)for(const seed of [1,17,20261021,level*20261019]){
     const base=generateCampaignLevel({level,seed});
-    assert.ok(base.proof.winningRate>=campaignTargets(level).min);
+    assert.ok(base.proof.attentiveWinningRate>=campaignTargets(level).min);
     assert.ok(replayPlan(base,base.proof.winningPath).count>0);
     if(level<=3)assert.ok(replayPlan(base,greedyPath(base).path).count>0);
     assert.equal(base.events.filter(e=>e.type==='choice').length,10);

@@ -90,7 +90,7 @@ export class LevelGenerator {
         }
         if(this.marseilleBonus){
             const bonus=this.marseilleBonus, distance=bonus.z-progress;
-            bonus.leftMesh.userData.root.visible=!bonus.passed&&!combatView&&distance<62&&distance>-8;
+            bonus.leftMesh.userData.root.visible=(!bonus.passed||bonus.tvState==='missed')&&!combatView&&distance<62&&distance>-8;
         }
         // Preserve all gameplay and collision data, cull only distant visuals.
         for (const enemy of this.enemies) {
@@ -110,7 +110,7 @@ export class LevelGenerator {
         for (const event of this.plan.events.filter(e => e.type === 'choice')) {
             // The fixed TV catalog owns both bonus numbers and faction identity.
             // No visual-only change to the chosen faction or computed amount.
-            const gate = { z: event.z, passed: false, leftGate: event.left, rightGate: event.right };
+            const gate = { z: event.z, passed: false, tvState:'approaching', leftGate: event.left, rightGate: event.right };
             const gateOrder=this.gates.length*2;
             gate.leftMesh = this.createGateMesh(event.left, -2.5, event.z, gateOrder);
             gate.rightMesh = this.createGateMesh(event.right, 2.5, event.z, gateOrder+1);
@@ -132,7 +132,7 @@ export class LevelGenerator {
         pane.userData.root=root;
         this.scene.add(root);this.meshes.push(root);
         // Separate pickup: never an eleventh decision or a tactical reward.
-        this.marseilleBonus={z,passed:false,leftMesh:pane,leftGate:{op:'support',kind:'marseille'}};
+        this.marseilleBonus={z,passed:false,tvState:'approaching',leftMesh:pane,leftGate:{op:'support',kind:'marseille'}};
     }
 
     createGateMesh(data, x, z, ordinal=0) {

@@ -1,3 +1,5 @@
+> HISTORIQUE — Interface de sélection rejetée par le propriétaire du projet. Remplacée par TV_PARCOURS_2026-10-21.md. Les résultats ci-dessous concernent uniquement la PR #26.
+
 # CONVERGENCE — Sélection tactile des TV et difficulté rééquilibrée
 
 ## Décision validée par le développement du 21 octobre 2026

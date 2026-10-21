@@ -1,3 +1,4 @@
+import {TV_RULESET} from './tvRoadRules.mjs';
 import {makeFixedPairs} from './fixedTVCatalog.mjs';
 import {initialState,solvePlan,replayPlan,greedyPath} from './tactics.mjs';
 import {applyCampaignCombat} from './campaignCombatRules.mjs';
@@ -8,10 +9,19 @@ export function campaignTargets(level){
 }
 function random(seed){let a=seed>>>0;return()=>{a+=0x6D2B79F5;let t=a;t=Math.imul(t^t>>>15,t|1);t^=t+Math.imul(t^t>>>7,t|61);return((t^t>>>14)>>>0)/4294967296;};}
 function certify(plan){
-  const paths=solvePlan(plan),winners=paths.filter(p=>p.survivors>0);
-  const witness=winners.reduce((a,b)=>!a||b.survivors>a.survivors?b:a,null);
-  if(!witness)throw Error('Campaign has no free winning route');
-  plan.proof={winningPaths:winners.length,totalPaths:paths.length,winningRate:winners.length/paths.length,
+  // Exact weighted enumeration of all 3^10 routes without 59,049 path arrays
+  // on the mobile main thread. Merging retains count, shields and missed count.
+  const paths=solvePlan(plan,false,{compact:true}),winners=paths.filter(p=>p.survivors>0);
+  const attentive=winners.filter(p=>p.misses===0);
+  const witness=attentive.reduce((a,b)=>!a||b.survivors>a.survivors?b:a,null);
+  if(!witness)throw Error('Campaign has no free attentive winning route');
+  const sum=rows=>rows.reduce((n,p)=>n+p.ways,0),total=sum(paths),winning=sum(winners);
+  const byMisses=Array.from({length:11},(_,misses)=>{
+    const rows=paths.filter(p=>p.misses===misses),win=rows.filter(p=>p.survivors>0);
+    return {misses,totalPaths:sum(rows),winningPaths:sum(win),winningRate:sum(win)/sum(rows)};
+  });
+  plan.proof={winningPaths:winning,totalPaths:total,winningRate:winning/total,
+    attentiveWinningRate:byMisses[0].winningRate,byMisses,
     winningPath:witness.path,witnessSurvivors:witness.survivors,
     minSurvivors:Math.min(...winners.map(p=>p.survivors)),
     greedyWins:replayPlan(plan,greedyPath(plan).path).count>0,difficulty:campaignTargets(plan.level)};
@@ -37,12 +47,12 @@ export function generateCampaignLevel({level=1,seed=1,startCount=5,strength=1}={
         events.push({type:'enemy',kind:i%3===0?'bac':'crs',z:23+i*16,
           count:(level===1?6+(i===7?2:0):10+(i%4)*2)});
     });
-    const plan={version:4,ruleset:'campaign-patrol-20261021',seed,level,startCount:5,strength:1,
+    const plan={version:5,ruleset:TV_RULESET,seed,level,startCount:5,strength:1,
       events,trackLength:180,bossHealth:0,tvCatalog:'fixed16'};
-    const paths=solvePlan(plan),greedy=greedyPath(plan);
+    const paths=solvePlan(plan,false,{includeMiss:false,compact:true}),greedy=greedyPath(plan);
     for(let health=9;health<=90;health++){
       if(level<=3&&applyCampaignCombat(greedy,health).count===0)continue;
-      const rate=paths.filter(p=>applyCampaignCombat(p,health).count>0).length/paths.length;
+      const rate=paths.filter(p=>applyCampaignCombat(p,health).count>0).reduce((n,p)=>n+p.ways,0)/1024;
       if(rate<bounds.min)continue;
       const score=Math.abs(rate-bounds.ideal);
       if(!selected||score<selected.score)selected={plan:{...plan,bossHealth:health},score};
