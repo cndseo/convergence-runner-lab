@@ -76,7 +76,7 @@
     },
     {
       "key": "pompiers-chloe",
-      "source": "fire-female-01",
+      "source": "female-adult-05",
       "prop": null
     },
     {
@@ -96,13 +96,13 @@
     },
     {
       "key": "lyceens-mathis",
-      "source": "male-adult-04",
+      "source": "male-adult-10",
       "prop": null
     },
     {
       "key": "lyceens-leo",
       "source": "male-adult-07",
-      "prop": "placard"
+      "prop": null
     },
     {
       "key": "lyceens-manon",

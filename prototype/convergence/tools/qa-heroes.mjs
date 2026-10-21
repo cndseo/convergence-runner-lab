@@ -32,6 +32,10 @@ try{
   const stats=await page.evaluate(()=>{const v=window.__convergence.heroes.viewer,h=v.human;let meshes=0,bones=0,triangles=0;h.model.traverse(n=>{if(n.isSkinnedMesh){meshes++;bones+=n.skeleton.bones.length;}if(n.isMesh)triangles+=(n.geometry.index?.count||n.geometry.attributes.position.count)/3;});return {id:h.id,source:h.sourceId,meshes,bones,triangles,drawCalls:v.renderer.info.render.calls};});
   assert.equal(stats.id,'hero-'+p.id);assert.ok(stats.meshes>0&&stats.bones>0);report.profiles.push(stats);
   await page.locator('.hero-stage').screenshot({path:file(p.id+'.png')});
+  await page.getByRole('button',{name:'Voir le visage',exact:true}).click();
+  assert.equal(await page.locator('.hero-zoom').getAttribute('aria-pressed'),'true');
+  await page.locator('.hero-stage').screenshot({path:file(p.id+'-face.png')});
+  await page.getByRole('button',{name:'Voir la silhouette',exact:true}).click();
  }
  await page.locator('[data-family="genz"]').click();await page.locator('[data-hero="genz-lea"]').click();await page.waitForFunction(()=>!document.getElementById('hero-confirm').disabled);
  await page.screenshot({path:file('selection-390.png')});await page.locator('#hero-confirm').click();

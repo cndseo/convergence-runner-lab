@@ -1,0 +1,920 @@
+{
+  "stats": [
+    {
+      "id": "genz-lea",
+      "drawCalls": 8,
+      "triangles": 19686,
+      "meshes": [
+        {
+          "name": "",
+          "material": "",
+          "triangles": 4088
+        },
+        {
+          "name": "",
+          "material": "",
+          "triangles": 2
+        },
+        {
+          "name": "",
+          "material": "",
+          "triangles": 5508
+        },
+        {
+          "name": "",
+          "material": "",
+          "triangles": 900
+        },
+        {
+          "name": "",
+          "material": "",
+          "triangles": 900
+        },
+        {
+          "name": "f005_hipoly_81_bones_opacity_1",
+          "material": "f005_body",
+          "triangles": 4634
+        },
+        {
+          "name": "f005_hipoly_81_bones_opacity_2",
+          "material": "f005_head",
+          "triangles": 2734
+        },
+        {
+          "name": "f005_hipoly_81_bones_opacity_3",
+          "material": "f005_opacity",
+          "triangles": 920
+        }
+      ]
+    },
+    {
+      "id": "genz-emma",
+      "drawCalls": 8,
+      "triangles": 18124,
+      "meshes": [
+        {
+          "name": "",
+          "material": "",
+          "triangles": 1440
+        },
+        {
+          "name": "",
+          "material": "",
+          "triangles": 2
+        },
+        {
+          "name": "",
+          "material": "",
+          "triangles": 6108
+        },
+        {
+          "name": "",
+          "material": "",
+          "triangles": 900
+        },
+        {
+          "name": "",
+          "material": "",
+          "triangles": 900
+        },
+        {
+          "name": "f012_hipoly_81_bones_opacity_1",
+          "material": "f012_body",
+          "triangles": 4714
+        },
+        {
+          "name": "f012_hipoly_81_bones_opacity_2",
+          "material": "f012_head",
+          "triangles": 3580
+        },
+        {
+          "name": "f012_hipoly_81_bones_opacity_3",
+          "material": "f012_opacity",
+          "triangles": 480
+        }
+      ]
+    },
+    {
+      "id": "genz-kay",
+      "drawCalls": 8,
+      "triangles": 31570,
+      "meshes": [
+        {
+          "name": "",
+          "material": "",
+          "triangles": 14976
+        },
+        {
+          "name": "",
+          "material": "",
+          "triangles": 2
+        },
+        {
+          "name": "",
+          "material": "",
+          "triangles": 6108
+        },
+        {
+          "name": "",
+          "material": "",
+          "triangles": 900
+        },
+        {
+          "name": "",
+          "material": "",
+          "triangles": 900
+        },
+        {
+          "name": "m006_hipoly_81_bones_opacity_1",
+          "material": "m006_body",
+          "triangles": 4760
+        },
+        {
+          "name": "m006_hipoly_81_bones_opacity_2",
+          "material": "m006_head",
+          "triangles": 3236
+        },
+        {
+          "name": "m006_hipoly_81_bones_opacity_3",
+          "material": "m006_opacity",
+          "triangles": 688
+        }
+      ]
+    },
+    {
+      "id": "genz-noah",
+      "drawCalls": 8,
+      "triangles": 17766,
+      "meshes": [
+        {
+          "name": "",
+          "material": "",
+          "triangles": 2148
+        },
+        {
+          "name": "",
+          "material": "",
+          "triangles": 2
+        },
+        {
+          "name": "",
+          "material": "",
+          "triangles": 6228
+        },
+        {
+          "name": "",
+          "material": "",
+          "triangles": 900
+        },
+        {
+          "name": "",
+          "material": "",
+          "triangles": 900
+        },
+        {
+          "name": "m013_hipoly_81_bones_opacity_1",
+          "material": "m013_body",
+          "triangles": 4272
+        },
+        {
+          "name": "m013_hipoly_81_bones_opacity_2",
+          "material": "m013_head",
+          "triangles": 3080
+        },
+        {
+          "name": "m013_hipoly_81_bones_opacity_3",
+          "material": "m013_opacity",
+          "triangles": 236
+        }
+      ]
+    },
+    {
+      "id": "gilets-thomas",
+      "drawCalls": 6,
+      "triangles": 14718,
+      "meshes": [
+        {
+          "name": "m024_hipoly_81_bones_opacity_1",
+          "material": "m024_head",
+          "triangles": 3046
+        },
+        {
+          "name": "m024_hipoly_81_bones_opacity_2",
+          "material": "m024_body",
+          "triangles": 3500
+        },
+        {
+          "name": "m024_hipoly_81_bones_opacity_3",
+          "material": "m024_opacity",
+          "triangles": 186
+        },
+        {
+          "name": "",
+          "material": "",
+          "triangles": 2
+        },
+        {
+          "name": "",
+          "material": "",
+          "triangles": 7888
+        },
+        {
+          "name": "",
+          "material": "",
+          "triangles": 96
+        }
+      ]
+    },
+    {
+      "id": "gilets-marcel",
+      "drawCalls": 7,
+      "triangles": 19382,
+      "meshes": [
+        {
+          "name": "",
+          "material": "",
+          "triangles": 2536
+        },
+        {
+          "name": "",
+          "material": "",
+          "triangles": 2
+        },
+        {
+          "name": "",
+          "material": "",
+          "triangles": 9160
+        },
+        {
+          "name": "",
+          "material": "",
+          "triangles": 96
+        },
+        {
+          "name": "m013_hipoly_81_bones_opacity_1",
+          "material": "m013_body",
+          "triangles": 4272
+        },
+        {
+          "name": "m013_hipoly_81_bones_opacity_2",
+          "material": "m013_head",
+          "triangles": 3080
+        },
+        {
+          "name": "m013_hipoly_81_bones_opacity_3",
+          "material": "m013_opacity",
+          "triangles": 236
+        }
+      ]
+    },
+    {
+      "id": "gilets-sophie",
+      "drawCalls": 7,
+      "triangles": 20134,
+      "meshes": [
+        {
+          "name": "",
+          "material": "",
+          "triangles": 4088
+        },
+        {
+          "name": "",
+          "material": "",
+          "triangles": 2
+        },
+        {
+          "name": "",
+          "material": "",
+          "triangles": 7660
+        },
+        {
+          "name": "",
+          "material": "",
+          "triangles": 96
+        },
+        {
+          "name": "f005_hipoly_81_bones_opacity_1",
+          "material": "f005_body",
+          "triangles": 4634
+        },
+        {
+          "name": "f005_hipoly_81_bones_opacity_2",
+          "material": "f005_head",
+          "triangles": 2734
+        },
+        {
+          "name": "f005_hipoly_81_bones_opacity_3",
+          "material": "f005_opacity",
+          "triangles": 920
+        }
+      ]
+    },
+    {
+      "id": "gilets-nadia",
+      "drawCalls": 7,
+      "triangles": 20620,
+      "meshes": [
+        {
+          "name": "",
+          "material": "",
+          "triangles": 4088
+        },
+        {
+          "name": "",
+          "material": "",
+          "triangles": 2
+        },
+        {
+          "name": "",
+          "material": "",
+          "triangles": 7660
+        },
+        {
+          "name": "",
+          "material": "",
+          "triangles": 96
+        },
+        {
+          "name": "f012_hipoly_81_bones_opacity_1",
+          "material": "f012_body",
+          "triangles": 4714
+        },
+        {
+          "name": "f012_hipoly_81_bones_opacity_2",
+          "material": "f012_head",
+          "triangles": 3580
+        },
+        {
+          "name": "f012_hipoly_81_bones_opacity_3",
+          "material": "f012_opacity",
+          "triangles": 480
+        }
+      ]
+    },
+    {
+      "id": "soignants-lucas",
+      "drawCalls": 6,
+      "triangles": 15131,
+      "meshes": [
+        {
+          "name": "",
+          "material": "",
+          "triangles": 1000
+        },
+        {
+          "name": "",
+          "material": "",
+          "triangles": 2
+        },
+        {
+          "name": "",
+          "material": "",
+          "triangles": 6548
+        },
+        {
+          "name": "m152_hipoly_81_bones_opacity_1",
+          "material": "m152_body",
+          "triangles": 4174
+        },
+        {
+          "name": "m152_hipoly_81_bones_opacity_2",
+          "material": "m152_head",
+          "triangles": 3022
+        },
+        {
+          "name": "m152_hipoly_81_bones_opacity_3",
+          "material": "m152_opacity",
+          "triangles": 385
+        }
+      ]
+    },
+    {
+      "id": "soignants-amina",
+      "drawCalls": 6,
+      "triangles": 34418,
+      "meshes": [
+        {
+          "name": "",
+          "material": "",
+          "triangles": 19344
+        },
+        {
+          "name": "",
+          "material": "",
+          "triangles": 2
+        },
+        {
+          "name": "",
+          "material": "",
+          "triangles": 6548
+        },
+        {
+          "name": "f153_hipoly_81_bones_opacity_1",
+          "material": "f153_head",
+          "triangles": 3375
+        },
+        {
+          "name": "f153_hipoly_81_bones_opacity_2",
+          "material": "f153_body",
+          "triangles": 4597
+        },
+        {
+          "name": "f153_hipoly_81_bones_opacity_4",
+          "material": "f153_opacity",
+          "triangles": 552
+        }
+      ]
+    },
+    {
+      "id": "soignants-yann",
+      "drawCalls": 4,
+      "triangles": 10041,
+      "meshes": [
+        {
+          "name": "",
+          "material": "",
+          "triangles": 2460
+        },
+        {
+          "name": "m152_hipoly_81_bones_opacity_1",
+          "material": "m152_body",
+          "triangles": 4174
+        },
+        {
+          "name": "m152_hipoly_81_bones_opacity_2",
+          "material": "m152_head",
+          "triangles": 3022
+        },
+        {
+          "name": "m152_hipoly_81_bones_opacity_3",
+          "material": "m152_opacity",
+          "triangles": 385
+        }
+      ]
+    },
+    {
+      "id": "soignants-carine",
+      "drawCalls": 6,
+      "triangles": 17962,
+      "meshes": [
+        {
+          "name": "",
+          "material": "",
+          "triangles": 4088
+        },
+        {
+          "name": "",
+          "material": "",
+          "triangles": 2
+        },
+        {
+          "name": "",
+          "material": "",
+          "triangles": 5348
+        },
+        {
+          "name": "f153_hipoly_81_bones_opacity_1",
+          "material": "f153_head",
+          "triangles": 3375
+        },
+        {
+          "name": "f153_hipoly_81_bones_opacity_2",
+          "material": "f153_body",
+          "triangles": 4597
+        },
+        {
+          "name": "f153_hipoly_81_bones_opacity_4",
+          "material": "f153_opacity",
+          "triangles": 552
+        }
+      ]
+    },
+    {
+      "id": "pompiers-hugo",
+      "drawCalls": 10,
+      "triangles": 11348,
+      "meshes": [
+        {
+          "name": "",
+          "material": "",
+          "triangles": 1000
+        },
+        {
+          "name": "",
+          "material": "",
+          "triangles": 2148
+        },
+        {
+          "name": "",
+          "material": "",
+          "triangles": 32
+        },
+        {
+          "name": "",
+          "material": "",
+          "triangles": 32
+        },
+        {
+          "name": "",
+          "material": "",
+          "triangles": 1580
+        },
+        {
+          "name": "",
+          "material": "",
+          "triangles": 96
+        },
+        {
+          "name": "",
+          "material": "",
+          "triangles": 32
+        },
+        {
+          "name": "",
+          "material": "",
+          "triangles": 32
+        },
+        {
+          "name": "m138_hipoly_81_bones_1",
+          "material": "m138_body",
+          "triangles": 3344
+        },
+        {
+          "name": "m138_hipoly_81_bones_2",
+          "material": "m138_head",
+          "triangles": 3052
+        }
+      ]
+    },
+    {
+      "id": "pompiers-chloe",
+      "drawCalls": 11,
+      "triangles": 16328,
+      "meshes": [
+        {
+          "name": "",
+          "material": "",
+          "triangles": 4088
+        },
+        {
+          "name": "",
+          "material": "",
+          "triangles": 2148
+        },
+        {
+          "name": "",
+          "material": "",
+          "triangles": 32
+        },
+        {
+          "name": "",
+          "material": "",
+          "triangles": 32
+        },
+        {
+          "name": "",
+          "material": "",
+          "triangles": 1580
+        },
+        {
+          "name": "",
+          "material": "",
+          "triangles": 96
+        },
+        {
+          "name": "",
+          "material": "",
+          "triangles": 32
+        },
+        {
+          "name": "",
+          "material": "",
+          "triangles": 32
+        },
+        {
+          "name": "f005_hipoly_81_bones_opacity_1",
+          "material": "f005_body",
+          "triangles": 4634
+        },
+        {
+          "name": "f005_hipoly_81_bones_opacity_2",
+          "material": "f005_head",
+          "triangles": 2734
+        },
+        {
+          "name": "f005_hipoly_81_bones_opacity_3",
+          "material": "f005_opacity",
+          "triangles": 920
+        }
+      ]
+    },
+    {
+      "id": "pompiers-pierre",
+      "drawCalls": 9,
+      "triangles": 10348,
+      "meshes": [
+        {
+          "name": "",
+          "material": "",
+          "triangles": 2148
+        },
+        {
+          "name": "",
+          "material": "",
+          "triangles": 32
+        },
+        {
+          "name": "",
+          "material": "",
+          "triangles": 32
+        },
+        {
+          "name": "",
+          "material": "",
+          "triangles": 1580
+        },
+        {
+          "name": "",
+          "material": "",
+          "triangles": 96
+        },
+        {
+          "name": "",
+          "material": "",
+          "triangles": 32
+        },
+        {
+          "name": "",
+          "material": "",
+          "triangles": 32
+        },
+        {
+          "name": "m138_hipoly_81_bones_1",
+          "material": "m138_body",
+          "triangles": 3344
+        },
+        {
+          "name": "m138_hipoly_81_bones_2",
+          "material": "m138_head",
+          "triangles": 3052
+        }
+      ]
+    },
+    {
+      "id": "pompiers-samir",
+      "drawCalls": 10,
+      "triangles": 13874,
+      "meshes": [
+        {
+          "name": "",
+          "material": "",
+          "triangles": 2148
+        },
+        {
+          "name": "",
+          "material": "",
+          "triangles": 32
+        },
+        {
+          "name": "",
+          "material": "",
+          "triangles": 32
+        },
+        {
+          "name": "",
+          "material": "",
+          "triangles": 2
+        },
+        {
+          "name": "",
+          "material": "",
+          "triangles": 5104
+        },
+        {
+          "name": "",
+          "material": "",
+          "triangles": 96
+        },
+        {
+          "name": "",
+          "material": "",
+          "triangles": 32
+        },
+        {
+          "name": "",
+          "material": "",
+          "triangles": 32
+        },
+        {
+          "name": "m138_hipoly_81_bones_1",
+          "material": "m138_body",
+          "triangles": 3344
+        },
+        {
+          "name": "m138_hipoly_81_bones_2",
+          "material": "m138_head",
+          "triangles": 3052
+        }
+      ]
+    },
+    {
+      "id": "lyceens-julie",
+      "drawCalls": 9,
+      "triangles": 20838,
+      "meshes": [
+        {
+          "name": "",
+          "material": "",
+          "triangles": 4088
+        },
+        {
+          "name": "",
+          "material": "",
+          "triangles": 600
+        },
+        {
+          "name": "",
+          "material": "",
+          "triangles": 2
+        },
+        {
+          "name": "",
+          "material": "",
+          "triangles": 6060
+        },
+        {
+          "name": "",
+          "material": "",
+          "triangles": 900
+        },
+        {
+          "name": "",
+          "material": "",
+          "triangles": 900
+        },
+        {
+          "name": "f005_hipoly_81_bones_opacity_1",
+          "material": "f005_body",
+          "triangles": 4634
+        },
+        {
+          "name": "f005_hipoly_81_bones_opacity_2",
+          "material": "f005_head",
+          "triangles": 2734
+        },
+        {
+          "name": "f005_hipoly_81_bones_opacity_3",
+          "material": "f005_opacity",
+          "triangles": 920
+        }
+      ]
+    },
+    {
+      "id": "lyceens-mathis",
+      "drawCalls": 8,
+      "triangles": 29826,
+      "meshes": [
+        {
+          "name": "m024_hipoly_81_bones_opacity_1",
+          "material": "m024_head",
+          "triangles": 3046
+        },
+        {
+          "name": "m024_hipoly_81_bones_opacity_2",
+          "material": "m024_body",
+          "triangles": 3500
+        },
+        {
+          "name": "m024_hipoly_81_bones_opacity_3",
+          "material": "m024_opacity",
+          "triangles": 186
+        },
+        {
+          "name": "",
+          "material": "",
+          "triangles": 14976
+        },
+        {
+          "name": "",
+          "material": "",
+          "triangles": 2
+        },
+        {
+          "name": "",
+          "material": "",
+          "triangles": 6316
+        },
+        {
+          "name": "",
+          "material": "",
+          "triangles": 900
+        },
+        {
+          "name": "",
+          "material": "",
+          "triangles": 900
+        }
+      ]
+    },
+    {
+      "id": "lyceens-leo",
+      "drawCalls": 9,
+      "triangles": 20022,
+      "meshes": [
+        {
+          "name": "",
+          "material": "",
+          "triangles": 1000
+        },
+        {
+          "name": "",
+          "material": "",
+          "triangles": 600
+        },
+        {
+          "name": "",
+          "material": "",
+          "triangles": 2
+        },
+        {
+          "name": "",
+          "material": "",
+          "triangles": 9032
+        },
+        {
+          "name": "",
+          "material": "",
+          "triangles": 900
+        },
+        {
+          "name": "",
+          "material": "",
+          "triangles": 900
+        },
+        {
+          "name": "m013_hipoly_81_bones_opacity_1",
+          "material": "m013_body",
+          "triangles": 4272
+        },
+        {
+          "name": "m013_hipoly_81_bones_opacity_2",
+          "material": "m013_head",
+          "triangles": 3080
+        },
+        {
+          "name": "m013_hipoly_81_bones_opacity_3",
+          "material": "m013_opacity",
+          "triangles": 236
+        }
+      ]
+    },
+    {
+      "id": "lyceens-manon",
+      "drawCalls": 8,
+      "triangles": 18076,
+      "meshes": [
+        {
+          "name": "",
+          "material": "",
+          "triangles": 1440
+        },
+        {
+          "name": "",
+          "material": "",
+          "triangles": 2
+        },
+        {
+          "name": "",
+          "material": "",
+          "triangles": 6060
+        },
+        {
+          "name": "",
+          "material": "",
+          "triangles": 900
+        },
+        {
+          "name": "",
+          "material": "",
+          "triangles": 900
+        },
+        {
+          "name": "f012_hipoly_81_bones_opacity_1",
+          "material": "f012_body",
+          "triangles": 4714
+        },
+        {
+          "name": "f012_hipoly_81_bones_opacity_2",
+          "material": "f012_head",
+          "triangles": 3580
+        },
+        {
+          "name": "f012_hipoly_81_bones_opacity_3",
+          "material": "f012_opacity",
+          "triangles": 480
+        }
+      ]
+    }
+  ],
+  "errors": []
+}
