@@ -1,0 +1,12 @@
+{
+  "base": "https://heros-convergence.72-61-167-161.sslip.io/",
+  "build": "/assets/index-gi0RVB0a.js",
+  "ok": true,
+  "errors": [],
+  "checks": [
+    "tall hero preview framing",
+    "320px wardrobe scroll",
+    "power tap and exact next-TV hint",
+    "320px result navigation"
+  ]
+}

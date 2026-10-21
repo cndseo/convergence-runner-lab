@@ -1,0 +1,219 @@
+{
+  "base": "http://127.0.0.1:4674/",
+  "districts": [
+    {
+      "id": 1,
+      "state": "win",
+      "survivors": 29,
+      "start": 5,
+      "gates": 10
+    },
+    {
+      "id": 2,
+      "state": "win",
+      "survivors": 44,
+      "start": 11,
+      "gates": 10
+    },
+    {
+      "id": 3,
+      "state": "win",
+      "survivors": 57,
+      "start": 11,
+      "gates": 10
+    },
+    {
+      "id": 4,
+      "state": "win",
+      "survivors": 47,
+      "start": 11,
+      "gates": 10
+    },
+    {
+      "id": 5,
+      "state": "win",
+      "survivors": 51,
+      "start": 11,
+      "gates": 10
+    },
+    {
+      "id": 6,
+      "state": "win",
+      "survivors": 34,
+      "start": 11,
+      "gates": 10
+    },
+    {
+      "id": 7,
+      "state": "win",
+      "survivors": 50,
+      "start": 11,
+      "gates": 10
+    },
+    {
+      "id": 8,
+      "state": "win",
+      "survivors": 44,
+      "start": 11,
+      "gates": 10
+    },
+    {
+      "id": 9,
+      "state": "win",
+      "survivors": 44,
+      "start": 11,
+      "gates": 10
+    },
+    {
+      "id": 10,
+      "state": "win",
+      "survivors": 42,
+      "start": 11,
+      "gates": 10
+    },
+    {
+      "id": 11,
+      "state": "win",
+      "survivors": 37,
+      "start": 11,
+      "gates": 10
+    },
+    {
+      "id": 12,
+      "state": "win",
+      "survivors": 34,
+      "start": 11,
+      "gates": 10
+    }
+  ],
+  "powers": [
+    {
+      "id": "genz-lea",
+      "before": {
+        "count": 11,
+        "shields": 0,
+        "coins": 2800,
+        "clouds": 1
+      },
+      "after": {
+        "count": 11,
+        "shields": 0,
+        "coins": 2800,
+        "clouds": 1
+      },
+      "activated": true,
+      "twice": false,
+      "effect": "sprint",
+      "speed": 1.2,
+      "expired": null
+    },
+    {
+      "id": "gilets-marcel",
+      "before": {
+        "count": 11,
+        "shields": 0,
+        "coins": 2800,
+        "clouds": 1
+      },
+      "after": {
+        "count": 11,
+        "shields": 0,
+        "coins": 2800,
+        "clouds": 1
+      },
+      "activated": true,
+      "twice": false,
+      "effect": "cohesion",
+      "speed": 1,
+      "expired": null
+    },
+    {
+      "id": "soignants-lucas",
+      "before": {
+        "count": 11,
+        "shields": 0,
+        "coins": 2800,
+        "clouds": 1
+      },
+      "after": {
+        "count": 11,
+        "shields": 0,
+        "coins": 2800,
+        "clouds": 0
+      },
+      "activated": true,
+      "twice": false,
+      "effect": "clear-gas",
+      "speed": 1,
+      "expired": null
+    },
+    {
+      "id": "pompiers-hugo",
+      "before": {
+        "count": 11,
+        "shields": 0,
+        "coins": 2800,
+        "clouds": 1
+      },
+      "after": {
+        "count": 11,
+        "shields": 0,
+        "coins": 2800,
+        "clouds": 1
+      },
+      "activated": true,
+      "twice": false,
+      "effect": "smoke-guard",
+      "speed": 1,
+      "expired": null
+    },
+    {
+      "id": "lyceens-julie",
+      "before": {
+        "count": 11,
+        "shields": 0,
+        "coins": 2800,
+        "clouds": 1
+      },
+      "after": {
+        "count": 11,
+        "shields": 0,
+        "coins": 2800,
+        "clouds": 1
+      },
+      "activated": true,
+      "twice": false,
+      "effect": "scout",
+      "speed": 1,
+      "expired": null
+    }
+  ],
+  "render": [
+    {
+      "hero": null,
+      "skinned": 12,
+      "instances": 300,
+      "total": 312,
+      "calls": 193,
+      "triangles": 484014,
+      "textures": 263,
+      "geometries": 424,
+      "renderer": "ANGLE (AMD, AMD Radeon 780M Graphics (0x00001900) Direct3D11 vs_5_0 ps_5_0, D3D11)"
+    },
+    {
+      "hero": "genz-lea",
+      "skinned": 12,
+      "instances": 300,
+      "total": 312,
+      "calls": 182,
+      "triangles": 490892,
+      "textures": 267,
+      "geometries": 412,
+      "renderer": "ANGLE (AMD, AMD Radeon 780M Graphics (0x00001900) Direct3D11 vs_5_0 ps_5_0, D3D11)"
+    }
+  ],
+  "errors": [],
+  "badAssets": [],
+  "legacyPreserved": true,
+  "backupRestored": true
+}
