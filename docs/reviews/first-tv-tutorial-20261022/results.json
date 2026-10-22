@@ -1,0 +1,38 @@
+{
+  "url": "http://127.0.0.1:4729/",
+  "checks": [
+    {
+      "test": "in-road-mobile-visual-before-first-TV",
+      "metrics": {
+        "pointerEvents": "none",
+        "barHeight": 59.288299560546875,
+        "barWidth": 292.1401672363281,
+        "viewportWidth": 390,
+        "barTop": 201.86013793945312,
+        "canvasElement": true
+      }
+    },
+    {
+      "test": "tap-left-removes-tutorial-and-selects-only-left",
+      "side": "left",
+      "done": true,
+      "history": 1,
+      "state": "playing"
+    },
+    {
+      "test": "tap-right-removes-tutorial",
+      "ok": true
+    },
+    {
+      "test": "miss-applies-existing-damage-and-removes-tutorial",
+      "outcome": "miss",
+      "done": true
+    },
+    {
+      "test": "no-level-two-or-pause-overlay-regression",
+      "ok": true
+    }
+  ],
+  "errors": [],
+  "badAssets": []
+}
