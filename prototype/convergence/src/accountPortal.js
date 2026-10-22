@@ -154,7 +154,7 @@ export class AccountPortal{
     const [providers,ticket]=await Promise.all([request('/api/v1/auth/status'),Promise.resolve(extractTicket())]);
     this.google.hidden=!providers.google;
     this.emailButton.hidden=!providers.email;this.emailField.hidden=!providers.email;
-    if(!providers.google&&!providers.email)this.status('La connexion sera disponible après configuration du serveur.');
+    if(!providers.google&&!providers.email)this.status('Utilise un code personnel sécurisé pour sauvegarder ou récupérer ta partie sur un autre appareil.');
     if(ticket){
       this.syncing=true;
       try{
