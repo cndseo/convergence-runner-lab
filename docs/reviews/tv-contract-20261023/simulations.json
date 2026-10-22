@@ -1,0 +1,531 @@
+{
+  "rows": [
+    {
+      "level": 1,
+      "seed": 1,
+      "boss": 17,
+      "resistanceUnchanged": true,
+      "totalPaths": 59049,
+      "winningPaths": 6704,
+      "attentiveWinningRate": 0.326171875,
+      "survivors": 32
+    },
+    {
+      "level": 1,
+      "seed": 17,
+      "boss": 17,
+      "resistanceUnchanged": true,
+      "totalPaths": 59049,
+      "winningPaths": 6704,
+      "attentiveWinningRate": 0.326171875,
+      "survivors": 32
+    },
+    {
+      "level": 1,
+      "seed": 20261023,
+      "boss": 17,
+      "resistanceUnchanged": true,
+      "totalPaths": 59049,
+      "winningPaths": 6704,
+      "attentiveWinningRate": 0.326171875,
+      "survivors": 32
+    },
+    {
+      "level": 1,
+      "seed": 20261019,
+      "boss": 17,
+      "resistanceUnchanged": true,
+      "totalPaths": 59049,
+      "winningPaths": 6704,
+      "attentiveWinningRate": 0.326171875,
+      "survivors": 32
+    },
+    {
+      "level": 2,
+      "seed": 1,
+      "boss": 13,
+      "resistanceUnchanged": true,
+      "totalPaths": 59049,
+      "winningPaths": 2449,
+      "attentiveWinningRate": 0.2158203125,
+      "survivors": 51
+    },
+    {
+      "level": 2,
+      "seed": 17,
+      "boss": 9,
+      "resistanceUnchanged": true,
+      "totalPaths": 59049,
+      "winningPaths": 3171,
+      "attentiveWinningRate": 0.23046875,
+      "survivors": 32
+    },
+    {
+      "level": 2,
+      "seed": 20261023,
+      "boss": 10,
+      "resistanceUnchanged": true,
+      "totalPaths": 59049,
+      "winningPaths": 2294,
+      "attentiveWinningRate": 0.22265625,
+      "survivors": 32
+    },
+    {
+      "level": 2,
+      "seed": 40522038,
+      "boss": 9,
+      "resistanceUnchanged": true,
+      "totalPaths": 59049,
+      "winningPaths": 2926,
+      "attentiveWinningRate": 0.2275390625,
+      "survivors": 28
+    },
+    {
+      "level": 3,
+      "seed": 1,
+      "boss": 14,
+      "resistanceUnchanged": true,
+      "totalPaths": 59049,
+      "winningPaths": 2632,
+      "attentiveWinningRate": 0.228515625,
+      "survivors": 49
+    },
+    {
+      "level": 3,
+      "seed": 17,
+      "boss": 9,
+      "resistanceUnchanged": true,
+      "totalPaths": 59049,
+      "winningPaths": 2250,
+      "attentiveWinningRate": 0.21875,
+      "survivors": 50
+    },
+    {
+      "level": 3,
+      "seed": 20261023,
+      "boss": 12,
+      "resistanceUnchanged": true,
+      "totalPaths": 59049,
+      "winningPaths": 3274,
+      "attentiveWinningRate": 0.234375,
+      "survivors": 38
+    },
+    {
+      "level": 3,
+      "seed": 60783057,
+      "boss": 11,
+      "resistanceUnchanged": true,
+      "totalPaths": 59049,
+      "winningPaths": 3027,
+      "attentiveWinningRate": 0.2412109375,
+      "survivors": 48
+    },
+    {
+      "level": 4,
+      "seed": 1,
+      "boss": 10,
+      "resistanceUnchanged": true,
+      "totalPaths": 59049,
+      "winningPaths": 1863,
+      "attentiveWinningRate": 0.1640625,
+      "survivors": 37
+    },
+    {
+      "level": 4,
+      "seed": 17,
+      "boss": 10,
+      "resistanceUnchanged": true,
+      "totalPaths": 59049,
+      "winningPaths": 2637,
+      "attentiveWinningRate": 0.1640625,
+      "survivors": 25
+    },
+    {
+      "level": 4,
+      "seed": 20261023,
+      "boss": 13,
+      "resistanceUnchanged": true,
+      "totalPaths": 59049,
+      "winningPaths": 1993,
+      "attentiveWinningRate": 0.17578125,
+      "survivors": 38
+    },
+    {
+      "level": 4,
+      "seed": 81044076,
+      "boss": 9,
+      "resistanceUnchanged": true,
+      "totalPaths": 59049,
+      "winningPaths": 2253,
+      "attentiveWinningRate": 0.1572265625,
+      "survivors": 32
+    },
+    {
+      "level": 5,
+      "seed": 1,
+      "boss": 15,
+      "resistanceUnchanged": true,
+      "totalPaths": 59049,
+      "winningPaths": 2310,
+      "attentiveWinningRate": 0.1796875,
+      "survivors": 48
+    },
+    {
+      "level": 5,
+      "seed": 17,
+      "boss": 13,
+      "resistanceUnchanged": true,
+      "totalPaths": 59049,
+      "winningPaths": 2327,
+      "attentiveWinningRate": 0.1728515625,
+      "survivors": 42
+    },
+    {
+      "level": 5,
+      "seed": 20261023,
+      "boss": 10,
+      "resistanceUnchanged": true,
+      "totalPaths": 59049,
+      "winningPaths": 1859,
+      "attentiveWinningRate": 0.1728515625,
+      "survivors": 35
+    },
+    {
+      "level": 5,
+      "seed": 101305095,
+      "boss": 9,
+      "resistanceUnchanged": true,
+      "totalPaths": 59049,
+      "winningPaths": 2252,
+      "attentiveWinningRate": 0.1611328125,
+      "survivors": 30
+    },
+    {
+      "level": 6,
+      "seed": 1,
+      "boss": 9,
+      "resistanceUnchanged": true,
+      "totalPaths": 59049,
+      "winningPaths": 2377,
+      "attentiveWinningRate": 0.154296875,
+      "survivors": 29
+    },
+    {
+      "level": 6,
+      "seed": 17,
+      "boss": 12,
+      "resistanceUnchanged": true,
+      "totalPaths": 59049,
+      "winningPaths": 2165,
+      "attentiveWinningRate": 0.185546875,
+      "survivors": 45
+    },
+    {
+      "level": 6,
+      "seed": 20261023,
+      "boss": 9,
+      "resistanceUnchanged": true,
+      "totalPaths": 59049,
+      "winningPaths": 1653,
+      "attentiveWinningRate": 0.1484375,
+      "survivors": 42
+    },
+    {
+      "level": 6,
+      "seed": 121566114,
+      "boss": 10,
+      "resistanceUnchanged": true,
+      "totalPaths": 59049,
+      "winningPaths": 2113,
+      "attentiveWinningRate": 0.1767578125,
+      "survivors": 43
+    },
+    {
+      "level": 7,
+      "seed": 1,
+      "boss": 13,
+      "resistanceUnchanged": true,
+      "totalPaths": 59049,
+      "winningPaths": 1885,
+      "attentiveWinningRate": 0.1669921875,
+      "survivors": 43
+    },
+    {
+      "level": 7,
+      "seed": 17,
+      "boss": 9,
+      "resistanceUnchanged": true,
+      "totalPaths": 59049,
+      "winningPaths": 1816,
+      "attentiveWinningRate": 0.1513671875,
+      "survivors": 39
+    },
+    {
+      "level": 7,
+      "seed": 20261023,
+      "boss": 9,
+      "resistanceUnchanged": true,
+      "totalPaths": 59049,
+      "winningPaths": 1967,
+      "attentiveWinningRate": 0.169921875,
+      "survivors": 30
+    },
+    {
+      "level": 7,
+      "seed": 141827133,
+      "boss": 10,
+      "resistanceUnchanged": true,
+      "totalPaths": 59049,
+      "winningPaths": 1892,
+      "attentiveWinningRate": 0.169921875,
+      "survivors": 28
+    },
+    {
+      "level": 8,
+      "seed": 1,
+      "boss": 9,
+      "resistanceUnchanged": true,
+      "totalPaths": 59049,
+      "winningPaths": 2110,
+      "attentiveWinningRate": 0.1484375,
+      "survivors": 45
+    },
+    {
+      "level": 8,
+      "seed": 17,
+      "boss": 9,
+      "resistanceUnchanged": true,
+      "totalPaths": 59049,
+      "winningPaths": 2071,
+      "attentiveWinningRate": 0.1572265625,
+      "survivors": 41
+    },
+    {
+      "level": 8,
+      "seed": 20261023,
+      "boss": 9,
+      "resistanceUnchanged": true,
+      "totalPaths": 59049,
+      "winningPaths": 1305,
+      "attentiveWinningRate": 0.146484375,
+      "survivors": 29
+    },
+    {
+      "level": 8,
+      "seed": 162088152,
+      "boss": 9,
+      "resistanceUnchanged": true,
+      "totalPaths": 59049,
+      "winningPaths": 1811,
+      "attentiveWinningRate": 0.15234375,
+      "survivors": 29
+    },
+    {
+      "level": 9,
+      "seed": 1,
+      "boss": 11,
+      "resistanceUnchanged": true,
+      "totalPaths": 59049,
+      "winningPaths": 2295,
+      "attentiveWinningRate": 0.17578125,
+      "survivors": 51
+    },
+    {
+      "level": 9,
+      "seed": 17,
+      "boss": 11,
+      "resistanceUnchanged": true,
+      "totalPaths": 59049,
+      "winningPaths": 2299,
+      "attentiveWinningRate": 0.171875,
+      "survivors": 48
+    },
+    {
+      "level": 9,
+      "seed": 20261023,
+      "boss": 10,
+      "resistanceUnchanged": true,
+      "totalPaths": 59049,
+      "winningPaths": 1960,
+      "attentiveWinningRate": 0.166015625,
+      "survivors": 40
+    },
+    {
+      "level": 9,
+      "seed": 182349171,
+      "boss": 9,
+      "resistanceUnchanged": true,
+      "totalPaths": 59049,
+      "winningPaths": 1459,
+      "attentiveWinningRate": 0.107421875,
+      "survivors": 33
+    },
+    {
+      "level": 10,
+      "seed": 1,
+      "boss": 10,
+      "resistanceUnchanged": true,
+      "totalPaths": 59049,
+      "winningPaths": 1925,
+      "attentiveWinningRate": 0.169921875,
+      "survivors": 26
+    },
+    {
+      "level": 10,
+      "seed": 17,
+      "boss": 10,
+      "resistanceUnchanged": true,
+      "totalPaths": 59049,
+      "winningPaths": 1978,
+      "attentiveWinningRate": 0.1767578125,
+      "survivors": 25
+    },
+    {
+      "level": 10,
+      "seed": 20261023,
+      "boss": 11,
+      "resistanceUnchanged": true,
+      "totalPaths": 59049,
+      "winningPaths": 2359,
+      "attentiveWinningRate": 0.1806640625,
+      "survivors": 43
+    },
+    {
+      "level": 10,
+      "seed": 202610190,
+      "boss": 12,
+      "resistanceUnchanged": true,
+      "totalPaths": 59049,
+      "winningPaths": 1990,
+      "attentiveWinningRate": 0.1640625,
+      "survivors": 52
+    },
+    {
+      "level": 11,
+      "seed": 1,
+      "boss": 9,
+      "resistanceUnchanged": true,
+      "totalPaths": 59049,
+      "winningPaths": 1316,
+      "attentiveWinningRate": 0.0986328125,
+      "survivors": 27
+    },
+    {
+      "level": 11,
+      "seed": 17,
+      "boss": 9,
+      "resistanceUnchanged": true,
+      "totalPaths": 59049,
+      "winningPaths": 1745,
+      "attentiveWinningRate": 0.158203125,
+      "survivors": 37
+    },
+    {
+      "level": 11,
+      "seed": 20261023,
+      "boss": 9,
+      "resistanceUnchanged": true,
+      "totalPaths": 59049,
+      "winningPaths": 1879,
+      "attentiveWinningRate": 0.1806640625,
+      "survivors": 40
+    },
+    {
+      "level": 11,
+      "seed": 222871209,
+      "boss": 9,
+      "resistanceUnchanged": true,
+      "totalPaths": 59049,
+      "winningPaths": 1773,
+      "attentiveWinningRate": 0.1806640625,
+      "survivors": 46
+    },
+    {
+      "level": 12,
+      "seed": 1,
+      "boss": 9,
+      "resistanceUnchanged": true,
+      "totalPaths": 59049,
+      "winningPaths": 1441,
+      "attentiveWinningRate": 0.123046875,
+      "survivors": 46
+    },
+    {
+      "level": 12,
+      "seed": 17,
+      "boss": 9,
+      "resistanceUnchanged": true,
+      "totalPaths": 59049,
+      "winningPaths": 1983,
+      "attentiveWinningRate": 0.181640625,
+      "survivors": 41
+    },
+    {
+      "level": 12,
+      "seed": 20261023,
+      "boss": 9,
+      "resistanceUnchanged": true,
+      "totalPaths": 59049,
+      "winningPaths": 1686,
+      "attentiveWinningRate": 0.14453125,
+      "survivors": 40
+    },
+    {
+      "level": 12,
+      "seed": 243132228,
+      "boss": 9,
+      "resistanceUnchanged": true,
+      "totalPaths": 59049,
+      "winningPaths": 1204,
+      "attentiveWinningRate": 0.1044921875,
+      "survivors": 35
+    }
+  ],
+  "beforeAfter": [
+    {
+      "key": "renforts10",
+      "state": {
+        "count": 70,
+        "shields": 0
+      },
+      "before": {
+        "count": 72,
+        "shields": 0
+      },
+      "after": {
+        "count": 80,
+        "shields": 0
+      }
+    },
+    {
+      "key": "mobilisation2",
+      "state": {
+        "count": 72,
+        "shields": 0
+      },
+      "before": {
+        "count": 72,
+        "shields": 0
+      },
+      "after": {
+        "count": 144,
+        "shields": 0
+      }
+    },
+    {
+      "key": "protections21",
+      "state": {
+        "count": 30,
+        "shields": 47
+      },
+      "before": {
+        "count": 30,
+        "shields": 48
+      },
+      "after": {
+        "count": 30,
+        "shields": 68
+      }
+    }
+  ]
+}

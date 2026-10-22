@@ -27,13 +27,13 @@ test('barriers and conditions explain facts without revealing optimal choices',(
   assert.match(c.detail,/non remplie/);
 });
 
-test('crowd cap is not mistaken for a full numeric bonus',()=>{
+test('a bonus above the former display cap remains exact in feedback',()=>{
   const before={count:69,shields:2};
   const after=applyChoice(before,{op:'+',value:10});
   const f=explainGateChoice({op:'+',value:10},before,after);
-  assert.equal(after.count,72);
-  assert.match(f.title,/\+3 manifestants/);
-  assert.match(f.detail,/plafond/i);
+  assert.equal(after.count,79);
+  assert.match(f.title,/\+10 manifestants/);
+  assert.doesNotMatch(f.detail,/plafond/i);
 });
 
 test('loss report distinguishes sources and provides grounded guidance',()=>{

@@ -162,6 +162,8 @@ function finalizeBravmPlan(plan) {
   plan.bossHealth=choice.health;
   const winners=alive.slice(choice.lower),witness=winners.at(-1);
   const survived=replayPlan(plan,witness.path).count;
+  // Exact Daily routes must fit the existing score storage; never truncate a score.
+  if(plan.version>=4&&winners.some(p=>applyCombat(p,plan.bossHealth,plan.strength).count>MAX_CROWD))return null;
   if(survived<=0||replayPlan(plan,greedy.path).count>0)return null;
   plan.proof={
     winningPaths:winners.length,totalPaths:paths.length,

@@ -18,15 +18,16 @@ const definitions={
  dispersion2:{file:'tv_lci_malus_div2_dispersion.png',op:'/',value:2},
  bravm3:{file:'tv_lci_malus_3_manifestants.png',op:'damage',kind:'bravm',value:3,percent:false}
 };
+const familyNames={all:'manifestants',genz:'GenZ',pompiers:'pompiers',infirmieres:'infirmières',gilets:'gilets jaunes',lyceens:'lycéens'};
 const fields=['op','value','kind','percent','bonusFaction','condition','threshold','elseValue'];
 function definition(id,d,folder='tv-final'){
  const resource=d.op==='shield'?'shields':d.op==='support'?'marseilleCharges':'count';
  const formula=d.op==='+'?'count + '+d.value:d.op==='*'?'count * '+d.value:
-  d.op==='%'?'floor(count * 1.5)':d.op==='shield'?'shields + '+d.value:
+  d.op==='%'?'floor(count * (1 + '+d.value+'/100))':d.op==='shield'?'shields + '+d.value:
   d.op==='/'?'floor(count / '+d.value+')':d.op==='support'?'marseilleCharges + 1':
   d.percent?'max(0, count - ceil(count * '+d.value+'/100)), protections absorb first':
   d.op==='damage'&&d.kind!=='bravm'?'protections absorb '+d.value+' hits, then max(0, count - uncovered)':'max(0, count - '+d.value+')';
- return Object.freeze({...d,id,folder,family:d.bonusFaction||'all',resource,conditions:null,formula,sha256:assetHashes[d.file]});
+ return Object.freeze({...d,id,folder,family:d.bonusFaction||'all',resource,resourceName:resource==='shields'?'protections':resource==='marseilleCharges'?'charge marseillaise':familyNames[d.bonusFaction||'all'],conditions:d.op==='damage'&&d.kind!=='bravm'?'Les protections absorbent les impacts avant les manifestants':d.op==='/'||d.op==='%'?'Arrondi à l’entier inférieur':null,formula,sha256:assetHashes[d.file]});
 }
 export const FIXED_TV_CATALOG=Object.freeze(Object.fromEntries(Object.entries(definitions).map(([id,d])=>[id,definition(id,d)])));
 export const MARSEILLE_TV=definition('marseille1',{file:'tv-marseille-attack.png',op:'support',kind:'marseille',value:1},'marseille-bonus');

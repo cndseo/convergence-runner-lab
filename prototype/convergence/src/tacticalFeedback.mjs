@@ -1,12 +1,14 @@
 // Short, strictly factual feedback derived from the SAME states as the
 // certified tactical solver. No extra damage, healing, preview or route hint.
+import {tvDefinition} from './fixedTVCatalog.mjs';
 export function explainGateChoice(choice, before, after) {
   const population = after.count - before.count;
   const protection = after.shields - before.shields;
   const pieces = [];
   let tone = 'neutral';
   if (population > 0) {
-    pieces.push(`+${population} manifestant${population > 1 ? 's' : ''}`);
+    const resource=choice.tvKey&&choice.bonusFaction?tvDefinition(choice.tvKey).resourceName:`manifestant${population>1?'s':''}`;
+    pieces.push(`+${population} ${resource}`);
     tone = 'positive';
   } else if (population < 0) {
     pieces.push(`${population} manifestants`);

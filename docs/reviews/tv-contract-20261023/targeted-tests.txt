@@ -1,0 +1,24 @@
+Ô£ö one UTC daily seed shared across locales and changing at midnight UTC (4.866ms)
+Ô£ö identical daily plans at same date with exactly 10 portals, proved winning (79.1836ms)
+Ô£ö forged or incomplete score submissions cannot be accepted (0.2627ms)
+Ô£ö share text displays score but not winning route or private data (0.4276ms)
+Ô£ö arithmetic, rounding, conditions and shield consumption (2.0484ms)
+Ô£ö 800 generated levels: witness wins, losing routes exist, greedy loses (3648.5153ms)
+Ô£ö same configuration reproduces the same puzzle (6.8171ms)
+Ô£ö all 16 approved PNG hashes and the Marseille gift remain byte-identical (86.6531ms)
+Ô£ö every TV has exact independent arithmetic before, at and above the former caps (3.2856ms)
+Ô£ö a mismatched sign, value, faction or hidden damage kind is rejected before applying a TV (0.5981ms)
+Ô£ö specific families are added exactly and multiplication preserves the composition (0.4227ms)
+Ô£ö successive bonuses, penalties, multiplier and shields retain exact resources (0.1955ms)
+Ô£ö exact Daily plans remain verifiable and within the existing ranking storage range (254.5125ms)
+Ô£ö sixteen correct PNG choices; no generated image overlay (101.1306ms)
+Ô£ö 20 choices in every generated level are drawn exclusively from the 16 fixed PNGs (1631.2973ms)
+Ô£ö bonus human factions and all six penalties preserve exact arithmetic (0.9943ms)
+Ôä╣ tests 16
+Ôä╣ suites 0
+Ôä╣ pass 16
+Ôä╣ fail 0
+Ôä╣ cancelled 0
+Ôä╣ skipped 0
+Ôä╣ todo 0
+Ôä╣ duration_ms 3944.3804
