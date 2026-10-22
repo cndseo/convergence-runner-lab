@@ -1,0 +1,37 @@
+﻿{
+    "checked_url":  "http://127.0.0.1:4713/",
+    "unit_tests":  101,
+    "districts_passed":  12,
+    "focus_blur_pause_regression":  {
+                                        "test":  "pause-blur-visibility-resume-no-stale-tap",
+                                        "ok":  true
+                                    },
+    "touch_sides":  [
+                        {
+                            "test":  "tap-left",
+                            "state":  "playing",
+                            "pair":  "chosen"
+                        },
+                        {
+                            "test":  "tap-right",
+                            "state":  "playing",
+                            "pair":  "chosen"
+                        }
+                    ],
+    "errors":  [
+
+               ],
+    "missing_assets":  [
+
+                       ],
+    "performance":  {
+                        "displayed":  312,
+                        "targetingMs":  0.0095,
+                        "calls":  194,
+                        "triangles":  404362,
+                        "frames":  {
+                                       "medianMs":  18.10000000000582,
+                                       "p95Ms":  18.69999999999709
+                                   }
+                    }
+}

@@ -117,6 +117,9 @@ export class TVChoice {
   c.addEventListener('pointerdown',e=>{
    if(!e.isPrimary||e.button!==0){this.close();return;}
    if(!['playing','fighting','final_chase'].includes(g.state))return;
+   // The WebGL canvas is a game surface: suppress iOS native click/focus
+   // defaults without interfering with the HUD buttons above the canvas.
+   e.preventDefault();
    this.pointer={id:e.pointerId,x:e.clientX,y:e.clientY,lastX:e.clientX,time:performance.now(),runId:g.runId,state:g.state,target:this.hit(e.clientX,e.clientY),dragged:false};
    c.setPointerCapture(e.pointerId);
   });
@@ -136,7 +139,9 @@ export class TVChoice {
    if(target&&p.target?.gate===target.gate&&p.target.side===target.side)this.choose(target.gate,target.side);
   });
   c.addEventListener('pointercancel',()=>this.close());c.addEventListener('lostpointercapture',()=>this.close());
-  window.addEventListener('blur',()=>{this.close();g.keys={};if(['playing','fighting','bravm_charge'].includes(g.state))document.getElementById('pause-btn').click();});
+  // A transient blur is common in an iOS in-app browser after tapping canvas.
+  // Clear any pending gesture, but only true backgrounding may auto-pause.
+  window.addEventListener('blur',()=>{this.close();g.keys={};});
   document.addEventListener('visibilitychange',()=>{this.close();g.keys={};});
  }
 }
