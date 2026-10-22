@@ -12,6 +12,7 @@ try{
  await context.route('**/api/v1/**',r=>r.fulfill({json:{leaderboard:false,payments:'disabled'}}));
  const page=await context.newPage();page.on('pageerror',e=>report.errors.push(e.message));page.on('response',r=>{if(r.status()>=400&&r.url().includes('/assets/'))report.badAssets.push(r.url());});
  await page.goto(base+'?qa=1',{waitUntil:'networkidle'});await page.waitForFunction(()=>window.__convergence?.heroes);
+ assert.equal(await page.locator('#tv-choice-dialog').count(),0);
  await page.evaluate(()=>{const g=window.__convergence;g.qaManual=true;g.heroes.save.heroId='genz-lea';g.qaSounds={breaks:0,impacts:0};for(const [method,key] of [['playHit','breaks'],['playCombatImpact','impacts']]){const original=g.audio[method].bind(g.audio);g.audio[method]=(...args)=>{g.qaSounds[key]++;return original(...args);};}});
  const reset=async(count=30,shields=0)=>{
   await page.evaluate(({count,shields})=>{

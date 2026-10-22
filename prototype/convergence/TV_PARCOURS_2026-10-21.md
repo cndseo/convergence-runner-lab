@@ -32,6 +32,12 @@ Le réglage des barrages reste celui de la PR #26 pour les parcours attentifs. L
 
 ## Livraison et limites
 
-Prévisualisation distincte prévue : `https://heros-convergence.72-61-167-161.sslip.io/tv-parcours/`. Construction Docker Node 24 sur le VPS, sans réseau dans le conteneur de build, ni GitHub Actions. Dossier propre et URL neuve, sans remplacer les anciennes prévisualisations. `revision.txt` identifie le commit construit. Le script `tools/deploy-road-tv-preview.sh` refuse d'écraser une prévisualisation existante.
+Prévisualisation distincte publiée : `https://heros-convergence.72-61-167-161.sslip.io/tv-parcours/`. Construction Docker Node 24 sur le VPS, sans réseau dans le conteneur de build, ni GitHub Actions. Dossier propre et URL neuve, sans remplacer les anciennes prévisualisations. `revision.txt` identifie le commit construit. Le script `tools/deploy-road-tv-preview.sh` refuse d'écraser une prévisualisation existante.
 
 La validation sur un iPhone physique et l'écoute réelle restent à faire. Les appels aux sons sont contrôlés automatiquement ; cela ne remplace pas l'écoute sur l'appareil. Les probabilités théoriques ne remplacent pas une session de jeu humaine. Aucun changement de main, de jeu.laconvergence.fr ou de la configuration Stripe.
+
+## Contrôle final du build HTTPS
+
+Passe Chrome 390×844 effectuée sur l'URL publiée : **12/12 quartiers gagnés gratuitement**, concordance exacte avec le simulateur, zéro erreur JavaScript et zéro asset en erreur. Tous les contrôles tactiles, collisions, sons appelés, pause/focus, BRAV-M, sauvegardes, souris et Daily réussis. Avec 312 silhouettes : projection moyenne 0,0063 ms, frame médiane 18,2 ms et p95 18,6 ms sur Chrome du GMK.
+
+Commit réellement construit et servi : `e8567b079359ab8c79539e76db6f750c6860a2aa`. Les commits de compte rendu ultérieurs ne modifient pas le code de l'application. Les captures présentes dans le dossier QA proviennent de cette URL HTTPS. `deployment.json` conserve le statut 200, la révision et les empreintes SHA-256 des bundles servis.
