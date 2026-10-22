@@ -1,0 +1,43 @@
+<!doctype html>
+<html lang="fr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>CONVERGENCE — Cockpit privé</title>
+<style>
+:root{color-scheme:dark;font:16px system-ui,sans-serif;background:#090f19;color:#f4f3ee}
+body{margin:0;padding:24px;max-width:1150px;margin-inline:auto}
+header{display:flex;align-items:center;justify-content:space-between;gap:15px;flex-wrap:wrap}
+h1{font-size:25px;margin:8px 0}h2{font-size:16px}
+button{background:#ffcc38;color:#171717;border:0;border-radius:9px;padding:12px;font-weight:800;cursor:pointer}
+button.secondary{background:#25354b;color:#fff}
+.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(165px,1fr));gap:12px;margin:26px 0}
+.metric,section{border:1px solid #304154;background:#172234;border-radius:14px;padding:17px}
+.metric strong{display:block;font-size:33px;margin-top:12px;color:#ffcc38}
+.metric small,small,.muted{color:#a9b7cc}
+table{width:100%;border-collapse:collapse}td,th{text-align:left;padding:12px;border-bottom:1px solid #304154}
+.columns{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+@media(max-width:650px){.columns{grid-template-columns:1fr}}
+#app{display:none}#auth{margin-top:48px;max-width:480px}
+#error{white-space:pre-wrap;color:#f09e9e}
+#admin-email{display:block;width:100%;box-sizing:border-box;padding:12px;margin:12px 0;font-size:16px;border-radius:9px;border:1px solid #728ba3;background:#091524;color:#fff}
+#auth-error{color:#e1adad}
+</style></head><body>
+<header><h1>CONVERGENCE <span class="muted">/ Cockpit privé</span></h1><div><button id="refresh" class="secondary">Actualiser</button> <button id="logout" class="secondary">Déconnexion</button></div></header>
+<section id="auth"><h2>Accès réservé à l'administration</h2><p>Utilise ton compte administrateur autorisé.</p>
+<button id="signin" type="button">Continuer avec Google</button>
+<input id="admin-email" type="email" autocomplete="email" placeholder="Adresse e-mail de l’administrateur" maxlength="254" hidden>
+<button id="signin-email" type="button" hidden>Recevoir un lien de connexion</button>
+<p id="auth-error" role="status"></p></section>
+<main id="app"><p class="muted">Présence anonyme actualisée toutes les 15 s. « En ligne » inclut le menu ; « En jeu » concerne les parties en cours. Aucune identité ni IP de visiteur n’est affichée ou conservée par ce compteur. Les sessions de 24 h sont estimées par tranches de 5 minutes.</p>
+<div class="cards">
+<div class="metric"><small>Visiteurs en ligne / 90 s</small><strong id="online">—</strong></div>
+<div class="metric"><small>En jeu / 90 s</small><strong id="active">—</strong></div>
+<div class="metric"><small>Sessions ~24 h</small><strong id="visitors">—</strong></div>
+<div class="metric"><small>Comptes liés</small><strong id="accounts">—</strong></div>
+<div class="metric"><small>Joueurs enregistrés</small><strong id="players">—</strong></div>
+<div class="metric"><small>Scores du jour</small><strong id="scores">—</strong></div>
+<div class="metric"><small>Achats confirmés / 24 h</small><strong id="orders">—</strong></div>
+<div class="metric"><small>Chiffre d'affaires brut / 24 h</small><strong id="revenue">—</strong></div>
+</div>
+<div class="columns"><section><h2>Acquisition par source ~24 h</h2><table><thead><tr><th>Source</th><th>Sessions</th></tr></thead><tbody id="sources"></tbody></table></section>
+<section><h2>Produits achetés / 24 h</h2><table><thead><tr><th>Produit</th><th>Achats</th></tr></thead><tbody id="products"></tbody></table></section></div>
+<p id="timestamp" class="muted"></p><p id="error" role="alert"></p>
+</main><script type="module" src="./src/cockpit.js"></script></body></html>

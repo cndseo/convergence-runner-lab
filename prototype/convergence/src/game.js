@@ -1,6 +1,7 @@
 import * as THREE from 'three';
 import { HeroSystem } from './heroSystem.js';
 import { PlayerExperience } from './playerExperience.js';
+import { AccountPortal } from './accountPortal.js';
 import { updateReferenceMotorcycleCharge } from './policeReferenceSprites.js';
 import { BravmGateCharge } from './bravmGateCharge.js';
 import {campaignCombatExchange,applyCampaignPatrol} from './campaignCombatRules.mjs';
@@ -128,6 +129,7 @@ export class Game {
         this.parisJourney = new ParisJourney(this);
         this.experience = new PlayerExperience(this);
         this.heroes = new HeroSystem(this);
+        this.accountPortal = new AccountPortal(this);
         // Warm the shared CC0 asset caches while the user views the menu.
         Promise.allSettled([preloadRunnerHumanoid(),preloadPoliceHumanoid(),preloadMotorcycle()]);
         this.animate();
