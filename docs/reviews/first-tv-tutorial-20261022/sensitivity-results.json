@@ -1,0 +1,30 @@
+{
+  "timestamp": "2026-10-22",
+  "results": "pass",
+  "unit_tests": 103,
+  "viewport": {
+    "width": 390,
+    "height": 844
+  },
+  "drag_start_px": {
+    "old": 10,
+    "new": 2
+  },
+  "steering_gain": {
+    "old": 0.02,
+    "new": 0.026
+  },
+  "checks": {
+    "mouse_after_3px": 0.078,
+    "touch_after_3px": 0.078,
+    "drag_73px": 1.898,
+    "clamped": -3.5,
+    "tv_5px_tap": "left",
+    "tv_tutorial": "pass",
+    "restart_from_pause": "pass",
+    "restart_from_defeat": "pass",
+    "errors": [],
+    "badAssets": []
+  },
+  "caveat": "Browser simulated touch; physical iPhone not yet tested"
+}

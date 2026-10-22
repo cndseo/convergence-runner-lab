@@ -25,23 +25,23 @@ export class FirstTVTutorial {
   this.elapsed=0;
   this.hide();
  }
- hide(){this.root.hidden=true;}
+ hide(){if(!this.root.hidden)this.root.hidden=true;}
  resolve(gate){
   if(gate===this.firstGate){this.done=true;this.hide();}
  }
  update(dt){
   const g=this.game,gate=this.firstGate;
   if(this.done||!gate||!this.choice.active()||g.state!=='playing'||
-    g.geographicLevel!==1||gate.passed||this.choice.next()!==gate||
-    !this.choice.eligible(gate)){
+    g.geographicLevel!==1||gate.passed){
    this.hide();return;
   }
   const distance=gate.z-g.trackZ;
-  // Trigger only when the TV pair is actually within finger-tap reach.
+  // Avoid gate sorting, projections and layout reads outside the short TV approach.
   if(distance>19.5||distance<=1){this.hide();return;}
   this.elapsed+=dt;
-  if(this.elapsed<0.065&&!this.root.hidden)return;
+  if(this.elapsed<0.10&&!this.root.hidden)return;
   this.elapsed=0;
+  if(!this.choice.eligible(gate)){this.hide();return;}
   const targets=this.choice.targets();
   if(targets.length!==2){this.hide();return;}
   const rect=this.choice.canvas.getBoundingClientRect();

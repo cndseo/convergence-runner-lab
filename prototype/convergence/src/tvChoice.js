@@ -1,6 +1,7 @@
 import * as THREE from 'three';
 import {TV_TAP_SLOP,canTapTV,claimTV,isTVTap,applyTVImpact,TV_IMPACT_LEAD} from './tvRoadRules.mjs';
 import {FirstTVTutorial} from './firstTVTutorial.js';
+import {steeringThreshold,steerFromPixels} from './steeringRules.mjs';
 
 // No DOM choice surface. Project only the next physical TV's existing PNG plane,
 // never raycast the crowd (up to 312 figures) or the street. CSS-pixel touch bounds.
@@ -31,7 +32,8 @@ export class TVChoice {
    const pane=gate[side+'Mesh'];if(!pane)continue;
    let visible=true;for(let n=pane;n;n=n.parent)if(!n.visible)visible=false;
    if(!visible)continue;
-   pane.updateWorldMatrix(true,false);pane.geometry.computeBoundingBox();
+   pane.updateWorldMatrix(true,false);
+   if(!pane.geometry.boundingBox)pane.geometry.computeBoundingBox();
    const b=pane.geometry.boundingBox,points=[];
    for(const x of [b.min.x,b.max.x])for(const y of [b.min.y,b.max.y]){
     const p=new THREE.Vector3(x,y,0).applyMatrix4(pane.matrixWorld).project(g.camera);
@@ -130,9 +132,10 @@ export class TVChoice {
   });
   c.addEventListener('pointermove',e=>{
    const p=this.pointer;if(!p||p.id!==e.pointerId)return;
-   if(g.mode==='daily'||g.state==='final_chase'||Math.hypot(e.clientX-p.x,e.clientY-p.y)>TV_TAP_SLOP)p.dragged=true;
+   // Initiate directional movement on 2 px, retaining TV tap tolerance if pressed on a screen.
+   if(g.mode==='daily'||g.state==='final_chase'||Math.hypot(e.clientX-p.x,e.clientY-p.y)>steeringThreshold(!!p.target,TV_TAP_SLOP))p.dragged=true;
    if(p.dragged&&['playing','final_chase'].includes(g.state)){
-    g.isDragging=true;g.playerX=Math.max(-3.5,Math.min(3.5,g.playerX+(e.clientX-p.lastX)*.02));
+    g.isDragging=true;g.playerX=steerFromPixels(g.playerX,e.clientX-p.lastX);
    }
    p.lastX=e.clientX;
   });
