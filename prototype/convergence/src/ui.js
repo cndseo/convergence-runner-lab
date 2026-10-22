@@ -40,11 +40,13 @@ export class UIManager {
             this.game.tvChoice?.close();
             this.game.pausedState = this.game.state;
             this.game.state = 'paused'; panel.classList.remove('hidden');
+            this.resetRestartButtons();
             this.game.marseille?.showButton();this.game.genzFireworks?.showButton(); // Hide attack action immediately during pause.
             this.game.audio.pauseAudio();
         });
         document.getElementById('resume-btn').addEventListener('click', () => {
             this.game.state = this.game.pausedState || 'playing'; panel.classList.add('hidden');
+            this.resetRestartButtons();
             this.game.marseille?.showButton();this.game.genzFireworks?.showButton(); // Restore CTA only if attack can now be launched.
             this.game.audio.resumeAudio();
         });
@@ -54,8 +56,36 @@ export class UIManager {
             soundButton.textContent=muted?'SON : COUPÉ':'SON : ACTIVÉ';
         });
         this.setupButtons();
+        this.setupRestartButtons();
         this.updateHUDInfo();
         this.startShakeLoop();
+    }
+
+    setupRestartButtons() {
+        const ids=['restart-from-start-btn','restart-from-lose-btn'];
+        this.restartButtons=ids.map(id=>document.getElementById(id));
+        for(const button of this.restartButtons){
+            button.addEventListener('click',()=>{
+                this.game.audio.playClick();
+                if(button.dataset.confirmRestart==='yes'){
+                    this.resetRestartButtons();
+                    this.game.restartCampaignFromBeginning();
+                    return;
+                }
+                this.resetRestartButtons();
+                button.dataset.confirmRestart='yes';
+                button.classList.add('restart-confirm');
+                button.textContent='CONFIRMER : RETOUR AU NIVEAU 1';
+            });
+        }
+    }
+
+    resetRestartButtons() {
+        for(const button of this.restartButtons||[]){
+            button.dataset.confirmRestart='no';
+            button.classList.remove('restart-confirm');
+            button.textContent='↻ RECOMMENCER DEPUIS LE DÉBUT';
+        }
     }
 
     setupButtons() {

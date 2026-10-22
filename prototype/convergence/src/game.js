@@ -226,6 +226,23 @@ export class Game {
         }
     }
 
+    restartCampaignFromBeginning() {
+        // Reset campaign position only. Keep paid entitlements, earned upgrades and hero XP.
+        this.mode = 'campaign';
+        this.dailyDate = null;
+        this.campaignLevelBackup = null;
+        this.parisDevSelection = false;
+        this.level = 1;
+        this.parisLevel = 1;
+        this.campaignComplete = false;
+        this.finalCaptured = false;
+        this.story.introSeen = false;
+        this.ui.hideAllScreens();
+        document.getElementById('pause-panel')?.classList.add('hidden');
+        this.saveProgress();
+        this.startWithIntro({newRun:true});
+    }
+
     startDailyChallenge(day=utcChallengeDate()) {
         if(this.mode!=='daily')this.campaignLevelBackup=this.level;
         this.mode='daily';

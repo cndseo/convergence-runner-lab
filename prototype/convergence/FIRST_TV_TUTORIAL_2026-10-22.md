@@ -21,3 +21,14 @@ Module `src/firstTVTutorial.js` branché sur le contrôleur existant `TVChoice`;
 
 ## Livraison
 Branche indépendante. Prévisualisation HTTPS isolée pour confirmation sur iPhone physique ; ni Stripe ni la version publique ne doivent être modifiés avant validation.
+
+
+## Extension — Recommencer depuis le début
+La fenêtre Pause et l'écran de défaite proposent « ↻ RECOMMENCER DEPUIS LE DÉBUT ». Un deuxième appui confirme l'opération. Sur confirmation, la méthode restartCampaignFromBeginning() ramène le quartier et le niveau de campagne à 1, supprime l'état de fin de partie, sauvegarde la position, puis lance automatiquement le prologue d'origine. Le tutoriel de la première TV réapparaît lors du nouveau parcours.
+
+Les achats Stripe, crédits disponibles, profil et XP du héros, améliorations, costumes et pièces gagnées ne sont ni supprimés ni réinitialisés. Seule la progression de campagne et la partie en cours sont recommencées. Le bouton Reprendre annule une confirmation non validée.
+
+### Vérifications supplémentaires
+- npm test : 101/101 réussis, build Vite --base / réussi.
+- Chrome tactile iPhone 390×844 : retour au niveau 1 depuis quartier 5 via Pause et depuis quartier 8 via l'écran de défaite ; double confirmation, annulation par Reprendre, intro et tutoriel réinitialisés, sauvegarde mise à jour ; pièces, améliorations, XP et clé de propriété test conservés.
+- Aucune erreur JavaScript ou ressource manquante. Captures restart-pause-iphone-390.png, restart-confirm-iphone-390.png et rapport restart-results.json.

@@ -1,0 +1,35 @@
+{
+  "ok": true,
+  "url": "http://127.0.0.1:4731/",
+  "checks": [
+    {
+      "name": "pause-two-press-restart-level-one-intro-save-preserve-purchases",
+      "state": "intro",
+      "level": 1,
+      "parisLevel": 1,
+      "mode": "campaign",
+      "runId": 2,
+      "coins": 71,
+      "crowdUpgrade": 2,
+      "strengthUpgrade": 3,
+      "heroXP": 120,
+      "marker": "owned",
+      "savedLevel": 1,
+      "savedParisLevel": 1,
+      "storyReady": true,
+      "introSeen": true,
+      "tutorialGate": true,
+      "marseilleGiftClaimed": false
+    },
+    {
+      "name": "first-TV-tutorial-reset-after-restart",
+      "ok": true
+    },
+    {
+      "name": "defeat-screen-restart-from-beginning",
+      "ok": true
+    }
+  ],
+  "errors": [],
+  "badAssets": []
+}
