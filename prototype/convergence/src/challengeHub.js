@@ -429,7 +429,7 @@ export class ChallengeHub {
     this.note.textContent=await shareResultCard({...result,mode:'daily'},location.origin+location.pathname,this.resultCard,this.game.experience?.telemetry);
   }
   async checkout(sku){
-    if(this.game.accountPortal && !this.game.accountPortal.isLinked && import.meta.env.VITE_CONVERGENCE_SUPABASE_URL){
+    if(this.game.accountPortal && !this.game.accountPortal.isLinked && import.meta.env.VITE_CONVERGENCE_API){
       this.game.accountPortal.open();
       this.game.accountPortal.status('Connecte ton compte pour protéger et retrouver tes achats.');
       return;

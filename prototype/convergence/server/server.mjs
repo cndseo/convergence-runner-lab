@@ -6,6 +6,7 @@ import { dirname, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { utcChallengeDate, validChallengeDate, computeDailyScore } from '../src/dailyChallenge.mjs';
 import { installAccountTables, createAccountRoutes } from './account.mjs';
+import { installIdentityTables, createIdentityRoutes } from './identity.mjs';
 
 export const PRODUCTS = Object.freeze({
  spiderman:{sku:'spiderman',name:'CONVERGENCE — Personnage Spider-Man',cents:199,description:'Personnage déguisé - apparence visuelle, sans avantage tactique'},
@@ -40,6 +41,7 @@ function database(file){
  CREATE TABLE IF NOT EXISTS genz_redemptions(request_id TEXT PRIMARY KEY,player_id TEXT NOT NULL REFERENCES players(id),remaining INTEGER NOT NULL,created TEXT NOT NULL);
  CREATE TABLE IF NOT EXISTS unclaimed_orders(session_id TEXT PRIMARY KEY,sku TEXT NOT NULL,created TEXT NOT NULL);`);
  installAccountTables(db);
+ installIdentityTables(db);
  return db;
 }
 function auth(db,req){
@@ -57,7 +59,8 @@ async function readBody(req){
 export function createApiServer({dbPath=':memory:',clock=()=>new Date(),corsOrigins=[],
  gameUrl='http://127.0.0.1:4320/convergence-runner-lab/convergence/',stripeClient=null,
  webhookSecret='',paymentsMode='disabled',paymentLinks={},
- supabaseUrl='',supabasePublishableKey='',adminSubjects='',verifyIdentity}={}){
+ adminSubjects='',verifyIdentity,publicApiUrl='',googleClientId='',googleClientSecret='',
+ smtpHost='',smtpPort=587,smtpUser='',smtpPass='',smtpFrom='',sendEmail,googleOAuthClient,trustLocalProxy=false}={}){
  if(!['disabled','test','live'].includes(paymentsMode))throw Error('Invalid payments mode');
  if(paymentsMode==='live' && ((!stripeClient&&!Object.keys(paymentLinks).length)||!webhookSecret||!gameUrl.startsWith('https://')))
   throw Error('Live payments require HTTPS game URL, Checkout or Payment Links, and webhook signature');
@@ -66,7 +69,9 @@ export function createApiServer({dbPath=':memory:',clock=()=>new Date(),corsOrig
  if(!validLinks)throw Error('Invalid Payment Links configuration');
  const paymentsReady=['test','live'].includes(paymentsMode)&&!!stripeClient&&!!webhookSecret;
  const db=database(dbPath);
- const accountRoutes=createAccountRoutes({db,clock,supabaseUrl,supabasePublishableKey,adminSubjects,verifyIdentity,products:PRODUCTS});
+ const identity=createIdentityRoutes({db,clock,gameUrl,publicApiUrl,googleClientId,googleClientSecret,
+   smtpHost,smtpPort,smtpUser,smtpPass,smtpFrom,sendEmail,googleOAuthClient,trustLocalProxy});
+ const accountRoutes=createAccountRoutes({db,clock,adminSubjects,verifyIdentity,consumeIdentity:identity.consume,products:PRODUCTS});
  const origins=new Set([...corsOrigins,new URL(gameUrl).origin,'http://127.0.0.1:4320','http://localhost:4320']);
  const server=http.createServer(async(req,res)=>{
   const origin=req.headers.origin;
@@ -80,6 +85,7 @@ export function createApiServer({dbPath=':memory:',clock=()=>new Date(),corsOrig
   if(req.method==='OPTIONS'){res.writeHead(204);res.end();return;}
   try{
    const uri=new URL(req.url,'http://localhost'),path=uri.pathname;
+   if(await identity.routes(req,res,path,uri))return;
    if(await accountRoutes(req,res,path))return;
    if(req.method==='GET'&&path==='/api/v1/health')
     return json(res,200,{ok:true,leaderboard:true,payments:paymentsReady?paymentsMode:'disabled',currency:'eur'});
@@ -153,7 +159,7 @@ export function createApiServer({dbPath=':memory:',clock=()=>new Date(),corsOrig
     if(!paymentsReady)return json(res,503,{error:'payments_disabled'});
     const player=auth(db,req);
     if(!player)return json(res,401,{error:'unauthorized'});
-    if(supabaseUrl && !db.prepare('SELECT 1 FROM account_links WHERE player_id=?').get(player.id))
+    if(identity.configured && !db.prepare('SELECT 1 FROM account_links WHERE player_id=?').get(player.id))
       return json(res,409,{error:'account_required'});
     const params=JSON.parse((await readBody(req)).toString('utf8'));
     const product=PRODUCTS[params.sku];
@@ -250,8 +256,15 @@ if(process.argv[1]&&resolve(process.argv[1])===fileURLToPath(import.meta.url)){
   gameUrl,
   stripeClient,webhookSecret,
   paymentsMode:mode,paymentLinks,
-  supabaseUrl:process.env.SUPABASE_URL||'',
-  supabasePublishableKey:process.env.SUPABASE_PUBLISHABLE_KEY||'',
+  publicApiUrl:process.env.AUTH_PUBLIC_URL||'',
+  googleClientId:process.env.GOOGLE_CLIENT_ID||'',
+  googleClientSecret:process.env.GOOGLE_CLIENT_SECRET||'',
+  smtpHost:process.env.SMTP_HOST||'',
+  smtpPort:process.env.SMTP_PORT||587,
+  smtpUser:process.env.SMTP_USER||'',
+  smtpPass:process.env.SMTP_PASS||'',
+  smtpFrom:process.env.SMTP_FROM||'',
+  trustLocalProxy:process.env.TRUST_LOCAL_PROXY==='1',
   adminSubjects:process.env.CONVERGENCE_ADMIN_SUBJECTS||''
  });
  const port=Number(process.env.PORT||4319);

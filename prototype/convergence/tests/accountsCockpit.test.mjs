@@ -66,7 +66,10 @@ test('identity, admin and progress endpoints reject unauthorized calls',async()=
     assert.equal((await req('/api/v1/account/link',json({},'fake'))).code,401);
     assert.equal((await req('/api/v1/admin/summary')).code,403);
     assert.equal((await req('/api/v1/admin/summary',{headers:{Authorization:'Bearer google-b'}})).code,403);
-    const summary=await req('/api/v1/admin/summary',{headers:{Authorization:'Bearer google-a'}});
+    const adminGuest=(await req('/api/v1/players',{method:'POST'})).data;
+    const adminLink=(await req('/api/v1/account/link',json({guestToken:adminGuest.token},'google-a'))).data;
+    const adminHeader={Authorization:'Bearer '+adminLink.token};
+    const summary=await req('/api/v1/admin/summary',{headers:adminHeader});
     assert.equal(summary.code,200);assert.equal(summary.data.active,0);
     const guest=(await req('/api/v1/players',{method:'POST'})).data;
     assert.equal((await req('/api/v1/account/progress',json({revision:0,progress:{coins:999999999999}},guest.token))).code,400);
@@ -76,7 +79,7 @@ test('identity, admin and progress endpoints reject unauthorized calls',async()=
     assert.equal((await req('/api/v1/presence',json({sessionId:'not-a-uuid',source:'x'}))).code,400);
     const valid='20d0400f-0d51-4924-9d9a-f22000000000';
     assert.equal((await req('/api/v1/presence',json({sessionId:valid,source:'tiktok'}))).code,200);
-    const after=await req('/api/v1/admin/summary',{headers:{Authorization:'Bearer google-a'}});
+    const after=await req('/api/v1/admin/summary',{headers:adminHeader});
     assert.equal(after.data.active,1);
     assert.deepEqual(after.data.sources,[{source:'tiktok',n:1}]);
   });

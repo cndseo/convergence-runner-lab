@@ -1,1 +1,1 @@
-{"name":"convergence-score-api","private":true,"type":"module","scripts":{"start":"node server.mjs"},"engines":{"node":">=24"},"dependencies":{"stripe":"22.6.0"}}
+{"name":"convergence-score-api","private":true,"type":"module","scripts":{"start":"node server.mjs"},"engines":{"node":">=24"},"dependencies":{"google-auth-library":"11.3.1","nodemailer":"10.2.1","stripe":"22.6.0"}}

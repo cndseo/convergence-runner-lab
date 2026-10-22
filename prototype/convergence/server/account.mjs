@@ -1,4 +1,5 @@
 import crypto from 'node:crypto';
+import { normalizeHeroSave } from '../src/heroRules.mjs';
 
 const digest = value => crypto.createHash('sha256').update(value).digest('hex');
 const send = (res,status,data) => {
@@ -36,6 +37,12 @@ const validProgress = p => {
   if(!x.ownedSkins||!x.ownedThemes)return null;
   x.equippedSkin=typeof p.equippedSkin==='string'&&/^[a-z0-9_-]{1,32}$/.test(p.equippedSkin)?p.equippedSkin:'blue';
   x.equippedTheme=typeof p.equippedTheme==='string'&&/^[a-z0-9_-]{1,32}$/.test(p.equippedTheme)?p.equippedTheme:'default';
+  if(p.heroSave)x.heroSave=normalizeHeroSave(p.heroSave);
+  if(p.badges&&typeof p.badges==='object'&&!Array.isArray(p.badges)){
+    x.badges={};
+    for(const [k,v] of Object.entries(p.badges))if(/^([1-9]|1[0-2])$/.test(k)&&v&&typeof v==='object')
+      x.badges[k]={won:v.won===true,badge:v.badge===true,best:Number.isSafeInteger(v.best)?Math.max(0,Math.min(1000,v.best)):0};
+  }
   return x;
 };
 const nowISO = clock => clock().toISOString();
@@ -70,21 +77,9 @@ function mergePlayers(db,into,from,clock){
     db.prepare('DELETE FROM '+table+' WHERE player_id=?').run(from);
   db.prepare('DELETE FROM players WHERE id=?').run(from);
 }
-export function createAccountRoutes({db,clock=()=>new Date(),supabaseUrl='',supabasePublishableKey='',adminSubjects='',verifyIdentity,products={}}={}){
-  const base=String(supabaseUrl).replace(/\/$/,'');
+export function createAccountRoutes({db,clock=()=>new Date(),adminSubjects='',consumeIdentity,verifyIdentity,products={}}={}){
   const admins=new Set(adminSubjects.split(',').map(x=>x.trim()).filter(Boolean));
-  const verify=verifyIdentity|| (async token=>{
-    if(!/^https:\/\/[a-z0-9]{20}\.supabase\.co$/.test(base)||!supabasePublishableKey||!token)return null;
-    try{
-      const res=await fetch(base+'/auth/v1/user',{
-        headers:{apikey:supabasePublishableKey,Authorization:'Bearer '+token},
-        signal:AbortSignal.timeout(4000)
-      });
-      if(!res.ok)return null;
-      const user=await res.json();
-      return /^[\da-f-]{36}$/.test(user.id||'')?user.id:null;
-    }catch{return null;}
-  });
+  const verify=verifyIdentity||consumeIdentity||(()=>null);
   const provision=(id,subject) => {
     if(id)return id;
     const newId=crypto.randomUUID(),token=issueToken();
@@ -94,18 +89,22 @@ export function createAccountRoutes({db,clock=()=>new Date(),supabaseUrl='',supa
   };
   return async(req,res,path) => {
     if(path==='/api/v1/account/link' && req.method==='POST'){
-      const subject=await verify(bearer(req));if(!subject)return send(res,401,{error:'invalid_identity'}),true;
-      const body=await parse(req),guest=playerFromToken(db,body.guestToken),existing=db.prepare('SELECT player_id AS id FROM account_links WHERE subject=?').get(subject);
-      let id=existing?.id||null;
+      const body=await parse(req);
       db.exec('BEGIN IMMEDIATE');
       try{
-        if(!id&&guest&&!db.prepare('SELECT 1 FROM account_links WHERE player_id=?').get(guest.id)){
+        const subject=await verify(bearer(req));
+        if(!subject){db.exec('ROLLBACK');send(res,401,{error:'invalid_identity'});return true;}
+        const guest=playerFromToken(db,body.guestToken);
+        const existing=db.prepare('SELECT player_id AS id FROM account_links WHERE subject=?').get(subject);
+        const guestAlreadyLinked=guest&&db.prepare('SELECT 1 FROM account_links WHERE player_id=?').get(guest.id);
+        let id=existing?.id||null;
+        if(!id&&guest&&!guestAlreadyLinked){
           id=guest.id;db.prepare('INSERT INTO account_links VALUES(?,?)').run(subject,id);
           // Guest access is replaced by scoped device sessions after account linking.
           db.prepare('UPDATE players SET token_hash=? WHERE id=?').run(digest(issueToken()),id);
         }else{
           id=provision(id,subject);
-          if(guest&&guest.id!==id&&!db.prepare('SELECT 1 FROM account_links WHERE player_id=?').get(guest.id))
+          if(guest&&guest.id!==id&&!guestAlreadyLinked)
             mergePlayers(db,id,guest.id,clock);
         }
         const token=issueToken();
@@ -113,6 +112,12 @@ export function createAccountRoutes({db,clock=()=>new Date(),supabaseUrl='',supa
         db.exec('COMMIT');
         return send(res,200,{playerId:id,token}),true;
       }catch(e){db.exec('ROLLBACK');throw e;}
+    }
+    if(path==='/api/v1/account/me' && req.method==='GET'){
+      const player=playerFromToken(db,bearer(req));
+      if(!player){send(res,401,{error:'unauthorized'});return true;}
+      const linked=!!db.prepare('SELECT 1 FROM account_links WHERE player_id=?').get(player.id);
+      send(res,200,{playerId:player.id,linked});return true;
     }
     if(path==='/api/v1/account/logout' && req.method==='POST'){
       const token=bearer(req);
@@ -148,8 +153,9 @@ export function createAccountRoutes({db,clock=()=>new Date(),supabaseUrl='',supa
       return send(res,200,{ok:true}),true;
     }
     if(path==='/api/v1/admin/summary' && req.method==='GET'){
-      const subject=await verify(bearer(req));
-      if(!subject||!admins.has(subject))return send(res,403,{error:'forbidden'}),true;
+      const player=playerFromToken(db,bearer(req));
+      const authorized=player&&db.prepare('SELECT subject FROM account_links WHERE player_id=?').all(player.id).some(x=>admins.has(x.subject));
+      if(!authorized)return send(res,403,{error:'forbidden'}),true;
       const now=clock().getTime(),today=new Date(now).toISOString().slice(0,10);
       const period=new Date(now-86400000).toISOString(),live=new Date(now-90000).toISOString();
       db.prepare('DELETE FROM player_presence WHERE last_seen<?').run(new Date(now-14*86400000).toISOString());

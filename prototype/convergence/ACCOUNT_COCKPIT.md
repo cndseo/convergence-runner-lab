@@ -1,45 +1,63 @@
-# CONVERGENCE — comptes, achats, classements et cockpit
+# CONVERGENCE — comptes et cockpit autonomes (sans Supabase)
 
-## Réalisé sur branche isolée
-- Jeu invité maintenu et sauvegardes locales préservées.
-- Connexion Google, Apple et e-mail à usage unique via Supabase Auth et PKCE (inspiré de Frairot, instance indépendante).
-- Association du compte à la partie invitée; anciens scores, inventaire, achats et munitions conservés.
-- Sessions multidevices avec jetons distincts, révocation de session lors de la déconnexion.
-- Sauvegarde cloud de progression avec révision et prévention de régression accidentelle.
-- Classement serveur existant conservé et recalcul des résultats.
-- Cockpit privé: comptes enregistrés, sessions actives, scores, achats confirmés, revenus bruts, acquisition.
-- Mesure de présence facultative uniquement après consentement, à 30 secondes d'intervalle, actif si signal dans les 90 secondes.
-- Le journal SQLite ne stocke pas l'adresse IP dans cette fonctionnalité; l'infrastructure d'hébergement peut avoir ses propres logs.
+## Architecture retenue
+- Node.js 24 + SQLite restent le serveur et la base métier de référence, sur notre VPS.
+- Authentification Google par OAuth 2.0 / OpenID Connect, code d'autorisation, state, nonce et PKCE (vérification Google côté serveur).
+- Connexion e-mail par lien à usage unique, valable 15 minutes, envoyé en SMTP sécurisé ; jamais de mot de passe.
+- Les fournisseurs sont des options interchangeables, pas des gestionnaires de notre base de données.
+- Connexion Google/e-mail rattachée à un joueur enregistré dans SQLite et conservant scores, objets achetés, renforts, munitions et progression.
+- Invité = jeu gratuit sans compte. Quand la connexion est activée, compte nécessaire avant achat.
+- Les sessions sont propres à chaque appareil et révocables. Un compte lié ne peut pas être revendiqué silencieusement par une nouvelle identité.
+- Classement du défi quotidien calculé sur le serveur, nom de joueur optionnel.
+- Cockpit privé : UID administrateur autorisé sous forme google:<sub> ou email:<adresse>, vérification côté API sur le jeton de session.
+- Mesure des joueurs actifs uniquement après consentement. Fenêtre actif = dernière présence durant 90 s, via heartbeat toutes les 30 s, suppression des présences vieilles de 14 jours.
+- Revenus estimés par produits et montants catalogues des paiements enregistrés, hors remboursements et frais Stripe.
 
-## Configuration externe à faire avant toute activation publique
-Créer un projet Supabase dédié CONVERGENCE, distinct de celui de Frairot, après validation des frais éventuels.
-Activer Google OAuth, Apple OAuth et les liens e-mail.
-Ajouter les redirects autorisés:
-https://jeu.laconvergence.fr/
-https://jeu.laconvergence.fr/cockpit.html
+## Variables publiques, compilation du jeu
+VITE_CONVERGENCE_API=https://api.laconvergence.fr
 
-Variables publiques Vite:
-VITE_CONVERGENCE_API=https://API_HTTPS
-VITE_CONVERGENCE_SUPABASE_URL=https://PROJET.supabase.co
-VITE_CONVERGENCE_SUPABASE_PUBLISHABLE_KEY=<cle publique>
+Aucun secret Google, SMTP, Stripe, cookie, JWT ou clé d'administration n'est distribué dans les fichiers JS du jeu.
 
-Variables privées du serveur:
-SUPABASE_URL=https://PROJET.supabase.co
-SUPABASE_PUBLISHABLE_KEY=<cle publique>
-CONVERGENCE_ADMIN_SUBJECTS=<UID admin du projet Supabase>
-DB_PATH=<chemin persistant de SQLite, sauvegardé>
-ALLOWED_ORIGINS=https://jeu.laconvergence.fr
+## Variables de l'API sur VPS uniquement
+AUTH_PUBLIC_URL=https://api.laconvergence.fr
 GAME_URL=https://jeu.laconvergence.fr/
+ALLOWED_ORIGINS=https://jeu.laconvergence.fr
+DB_PATH=/chemin/prive/convergence.sqlite
+PORT=4319
+HOST=127.0.0.1
+TRUST_LOCAL_PROXY=1
+GOOGLE_CLIENT_ID=<client_id_application_web>
+GOOGLE_CLIENT_SECRET=<secret_google>
+SMTP_HOST=<smtp>
+SMTP_PORT=465
+SMTP_USER=<compte>
+SMTP_PASS=<secret>
+SMTP_FROM=CONVERGENCE <notifications@domaine>
+CONVERGENCE_ADMIN_SUBJECTS=google:<sub_du_compte_admin>
 
-Ne jamais mettre les clés service_role, le secret Stripe ou les comptes admin dans le JavaScript public.
-Les JWT sont vérifiés par appel au fournisseur d'identité depuis le serveur; le simple ID donné par le client n'est pas accepté.
-Le cockpit est une page statique à accès données restreint côté API: le HTML seul ne donne aucune statistique.
+Important : la variable GOOGLE_CLIENT_ID est publique chez Google, mais le secret reste exclusivement sur le VPS.
+Chez Google Cloud, autoriser exactement https://api.laconvergence.fr/api/v1/auth/google/callback comme URI de redirection.
+Configurer HTTPS pour les deux domaines et le reverse proxy API; un certificat valide est impératif.
+La variable TRUST_LOCAL_PROXY=1 exige un proxy local de confiance qui transmet X-Real-IP depuis l'adresse client (par ex. Nginx : proxy_set_header X-Real-IP $remote_addr). Interdire l'accès direct au port Node depuis Internet.
+L'authentification renvoie le joueur vers jeu.laconvergence.fr via un ticket de connexion éphémère placé dans le fragment URL et consommé via POST une seule fois.
+Un lien e-mail arrive également sur le jeu avec un ticket éphémère (usage unique). Le ticket ne contient aucun identifiant privé en clair.
 
-## Limites et déploiement
-- Le cockpit ne peut afficher des chiffres réels qu'après raccordement de l'API et collecte consentie.
-- La reprise concerne la campagne entre les niveaux, pas la position exacte au milieu d'un niveau.
-- Google, Apple, e-mail et les achats réels nécessitent des tests externes sur les fournisseurs configurés.
-- Achat enregistré = paiement vérifié par webhook signé; le CA affiché est brut sans remboursements ni frais.
-- L'API est à déployer derrière HTTPS et SQLite doit être sauvegardé; ne pas déployer avant validation de ces conditions.
-- Commandes: npm test; npm run build.
-- Ne pas réutiliser l'instance Frairot ni ses données. Les modèles et plateformes sont remplaçables.
+## Sécurité et limites
+- Aucun nouveau coût Supabase. Les coûts éventuels SMTP, hébergement, réseau, Apple Developer et Stripe restent distincts.
+- Les tickets de connexion sont stockés uniquement sous forme de SHA-256, expirent, et ne sont valides qu'une fois.
+- Google : le serveur vérifie signature ID Token, audience, state, nonce, échange de code et PKCE.
+- E-mail : anti-flood par adresse et IP de connexion directe, réponse générique pour éviter l'énumération.
+- Sessions de jeu : jetons de 256 bits par appareil, expirent après 90 jours et sont révocables individuellement.
+- La progression est sauvegardée entre les niveaux. Pas de reprise à la seconde près en pleine course.
+- Google et e-mail ne sont pas fusionnés automatiquement s'ils sont associés à des joueurs différents; cette opération devra être explicitement autorisée.
+- Apple n'est pas activé : il faut un compte Apple Developer et un flux OAuth vérifié séparément, sans promettre une fonctionnalité non configurée.
+- L'API et les services Google/SMTP réels ne peuvent être validés tant que les identifiants VPS/Google/SMTP n'ont pas été configurés et un test effectué sur les domaines.
+- Le jeu actuel en production n'a pas été remplacé.
+- Sauvegardes chiffrées de SQLite et test de restauration indispensables avant mise en service.
+- Modifier uniquement la branche isolée PR #36. Ne pas remplacer le moteur ni écraser le répertoire de build d'un autre agent.
+
+## Tests
+Depuis prototype/convergence/server : npm ci
+Depuis prototype/convergence : npm ci; npm test; npm run build
+Test Chrome (GMK) : node tools/smoke-account-ui.mjs
+API : GET /api/v1/health ; GET /api/v1/auth/status ; GET /api/v1/admin/summary (auth).
