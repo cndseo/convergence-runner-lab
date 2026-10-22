@@ -67,11 +67,14 @@ export class ChallengeHub {
     close.addEventListener('click',()=>this.close());
     top.append(close);
     card.append(top);
+    const awning=make('div','shop-awning');awning.setAttribute('aria-hidden','true');
+    card.append(awning);
     const heading=make('h2','challenge-title');
+    const shopKicker=make('p','shop-kicker','Cosmétiques · Boosters · Costumes');
     const note=make('p','challenge-note');
     const body=make('div','challenge-body');
     const foot=make('div','challenge-foot');
-    card.append(heading,note,body,foot);
+    card.append(heading,shopKicker,note,body,foot);
     panel.append(card);
     this.game.ui.container.appendChild(panel);
     this.panel=panel;this.heading=heading;this.note=note;
@@ -88,6 +91,7 @@ export class ChallengeHub {
     if(kind==='premium'){this.shopSection=section;this.game.experience?.telemetry.track('store_open',{source:section});}
     this.panel.classList.remove('hidden');
     this.kind=kind;
+    this.panel.classList.toggle('shop-mode',kind==='premium');
     this.foot.replaceChildren();
     this.body.replaceChildren();
     if(kind==='daily')this.renderDaily();
@@ -197,18 +201,26 @@ export class ChallengeHub {
   }
   renderPremium(){
     this.body.replaceChildren();this.foot.replaceChildren();
-    this.heading.textContent='BOUTIQUE';
+    this.heading.textContent='🛍️ BOUTIQUE';
     this.note.textContent='Cosmétiques permanents ou consommables de campagne. Tous les niveaux restent gagnables gratuitement. Aucun avantage dans le défi du jour.';
     const tabs=make('nav','shop-categories');tabs.setAttribute('aria-label','Catégories de la boutique');
-    for(const [id,label] of [['all','Tout'],['genz','Tirs GenZ'],['marseille','Renforts'],['costumes','Costumes']]){
+    for(const [id,label] of [['all','🛒 Tout'],['genz','🚀 Tirs GenZ'],['marseille','👥 Renforts'],['costumes','👕 Costumes']]){
       const button=this.action(label,()=>{this.shopSection=id;this.renderPremium();});
       button.setAttribute('aria-pressed',String((this.shopSection||'all')===id));tabs.append(button);
     }
     this.body.append(tabs);
     const category=item=>item.id.startsWith('genz')?'genz':item.id.startsWith('marseille')?'marseille':'costumes';
-    for(const item of PREMIUM_CATALOG.filter(item=>!this.shopSection||this.shopSection==='all'||category(item)===this.shopSection)){
-      const row=make('div','challenge-product');
-      const info=make('div','');
+    // Merchandising changes display order only, not catalog identifiers or prices.
+    const featured=['genz3','genz12','marseille1','marseille3','marseille10','spiderman','dinosaur'];
+    const shown=PREMIUM_CATALOG.filter(item=>!this.shopSection||this.shopSection==='all'||category(item)===this.shopSection);
+    shown.sort((a,b)=>featured.indexOf(a.id)-featured.indexOf(b.id));
+    for(const item of shown){
+      const row=make('div','challenge-product shop-product-'+category(item));
+      row.dataset.product=item.id;
+      const visual=make('div','shop-product-art',({genz3:'🚀🎇',genz12:'🎆🚀',marseille1:'👥',marseille3:'👥✨',marseille10:'👥👥',spiderman:'🕷️',dinosaur:'🦖'})[item.id]||'🎁');
+      visual.setAttribute('aria-hidden','true');
+      row.append(visual);
+      const info=make('div','shop-product-info');
       info.append(make('strong','',item.label),make('span','',item.description),make('small','product-kind',category(item)==='costumes'?'COSMÉTIQUE PERMANENT':'CONSOMMABLE · S’ÉPUISE À L’UTILISATION'));
       if(item.art){
         const img=make('img','character-product-thumb');
@@ -220,10 +232,11 @@ export class ChallengeHub {
       const pay=this.action(item.comingSoon?'BIENTÔT':owned?'ACQUIS':(item.cents/100).toFixed(2).replace('.',',')+' €',
         ()=>this.checkout(item.id),item.comingSoon||owned||!this.paymentsEnabled||!this.buyableSkus?.has(item.id));
       pay.dataset.sku=item.id;
+      pay.classList.add('shop-price-button');
       pay.setAttribute('aria-label','Acheter '+item.label+' avec Stripe');
       row.append(info,pay);this.body.append(row);
       if(item.id==='genz3' && (!this.paymentsEnabled || this.game.qa)){
-        const preview=this.action('TESTER 3 TIRS GENZ (DÉMO)',()=>this.previewGenz());
+        const preview=this.action('🎮 TESTER 3 TIRS GENZ (DÉMO)',()=>this.previewGenz());
         preview.classList.add('character-preview-action');this.body.append(preview);
       }
       if(item.id==='marseille1' && (!this.paymentsEnabled || this.game.qa)){
@@ -240,14 +253,20 @@ export class ChallengeHub {
     }
     const charges=make('p','challenge-credit-count',
       'Interventions marseillaises disponibles : '+(this.game.marseille?.available()||0));
+    charges.classList.add('shop-available','shop-available-support');
+    charges.textContent='🛡️ 👥 '+charges.textContent;
     this.body.append(charges);
-    this.body.append(make('p','challenge-credit-count',
-      'Munitions GenZ disponibles : '+(this.game.genzFireworks?.available()||0)));
+    const genzStock=make('p','challenge-credit-count shop-available shop-available-genz',
+      '🚀 Munitions GenZ disponibles : '+(this.game.genzFireworks?.available()||0));
+    this.body.append(genzStock);
     const warning=make('p','challenge-warning',this.paymentsEnabled
       ?'Paiement sur Stripe Checkout. Uniquement après confirmation serveur.'
       :'Paiements désactivés. Le bouton TESTER permet de voir les personnages dans le prototype, sans achat.');
+    warning.textContent='ℹ️ '+warning.textContent;
     this.body.append(warning);
-    this.foot.append(this.action('← RETOUR',()=>{if(this.resumeAfterPremium)this.close();else this.open('daily');}));
+    const back=this.action('← RETOUR',()=>{if(this.resumeAfterPremium)this.close();else this.open('daily');});
+    back.classList.add('shop-back-button');
+    this.foot.append(back);
   }
   previewCharacter(id,owned=false){
     if(!['spiderman','dinosaur'].includes(id))return;
