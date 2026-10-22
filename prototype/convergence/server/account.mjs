@@ -190,7 +190,12 @@ export function createAccountRoutes({db,clock=()=>new Date(),adminSubjects='',co
     }
     if(path==='/api/v1/admin/summary' && req.method==='GET'){
       const player=playerFromToken(db,bearer(req));
-      const authorized=player&&db.prepare('SELECT subject FROM account_links WHERE player_id=?').all(player.id).some(x=>admins.has(x.subject));
+      const authorized=player&&db.prepare('SELECT subject FROM account_links WHERE player_id=?').all(player.id).some(x=>{
+        if(admins.has(x.subject))return true;
+        if(!x.subject.startsWith('google:'))return false;
+        const verified=db.prepare('SELECT email FROM google_verified_emails WHERE subject=?').get(x.subject)?.email;
+        return typeof verified==='string'&&verified.endsWith('@gmail.com')&&admins.has('email:'+verified);
+      });
       if(!authorized)return send(res,403,{error:'forbidden'}),true;
       const now=clock().getTime(),today=new Date(now).toISOString().slice(0,10);
       const period=new Date(now-86400000).toISOString(),live=new Date(now-90000).toISOString();
