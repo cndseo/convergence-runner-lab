@@ -13,12 +13,12 @@ export const request=async(path,options={})=>{
   if(!response.ok)throw Object.assign(Error(data.error||'api_unavailable'),{status:response.status,details:data});
   return data;
 };
-export async function redeemTicket(ticket,guestToken=accessToken()){
+export async function redeemTicket(ticket,guestToken=accessToken(),storageKey='convergence_challenge_token'){
   const link=await request('/api/v1/account/link',{
     method:'POST',headers:{'Content-Type':'application/json',Authorization:'Bearer '+ticket},
     body:JSON.stringify({guestToken})
   });
-  localStorage.setItem('convergence_challenge_token',link.token);
+  localStorage.setItem(storageKey,link.token);
   return link;
 }
 const readSave=()=>{try{return JSON.parse(localStorage.getItem('convergence_vertical_v1')||'null');}catch{return null;}};

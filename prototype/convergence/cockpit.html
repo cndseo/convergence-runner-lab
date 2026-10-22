@@ -17,10 +17,15 @@ table{width:100%;border-collapse:collapse}td,th{text-align:left;padding:12px;bor
 @media(max-width:650px){.columns{grid-template-columns:1fr}}
 #app{display:none}#auth{margin-top:48px;max-width:480px}
 #error{white-space:pre-wrap;color:#f09e9e}
+#admin-email{display:block;width:100%;box-sizing:border-box;padding:12px;margin:12px 0;font-size:16px;border-radius:9px;border:1px solid #728ba3;background:#091524;color:#fff}
+#auth-error{color:#e1adad}
 </style></head><body>
 <header><h1>CONVERGENCE <span class="muted">/ Cockpit privé</span></h1><div><button id="refresh" class="secondary">Actualiser</button> <button id="logout" class="secondary">Déconnexion</button></div></header>
-<section id="auth"><h2>Accès réservé à l'administration</h2><p>Connexion Google avec ton compte administrateur autorisé.</p>
-<button id="signin">Continuer avec Google</button><p id="auth-error" role="alert"></p></section>
+<section id="auth"><h2>Accès réservé à l'administration</h2><p>Utilise ton compte administrateur autorisé.</p>
+<button id="signin" type="button">Continuer avec Google</button>
+<input id="admin-email" type="email" autocomplete="email" placeholder="Adresse e-mail de l’administrateur" maxlength="254" hidden>
+<button id="signin-email" type="button" hidden>Recevoir un lien de connexion</button>
+<p id="auth-error" role="status"></p></section>
 <main id="app"><p class="muted">Statistiques : utilisateurs ayant accepté le suivi. Activité estimée sur les 90 dernières secondes.</p>
 <div class="cards">
 <div class="metric"><small>Joueurs actifs / 90 s</small><strong id="active">—</strong></div>
