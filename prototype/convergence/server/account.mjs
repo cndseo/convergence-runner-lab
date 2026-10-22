@@ -13,6 +13,8 @@ export function installAccountTables(db) {
   db.exec("CREATE TABLE IF NOT EXISTS campaign_saves (player_id TEXT PRIMARY KEY REFERENCES players(id), data TEXT NOT NULL, revision INTEGER NOT NULL DEFAULT 1, updated TEXT NOT NULL);");
   db.exec("CREATE TABLE IF NOT EXISTS player_presence (session_id TEXT PRIMARY KEY, first_seen TEXT NOT NULL, last_seen TEXT NOT NULL, source TEXT NOT NULL);");
   db.exec("CREATE INDEX IF NOT EXISTS presence_time ON player_presence(last_seen);");
+  // Only aggregated 5-minute counts are persisted; per-tab presence stays in RAM.
+  db.exec("CREATE TABLE IF NOT EXISTS audience_buckets (bucket TEXT NOT NULL, source TEXT NOT NULL, sessions INTEGER NOT NULL DEFAULT 0, PRIMARY KEY(bucket,source));");
   db.exec("CREATE TABLE IF NOT EXISTS recovery_codes (player_id TEXT PRIMARY KEY REFERENCES players(id), code_hash TEXT NOT NULL UNIQUE, updated TEXT NOT NULL);");
 }
 const playerFromToken = (db,token) => {
@@ -83,6 +85,13 @@ function mergePlayers(db,into,from,clock){
 }
 export function createAccountRoutes({db,clock=()=>new Date(),adminSubjects='',consumeIdentity,verifyIdentity,products={}}={}){
   const admins=new Set(adminSubjects.split(',').map(x=>x.trim()).filter(Boolean));
+  const onlineSessions=new Map();
+  let prunedBucket='';
+  const activeCutoff=now=>now-90000;
+  const bucketFor=ms=>new Date(Math.floor(ms/300000)*300000).toISOString().slice(0,16);
+  const pruneLive=now=>{
+    for(const [id,session] of onlineSessions)if(session.seen<activeCutoff(now))onlineSessions.delete(id);
+  };
   const verify=verifyIdentity||consumeIdentity||(()=>null);
   const provision=(id,subject) => {
     if(id)return id;
@@ -180,6 +189,28 @@ export function createAccountRoutes({db,clock=()=>new Date(),adminSubjects='',co
         .run(p.id,JSON.stringify(progress),next,nowISO(clock));
       return send(res,200,{revision:next}),true;
     }
+    if(path==='/api/v1/presence/live' && req.method==='POST'){
+      const b=await parse(req);
+      if(typeof b.sessionId!=='string'||
+          !/^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/.test(b.sessionId)||
+          !['facebook','tiktok','x','direct','other'].includes(b.source)||
+          typeof b.playing!=='boolean')
+        return send(res,400,{error:'invalid_live_presence'}),true;
+      const now=clock().getTime();
+      pruneLive(now);
+      const previous=onlineSessions.get(b.sessionId);
+      if(!previous){
+        if(onlineSessions.size>=20000)return send(res,503,{error:'presence_capacity'}),true;
+        const bucket=bucketFor(now);
+        db.prepare('INSERT INTO audience_buckets(bucket,source,sessions) VALUES(?,?,1) ON CONFLICT(bucket,source) DO UPDATE SET sessions=sessions+1').run(bucket,b.source);
+        if(prunedBucket!==bucket){
+          prunedBucket=bucket;
+          db.prepare('DELETE FROM audience_buckets WHERE bucket<?').run(bucketFor(now-25*3600000));
+        }
+      }
+      onlineSessions.set(b.sessionId,{seen:now,playing:b.playing,source:b.source});
+      return send(res,200,{ok:true}),true;
+    }
     if(path==='/api/v1/presence' && req.method==='POST'){
       const b=await parse(req);
       if(!/^[0-9a-f-]{36}$/.test(b.sessionId||'') || !['facebook','tiktok','x','direct','other'].includes(b.source))
@@ -201,12 +232,22 @@ export function createAccountRoutes({db,clock=()=>new Date(),adminSubjects='',co
       const period=new Date(now-86400000).toISOString(),live=new Date(now-90000).toISOString();
       db.prepare('DELETE FROM player_presence WHERE last_seen<?').run(new Date(now-14*86400000).toISOString());
       const one=sql=>db.prepare(sql).get()?.n||0;
-      const active=db.prepare('SELECT COUNT(*) AS n FROM player_presence WHERE last_seen>=?').get(live).n;
-      const unique=db.prepare('SELECT COUNT(*) AS n FROM player_presence WHERE first_seen>=?').get(period).n;
+      pruneLive(now);
+      const liveSessions=[...onlineSessions.values()];
+      const legacyActive=db.prepare('SELECT COUNT(*) AS n FROM player_presence WHERE last_seen>=?').get(live).n;
+      const active=legacyActive+liveSessions.filter(s=>s.playing).length;
+      const online=legacyActive+liveSessions.length;
+      const cutoffBucket=bucketFor(now-86400000);
+      const recent=db.prepare('SELECT source,SUM(sessions) AS n FROM audience_buckets WHERE bucket>=? GROUP BY source').all(cutoffBucket);
+      const unique=db.prepare('SELECT COUNT(*) AS n FROM player_presence WHERE first_seen>=?').get(period).n+
+        recent.reduce((sum,r)=>sum+r.n,0);
       const orders=db.prepare('SELECT sku,COUNT(*) AS n FROM orders WHERE created>=? GROUP BY sku').all(period);
       const scores=db.prepare('SELECT COUNT(*) AS n FROM scores WHERE day=?').get(today).n;
-      const sources=db.prepare('SELECT source,COUNT(*) AS n FROM player_presence WHERE first_seen>=? GROUP BY source').all(period);
-      return send(res,200,{at:nowISO(clock),active,visitors24h:unique,registered:one('SELECT COUNT(*) AS n FROM account_links'),playerRecords:one('SELECT COUNT(*) AS n FROM players'),dailyScores:scores,
+      const sourceCounts=new Map(recent.map(r=>[r.source,r.n]));
+      for(const row of db.prepare('SELECT source,COUNT(*) AS n FROM player_presence WHERE first_seen>=? GROUP BY source').all(period))
+        sourceCounts.set(row.source,(sourceCounts.get(row.source)||0)+row.n);
+      const sources=[...sourceCounts].map(([source,n])=>({source,n})).sort((a,b)=>b.n-a.n);
+      return send(res,200,{at:nowISO(clock),active,online,visitors24h:unique,registered:one('SELECT COUNT(*) AS n FROM account_links'),playerRecords:one('SELECT COUNT(*) AS n FROM players'),dailyScores:scores,
         purchases24h:orders.reduce((a,b)=>a+b.n,0),revenueCents24h:orders.reduce((a,b)=>a+b.n*(products[b.sku]?.cents||0),0),orders, sources}),true;
     }
     return false;
