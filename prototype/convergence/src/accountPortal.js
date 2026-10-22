@@ -26,14 +26,14 @@ const message=e=>String(e?.message||e||'Une erreur est survenue.').slice(0,160);
 function applySave(game,save){
   localStorage.setItem('convergence_vertical_v1',JSON.stringify(save));
   game.loadProgress();
-  if(s.heroSave&&game.heroes){
-    game.heroes.save=s.heroSave;
-    localStorage.setItem('convergence_hero_v1',JSON.stringify(s.heroSave));
+  if(save.heroSave&&game.heroes){
+    game.heroes.save=save.heroSave;
+    localStorage.setItem('convergence_hero_v1',JSON.stringify(save.heroSave));
     game.heroes.refreshMenu();
   }
-  if(s.badges&&game.experience){
-    game.experience.badges=s.badges;
-    localStorage.setItem('convergence_quartiers_v1',JSON.stringify(s.badges));
+  if(save.badges&&game.experience){
+    game.experience.badges=save.badges;
+    localStorage.setItem('convergence_quartiers_v1',JSON.stringify(save.badges));
   }
   game.ui?.updateMenu?.();
 }
@@ -49,7 +49,7 @@ export class AccountPortal{
       game.heroes.persist=(...args)=>{const result=persistHero(...args);this.queueSave();return result;};
     }
     this.init().catch(e=>this.status('Connexion indisponible : '+message(e)));
-    this.maybeHeartbeat();this.askAudienceConsent();
+    this.maybeHeartbeat();
   }
   getSource(){
     const s=(new URLSearchParams(location.search).get('utm_source')||'').toLowerCase();
@@ -65,11 +65,9 @@ export class AccountPortal{
     document.querySelector('.menu-actions')?.append(b);
     const panel=document.createElement('section');panel.className='account-portal hidden';panel.id='account-portal';
     panel.setAttribute('role','dialog');panel.setAttribute('aria-label','Compte CONVERGENCE');
-    panel.innerHTML='<div class="account-sheet"><button type="button" class="account-close" aria-label="Fermer">✕</button><h2>MON COMPTE CONVERGENCE</h2><p>Sauvegarde tes niveaux et retrouve tes achats sur tous tes appareils.</p><label class="account-consent">Pseudonyme dans le classement <input id="player-alias" maxlength="18" placeholder="Ton pseudo"></label><div id="account-methods"></div><p id="account-status" role="status"></p><label class="account-consent"><input type="checkbox" id="audience-opt"> Participer aux statistiques de fréquentation anonymisées (facultatif)</label></div>';
+    panel.innerHTML='<div class="account-sheet"><button type="button" class="account-close" aria-label="Fermer">✕</button><h2>MON COMPTE CONVERGENCE</h2><p>Sauvegarde tes niveaux et retrouve tes achats sur tous tes appareils.</p><label class="account-consent">Pseudonyme dans le classement <input id="player-alias" maxlength="18" placeholder="Ton pseudo"></label><div id="account-methods"></div><p id="account-status" role="status"></p></div>';
     this.game.ui.container.append(panel);this.panel=panel;
     panel.querySelector('.account-close').onclick=()=>this.close();
-    panel.querySelector('#audience-opt').checked=localStorage.getItem('convergence_audience_consent')==='yes';
-    panel.querySelector('#audience-opt').onchange=e=>{localStorage.setItem('convergence_audience_consent',e.target.checked?'yes':'no');this.maybeHeartbeat();};
     const alias=panel.querySelector('#player-alias');
     alias.value=localStorage.getItem('convergence_player_name')||'';
     alias.onchange=()=>{
@@ -94,52 +92,7 @@ export class AccountPortal{
         this.status(result.message||'Consulte ta messagerie pour ouvrir le lien de connexion.');
       }catch(e){this.status('Envoi impossible : '+message(e));}
       finally{this.emailButton.disabled=false;}
-    });this.emailButton.hidden=true;email.hidden=true;this.emailField=email;
-    this.recoveryButton=make('SAUVEGARDER · OBTENIR MON CODE PERSONNEL',async()=>{
-      this.recoveryButton.disabled=true;
-      try{
-        const token=await this.game.challengeHub.ensurePlayer();
-        const data=await request('/api/v1/account/recovery/create',{method:'POST',
-          headers:{Authorization:'Bearer '+token}});
-        this.isLinked=true;
-        this.revision=(await request('/api/v1/account/progress',{headers:{Authorization:'Bearer '+token}})).revision;
-        const progress=this.snapshot();if(progress)await this.upload(progress);
-        this.codeOutput.value=data.code;this.codeOutput.hidden=false;
-        this.copyCode.hidden=false;
-        this.signout.hidden=false;
-        this.status('Copie ton code et conserve-le dans un endroit sûr. Il donne accès à ta partie et à tes achats. Un nouveau code remplace le précédent.');
-      }catch(e){this.status('Sauvegarde impossible : '+message(e));}
-      finally{this.recoveryButton.disabled=false;}
-    });
-    this.codeOutput=document.createElement('input');this.codeOutput.readOnly=true;
-    this.codeOutput.hidden=true;this.codeOutput.setAttribute('aria-label','Code de récupération de ta partie');
-    this.codeOutput.style.cssText='width:100%;box-sizing:border-box;padding:12px;font-size:15px';
-    methods.append(this.codeOutput);
-    this.copyCode=make('COPIER MON CODE',async()=>{
-      try{await navigator.clipboard.writeText(this.codeOutput.value);this.status('Code copié. Conserve-le en lieu sûr.');}
-      catch{this.codeOutput.select();this.status('Sélectionne puis copie ton code.');}
-    });this.copyCode.hidden=true;
-    this.recoveryInput=document.createElement('input');this.recoveryInput.placeholder='Ton code personnel CV-…';
-    this.recoveryInput.autocomplete='off';this.recoveryInput.maxLength=35;
-    this.recoveryInput.style.cssText='width:100%;box-sizing:border-box;padding:12px;font-size:15px';
-    methods.append(this.recoveryInput);
-    this.recoverButton=make('RÉCUPÉRER MA PARTIE SUR CET APPAREIL',async()=>{
-      this.recoverButton.disabled=true;
-      try{
-        const guestToken=this.game.challengeHub.playerToken||'';
-        const data=await request('/api/v1/account/recovery/redeem',{method:'POST',
-          headers:{'Content-Type':'application/json'},
-          body:JSON.stringify({code:this.recoveryInput.value.trim(),guestToken})});
-        localStorage.setItem('convergence_challenge_token',data.token);
-        this.game.challengeHub.playerToken=data.token;
-        this.recoveryInput.value='';
-        this.isLinked=true;this.revision=0;
-        await this.restore();await this.game.challengeHub.refreshRemoteStatus();
-        this.signout.hidden=false;
-        this.status('Partie retrouvée ! Ton compte et tes achats sont synchronisés.');
-      }catch(e){this.status('Récupération impossible : '+message(e));}
-      finally{this.recoverButton.disabled=false;}
-    });
+    });this.emailButton.hidden=false;email.hidden=false;this.emailField=email;
     this.signout=make('SE DÉCONNECTER',()=>this.signOut());this.signout.hidden=true;
   }
   status(value){const el=this.panel?.querySelector('#account-status');if(el)el.textContent=value;}
@@ -153,8 +106,10 @@ export class AccountPortal{
     if(!configured)return;
     const [providers,ticket]=await Promise.all([request('/api/v1/auth/status'),Promise.resolve(extractTicket())]);
     this.google.hidden=!providers.google;
-    this.emailButton.hidden=!providers.email;this.emailField.hidden=!providers.email;
-    if(!providers.google&&!providers.email)this.status('Utilise un code personnel sécurisé pour sauvegarder ou récupérer ta partie sur un autre appareil.');
+    this.emailButton.disabled=!providers.email;
+    this.emailButton.title=providers.email?'':'La connexion par e-mail doit être activée sur le serveur';
+    this.emailField.hidden=false;
+    if(!providers.email)this.status('Connexion par e-mail momentanément indisponible. Google est opérationnel.');
     if(ticket){
       this.syncing=true;
       try{
@@ -225,16 +180,6 @@ export class AccountPortal{
       this.revision=remote.revision;
       this.revision=(await write()).revision;
     }
-  }
-  askAudienceConsent(){
-    if(!api||localStorage.getItem('convergence_audience_consent')!==null)return;
-    const box=document.createElement('div');box.className='audience-banner';
-    box.innerHTML='<p>Autorises-tu la mesure de fréquentation du jeu ? Sessions actives et origine du trafic, avec identifiant temporaire, conservés 14 jours. Facultatif.</p>';
-    for(const [label,choice] of [['ACCEPTER','yes'],['REFUSER','no']]){
-      const button=document.createElement('button');button.type='button';button.textContent=label;
-      button.onclick=()=>{localStorage.setItem('convergence_audience_consent',choice);this.panel.querySelector('#audience-opt').checked=choice==='yes';box.remove();this.maybeHeartbeat();};box.append(button);
-    }
-    document.body.append(box);
   }
   maybeHeartbeat(){
     clearInterval(this.heartbeat);this.heartbeat=null;
