@@ -33,11 +33,12 @@ export function installIdentityTables(db){
 }
 export function createIdentityRoutes({db,clock=()=>new Date(),gameUrl='http://127.0.0.1:4320/',
  publicApiUrl='',googleClientId='',googleClientSecret='',smtpHost='',smtpPort=587,
- smtpUser='',smtpPass='',smtpFrom='',sendEmail,googleOAuthClient,trustLocalProxy=false}={}){
+ smtpUser='',smtpPass='',smtpFrom='',emailRelayUrl='',emailRelaySecret='',sendEmail,googleOAuthClient,trustLocalProxy=false}={}){
   const publicApi=String(publicApiUrl).replace(/\/$/,'');
   const callbackUrl=publicApi ? publicApi+'/api/v1/auth/google/callback' : '';
   const googleReady=Boolean(googleClientId&&googleClientSecret&&callbackUrl);
-  const mailReady=Boolean(sendEmail || (smtpHost&&smtpUser&&smtpPass&&smtpFrom));
+  const relayReady=Boolean(/^https:\/\/jeu\.laconvergence\.fr\/auth-mail-relay\.php$/.test(emailRelayUrl)&&/^[a-f0-9]{64}$/.test(emailRelaySecret));
+  const mailReady=Boolean(sendEmail || relayReady || (smtpHost&&smtpUser&&smtpPass&&smtpFrom));
   if(process.env.NODE_ENV==='production' && (googleReady||mailReady)){
     if(!String(gameUrl).startsWith('https://'))throw Error('Production login requires HTTPS game URL');
     if(googleReady && !publicApi.startsWith('https://'))throw Error('Google OAuth callback must use HTTPS');
@@ -48,7 +49,15 @@ export function createIdentityRoutes({db,clock=()=>new Date(),gameUrl='http://12
     requireTLS:Number(smtpPort)!==465,auth:{user:smtpUser,pass:smtpPass},
     tls:{rejectUnauthorized:true}
   }):null;
-  const sendMail=sendEmail||((to,link)=>transport.sendMail({
+  const sendMail=sendEmail||(relayReady?async(to,link)=>{
+    const timestamp=String(Math.floor(clock().getTime()/1000));
+    const body=JSON.stringify({to,link});
+    const signature=crypto.createHmac('sha256',emailRelaySecret).update(timestamp+'.'+body).digest('hex');
+    const result=await fetch(emailRelayUrl,{method:'POST',headers:{'Content-Type':'application/json',
+      'X-Convergence-Timestamp':timestamp,'X-Convergence-Signature':signature},body,signal:AbortSignal.timeout(12000)});
+    if(!result.ok)throw Error('signed_mail_relay_failed');
+    return {accepted:[to]};
+  }:(to,link)=>transport.sendMail({
     from:smtpFrom,to,subject:'Connexion à CONVERGENCE',
     text:'Ouvre ce lien pour retrouver ta partie CONVERGENCE. Il est valable 15 minutes et ne fonctionne qu’une fois.\n\n'+link+
       '\n\nSi tu n’as rien demandé, ignore ce message.'

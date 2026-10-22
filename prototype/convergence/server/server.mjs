@@ -1,7 +1,7 @@
 import http from 'node:http';
 import crypto from 'node:crypto';
 import { DatabaseSync } from 'node:sqlite';
-import { mkdirSync } from 'node:fs';
+import { mkdirSync,readFileSync } from 'node:fs';
 import { dirname, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { utcChallengeDate, validChallengeDate, computeDailyScore } from '../src/dailyChallenge.mjs';
@@ -60,7 +60,7 @@ export function createApiServer({dbPath=':memory:',clock=()=>new Date(),corsOrig
  gameUrl='http://127.0.0.1:4320/convergence-runner-lab/convergence/',stripeClient=null,
  webhookSecret='',paymentsMode='disabled',paymentLinks={},
  adminSubjects='',verifyIdentity,publicApiUrl='',googleClientId='',googleClientSecret='',
- smtpHost='',smtpPort=587,smtpUser='',smtpPass='',smtpFrom='',sendEmail,googleOAuthClient,trustLocalProxy=false}={}){
+ smtpHost='',smtpPort=587,smtpUser='',smtpPass='',smtpFrom='',emailRelayUrl='',emailRelaySecret='',sendEmail,googleOAuthClient,trustLocalProxy=false}={}){
  if(!['disabled','test','live'].includes(paymentsMode))throw Error('Invalid payments mode');
  if(paymentsMode==='live' && ((!stripeClient&&!Object.keys(paymentLinks).length)||!webhookSecret||!gameUrl.startsWith('https://')))
   throw Error('Live payments require HTTPS game URL, Checkout or Payment Links, and webhook signature');
@@ -70,7 +70,7 @@ export function createApiServer({dbPath=':memory:',clock=()=>new Date(),corsOrig
  const paymentsReady=['test','live'].includes(paymentsMode)&&!!stripeClient&&!!webhookSecret;
  const db=database(dbPath);
  const identity=createIdentityRoutes({db,clock,gameUrl,publicApiUrl,googleClientId,googleClientSecret,
-   smtpHost,smtpPort,smtpUser,smtpPass,smtpFrom,sendEmail,googleOAuthClient,trustLocalProxy});
+   smtpHost,smtpPort,smtpUser,smtpPass,smtpFrom,emailRelayUrl,emailRelaySecret,sendEmail,googleOAuthClient,trustLocalProxy});
  const accountRoutes=createAccountRoutes({db,clock,adminSubjects,verifyIdentity,consumeIdentity:identity.consume,products:PRODUCTS});
  const origins=new Set([...corsOrigins,new URL(gameUrl).origin,'http://127.0.0.1:4320','http://localhost:4320']);
  const server=http.createServer(async(req,res)=>{
@@ -262,8 +262,10 @@ if(process.argv[1]&&resolve(process.argv[1])===fileURLToPath(import.meta.url)){
   smtpHost:process.env.SMTP_HOST||'',
   smtpPort:process.env.SMTP_PORT||587,
   smtpUser:process.env.SMTP_USER||'',
-  smtpPass:process.env.SMTP_PASS||'',
+  smtpPass:process.env.SMTP_PASS_FILE?readFileSync(process.env.SMTP_PASS_FILE,'utf8').trim():(process.env.SMTP_PASS||''),
   smtpFrom:process.env.SMTP_FROM||'',
+  emailRelayUrl:process.env.EMAIL_RELAY_URL||'',
+  emailRelaySecret:process.env.EMAIL_RELAY_SECRET_FILE?readFileSync(process.env.EMAIL_RELAY_SECRET_FILE,'utf8').trim():'',
   trustLocalProxy:process.env.TRUST_LOCAL_PROXY==='1',
   adminSubjects:process.env.CONVERGENCE_ADMIN_SUBJECTS||''
  });
