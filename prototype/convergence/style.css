@@ -1033,3 +1033,21 @@ body:has(.screen:not(.hidden)) #gesture-hint,body:has(#challenge-hub:not(.hidden
  color:#fff!important;
  box-shadow:0 0 14px #e76a3170;
 }
+
+/* Optional account portal; gameplay is playable without authentication. */
+.account-portal.hidden { display:none!important; }
+.account-portal { position:fixed; inset:0; z-index:20000; padding:18px; display:grid; place-items:center; background:rgba(3,9,20,.88); overflow:auto; color:#f5f2e6; }
+.account-sheet { position:relative; background:#162538; border:1px solid #48617a; border-radius:18px; padding:22px; width:min(100%,430px); box-sizing:border-box; box-shadow:0 24px 90px #0009; display:grid; gap:12px; }
+.account-sheet h2 { font-size:24px; margin:0; color:#ffcc38; }
+.account-sheet p {margin:0 0 10px;}
+.account-sheet #account-methods {display:grid; gap:10px;}
+.account-sheet input[type="email"] {padding:13px; border:1px solid #9eb1c0; border-radius:10px; font-size:16px;}
+.account-close { position:absolute; right:12px; top:10px; background:transparent; color:white; font-size:23px; border:0;}
+.account-consent {font-size:12px;color:#cbd6e3;line-height:1.5;}
+#account-status {min-height:20px;font-size:13px;color:#ffcc38;}
+
+.account-sheet #player-alias {width:100%;box-sizing:border-box;padding:10px;margin-top:6px;border:1px solid #9eb1c0;border-radius:9px;font-size:16px}
+.audience-banner {position:fixed;left:12px;right:12px;bottom:14px;z-index:20010;max-width:600px;margin:0 auto;background:#122237;border:1px solid #ffcc38;border-radius:12px;padding:14px;color:#fff;box-shadow:0 10px 30px #000b;font:13px system-ui,sans-serif}
+.audience-banner p {margin:0 0 10px}
+.audience-banner button {cursor:pointer;margin:2px 8px 2px 0;padding:9px 13px;background:#ffcc38;border:0;border-radius:8px;color:#151a24;font-weight:700}
+.audience-banner button:last-child {background:#344459;color:#fff}

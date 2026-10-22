@@ -396,7 +396,7 @@ export class ChallengeHub {
       const token=await this.ensurePlayer();
       const r=await fetch(this.apiBase+'/api/v1/daily/scores',{
         method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+token},
-        body:JSON.stringify({day:result.day,path:result.path})
+        body:JSON.stringify({day:result.day,path:result.path,name:localStorage.getItem('convergence_player_name')||''})
       });
       if(!r.ok)throw Error('Classement indisponible');
       const data=await r.json();
@@ -429,6 +429,11 @@ export class ChallengeHub {
     this.note.textContent=await shareResultCard({...result,mode:'daily'},location.origin+location.pathname,this.resultCard,this.game.experience?.telemetry);
   }
   async checkout(sku){
+    if(this.game.accountPortal && !this.game.accountPortal.isLinked && import.meta.env.VITE_CONVERGENCE_SUPABASE_URL){
+      this.game.accountPortal.open();
+      this.game.accountPortal.status('Connecte ton compte pour protéger et retrouver tes achats.');
+      return;
+    }
     const button=[...this.body.querySelectorAll('button[data-sku]')].find(el=>el.dataset.sku===sku);
     if(!this.paymentsEnabled || !this.apiBase){
       this.note.textContent='Paiement indisponible : connexion au serveur Stripe impossible.';
