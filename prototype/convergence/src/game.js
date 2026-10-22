@@ -219,8 +219,9 @@ export class Game {
 
     startWithIntro({force=false,newRun=false}={}) {
         this.startGame({newRun});
-        // The story remains available on demand; Play starts with a real decision.
-        if(force && this.level===1){
+        // Begin the original playable prologue automatically before campaign level 1.
+        // A Daily challenge, a continued campaign, and a hero selection stay uninterrupted.
+        if(this.mode==='campaign' && this.geographicLevel===1 && this.state==='playing'){
             this.story.beginIntro();
         }
     }
