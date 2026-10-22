@@ -19,7 +19,7 @@ async function load(){
   try{
     const d=await request('/api/v1/admin/summary',{headers:{Authorization:'Bearer '+adminToken()}});
     q('#auth').style.display='none';q('#app').style.display='block';set('auth-error','');
-    for(const [key,v] of [['active',d.active],['visitors',d.visitors24h],['accounts',d.registered],
+    for(const [key,v] of [['online',d.online],['active',d.active],['visitors',d.visitors24h],['accounts',d.registered],
       ['players',d.playerRecords],['scores',d.dailyScores],['orders',d.purchases24h],
       ['revenue',euros(d.revenueCents24h||0)]])set(key,v);
     fill('sources',d.sources||[],'source');fill('products',d.orders||[],'sku');
