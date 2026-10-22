@@ -30,6 +30,10 @@ try{
   if(side==='left')await snap('iphone-approach');
   const before=await state();await page.touchscreen.tap(t.x,t.y);const after=await state();
   assert.equal(after.state,'playing');assert.equal(after.history.length,1);assert.equal(after.history[0].side,side);assert.equal(after.broken,1);assert.equal(after.sounds.breaks,1);assert.equal(after.z,before.z);
+  // Reproduce a transient iOS browser focus loss right after tapping a TV.
+  await page.evaluate(()=>window.dispatchEvent(new Event('blur')));
+  assert.equal((await state()).state,'playing','TV tap must not open pause when focus flickers');
+  assert.equal(await page.locator('#pause-panel:not(.hidden)').count(),0);
   await page.touchscreen.tap(t.x,t.y);assert.equal((await state()).history.length,1);
   // A direct second-side call is also locked; no gesture race can collect it.
   assert.equal(await page.evaluate(()=>{const g=window.__convergence;return g.tvChoice.choose(g.levelGenerator.gates[0],'right');}),false);
@@ -59,7 +63,7 @@ try{
  report.checks.push({test:'impact-boundary-and-late-release',ok:true});
  await reset();const prePause=await state();await page.locator('#pause-btn').click();await page.evaluate(()=>{for(let i=0;i<20;i++)window.__convergence.update(.05);});
  assert.equal((await state()).z,prePause.z);assert.equal(await target('left'),null);await page.locator('#resume-btn').click();
- await page.evaluate(()=>window.dispatchEvent(new Event('blur')));assert.equal((await state()).state,'paused');await page.locator('#resume-btn').click();
+ await page.evaluate(()=>window.dispatchEvent(new Event('blur')));assert.equal((await state()).state,'playing','transient iOS focus loss must not pause');
  assert.equal((await state()).history.length,0);await page.evaluate(()=>{Object.defineProperty(document,'hidden',{configurable:true,get:()=>true});document.dispatchEvent(new Event('visibilitychange'));delete document.hidden;});assert.equal((await state()).state,'paused');await page.locator('#resume-btn').click();report.checks.push({test:'pause-blur-visibility-resume-no-stale-tap',ok:true});
  // Combat hides TV artwork: touching the same screen position cannot grant a reward.
  await reset();const combatPoint=await target('left');await page.evaluate(()=>{const g=window.__convergence;g.state='fighting';g.levelGenerator.updateVisibility(g.trackZ);});
