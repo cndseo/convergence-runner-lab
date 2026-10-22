@@ -250,6 +250,8 @@ if(process.argv[1]&&resolve(process.argv[1])===fileURLToPath(import.meta.url)){
   // In Payment Links mode Stripe only verifies signatures; no API calls are made.
   stripeClient=new Stripe(key||'sk_test_local_webhook_verification_only',{apiVersion:'2026-08-26.dahlia'});
  }
+ const googleConfig=process.env.GOOGLE_OAUTH_JSON_FILE ? JSON.parse(readFileSync(process.env.GOOGLE_OAUTH_JSON_FILE,'utf8')).web : null;
+ if(process.env.GOOGLE_OAUTH_JSON_FILE && (!googleConfig?.client_id || !googleConfig?.client_secret)) throw Error('Invalid Google OAuth file');
  const app=createApiServer({
   dbPath:process.env.DB_PATH||resolve('data/convergence.sqlite'),
   corsOrigins:process.env.ALLOWED_ORIGINS?.split(',').map(s=>s.trim())||[],
@@ -257,8 +259,8 @@ if(process.argv[1]&&resolve(process.argv[1])===fileURLToPath(import.meta.url)){
   stripeClient,webhookSecret,
   paymentsMode:mode,paymentLinks,
   publicApiUrl:process.env.AUTH_PUBLIC_URL||'',
-  googleClientId:process.env.GOOGLE_CLIENT_ID||'',
-  googleClientSecret:process.env.GOOGLE_CLIENT_SECRET||'',
+  googleClientId:googleConfig?.client_id||process.env.GOOGLE_CLIENT_ID||'',
+  googleClientSecret:googleConfig?.client_secret||process.env.GOOGLE_CLIENT_SECRET||'',
   smtpHost:process.env.SMTP_HOST||'',
   smtpPort:process.env.SMTP_PORT||587,
   smtpUser:process.env.SMTP_USER||'',

@@ -51,12 +51,13 @@ test('Google callback enforces state cookie, nonce, proof exchange and one-time 
       return {getPayload:()=>({nonce,sub:'verified-google-user-id'})};
     }
   };
-  await withServer({publicApiUrl:'https://api.laconvergence.fr',googleClientId:'test-client-id',
+  await withServer({publicApiUrl:'https://api.le84500.fr/convergence',googleClientId:'test-client-id',
     googleClientSecret:'local-test-secret',googleOAuthClient},async call=>{
     const started=await call('/api/v1/auth/google/start?destination=cockpit');
     assert.equal(started.status,302);
     const state=new URL(started.headers.get('location')).searchParams.get('state');
     assert.match(started.headers.get('set-cookie'),/HttpOnly; Secure; SameSite=Lax/);
+    assert.match(started.headers.get('set-cookie'),/Path=\/convergence\/api\/v1\/auth\/google;/);
     const cookie=started.headers.get('set-cookie').split(';')[0];
     assert.equal((await call('/api/v1/auth/google/callback?state='+state+'&code=valid-code')).status,400);
     const done=await call('/api/v1/auth/google/callback?state='+state+'&code=valid-code',{headers:{Cookie:cookie}});

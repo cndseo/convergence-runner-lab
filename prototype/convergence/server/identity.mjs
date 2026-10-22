@@ -25,7 +25,7 @@ const returnPage=value=>value==='cockpit'?'cockpit':'game';
 const cookieValue=(req,key)=>req.headers.cookie?.split(';').map(x=>x.trim()).find(x=>x.startsWith(key+'='))?.slice(key.length+1)||'';
 const equal=(x,y)=>typeof x==='string'&&typeof y==='string'&&x.length===y.length&&crypto.timingSafeEqual(Buffer.from(x),Buffer.from(y));
 const seconds=ms=>new Date(ms).toISOString();
-const flowCookie=(value,maxAge)=>'cg_oauth='+value+'; Path=/api/v1/auth/google; HttpOnly; Secure; SameSite=Lax; Max-Age='+maxAge;
+const flowCookie=(value,maxAge,path)=>'cg_oauth='+value+'; Path='+path+'; HttpOnly; Secure; SameSite=Lax; Max-Age='+maxAge;
 export function installIdentityTables(db){
   db.exec("CREATE TABLE IF NOT EXISTS identity_tickets (token_hash TEXT PRIMARY KEY, subject TEXT NOT NULL, expires_at TEXT NOT NULL);");
   db.exec("CREATE TABLE IF NOT EXISTS oauth_flows (state_hash TEXT PRIMARY KEY, verifier TEXT NOT NULL, nonce TEXT NOT NULL, destination TEXT NOT NULL, expires_at TEXT NOT NULL);");
@@ -36,6 +36,7 @@ export function createIdentityRoutes({db,clock=()=>new Date(),gameUrl='http://12
  smtpUser='',smtpPass='',smtpFrom='',emailRelayUrl='',emailRelaySecret='',sendEmail,googleOAuthClient,trustLocalProxy=false}={}){
   const publicApi=String(publicApiUrl).replace(/\/$/,'');
   const callbackUrl=publicApi ? publicApi+'/api/v1/auth/google/callback' : '';
+  const oauthCookiePath=(publicApi ? new URL(publicApi).pathname.replace(/\/$/,'') : '')+'/api/v1/auth/google';
   const googleReady=Boolean(googleClientId&&googleClientSecret&&callbackUrl);
   const relayReady=Boolean(/^https:\/\/jeu\.laconvergence\.fr\/auth-mail-relay\.php$/.test(emailRelayUrl)&&/^[a-f0-9]{64}$/.test(emailRelaySecret));
   const mailReady=Boolean(sendEmail || relayReady || (smtpHost&&smtpUser&&smtpPass&&smtpFrom));
@@ -128,7 +129,7 @@ export function createIdentityRoutes({db,clock=()=>new Date(),gameUrl='http://12
         prompt:'select_account',nonce,code_challenge:challenge,code_challenge_method:'S256',
         access_type:'online'
       });
-      redirect(res,location,flowCookie(state,600));return true;
+      redirect(res,location,flowCookie(state,600,oauthCookiePath));return true;
     }
     if(req.method==='GET'&&path==='/api/v1/auth/google/callback'){
       if(!googleReady){json(res,503,{error:'google_not_configured'});return true;}
@@ -149,7 +150,7 @@ export function createIdentityRoutes({db,clock=()=>new Date(),gameUrl='http://12
         if(!claim||claim.nonce!==flow.nonce||!claim.sub||!/^[a-zA-Z0-9_-]{5,160}$/.test(claim.sub))
           throw Error('invalid_claims');
         const loginTicket=issue('google:'+claim.sub);
-        redirect(res,linkFor(loginTicket,flow.destination),flowCookie('',0));
+        redirect(res,linkFor(loginTicket,flow.destination),flowCookie('',0,oauthCookiePath));
       }catch(e){json(res,401,{error:'google_verification_failed'});}
       return true;
     }
