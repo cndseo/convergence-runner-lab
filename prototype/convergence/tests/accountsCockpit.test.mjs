@@ -113,3 +113,30 @@ test('passwordless personal recovery code restores purchases on a second device 
     assert.equal((await req('/api/v1/account/recovery/redeem',json({code:'CV-bad'}))).code,400);
   });
 });
+
+test('anonymous live presence distinguishes online visitors from players without saving session identities',async()=>{
+  await run(async(req,db)=>{
+    const adminGuest=(await req('/api/v1/players',{method:'POST'})).data;
+    const admin=(await req('/api/v1/account/link',json({guestToken:adminGuest.token},'google-a'))).data;
+    const header={Authorization:'Bearer '+admin.token};
+    const one='d4c59337-b70d-4b97-8989-40cebe51a001';
+    const two='d4c59337-b70d-4b97-8989-40cebe51a002';
+    const live=(sessionId,source,playing)=>req('/api/v1/presence/live',json({sessionId,source,playing}));
+    assert.equal((await live(one,'tiktok',false)).code,200);
+    assert.equal((await live(two,'direct',true)).code,200);
+    assert.equal((await live(two,'direct',true)).code,200);
+    let metrics=(await req('/api/v1/admin/summary',{headers:header})).data;
+    assert.equal(metrics.online,2);
+    assert.equal(metrics.active,1);
+    assert.equal(metrics.visitors24h,2);
+    assert.deepEqual(metrics.sources.toSorted((a,b)=>a.source.localeCompare(b.source)),[{source:'direct',n:1},{source:'tiktok',n:1}]);
+    assert.equal((await live(one,'tiktok',true)).code,200);
+    metrics=(await req('/api/v1/admin/summary',{headers:header})).data;
+    assert.equal(metrics.online,2);
+    assert.equal(metrics.active,2);
+    assert.equal(metrics.visitors24h,2);
+    assert.equal((await live('invalid','direct',false)).code,400);
+    assert.equal(db.prepare('SELECT SUM(sessions) AS n FROM audience_buckets').get().n,2);
+    assert.equal(db.prepare('SELECT COUNT(*) AS n FROM player_presence').get().n,0);
+  });
+});
