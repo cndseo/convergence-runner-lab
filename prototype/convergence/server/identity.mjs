@@ -38,6 +38,10 @@ export function createIdentityRoutes({db,clock=()=>new Date(),gameUrl='http://12
   const callbackUrl=publicApi ? publicApi+'/api/v1/auth/google/callback' : '';
   const googleReady=Boolean(googleClientId&&googleClientSecret&&callbackUrl);
   const mailReady=Boolean(sendEmail || (smtpHost&&smtpUser&&smtpPass&&smtpFrom));
+  if(process.env.NODE_ENV==='production' && (googleReady||mailReady)){
+    if(!String(gameUrl).startsWith('https://'))throw Error('Production login requires HTTPS game URL');
+    if(googleReady && !publicApi.startsWith('https://'))throw Error('Google OAuth callback must use HTTPS');
+  }
   const google=googleReady?(googleOAuthClient||new OAuth2Client(googleClientId,googleClientSecret,callbackUrl)):null;
   const transport=mailReady&&!sendEmail ? nodemailer.createTransport({
     host:smtpHost,port:Number(smtpPort),secure:Number(smtpPort)===465,

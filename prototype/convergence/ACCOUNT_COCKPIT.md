@@ -61,3 +61,12 @@ Depuis prototype/convergence/server : npm ci
 Depuis prototype/convergence : npm ci; npm test; npm run build
 Test Chrome (GMK) : node tools/smoke-account-ui.mjs
 API : GET /api/v1/health ; GET /api/v1/auth/status ; GET /api/v1/admin/summary (auth).
+
+## Vérification réelle de compatibilité VPS — 22 octobre 2026
+- Le conteneur de production `convergence-payments-api` était opérationnel et signalait `payments: live`. Il n'a pas été redémarré ni modifié.
+- Préproduction isolée installée dans `/home/olga/apps/convergence-identity-stage-20261022` sur le VPS, commit de travail `386e65d` au moment du test, Node 24 Alpine, base SQLite distincte, sans ports publics ni accès réseau.
+- `GET /api/v1/health` => OK, `GET /api/v1/auth/status` => fournisseurs désactivés tant que les identifiants ne sont pas configurés.
+- Une sauvegarde cohérente de la base de production a été testée temporairement avec le nouveau schéma SQLite : `PRAGMA integrity_check = ok` et tables scores, commandes, liaisons de comptes et sauvegardes présentes. Cette copie temporaire a été supprimée immédiatement après le test.
+- Conteneur de préproduction arrêté à l'issue des essais pour préserver les ressources; code de préproduction conservé sans service actif.
+- Le cockpit peut utiliser Google **ou un lien e-mail**, ses jetons administrateur étant séparés des jetons joueur; le test navigateur simulant le lien e-mail, les chiffres et la déconnexion a réussi.
+- Blocage actuel : pas de DNS public confirmé pour `api.laconvergence.fr`, pas d'identifiants Google/SMTP dédiés dans le conteneur actuel; les vrais échanges restent non testés. Toute activation publique exige la configuration de ces éléments.

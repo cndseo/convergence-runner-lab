@@ -76,3 +76,10 @@ test('without external credentials every login method is safely unavailable',asy
     assert.equal((await call('/api/v1/auth/google/start')).status,503);
   });
 });
+
+test('production identity rejects insecure game origin',()=>{
+  const original=process.env.NODE_ENV;
+  process.env.NODE_ENV='production';
+  try{assert.throws(()=>createApiServer({sendEmail:async()=>{}}),/requires HTTPS game URL/);}
+  finally{if(original===undefined)delete process.env.NODE_ENV;else process.env.NODE_ENV=original;}
+});
