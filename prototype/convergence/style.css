@@ -976,3 +976,36 @@ body:has(.screen:not(.hidden)) #gesture-hint,body:has(#challenge-hub:not(.hidden
 @media(prefers-reduced-motion:reduce){
  #challenge-hub.shop-mode *{transition:none!important;animation:none!important}
 }
+
+
+/* First-level TV onboarding: floating on the road, never intercepts input. */
+#first-tv-tutorial{position:absolute;inset:0;z-index:48;pointer-events:none;overflow:hidden;touch-action:none}
+#first-tv-tutorial[hidden]{display:none!important}
+#first-tv-tutorial .first-tv-callout{
+ position:absolute;left:50%;width:max-content;max-width:96vw;
+ transform:translate(-50%,-50%);border-radius:18px;
+ background:linear-gradient(145deg,#ffeb80,#ffac2d 68%,#ec7421);
+ border:3px solid #fff9cd;color:#10213b;
+ font-size:clamp(25px,7.3vw,43px);font-weight:1000;line-height:1.15;
+ padding:11px 14px;white-space:nowrap;text-align:center;
+ letter-spacing:-.025em;text-shadow:0 1px #fff7b2;
+ box-shadow:0 0 0 5px #062849d9,0 0 22px 9px #ffe45aaa,0 12px 22px #000b;
+ animation:first-tv-pulse .9s ease-in-out infinite alternate;
+}
+#first-tv-tutorial .first-tv-marker{
+ position:absolute;transform:translateX(-50%);border-radius:8px;
+ border:3px dashed #ffe77b;outline:2px solid #113861bf;
+ box-shadow:0 0 0 4px #fff6af36,inset 0 0 14px #ffe88955,0 0 26px 10px #ffd53c8c;
+ animation:first-tv-ring .8s ease-in-out infinite alternate;
+}
+#first-tv-tutorial .first-tv-marker span{
+ position:absolute;top:-42px;left:50%;transform:translateX(-50%);
+ font-size:clamp(29px,9vw,42px);line-height:1;
+ filter:drop-shadow(0 0 6px #ffd13b) drop-shadow(0 3px 2px #132a45);
+ animation:first-tv-point .65s ease-in-out infinite alternate;
+}
+@keyframes first-tv-pulse{from{filter:brightness(1);scale:.97}to{filter:brightness(1.18);scale:1.04}}
+@keyframes first-tv-ring{from{opacity:.75;filter:brightness(1)}to{opacity:1;filter:brightness(1.5)}}
+@keyframes first-tv-point{from{translate:0 -5px}to{translate:0 5px}}
+@media(max-width:355px){#first-tv-tutorial .first-tv-callout{font-size:23px;padding:10px 8px}}
+@media(prefers-reduced-motion:reduce){#first-tv-tutorial *{animation:none!important}}

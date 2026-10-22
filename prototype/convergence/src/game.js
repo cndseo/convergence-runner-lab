@@ -269,6 +269,7 @@ export class Game {
         // Generate level
         this.trackLength = 180;
         this.levelGenerator.generate(this.level, this.trackLength);
+        this.tvChoice.resetRunTutorial();
         this.trackLength = this.levelGenerator.plan.trackLength;
         this.story.prepareFinalTarget();
         this.levelGenerator.updateVisibility(this.trackZ);

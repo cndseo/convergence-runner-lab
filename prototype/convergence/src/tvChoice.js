@@ -1,10 +1,12 @@
 import * as THREE from 'three';
 import {TV_TAP_SLOP,canTapTV,claimTV,isTVTap,applyTVImpact,TV_IMPACT_LEAD} from './tvRoadRules.mjs';
+import {FirstTVTutorial} from './firstTVTutorial.js';
 
 // No DOM choice surface. Project only the next physical TV's existing PNG plane,
 // never raycast the crowd (up to 312 figures) or the street. CSS-pixel touch bounds.
 export class TVChoice {
- constructor(game){this.game=game;this.pointer=null;this.canvas=game.renderer.domElement;this.installInput();}
+ constructor(game){this.game=game;this.pointer=null;this.canvas=game.renderer.domElement;this.tutorial=new FirstTVTutorial(this);this.installInput();}
+ resetRunTutorial(){this.tutorial.reset();}
  close(){this.pointer=null;this.game.isDragging=false;}
  active(){return this.game.mode==='campaign'&&['playing','fighting'].includes(this.game.state);}
  next(){
@@ -53,6 +55,7 @@ export class TVChoice {
   if(!this.eligible(gate)||!['left','right'].includes(side)||!gate[side+'Mesh'])return false;
   const g=this.game,choice=gate[side+'Gate'];
   if(!claimTV(gate,'chosen'))return false;
+  this.tutorial.resolve(gate);
   gate.tvSide=side;
   g.tvBreak.trigger(gate,side);
   if(choice.kind==='marseille'){
@@ -70,6 +73,7 @@ export class TVChoice {
  miss(gate){
   const g=this.game;
   if(!claimTV(gate,'missed'))return false;
+  this.tutorial.resolve(gate);
   const before={count:g.crowdManager.getPlayerCount(),shields:g.shields},after=applyTVImpact(before);
   const lost=before.count-after.count,blocked=before.shields-after.shields;
   g.shields=after.shields;
@@ -100,6 +104,7 @@ export class TVChoice {
   }
  }
  update(dt){
+  this.tutorial.update(dt);
   if(this.game.state==='paused'){this.close();return;}
   const gates=[...(this.game.levelGenerator?.gates||[])];
   if(this.game.levelGenerator?.marseilleBonus)gates.push(this.game.levelGenerator.marseilleBonus);
