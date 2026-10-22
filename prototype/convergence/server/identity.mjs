@@ -29,6 +29,7 @@ const flowCookie=(value,maxAge,path)=>'cg_oauth='+value+'; Path='+path+'; HttpOn
 export function installIdentityTables(db){
   db.exec("CREATE TABLE IF NOT EXISTS identity_tickets (token_hash TEXT PRIMARY KEY, subject TEXT NOT NULL, expires_at TEXT NOT NULL);");
   db.exec("CREATE TABLE IF NOT EXISTS oauth_flows (state_hash TEXT PRIMARY KEY, verifier TEXT NOT NULL, nonce TEXT NOT NULL, destination TEXT NOT NULL, expires_at TEXT NOT NULL);");
+  db.exec("CREATE TABLE IF NOT EXISTS google_verified_emails (subject TEXT PRIMARY KEY, email TEXT NOT NULL, verified_at TEXT NOT NULL);");
   db.exec("CREATE TABLE IF NOT EXISTS auth_rate_limits (rate_key TEXT PRIMARY KEY, window_start INTEGER NOT NULL, attempts INTEGER NOT NULL, last_sent INTEGER NOT NULL);");
 }
 export function createIdentityRoutes({db,clock=()=>new Date(),gameUrl='http://127.0.0.1:4320/',
@@ -149,7 +150,16 @@ export function createIdentityRoutes({db,clock=()=>new Date(),gameUrl='http://12
         const claim=ticket.getPayload();
         if(!claim||claim.nonce!==flow.nonce||!claim.sub||!/^[a-zA-Z0-9_-]{5,160}$/.test(claim.sub))
           throw Error('invalid_claims');
-        const loginTicket=issue('google:'+claim.sub);
+        const subject='google:'+claim.sub;
+        // Only a Gmail address verified by Google's signed OIDC token can match an email-based admin allowlist.
+        if(claim.email_verified===true && typeof claim.email==='string' &&
+            /^[^\s@]+@gmail\.com$/i.test(claim.email)){
+          db.prepare('INSERT INTO google_verified_emails(subject,email,verified_at) VALUES(?,?,?) ON CONFLICT(subject) DO UPDATE SET email=excluded.email,verified_at=excluded.verified_at')
+            .run(subject,claim.email.toLowerCase(),clock().toISOString());
+        }else{
+          db.prepare('DELETE FROM google_verified_emails WHERE subject=?').run(subject);
+        }
+        const loginTicket=issue(subject);
         redirect(res,linkFor(loginTicket,flow.destination),flowCookie('',0,oauthCookiePath));
       }catch(e){json(res,401,{error:'google_verification_failed'});}
       return true;
