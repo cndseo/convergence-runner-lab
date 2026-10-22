@@ -183,12 +183,17 @@ export class AccountPortal{
   }
   maybeHeartbeat(){
     clearInterval(this.heartbeat);this.heartbeat=null;
-    if(!api||localStorage.getItem('convergence_audience_consent')!=='yes')return;
+    if(!api)return;
+    // A fresh tab-scoped random ID, never stored in cookies or localStorage.
+    // The backend keeps live IDs in RAM for 90 seconds and persists only aggregated counts.
     const beat=()=>{
-      if(!document.hidden&&['playing','fighting','bravm_charge'].includes(this.game.state))
-        fetch(api+'/api/v1/presence',{method:'POST',headers:{'Content-Type':'application/json'},
-          body:JSON.stringify({sessionId:this.sessionId,source:this.source})}).catch(()=>{});
+      if(document.hidden)return;
+      const playing=['playing','fighting','bravm_charge'].includes(this.game.state);
+      fetch(api+'/api/v1/presence/live',{method:'POST',headers:{'Content-Type':'application/json'},
+        body:JSON.stringify({sessionId:this.sessionId,source:this.source,playing})}).catch(()=>{});
     };
-    beat();this.heartbeat=setInterval(beat,30000);
+    beat();
+    this.heartbeat=setInterval(beat,25000);
+    document.addEventListener('visibilitychange',beat);
   }
 }
