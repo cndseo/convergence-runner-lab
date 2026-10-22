@@ -1,0 +1,35 @@
+Ô£ö BRAV-M portal always subtracts exactly three and keeps shields unchanged (5.6638ms)
+Ô£ö solver and gameplay choices include only one BRAV-M penalty per crossing (14.9534ms)
+Ô£ö patrol strikes remove real tactical protesters and first exhaust protection (2.7145ms)
+Ô£ö large real barrages exchange blows with strength proportional to crowd (0.4265ms)
+Ô£ö five active flank patrols and four substantive barrages per advanced level with certified path (803.8594ms)
+Ô£ö all 59049 routes solved from identical state transitions (253.7905ms)
+(node:26872) [MODULE_TYPELESS_PACKAGE_JSON] Warning: Module type of file:///C:/CITYOS/convergence-targeted-combat-20261022/prototype/convergence/src/marseilleReinforcements.js is not specified and it doesn't parse as CommonJS.
+Reparsing as ES module because module syntax was detected. This incurs a performance overhead.
+To eliminate this warning, add "type": "module" to \\?\C:\CITYOS\convergence-targeted-combat-20261022\prototype\convergence\package.json.
+(Use `node --trace-warnings ...` to show where the warning was created)
+Ô£ö TV gift adds once to the same purchased stock and consumes without a payment API (1.1869ms)
+Ô£ö server synchronization preserves exactly one outstanding gift (0.1917ms)
+Ô£ö reload restores the gift and its claimed flag without allowing a duplicate (0.2411ms)
+Ô£ö new run replaces an unused gift and preserves all purchased charges (0.1573ms)
+Ô£ö later levels and daily challenge cannot grant or spend this bonus (0.166ms)
+Ô£ö purchased attacks keep the existing consume endpoint and 299 cent price (7.3864ms)
+Ô£ö attack action is visible only when combat allows manual use (1.2471ms)
+(node:6180) [MODULE_TYPELESS_PACKAGE_JSON] Warning: Module type of file:///C:/CITYOS/convergence-targeted-combat-20261022/prototype/convergence/src/bravmGateCharge.js is not specified and it doesn't parse as CommonJS.
+Reparsing as ES module because module syntax was detected. This incurs a performance overhead.
+To eliminate this warning, add "type": "module" to \\?\C:\CITYOS\convergence-targeted-combat-20261022\prototype\convergence\package.json.
+(Use `node --trace-warnings ...` to show where the warning was created)
+Ô£ö BRAV-M: contact removes three real units once, without stopping campaign or spending shields (12.4081ms)
+Ô£ö BRAV-M: pause, late tap, swept arrival and restart cannot lose or duplicate the hit (0.8294ms)
+Ô£ö Marseille: pause after charge consumption preserves the attack and prevents a second activation (0.8252ms)
+Ô£ö Marseille: a paused preload remains valid, a restarted run cannot consume a charge (0.9988ms)
+Ô£ö Marseille: real officer count reaches zero at the animated impact, not nine seconds later (0.6974ms)
+Ô£ö HUD arithmetic uses real units while dense crowd visuals are preserved (3.0557ms)
+Ôä╣ tests 19
+Ôä╣ suites 0
+Ôä╣ pass 19
+Ôä╣ fail 0
+Ôä╣ cancelled 0
+Ôä╣ skipped 0
+Ôä╣ todo 0
+Ôä╣ duration_ms 1288.5547

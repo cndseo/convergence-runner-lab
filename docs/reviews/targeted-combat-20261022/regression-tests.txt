@@ -1,0 +1,156 @@
+
+> count-master-game@1.0.0 test
+> node --test tests/*.test.mjs
+
+(node:16464) [MODULE_TYPELESS_PACKAGE_JSON] Warning: Module type of file:///C:/CITYOS/convergence-targeted-combat-20261022/prototype/convergence/src/challengeHub.js is not specified and it doesn't parse as CommonJS.
+Reparsing as ES module because module syntax was detected. This incurs a performance overhead.
+To eliminate this warning, add "type": "module" to \\?\C:\CITYOS\convergence-targeted-combat-20261022\prototype\convergence\package.json.
+(Use `node --trace-warnings ...` to show where the warning was created)
+Ô£ö prices exactly match approved Ôé¼1.99 per character and Ôé¼2.99 per Marseille intervention (3.2517ms)
+Ô£ö paid characters are visual only, and all boosters are campaign-only consumables (0.6337ms)
+Ô£ö GenZ bundles are server-priced consumables, independently from Marseille support (0.3045ms)
+Ô£ö BRAV-M portal always subtracts exactly three and keeps shields unchanged (12.5744ms)
+Ô£ö solver and gameplay choices include only one BRAV-M penalty per crossing (27.2121ms)
+(node:49720) [MODULE_TYPELESS_PACKAGE_JSON] Warning: Module type of file:///C:/CITYOS/convergence-targeted-combat-20261022/prototype/convergence/src/audio.js is not specified and it doesn't parse as CommonJS.
+Reparsing as ES module because module syntax was detected. This incurs a performance overhead.
+To eliminate this warning, add "type": "module" to \\?\C:\CITYOS\convergence-targeted-combat-20261022\prototype\convergence\package.json.
+(Use `node --trace-warnings ...` to show where the warning was created)
+Ô£ö Motorbike 4 field recording triggers exactly one paired left/right sound during BRAV-M charge (1.8087ms)
+Ô£ö motorcycle recording uses the selected file and preloads after starting campaign audio (116.2355ms)
+Ô£ö BRAV-M begins around 30 meters away, approaches for 3 seconds, damages once and plays no artificial impact (2.7378ms)
+Ô£ö patrol strikes remove real tactical protesters and first exhaust protection (18.2337ms)
+Ô£ö large real barrages exchange blows with strength proportional to crowd (0.8078ms)
+Ô£ö five active flank patrols and four substantive barrages per advanced level with certified path (3144.7853ms)
+Ô£ö all 59049 routes solved from identical state transitions (559.598ms)
+Ô£ö real first level is challenging yet has a substantial fraction of winning choices (20.8047ms)
+Ô£ö every real saved-level seed is certified across levels and upgraded crowds (5110.4309ms)
+Ô£ö certified path stays alive after each choice and each line of police (3.5354ms)
+Ô£ö alternate level seeds and long-term levels remain certified (85.8342ms)
+(node:43552) [MODULE_TYPELESS_PACKAGE_JSON] Warning: Module type of file:///C:/CITYOS/convergence-targeted-combat-20261022/prototype/convergence/src/characterModels3D.js is not specified and it doesn't parse as CommonJS.
+Reparsing as ES module because module syntax was detected. This incurs a performance overhead.
+To eliminate this warning, add "type": "module" to \\?\C:\CITYOS\convergence-targeted-combat-20261022\prototype\convergence\package.json.
+(Use `node --trace-warnings ...` to show where the warning was created)
+Ô£ö approved Spider-Man costume is articulated 3D, not a flat billboard (8.0725ms)
+Ô£ö dinosaur inflatable has depth, open mouth, eyes, feet and flexible tail (4.9678ms)
+Ô£ö 12 distinct Marseille actors contain no Sprite or image planes, all rigged for walking (46.8858ms)
+Ô£ö combat choreography transitions and recoveries are deterministic (0.9378ms)
+(node:43888) [MODULE_TYPELESS_PACKAGE_JSON] Warning: Module type of file:///C:/CITYOS/convergence-targeted-combat-20261022/prototype/convergence/src/combatImpactSounds.js is not specified and it doesn't parse as CommonJS.
+Reparsing as ES module because module syntax was detected. This incurs a performance overhead.
+To eliminate this warning, add "type": "module" to \\?\C:\CITYOS\convergence-targeted-combat-20261022\prototype\convergence\package.json.
+(Use `node --trace-warnings ...` to show where the warning was created)
+Ô£ö sampled baton, human reactions and body thud are short and rate-limited (1.4643ms)
+Ô£ö no synthetic tones, no impact when audio locked or assets missing (0.2673ms)
+Ô£ö combat sound assets are source-licensed locally and connected to BRAV-M and CRS hits (49.2203ms)
+Ô£ö no payments enabled by default, empty daily ranking, and profiles are anonymous (298.1355ms)
+Ô£ö leaderboard validates all 10 choices on server, does not trust client score (125.3851ms)
+Ô£ö Stripe checkout uses fixed EUR catalog and grants only via verified paid webhook (324.6315ms)
+Ô£ö one UTC daily seed shared across locales and changing at midnight UTC (3.5656ms)
+Ô£ö identical daily plans at same date with exactly 10 portals, proved winning (76.6817ms)
+Ô£ö forged or incomplete score submissions cannot be accepted (1.1022ms)
+Ô£ö share text displays score but not winning route or private data (18.4569ms)
+Ô£ö GenZ virtual ammo checkout grants only on signed paid webhook and spends exactly once (1997.3151ms)
+Ô£ö twenty explicit identity recipes and all five communities (2.9261ms)
+Ô£ö senior and younger faces stay distinct in the declarative catalog (0.4563ms)
+Ô£ö every selected hero has two authentic cropped PNGs (23.9245ms)
+Ô£ö wardrobe is strictly illustrated; GLBs are retained for gameplay (1.2403ms)
+Ô£ö twenty stable identities, four per family, and bounded atlas rows (3.9032ms)
+Ô£ö save migration is isolated, validated, and retains one permanent hero (1.4517ms)
+Ô£ö doubling copies family composition and certified TV recruitment remains exact (1.5238ms)
+Ô£ö all twelve districts have a free route with hero baseline and preserve actual family totals at every event (3102.4538ms)
+Ô£ö visual growth is monotonic, 3ÔÇô6x, bounded, and never resurrects an empty crowd (75.1447ms)
+Ô£ö each protection adds two visible supporters, losses remove them without changing the roster (0.2715ms)
+Ô£ö ranks sit behind the leader, within a compact corridor, with no duplicate slots (15.5097ms)
+Ô£ö every district has all patrol types throughout the route, clear of the playable corridor (61.3139ms)
+Ô£ö LBD shots can originate far from the player (1.39ms)
+Ô£ö high velocity bullets cannot tunnel through a moving target sphere (0.91ms)
+Ô£ö injury categories are defined and deterministic (0.4174ms)
+Ô£ö live payments require an HTTPS storefront, a Stripe client and signed webhooks (14.7277ms)
+Ô£ö explicitly configured live catalog reports live and retains updated GenZ pack counts (157.2476ms)
+(node:8880) [MODULE_TYPELESS_PACKAGE_JSON] Warning: Module type of file:///C:/CITYOS/convergence-targeted-combat-20261022/prototype/convergence/src/marseilleReinforcements.js is not specified and it doesn't parse as CommonJS.
+Reparsing as ES module because module syntax was detected. This incurs a performance overhead.
+To eliminate this warning, add "type": "module" to \\?\C:\CITYOS\convergence-targeted-combat-20261022\prototype\convergence\package.json.
+(Use `node --trace-warnings ...` to show where the warning was created)
+Ô£ö TV gift adds once to the same purchased stock and consumes without a payment API (1.3823ms)
+Ô£ö server synchronization preserves exactly one outstanding gift (1.0835ms)
+Ô£ö reload restores the gift and its claimed flag without allowing a duplicate (0.3122ms)
+Ô£ö new run replaces an unused gift and preserves all purchased charges (0.2913ms)
+Ô£ö later levels and daily challenge cannot grant or spend this bonus (0.2101ms)
+Ô£ö purchased attacks keep the existing consume endpoint and 299 cent price (7.0157ms)
+Ô£ö attack action is visible only when combat allows manual use (3.279ms)
+Ô£ö support routes enter from three directions, never teleport, and exit at different times (83.2806ms)
+Ô£ö CRS react progressively, retreat continuously, and keep moving off the road (0.4828ms)
+Ô£ö real Stripe webhook grants 1/3/10 charges idempotently; one trigger consumes one (1262.0513ms)
+Ô£ö old ten-front completion migrates into Paris without skipping the two final districts (2.1869ms)
+Ô£ö geography persists independently of tactical difficulty and survives daily-mode saves (0.2814ms)
+Ô£ö only the twelfth geographic destination permits the final symbolic capture (0.2777ms)
+Ô£ö all twelve campaign districts have certified free routes without paid support (6916.822ms)
+Ô£ö competitive daily plan retains legacy rules and verified replay (8.4896ms)
+Ô£ö duels share a valid date and declared target, never purchases or a winning route (0.8603ms)
+Ô£ö local diagnostic is opt-in, bounded, strips sensitive fields and erases on withdrawal (8.8602ms)
+Ô£ö the displayed participant count follows the actual renderer layout (1.3146ms)
+Ô£ö visible police reserves scale with crowd size, with mobile upper bounds (1.5654ms)
+Ô£ö pure visual response has no damage or inventory inputs (0.7792ms)
+Ô£ö 3 approved cutouts exist and were transferred without corruption (50.7887ms)
+Ô£ö steering reacts after a two-pixel swipe away from TVs but preserves TV tap tolerance (2.2889ms)
+Ô£ö drag steering is thirty percent more responsive in CSS pixels and still clamps to lanes (0.2308ms)
+Ô£ö intro speech happens before escape and shelter phases (1.1311ms)
+Ô£ö character cannot be caught at any non-final level or before the last CRS front falls (0.3258ms)
+Ô£ö last-level contact is possible, but requires real proximity (0.1485ms)
+(node:31740) [MODULE_TYPELESS_PACKAGE_JSON] Warning: Module type of file:///C:/CITYOS/convergence-targeted-combat-20261022/prototype/convergence/src/streetPatina.js is not specified and it doesn't parse as CommonJS.
+Reparsing as ES module because module syntax was detected. This incurs a performance overhead.
+To eliminate this warning, add "type": "module" to \\?\C:\CITYOS\convergence-targeted-combat-20261022\prototype\convergence\package.json.
+(Use `node --trace-warnings ...` to show where the warning was created)
+Ô£ö street improvements stay outside player lane and use instancing (28.4259ms)
+Ô£ö tiny levels remain valid (66.516ms)
+Ô£ö production Stripe Payment Links and Stripe Checkout are both accepted (1.3987ms)
+Ô£ö checkout accepts neither domains impersonating Stripe nor insecure links (0.3644ms)
+Ô£ö obsolete crowd personalization checkout link is absent (41.6904ms)
+Ô£ö Stripe Payment Links tie each paid order to one anonymous profile, with exactly-once fulfillment (764.3607ms)
+Ô£ö gate feedback shows exact population and protection deltas (5.095ms)
+Ô£ö barriers and conditions explain facts without revealing optimal choices (1.8361ms)
+Ô£ö crowd cap is not mistaken for a full numeric bonus (0.2447ms)
+Ô£ö loss report distinguishes sources and provides grounded guidance (0.4669ms)
+Ô£ö victory stars are cosmetic and only count actual survivors (0.2384ms)
+Ô£ö arithmetic, rounding, conditions and shield consumption (3.0521ms)
+Ô£ö 800 generated levels: witness wins, losing routes exist, greedy loses (1961.609ms)
+Ô£ö same configuration reproduces the same puzzle (1.7367ms)
+(node:5332) [MODULE_TYPELESS_PACKAGE_JSON] Warning: Module type of file:///C:/CITYOS/convergence-targeted-combat-20261022/prototype/convergence/src/bravmGateCharge.js is not specified and it doesn't parse as CommonJS.
+Reparsing as ES module because module syntax was detected. This incurs a performance overhead.
+To eliminate this warning, add "type": "module" to \\?\C:\CITYOS\convergence-targeted-combat-20261022\prototype\convergence\package.json.
+(Use `node --trace-warnings ...` to show where the warning was created)
+Ô£ö BRAV-M: contact removes three real units once, without stopping campaign or spending shields (3.3682ms)
+Ô£ö BRAV-M: pause, late tap, swept arrival and restart cannot lose or duplicate the hit (0.5502ms)
+Ô£ö Marseille: pause after charge consumption preserves the attack and prevents a second activation (0.8145ms)
+Ô£ö Marseille: a paused preload remains valid, a restarted run cannot consume a charge (0.5814ms)
+Ô£ö Marseille: real officer count reaches zero at the animated impact, not nine seconds later (6.9885ms)
+Ô£ö HUD arithmetic uses real units while dense crowd visuals are preserved (6.9584ms)
+Ô£ö sixteen correct PNG choices; no generated image overlay (150.6526ms)
+Ô£ö 20 choices in every generated level are drawn exclusively from the 16 fixed PNGs (971.3035ms)
+Ô£ö bonus human factions and all six penalties preserve exact arithmetic (0.3432ms)
+Ô£ö one stable image per exact operation and no hidden alternate amount (10.435ms)
+Ô£ö fixed PNG values, enemies, and winning path agree over 100 seeds (568.5328ms)
+Ô£ö impact examples, caps, shields, extinction and no resurrection (6.0369ms)
+Ô£ö atomic pair state rejects double tap, second TV and missed/late tap (1.1116ms)
+Ô£ö short taps only; dragging out and back cannot become a tap (1.0164ms)
+Ô£ö exact 3^10 enumeration equals compressed proof and shared replay (463.4237ms)
+Ô£ö twelve districts remain free with multiple seeded layouts and miss statistics (1238.5185ms)
+Ô£ö Daily retains two choices and rejects miss routes (6.4557ms)
+(node:44524) [MODULE_TYPELESS_PACKAGE_JSON] Warning: Module type of file:///C:/CITYOS/convergence-targeted-combat-20261022/prototype/convergence/src/urbanDecayAssets.js is not specified and it doesn't parse as CommonJS.
+Reparsing as ES module because module syntax was detected. This incurs a performance overhead.
+To eliminate this warning, add "type": "module" to \\?\C:\CITYOS\convergence-targeted-combat-20261022\prototype\convergence\package.json.
+(Use `node --trace-warnings ...` to show where the warning was created)
+{"name":"hospital-delabre.glb","bytes":345272,"meshCount":17,"triangles":3428,"bounds":[13,8.51,9.41]}
+Ô£ö 3D urban asset loads: hospital-delabre.glb (112.4355ms)
+{"name":"lycee-delabre.glb","bytes":304380,"meshCount":16,"triangles":3008,"bounds":[14.7,8.45,9.39]}
+Ô£ö 3D urban asset loads: lycee-delabre.glb (18.6695ms)
+{"name":"campement-trottoir.glb","bytes":198264,"meshCount":18,"triangles":1884,"bounds":[7.7,2.06,9.2]}
+Ô£ö 3D urban asset loads: campement-trottoir.glb (148.4177ms)
+Ô£ö scenery never obstructs player lane or alters tactical gates (0.7609ms)
+Ôä╣ tests 109
+Ôä╣ suites 0
+Ôä╣ pass 109
+Ôä╣ fail 0
+Ôä╣ cancelled 0
+Ôä╣ skipped 0
+Ôä╣ todo 0
+Ôä╣ duration_ms 8418.3206

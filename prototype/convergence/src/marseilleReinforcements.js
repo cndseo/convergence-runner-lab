@@ -76,7 +76,9 @@ export class MarseilleReinforcements {
    this.active||this.pending||this.available()<=0)return false;
   this.pending=true;this.showButton();
   const enemy=g.fightingEnemy,runId=g.runId,generation=this.generation;
-  const current=()=>g.runId===runId&&g.mode==='campaign'&&g.state==='fighting'&&
+  // A pause suspends this fight; it must not discard an already consumed charge.
+  const current=()=>g.runId===runId&&g.mode==='campaign'&&
+   (g.state==='fighting'||(g.state==='paused'&&g.pausedState==='fighting'))&&
    g.fightingEnemy===enemy&&this.generation===generation;
   try{
    const [artwork]=await Promise.all([this.preload(),g.audio.preloadMarseilleAttack()]);
@@ -156,6 +158,12 @@ export class MarseilleReinforcements {
   }
   if(t>=2.60&&!this.impactTriggered){
     this.impactTriggered=true;
+    // Resolve the actual police count at contact, while the existing escape
+    // animation continues. updateFight remains suspended until finish().
+    this.enemy.remainingCount=0;
+    if(this.enemy.isBoss){
+     g.ui.updateBossHealthBar(0,this.enemy.count);g.levelGenerator.updateBossCount(this.enemy);
+    }else g.levelGenerator.updateEnemyLabel(this.enemy);
     this.game.audio.playMarseilleImpact();
     this.game.ui.screenShake(3);
   }

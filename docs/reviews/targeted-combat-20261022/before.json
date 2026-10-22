@@ -1,0 +1,244 @@
+{
+  "phase": "before",
+  "base": "http://127.0.0.1:4722/",
+  "cases": [
+    {
+      "name": "marseille-gift",
+      "before": {
+        "state": "fighting",
+        "count": 30,
+        "models": 30,
+        "shields": 0,
+        "displayed": 127,
+        "hud": "👥 127",
+        "remaining": 14,
+        "active": false,
+        "pending": false,
+        "charges": 1,
+        "actors": 0,
+        "elapsed": 0
+      },
+      "triggered": {
+        "state": "fighting",
+        "count": 30,
+        "models": 30,
+        "shields": 0,
+        "displayed": 127,
+        "hud": "👥 127",
+        "remaining": 14,
+        "active": true,
+        "pending": false,
+        "charges": 0,
+        "actors": 15,
+        "elapsed": 0
+      },
+      "impact": {
+        "state": "fighting",
+        "count": 30,
+        "models": 30,
+        "shields": 0,
+        "displayed": 127,
+        "hud": "👥 127",
+        "remaining": 14,
+        "active": true,
+        "pending": false,
+        "charges": 0,
+        "actors": 15,
+        "elapsed": 2.9999999999999973
+      },
+      "finished": {
+        "state": "playing",
+        "count": 30,
+        "models": 30,
+        "shields": 0,
+        "displayed": 127,
+        "hud": "👥 127",
+        "active": false,
+        "pending": false,
+        "charges": 0,
+        "actors": 0,
+        "elapsed": 0,
+        "defeated": true
+      }
+    },
+    {
+      "name": "marseille-pause-load",
+      "activated": false,
+      "paused": {
+        "state": "paused",
+        "count": 30,
+        "models": 30,
+        "shields": 0,
+        "displayed": 127,
+        "hud": "👥 127",
+        "remaining": 14,
+        "active": false,
+        "pending": false,
+        "charges": 1,
+        "actors": 0,
+        "elapsed": 0
+      },
+      "resumed": {
+        "state": "fighting",
+        "count": 30,
+        "models": 30,
+        "shields": 0,
+        "displayed": 127,
+        "hud": "👥 127",
+        "remaining": 14,
+        "active": false,
+        "pending": false,
+        "charges": 1,
+        "actors": 0,
+        "elapsed": 0
+      }
+    },
+    {
+      "name": "marseille-pause-after-charge",
+      "activated": false,
+      "paused": {
+        "state": "paused",
+        "count": 30,
+        "models": 30,
+        "shields": 0,
+        "displayed": 127,
+        "hud": "👥 127",
+        "remaining": 14,
+        "active": false,
+        "pending": false,
+        "charges": 0,
+        "actors": 0,
+        "elapsed": 0
+      },
+      "resumed": {
+        "state": "fighting",
+        "count": 30,
+        "models": 30,
+        "shields": 0,
+        "displayed": 127,
+        "hud": "👥 127",
+        "remaining": 14,
+        "active": false,
+        "pending": false,
+        "charges": 0,
+        "actors": 0,
+        "elapsed": 0
+      }
+    },
+    {
+      "name": "bravm-impact",
+      "chosen": true,
+      "before": {
+        "state": "playing",
+        "count": 30,
+        "models": 30,
+        "shields": 20,
+        "displayed": 167,
+        "hud": "👥 167",
+        "remaining": 14,
+        "active": false,
+        "pending": false,
+        "charges": 0,
+        "actors": 0,
+        "elapsed": 0
+      },
+      "selected": {
+        "state": "playing",
+        "count": 27,
+        "models": 27,
+        "shields": 20,
+        "displayed": 158,
+        "hud": "👥 158",
+        "remaining": 14,
+        "active": false,
+        "pending": false,
+        "charges": 0,
+        "actors": 0,
+        "elapsed": 0
+      },
+      "hit": {
+        "state": "playing",
+        "count": 27,
+        "models": 27,
+        "shields": 20,
+        "displayed": 158,
+        "hud": "👥 158",
+        "remaining": 14,
+        "active": false,
+        "pending": false,
+        "charges": 0,
+        "actors": 0,
+        "elapsed": 0,
+        "lost": 0,
+        "ragdolls": 0
+      },
+      "history": [
+        {
+          "choice": {
+            "op": "damage",
+            "kind": "bravm",
+            "value": 3,
+            "percent": false,
+            "tvKey": "bravm3"
+          },
+          "before": {
+            "count": 30,
+            "shields": 20
+          },
+          "after": {
+            "count": 27,
+            "shields": 20
+          },
+          "side": "right"
+        }
+      ]
+    },
+    {
+      "name": "count-arithmetic",
+      "before": {
+        "state": "playing",
+        "count": 30,
+        "models": 30,
+        "shields": 0,
+        "displayed": 127,
+        "hud": "👥 127",
+        "remaining": 14,
+        "active": false,
+        "pending": false,
+        "charges": 0,
+        "actors": 0,
+        "elapsed": 0
+      },
+      "plus": {
+        "state": "playing",
+        "count": 35,
+        "models": 35,
+        "shields": 0,
+        "displayed": 141,
+        "hud": "👥 141",
+        "remaining": 14,
+        "active": false,
+        "pending": false,
+        "charges": 0,
+        "actors": 0,
+        "elapsed": 0
+      },
+      "minus": {
+        "state": "playing",
+        "count": 32,
+        "models": 32,
+        "shields": 0,
+        "displayed": 133,
+        "hud": "👥 133",
+        "remaining": 14,
+        "active": false,
+        "pending": false,
+        "charges": 0,
+        "actors": 0,
+        "elapsed": 0
+      }
+    }
+  ],
+  "errors": [],
+  "badAssets": []
+}
