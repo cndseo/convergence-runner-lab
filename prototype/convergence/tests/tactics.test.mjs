@@ -7,7 +7,7 @@ test('arithmetic, rounding, conditions and shield consumption',()=>{
  assert.deepEqual(applyChoice({count:5,shields:3},{op:'damage',value:6}),{count:2,shields:0});
  assert.deepEqual(applyCombat({count:5,shields:3},17,2),{count:0,shields:0});
  assert.equal(applyChoice({count:16,shields:0},{op:'conditional',condition:'atMost',threshold:15,value:30,elseValue:-5}).count,11);
- assert.equal(applyChoice({count:40,shields:0},{op:'*',value:3}).count,72);
+ assert.equal(applyChoice({count:40,shields:0},{op:'*',value:3}).count,120);
  assert.equal(applyChoice({count:1,shields:0},{op:'-',value:2}).count,0);
  assert.equal(applyChoice({count:0,shields:0},{op:'+',value:20}).count,0);
 });

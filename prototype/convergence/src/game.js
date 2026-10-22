@@ -7,6 +7,7 @@ import { BravmGateCharge } from './bravmGateCharge.js';
 import {campaignCombatExchange,applyCampaignPatrol} from './campaignCombatRules.mjs';
 import { TVBreakEffects } from './tvBreakEffects.js';
 import { TVChoice } from './tvChoice.js';
+import {canonicalTVChoice} from './fixedTVCatalog.mjs';
 import { applyChoice, sufferLoss, MAX_CROWD } from './tactics.mjs';
 import { explainGateChoice, evaluateResult } from './tacticalFeedback.mjs';
 import { FINAL_CAMPAIGN_LEVEL } from './storyRules.mjs';
@@ -520,6 +521,7 @@ export class Game {
     }
 
     applyGate(gateData,side=null) {
+        gateData=canonicalTVChoice(gateData);
         const before = { count: this.crowdManager.getPlayerCount(), shields: this.shields };
         const after = applyChoice(before, gateData);
         this.shields = after.shields;
@@ -527,8 +529,6 @@ export class Game {
         if (change > 0) {
             this.crowdManager.addToPlayerCrowd(change,gateData.bonusFaction,gateData);
             if(gateData.bonusFaction){
-                const added=this.crowdManager.playerStickmen.slice(-change);
-                for(const runner of added)runner.userData.bonusFaction=gateData.bonusFaction;
                 if(gateData.bonusFaction==='genz')this.genzFireworks?.addGenz(change);
             }
         }

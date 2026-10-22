@@ -1,5 +1,5 @@
 import {applyTVImpact,TV_RULESET} from './tvRoadRules.mjs';
-import {makeFixedPairs} from './fixedTVCatalog.mjs';
+import {canonicalTVChoice,makeFixedPairs} from './fixedTVCatalog.mjs';
 import {applyCampaignCombat,applyCampaignPatrol} from './campaignCombatRules.mjs';
 // Pure, deterministic rules shared by the level solver and the live game.
 export const MAX_CROWD = 72;
@@ -15,7 +15,8 @@ export function sufferLoss(state, loss) {
   next.count = Math.max(0, next.count - damage + absorbed);
   return next;
 }
-export function applyChoice(state, choice, legacyBravm=false) {
+export function applyChoice(state, choice, legacyBravm=false, legacyLimits=false) {
+  choice=canonicalTVChoice(choice);
   if (state.count <= 0) return { ...state };
   let next = { ...state };
   switch (choice.op) {
@@ -35,13 +36,16 @@ export function applyChoice(state, choice, legacyBravm=false) {
     case 'damage': {
       // BRAV-M motorcycle strike removes up to three protesters once on contact.
       // A shield does not turn the physical collision into a second combat tick.
-      if(choice.kind==='bravm'&&!legacyBravm)return {...next,count:Math.max(0,next.count-3)};
+      if(choice.kind==='bravm'&&!legacyBravm)return {...next,count:Math.max(0,next.count-choice.value)};
       return sufferLoss(next, choice.percent ? next.count * choice.value / 100 : choice.value);
     }
     default: throw new Error('Unknown operation: ' + choice.op);
   }
-  next.count = Math.max(0, Math.min(MAX_CROWD, Math.floor(next.count)));
-  next.shields = Math.max(0, Math.min(MAX_SHIELDS, Math.floor(next.shields)));
+  // Actor/display budgets must never truncate a printed resource promise.
+  next.count = Math.max(0, Math.floor(next.count));
+  next.shields = Math.max(0, Math.floor(next.shields));
+  if(!Number.isSafeInteger(next.count)||!Number.isSafeInteger(next.shields))throw Error('Invalid TV resource count');
+  if(legacyLimits){next.count=Math.min(MAX_CROWD,next.count);next.shields=Math.min(MAX_SHIELDS,next.shields);}
   return next;
 }
 export function applyCombat(state, health, strength = 1) {
@@ -83,7 +87,7 @@ export function solvePlan(plan, legacyBravm=false, {includeMiss=plan.ruleset===T
       states = states.map(s=>({...applyCampaignPatrol(s,plan.level),path:s.path}));
     } else {
       states = states.flatMap(s => (includeMiss?['left','right','miss']:['left','right']).map(side => ({
-        ...(side==='miss'?applyTVImpact(s):applyChoice(s,event[side],legacyBravm)),
+        ...(side==='miss'?applyTVImpact(s):applyChoice(s,event[side],legacyBravm,plan.legacyTVLimits===true)),
         path:[...s.path,side],misses:s.misses+(side==='miss'?1:0)
       })));
     }
@@ -109,7 +113,7 @@ export function replayPlan(plan, path, legacyBravm=false) {
       const side=path[i++];
       if(side==='miss'&&plan.ruleset===TV_RULESET)return applyTVImpact(state);
       if(!['left','right'].includes(side))throw Error('Invalid TV route decision: '+side);
-      return applyChoice(state,e[side],legacyBravm);
+      return applyChoice(state,e[side],legacyBravm,plan.legacyTVLimits===true);
     })();
   return combat(state,plan.bossHealth,plan.strength);
 }
@@ -129,7 +133,7 @@ export function greedyPath(plan, legacyBravm=false) {
   for (const e of plan.events) {
     if (e.type === 'enemy') { state = combat(state, e.count, plan.strength); continue; }
     if (e.type === 'patrol') {state=applyCampaignPatrol(state,plan.level);continue;}
-    const l = applyChoice(state, e.left,legacyBravm), r = applyChoice(state, e.right,legacyBravm);
+    const l = applyChoice(state, e.left,legacyBravm,plan.legacyTVLimits===true), r = applyChoice(state, e.right,legacyBravm,plan.legacyTVLimits===true);
     const side = l.count >= r.count ? 'left' : 'right';
     state = side === 'left' ? l : r;
     path.push(side);
@@ -139,9 +143,7 @@ export function greedyPath(plan, legacyBravm=false) {
 // Retain the legacy level layout, rolls and CRS/BAC roster. After a playable
 // seed is selected, rebalance only the boss for the fixed -3 BRAV-M collision.
 function finalizeBravmPlan(plan) {
-  for(const event of plan.events)if(event.type==='choice')
-    for(const gate of [event.left,event.right])
-      if(gate.kind==='bravm'){gate.value=3;gate.percent=false;}
+  // Immutable TV definitions already contain the approved BRAV-M value.
   const paths=solvePlan(plan);
   const alive=paths.filter(s=>s.count>0).sort((a,b)=>a.capacity-b.capacity);
   if(!alive.length)return null;
@@ -171,7 +173,7 @@ function finalizeBravmPlan(plan) {
 }
 
 // Fixed TV economy. The printed amounts are now the rules, NOT UI overlays.
-export function generateTacticalLevel({level=1,seed=1,startCount=5,strength=1}={}){
+export function generateTacticalLevel({level=1,seed=1,startCount=5,strength=1,exactTV=false}={}){
  level=Math.max(1,Math.floor(level));
  strength=Math.max(1,Math.floor(strength));
  const start=initialState(startCount).count;
@@ -197,7 +199,7 @@ export function generateTacticalLevel({level=1,seed=1,startCount=5,strength=1}={
     count:(n(5,9)+Math.floor(start/8)+Math.min(8,Math.floor(level/3)))*strength
    });
   });
-  const plan={version:3,seed,level,startCount:start,strength,events,
+  const plan={version:exactTV?4:3,legacyTVLimits:!exactTV,seed,level,startCount:start,strength,events,
    trackLength:180,bossHealth:0,tvCatalog:'fixed16'};
   const verified=finalizeBravmPlan(plan);
   if(!verified)continue;

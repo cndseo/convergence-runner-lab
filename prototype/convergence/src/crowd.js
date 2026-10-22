@@ -1,4 +1,5 @@
 import * as THREE from 'three';
+import {MAX_CROWD} from './tactics.mjs';
 import {familyRoster,changeRoster} from './heroRules.mjs';
 import {crowdDensity,crowdSlot} from './humanDensity.mjs';
 import { makeCitizen } from './characters.js';
@@ -55,12 +56,12 @@ export class CrowdManager {
     createPlayerCrowd(count) {
         this.clear();
         this.playerCount = count;
-        this.roster=this.game?.heroes?.active?familyRoster(count,this.game.heroes.profile.family):[];
+        this.roster=familyRoster(count,this.game?.heroes?.active?this.game.heroes.profile.family:'gilets');
         this.refreshDensity();
         this.playerGroup = new THREE.Group();
         this.playerGroup.userData.dynamic = true;
 
-        for (let i = 0; i < count; i++) {
+        for (let i = 0; i < Math.min(count,MAX_CROWD); i++) {
             this.addStickmanToGroup(i);
         }
 
@@ -98,7 +99,7 @@ export class CrowdManager {
 
     refreshDensity() {
         const shields=Math.max(0,Math.min(48,Math.floor(this.game?.shields||0)));
-        if(this.playerCount===this.density.count && (this.playerCount?shields*2:0)===this.density.protectors)return;
+        if(Math.min(MAX_CROWD,this.playerCount)===this.density.count && (this.playerCount?shields*2:0)===this.density.protectors)return;
         const next=crowdDensity(this.playerCount,shields);
         if(next.count!==this.density.count||next.protectors!==this.density.protectors){
             this.previousVisualTotal=this.density.total;
@@ -170,13 +171,13 @@ export class CrowdManager {
     }
 
     addToPlayerCrowd(amount, faction=null, choice=null) {
-        const startIndex = this.playerCount;
+        const startIndex = this.playerStickmen.length;
         this.playerCount += amount;
-        if(this.game?.heroes?.active)this.roster=changeRoster(this.roster,this.playerCount,choice||{bonusFaction:faction},this.game.heroes.profile.family);
+        this.roster=changeRoster(this.roster,this.playerCount,choice||{bonusFaction:faction},this.game?.heroes?.active?this.game.heroes.profile.family:'gilets');
         this.refreshDensity();
 
-        for (let i = 0; i < amount; i++) {
-            this.addStickmanToGroup(startIndex + i);
+        for (let i = startIndex; i < Math.min(this.playerCount,MAX_CROWD); i++) {
+            this.addStickmanToGroup(i);
             if(faction)this.playerStickmen.at(-1).userData.bonusFaction=faction;
         }
         // Gate reinforcements must also become skinned walkers / LOD sprites.
@@ -188,7 +189,13 @@ export class CrowdManager {
         amount = Math.min(amount, this.playerCount);
         if (amount <= 0) return;
 
-        for (let i = 0; i < amount; i++) {
+        const nextCount=Math.max(0,this.playerCount-amount);
+        const removedModels=Math.max(0,this.playerStickmen.length-Math.min(nextCount,MAX_CROWD));
+        for(let i=0;i<Math.min(5,amount-removedModels);i++){
+            const runner=this.playerStickmen.at(-1-i);
+            if(runner)this.launchRagdoll(runner,this.game?.getPlayerColor?.()||0x2196f3,null,{knockdown});
+        }
+        for (let i = 0; i < removedModels; i++) {
             if (this.playerStickmen.length > 0) {
                 const stickman = this.playerStickmen.pop();
                 // Instead of just removing, launch it as a ragdoll

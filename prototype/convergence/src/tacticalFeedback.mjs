@@ -32,12 +32,10 @@ export function explainGateChoice(choice, before, after) {
   } else if (choice.op === 'damage') {
     reason = choice.kind==='bravm' ? 'Charge BRAV-M : trois manifestants renversés' :
       protection < 0 ? 'Les protections ont limité les pertes' : 'Barrage traversé';
-  } else if (after.count === 72 && before.count < 72) {
-    reason = 'Plafond de foule atteint : 72';
   } else if (choice.op === '/' || choice.op === '-') {
     reason = choice.op==='/'?'La foule est divisée, arrondie à l’entier inférieur':'Ces départs retirent directement des manifestants';
   } else if (choice.op === '*') {
-    reason = 'Mobilisation multipliée, limitée à 72';
+    reason = 'Effectif réellement multiplié';
   } else {
     reason = 'Chaque choix influence les rencontres suivantes';
   }

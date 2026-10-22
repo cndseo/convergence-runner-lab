@@ -1,4 +1,5 @@
 import * as THREE from 'three';
+import {makeFixedTVChoice} from './fixedTVCatalog.mjs';
 import { generateTacticalLevel } from './tactics.mjs';
 import { generateCampaignLevel } from './campaignPlan.mjs';
 import { createArcadeGate, animateArcadeGates } from './arcadeGates.js';
@@ -58,7 +59,7 @@ export class LevelGenerator {
         resetMotorcycles();
         resetReferencePolice();
         this.plan = (this.game.mode==='daily'?generateTacticalLevel:generateCampaignLevel)({
-            level, seed: this.game.levelSeed ?? level * 20261019,
+            level, seed: this.game.levelSeed ?? level * 20261019, exactTV:this.game.mode==='daily',
             startCount: this.game.getStartingCrowdSize(), strength: this.game.getEffectiveStrength()
         });
         trackLength = this.plan.trackLength;
@@ -132,7 +133,7 @@ export class LevelGenerator {
         pane.userData.root=root;
         this.scene.add(root);this.meshes.push(root);
         // Separate pickup: never an eleventh decision or a tactical reward.
-        this.marseilleBonus={z,passed:false,tvState:'approaching',leftMesh:pane,leftGate:{op:'support',kind:'marseille'}};
+        this.marseilleBonus={z,passed:false,tvState:'approaching',leftMesh:pane,leftGate:makeFixedTVChoice('marseille1')};
     }
 
     createGateMesh(data, x, z, ordinal=0) {
