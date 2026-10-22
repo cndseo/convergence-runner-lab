@@ -1,28 +1,29 @@
 #!/usr/bin/env bash
-# Run inside WSL from this independent Git worktree. No Actions or public routes.
+# Exact-tree deployment through existing Docker preview, without GitHub Actions.
+# Export with native Git: git diff --binary 1786bbad663b432ce12b79c9454d2a4ba47ce837 HEAD
+# Arguments: commit SHA, WSL patch path, git rev-parse HEAD^{tree}.
 set -euo pipefail
-# Prepare the bundle with native Git (Windows worktree metadata is not readable
-# by WSL Git): git bundle create targeted-combat.bundle HEAD ^1786bbad663b432ce12b79c9454d2a4ba47ce837
-# Arguments: exact commit SHA and WSL-readable path to that incremental bundle.
-REV=${1:?exact commit SHA required}
-BUNDLE=${2:?bundle path required}
-[[ "$REV" =~ ^[0-9a-f]{40}$ ]]
+REV=${1:?commit SHA required}
+PATCH=${2:?patch path required}
+TREE=${3:?tree SHA required}
+[[ "$REV" =~ ^[0-9a-f]{40}$ && "$TREE" =~ ^[0-9a-f]{40}$ ]]
 KEY=/home/olga/.ssh/olga_vps_worker
 HOST=olga@72.61.167.161
-scp -i "$KEY" -o IdentitiesOnly=yes -o BatchMode=yes "$BUNDLE" "$HOST:/tmp/convergence-targeted-combat-$REV.bundle"
-ssh -i "$KEY" -o IdentitiesOnly=yes -o BatchMode=yes "$HOST" bash -s -- "$REV" <<'REMOTE'
+scp -i "$KEY" -o IdentitiesOnly=yes -o BatchMode=yes "$PATCH" "$HOST:/tmp/convergence-targeted-combat-$REV.patch"
+ssh -i "$KEY" -o IdentitiesOnly=yes -o BatchMode=yes "$HOST" bash -s -- "$REV" "$TREE" <<'REMOTE'
 set -euo pipefail
 REV=$1
-SRC=/home/olga/convergence-targeted-combat-src-${REV:0:12}
+TREE=$2
+SRC=/home/olga/convergence-targeted-combat-src-${REV:0:12}-tree
 PARENT=/home/olga/convergence-tv-choice-balance-src-20261021
 WEB=/home/olga/convergence-heroes-20261021/public/combat-cible-20261022
-# Existing previews are preserved; a deployment never overwrites an existing URL.
 test ! -e "$SRC"
 test ! -e "$WEB"
 git clone --shared --no-checkout "$PARENT" "$SRC"
-git -C "$SRC" fetch "/tmp/convergence-targeted-combat-$REV.bundle" HEAD
-git -C "$SRC" checkout --detach FETCH_HEAD
-test "$(git -C "$SRC" rev-parse HEAD)" = "$REV"
+git -C "$SRC" checkout --detach 1786bbad663b432ce12b79c9454d2a4ba47ce837
+git -C "$SRC" apply --index "/tmp/convergence-targeted-combat-$REV.patch"
+# Missing history on the VPS cannot hide a missing or altered source file.
+test "$(git -C "$SRC" write-tree)" = "$TREE"
 cp -a "$PARENT/prototype/convergence/node_modules" "$SRC/prototype/convergence/node_modules"
 docker run --rm --network none --user "$(id -u):$(id -g)" --memory 768m --cpus 1.5 \
  -v "$SRC:/work" -w /work/prototype/convergence \
@@ -31,6 +32,7 @@ docker run --rm --network none --user "$(id -u):$(id -g)" --memory 768m --cpus 1
 mkdir -p "$WEB"
 cp -a "$SRC/_targeted_combat_preview/." "$WEB/"
 printf '%s\n' "$REV" > "$WEB/revision.txt"
+printf '%s\n' "$TREE" > "$WEB/source-tree.txt"
 curl --fail --silent --show-error https://heros-convergence.72-61-167-161.sslip.io/combat-cible-20261022/revision.txt
-rm "/tmp/convergence-targeted-combat-$REV.bundle"
+rm "/tmp/convergence-targeted-combat-$REV.patch"
 REMOTE
