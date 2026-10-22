@@ -1,6 +1,7 @@
 // Collision-triggered BRAV-M street attack. Uses the existing gate's real
 // reference riders, not a duplicated bike texture, and resolves damage once.
 // A full ~3-second arrival from the visible far end of the Parisian street.
+import {TV_IMPACT_LEAD} from './tvRoadRules.mjs';
 import {policeResponse} from './policeResponse.mjs';
 import {makeOfficer} from './characters.js';
 import {upgradeBravMotorcycle} from './motorcycleAssets.js';
@@ -41,10 +42,12 @@ export class BravmGateCharge {
       rider.position.set(startX,rider.position.y,startZ);
       actorList.push({rider,x:startX,y:rider.position.y,z:startZ,index:i});
     }
-    // Keep runner stationary while the motorcycle approaches. The regular
-    // game update loop is frozen so no second portal or combat can resolve.
+    // Campaign keeps marching. A late tap shortens the approach so this hit
+    // resolves before the next route event; Daily keeps its original pause.
+    const duration=nonBlocking&&g.speed>0
+      ?Math.min(CHARGE_TIME,Math.max(.001,(gate.z-g.trackZ-TV_IMPACT_LEAD)/g.speed)):CHARGE_TIME;
     this.current={gate,choice,side,actors:actorList,elapsed:0,hit:false,
-      impactZ:-g.trackZ,impactX:g.playerX,runId:g.runId,speed:g.speed,nonBlocking};
+      impactZ:-g.trackZ,impactX:g.playerX,runId:g.runId,speed:g.speed,nonBlocking,duration};
     if(!nonBlocking){g.state='bravm_charge';g.speed=0;}
     g.audio.playBravmMotorbikeCharge?.();
     return true;
@@ -56,7 +59,8 @@ export class BravmGateCharge {
     if(c.nonBlocking){c.impactZ=-g.trackZ;c.impactX=g.playerX;}
     if(c.runId!==g.runId){this.clear();return;}
     c.elapsed+=Math.min(.05,Math.max(0,dt));
-    const t=c.elapsed,u=smooth(t/CHARGE_TIME);
+    const t=c.elapsed,atGate=c.nonBlocking&&g.trackZ>=c.gate.z-TV_IMPACT_LEAD;
+    const u=smooth(atGate?1:t/c.duration);
     for(const unit of c.actors){
       const {rider,x,y,z,index}=unit;
       const offset=c.actors.length===2?(index===0?-.54:.54):(index-(c.actors.length-1)/2)*.66;
@@ -70,10 +74,11 @@ export class BravmGateCharge {
       rider.rotation.y=0;
       rider.rotation.z=Math.sin(t*6+index)*.035*(1-u);
     }
-    if(t>=CHARGE_TIME&&!c.hit){
+    if((t>=c.duration||atGate)&&!c.hit){
       c.hit=true; // set before mutating game state to prevent reentrant damage
       const before=g.crowdManager.getPlayerCount();
-      if(!c.nonBlocking)g.applyGate(c.choice,c.side);
+      c.impactElapsed=t;
+      g.applyGate(c.choice,c.side);
       const lost=before-g.crowdManager.getPlayerCount();
       c.lost=lost;
       if(lost>0){
@@ -85,7 +90,7 @@ export class BravmGateCharge {
         g.ui.updateCount(g.crowdManager.getPlayerCount());
       }
     }
-    if(t>=CHARGE_TIME+RECOVERY_TIME||g.state==='lose'){
+    if((c.hit&&t>=c.impactElapsed+RECOVERY_TIME)||g.state==='lose'){
       this.clear();
       if(!c.nonBlocking&&g.state==='bravm_charge'){g.state='playing';g.speed=c.speed;}
     }

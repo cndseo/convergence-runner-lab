@@ -359,9 +359,11 @@ export class UIManager {
             const text = '◇ '+(this.game.shields||0)+' protections · '+done+'/10 TV · Arrivée '+Math.round(Math.min(1,this.game.trackZ/this.game.trackLength)*100)+' %';
             if(this.tacticalStatus.textContent!==text)this.tacticalStatus.textContent=text;
         }
-        this.countDisplay.textContent = '👥 '+visible;
+        // The counter uses the same units as TV arithmetic and real combat losses.
+        // Dense silhouettes remain a presentation detail, documented in the title.
+        this.countDisplay.textContent = '👥 '+count;
         // Pulse the count display when count changes significantly
-        if (Math.abs(visible - this.prevCount) > 2) {
+        if (Math.abs(count - this.prevCount) > 2) {
             this.countDisplay.style.transform = 'scale(1.3)';
             this.countDisplay.style.transition = 'transform 0.15s ease';
             setTimeout(() => {
@@ -369,7 +371,7 @@ export class UIManager {
                 setTimeout(() => { this.countDisplay.style.transition = ''; }, 150);
             }, 150);
         }
-        this.prevCount = visible;
+        this.prevCount = count;
     }
 
     showUpgrades() {

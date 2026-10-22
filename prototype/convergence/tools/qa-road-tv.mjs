@@ -3,7 +3,7 @@ import {createRequire} from 'node:module';
 import {mkdirSync,writeFileSync,rmSync} from 'node:fs';
 const {chromium}=createRequire(import.meta.url)('playwright-core');
 const base=process.env.QA_URL||'http://127.0.0.1:4711/';
-const out=new URL('../../../docs/reviews/road-tv-20261021/',import.meta.url);mkdirSync(out,{recursive:true});
+const out=process.env.QA_OUTPUT?new URL('file:///'+process.env.QA_OUTPUT.replaceAll('\\','/')+'/'):new URL('../../../docs/reviews/road-tv-20261021/',import.meta.url);mkdirSync(out,{recursive:true});
 const file=n=>new URL(n,out).pathname.replace(/^\/([A-Za-z]:)/,'$1');
 const browser=await chromium.launch({executablePath:'C:/Program Files/Google/Chrome/Application/chrome.exe',headless:true,args:['--enable-webgl','--ignore-gpu-blocklist']});
 const report={base,checks:[],districts:[],errors:[],badAssets:[]};
@@ -70,17 +70,18 @@ try{
  await page.touchscreen.tap(combatPoint.x,combatPoint.y);assert.equal((await state()).history.length,0);
  await page.evaluate(()=>{const g=window.__convergence;g.state='playing';g.levelGenerator.updateVisibility(g.trackZ);});
  const recovered=await target('left');await page.touchscreen.tap(recovered.x,recovered.y);assert.equal((await state()).history.length,1);report.checks.push({test:'combat-hidden-tv-and-recovery',ok:true});
- // BRAV-M TV applies its printed -3 immediately; bikes keep animating while marching.
+ // BRAV-M TV locks immediately; its printed -3 resolves once at physical contact.
  await reset(30,20);
  await page.evaluate(()=>{const g=window.__convergence;const gate=g.levelGenerator.gates.find(t=>t.leftGate.kind==='bravm'||t.rightGate.kind==='bravm');for(const t of g.levelGenerator.gates)if(t.z<gate.z){t.passed=true;t.tvState='resolved';}for(const p of g.levelGenerator.patrols)if(p.z<gate.z)p.passed=true;for(const e of g.levelGenerator.enemies)if(e.z<gate.z)e.defeated=true;g.trackZ=gate.z-9;g.update(.001);});
  const bravSide=await page.evaluate(()=>{const t=window.__convergence.tvChoice.next();return t.leftGate.kind==='bravm'?'left':'right';});
  const brav=await target(bravSide);assert.ok(brav);const beforeBrav=await state();await page.touchscreen.tap(brav.x,brav.y);
- assert.equal((await state()).count,27);assert.equal((await state()).state,'playing');
+ assert.equal((await state()).count,30);assert.equal((await state()).state,'playing');
  await page.evaluate(()=>{const g=window.__convergence;for(let i=0;i<66;i++)g.update(.05);});
- assert.equal((await state()).count,27);assert.ok((await state()).z>beforeBrav.z+5);report.checks.push({test:'bravm-immediate-once-no-pause',ok:true});
+ assert.equal((await state()).count,27);assert.ok((await state()).z>beforeBrav.z+5);report.checks.push({test:'bravm-contact-once-no-pause',ok:true});
  // All districts through the actual simulation, taps issued at current projected
  // screen locations; no direct reward injection and no purchased consumables.
- for(let id=1;id<=12;id++){
+ const districts=process.env.QA_DISTRICTS?process.env.QA_DISTRICTS.split(',').map(Number):Array.from({length:12},(_,i)=>i+1);
+ for(const id of districts){
   await page.evaluate(id=>{const g=window.__convergence;g.heroes.save.heroId=null;g.heroes.needsChoice=()=>false;g.crowdUpgrade=1;g.strengthUpgrade=1;g.ui.hideAllScreens();g.parisJourney.playDistrict(id);g.parisJourney.card.classList.remove('visible');},id);
   for(let batch=0;batch<500;batch++){
    const result=await page.evaluate(()=>{

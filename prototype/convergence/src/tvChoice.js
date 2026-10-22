@@ -18,6 +18,7 @@ export class TVChoice {
  eligible(gate){
   const g=this.game;
   if(!this.active()||!gate||gate!==this.next()||!canTapTV(gate,g.trackZ))return false;
+  if(g.bravmGateCharge.current&&!g.bravmGateCharge.current.hit)return false;
   // Preserve the certified event order: a future reward cannot bypass a battle.
   if(g.levelGenerator.patrols?.some(p=>!p.passed&&p.z<gate.z))return false;
   if(g.levelGenerator.enemies?.some(e=>!e.defeated&&e.z<gate.z))return false;
@@ -63,10 +64,10 @@ export class TVChoice {
   if(choice.kind==='marseille'){
    if(g.marseille.grantLevelOneGift()){g.audio.playGateGood();g.ui.showLbdImpact('MARSEILLAIS +1 EN RÉSERVE',true);}
   }else{
-   // Keep the established bikes as a non-blocking visual response. The printed
-   // -3 is applied immediately once, not again when the animation arrives.
-   if(choice.kind==='bravm')g.bravmGateCharge.start(gate,choice,side,{nonBlocking:true});
-   g.applyGate(choice,side);
+   // The TV locks immediately; its -3 resolves once when the bikes make contact.
+   // All other TV effects remain immediate. Marching never pauses.
+   const charging=choice.kind==='bravm'&&g.bravmGateCharge.start(gate,choice,side,{nonBlocking:true});
+   if(!charging)g.applyGate(choice,side);
   }
   for(const s of ['left','right'])if(gate[s+'Mesh'])gate[s+'Mesh'].userData.root.visible=false;
   g.ui.updateCount(g.crowdManager.getPlayerCount());
