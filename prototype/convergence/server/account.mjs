@@ -13,6 +13,7 @@ export function installAccountTables(db) {
   db.exec("CREATE TABLE IF NOT EXISTS campaign_saves (player_id TEXT PRIMARY KEY REFERENCES players(id), data TEXT NOT NULL, revision INTEGER NOT NULL DEFAULT 1, updated TEXT NOT NULL);");
   db.exec("CREATE TABLE IF NOT EXISTS player_presence (session_id TEXT PRIMARY KEY, first_seen TEXT NOT NULL, last_seen TEXT NOT NULL, source TEXT NOT NULL);");
   db.exec("CREATE INDEX IF NOT EXISTS presence_time ON player_presence(last_seen);");
+  db.exec("CREATE TABLE IF NOT EXISTS recovery_codes (player_id TEXT PRIMARY KEY REFERENCES players(id), code_hash TEXT NOT NULL UNIQUE, updated TEXT NOT NULL);");
 }
 const playerFromToken = (db,token) => {
   if(typeof token!=='string'||!/^[\w-]{43}$/.test(token))return null;
@@ -67,13 +68,16 @@ function mergePlayers(db,into,from,clock){
     db.prepare('UPDATE '+table+' SET player_id=? WHERE player_id=?').run(into,from);
   db.prepare('UPDATE orders SET player_id=? WHERE player_id=?').run(into,from);
   const src=db.prepare('SELECT data FROM campaign_saves WHERE player_id=?').get(from);
+  const recovery=db.prepare('SELECT code_hash,updated FROM recovery_codes WHERE player_id=?').get(from);
+  if(recovery&&!db.prepare('SELECT 1 FROM recovery_codes WHERE player_id=?').get(into))
+    db.prepare('UPDATE recovery_codes SET player_id=? WHERE player_id=?').run(into,from);
   const dst=db.prepare('SELECT data FROM campaign_saves WHERE player_id=?').get(into);
   if(src && (!dst||JSON.parse(src.data).level>JSON.parse(dst.data).level))
     db.prepare('INSERT INTO campaign_saves(player_id,data,revision,updated) VALUES(?,?,1,?) ON CONFLICT(player_id) DO UPDATE SET data=excluded.data,revision=campaign_saves.revision+1,updated=excluded.updated')
     .run(into,src.data,nowISO(clock));
   db.prepare('DELETE FROM scores WHERE player_id=?').run(from);
   db.prepare('DELETE FROM inventory WHERE player_id=?').run(from);
-  for(const table of ['marseille_charges','genz_ammo','support_redemptions','genz_redemptions','campaign_saves','player_tokens'])
+  for(const table of ['marseille_charges','genz_ammo','support_redemptions','genz_redemptions','campaign_saves','player_tokens','recovery_codes'])
     db.prepare('DELETE FROM '+table+' WHERE player_id=?').run(from);
   db.prepare('DELETE FROM players WHERE id=?').run(from);
 }
@@ -113,10 +117,42 @@ export function createAccountRoutes({db,clock=()=>new Date(),adminSubjects='',co
         return send(res,200,{playerId:id,token}),true;
       }catch(e){db.exec('ROLLBACK');throw e;}
     }
+    if(path==='/api/v1/account/recovery/create' && req.method==='POST'){
+      const player=playerFromToken(db,bearer(req));
+      if(!player)return send(res,401,{error:'unauthorized'}),true;
+      const code='CV-'+crypto.randomBytes(24).toString('base64url');
+      db.prepare('INSERT INTO recovery_codes VALUES(?,?,?) ON CONFLICT(player_id) DO UPDATE SET code_hash=excluded.code_hash,updated=excluded.updated')
+        .run(player.id,digest(code),nowISO(clock));
+      return send(res,200,{code,warning:'Conserve ce code en lieu sûr : il donne accès à ta partie et à tes achats. Le précédent code est invalidé.'}),true;
+    }
+    if(path==='/api/v1/account/recovery/redeem' && req.method==='POST'){
+      const body=await parse(req);
+      if(typeof body.code!=='string'||!/^CV-[A-Za-z0-9_-]{32}$/.test(body.code))return send(res,400,{error:'invalid_recovery_code'}),true;
+      const player=db.prepare('SELECT player_id AS id FROM recovery_codes WHERE code_hash=?').get(digest(body.code));
+      if(!player)return send(res,401,{error:'invalid_recovery_code'}),true;
+      db.exec('BEGIN IMMEDIATE');
+      try{
+        const guest=playerFromToken(db,body.guestToken);
+        if(guest&&guest.id!==player.id &&
+          !db.prepare('SELECT 1 FROM account_links WHERE player_id=?').get(guest.id) &&
+          !db.prepare('SELECT 1 FROM recovery_codes WHERE player_id=?').get(guest.id))
+          mergePlayers(db,player.id,guest.id,clock);
+        const token=issueToken();
+        db.prepare('INSERT INTO player_tokens VALUES(?,?,?)').run(digest(token),player.id,new Date(clock().getTime()+90*86400000).toISOString());
+        db.exec('COMMIT');
+        return send(res,200,{playerId:player.id,token}),true;
+      }catch(e){db.exec('ROLLBACK');throw e;}
+    }
+    if(path==='/api/v1/account/recovery/status' && req.method==='GET'){
+      const player=playerFromToken(db,bearer(req));
+      if(!player)return send(res,401,{error:'unauthorized'}),true;
+      return send(res,200,{enabled:!!db.prepare('SELECT 1 FROM recovery_codes WHERE player_id=?').get(player.id)}),true;
+    }
     if(path==='/api/v1/account/me' && req.method==='GET'){
       const player=playerFromToken(db,bearer(req));
       if(!player){send(res,401,{error:'unauthorized'});return true;}
-      const linked=!!db.prepare('SELECT 1 FROM account_links WHERE player_id=?').get(player.id);
+      const linked=!!db.prepare('SELECT 1 FROM account_links WHERE player_id=?').get(player.id)||
+        !!db.prepare('SELECT 1 FROM recovery_codes WHERE player_id=?').get(player.id);
       send(res,200,{playerId:player.id,linked});return true;
     }
     if(path==='/api/v1/account/logout' && req.method==='POST'){

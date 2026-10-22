@@ -95,6 +95,51 @@ export class AccountPortal{
       }catch(e){this.status('Envoi impossible : '+message(e));}
       finally{this.emailButton.disabled=false;}
     });this.emailButton.hidden=true;email.hidden=true;this.emailField=email;
+    this.recoveryButton=make('SAUVEGARDER · OBTENIR MON CODE PERSONNEL',async()=>{
+      this.recoveryButton.disabled=true;
+      try{
+        const token=await this.game.challengeHub.ensurePlayer();
+        const data=await request('/api/v1/account/recovery/create',{method:'POST',
+          headers:{Authorization:'Bearer '+token}});
+        this.isLinked=true;
+        this.revision=(await request('/api/v1/account/progress',{headers:{Authorization:'Bearer '+token}})).revision;
+        const progress=this.snapshot();if(progress)await this.upload(progress);
+        this.codeOutput.value=data.code;this.codeOutput.hidden=false;
+        this.copyCode.hidden=false;
+        this.signout.hidden=false;
+        this.status('Copie ton code et conserve-le dans un endroit sûr. Il donne accès à ta partie et à tes achats. Un nouveau code remplace le précédent.');
+      }catch(e){this.status('Sauvegarde impossible : '+message(e));}
+      finally{this.recoveryButton.disabled=false;}
+    });
+    this.codeOutput=document.createElement('input');this.codeOutput.readOnly=true;
+    this.codeOutput.hidden=true;this.codeOutput.setAttribute('aria-label','Code de récupération de ta partie');
+    this.codeOutput.style.cssText='width:100%;box-sizing:border-box;padding:12px;font-size:15px';
+    methods.append(this.codeOutput);
+    this.copyCode=make('COPIER MON CODE',async()=>{
+      try{await navigator.clipboard.writeText(this.codeOutput.value);this.status('Code copié. Conserve-le en lieu sûr.');}
+      catch{this.codeOutput.select();this.status('Sélectionne puis copie ton code.');}
+    });this.copyCode.hidden=true;
+    this.recoveryInput=document.createElement('input');this.recoveryInput.placeholder='Ton code personnel CV-…';
+    this.recoveryInput.autocomplete='off';this.recoveryInput.maxLength=35;
+    this.recoveryInput.style.cssText='width:100%;box-sizing:border-box;padding:12px;font-size:15px';
+    methods.append(this.recoveryInput);
+    this.recoverButton=make('RÉCUPÉRER MA PARTIE SUR CET APPAREIL',async()=>{
+      this.recoverButton.disabled=true;
+      try{
+        const guestToken=this.game.challengeHub.playerToken||'';
+        const data=await request('/api/v1/account/recovery/redeem',{method:'POST',
+          headers:{'Content-Type':'application/json'},
+          body:JSON.stringify({code:this.recoveryInput.value.trim(),guestToken})});
+        localStorage.setItem('convergence_challenge_token',data.token);
+        this.game.challengeHub.playerToken=data.token;
+        this.recoveryInput.value='';
+        this.isLinked=true;this.revision=0;
+        await this.restore();await this.game.challengeHub.refreshRemoteStatus();
+        this.signout.hidden=false;
+        this.status('Partie retrouvée ! Ton compte et tes achats sont synchronisés.');
+      }catch(e){this.status('Récupération impossible : '+message(e));}
+      finally{this.recoverButton.disabled=false;}
+    });
     this.signout=make('SE DÉCONNECTER',()=>this.signOut());this.signout.hidden=true;
   }
   status(value){const el=this.panel?.querySelector('#account-status');if(el)el.textContent=value;}

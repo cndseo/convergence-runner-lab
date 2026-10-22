@@ -92,3 +92,24 @@ test('a different authenticated user cannot claim an already-linked guest accoun
     assert.notEqual(a.playerId,b.playerId);
   });
 });
+test('passwordless personal recovery code restores purchases on a second device and can be rotated',async()=>{
+  await run(async(req,db)=>{
+    const first=(await req('/api/v1/players',{method:'POST'})).data;
+    db.prepare('INSERT INTO inventory VALUES(?,?,?)').run(first.playerId,'spiderman','2026-10-22T12:00:00Z');
+    const initial=(await req('/api/v1/account/recovery/create',{method:'POST',
+      headers:{Authorization:'Bearer '+first.token}})).data.code;
+    assert.match(initial,/^CV-[\w-]{32}$/);
+    const second=(await req('/api/v1/players',{method:'POST'})).data;
+    const found=await req('/api/v1/account/recovery/redeem',json({code:initial,guestToken:second.token}));
+    assert.equal(found.code,200);
+    assert.equal(found.data.playerId,first.playerId);
+    assert.deepEqual((await req('/api/v1/shop/inventory',{headers:{Authorization:'Bearer '+found.data.token}})).data.owned,['spiderman']);
+    assert.equal((await req('/api/v1/account/me',{headers:{Authorization:'Bearer '+found.data.token}})).data.linked,true);
+    const replacement=(await req('/api/v1/account/recovery/create',{method:'POST',
+      headers:{Authorization:'Bearer '+found.data.token}})).data.code;
+    assert.notEqual(initial,replacement);
+    assert.equal((await req('/api/v1/account/recovery/redeem',json({code:initial}))).code,401);
+    assert.equal((await req('/api/v1/account/recovery/redeem',json({code:replacement}))).code,200);
+    assert.equal((await req('/api/v1/account/recovery/redeem',json({code:'CV-bad'}))).code,400);
+  });
+});
