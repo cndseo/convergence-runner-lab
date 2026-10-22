@@ -48,11 +48,11 @@ test('Google callback enforces state cookie, nonce, proof exchange and one-time 
     getToken:async opts=>{verifier=opts.codeVerifier;assert.equal(opts.code,'valid-code');return {tokens:{id_token:'verified-test-token'}};},
     verifyIdToken:async args=>{
       assert.equal(args.audience,'test-client-id');
-      return {getPayload:()=>({nonce,sub:'verified-google-user-id'})};
+      return {getPayload:()=>({nonce,sub:'verified-google-user-id',email:'fixture-admin@gmail.com',email_verified:true})};
     }
   };
   await withServer({publicApiUrl:'https://api.le84500.fr/convergence',googleClientId:'test-client-id',
-    googleClientSecret:'local-test-secret',googleOAuthClient},async call=>{
+    googleClientSecret:'local-test-secret',googleOAuthClient,adminSubjects:'email:fixture-admin@gmail.com'},async call=>{
     const started=await call('/api/v1/auth/google/start?destination=cockpit');
     assert.equal(started.status,302);
     const state=new URL(started.headers.get('location')).searchParams.get('state');
@@ -65,7 +65,10 @@ test('Google callback enforces state cookie, nonce, proof exchange and one-time 
     assert.equal(new URL(done.headers.get('location')).pathname,'/cockpit.html');
     assert.match(verifier,/^[\w-]{43}$/);
     const ticket=new URLSearchParams(new URL(done.headers.get('location')).hash.slice(1)).get('auth_ticket');
-    assert.equal((await call('/api/v1/account/link',authJson({},ticket))).status,200);
+    const linked=await call('/api/v1/account/link',authJson({},ticket));
+    assert.equal(linked.status,200);
+    const admin=await call('/api/v1/admin/summary',{headers:{Authorization:'Bearer '+linked.data.token}});
+    assert.equal(admin.status,200,'verified Gmail Google login matches the email admin allowlist');
     assert.equal((await call('/api/v1/account/link',authJson({},ticket))).status,401);
     assert.equal((await call('/api/v1/auth/google/callback?state='+state+'&code=valid-code',{headers:{Cookie:cookie}})).status,400);
   });
