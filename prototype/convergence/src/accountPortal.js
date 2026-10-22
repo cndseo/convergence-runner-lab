@@ -44,6 +44,10 @@ export class AccountPortal{
     this.installUI();
     const save=game.saveProgress.bind(game);
     game.saveProgress=(...args)=>{const result=save(...args);this.queueSave();return result;};
+    if(game.heroes?.persist){
+      const persistHero=game.heroes.persist.bind(game.heroes);
+      game.heroes.persist=(...args)=>{const result=persistHero(...args);this.queueSave();return result;};
+    }
     this.init().catch(e=>this.status('Connexion indisponible : '+message(e)));
     this.maybeHeartbeat();this.askAudienceConsent();
   }
