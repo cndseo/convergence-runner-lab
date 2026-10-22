@@ -44,7 +44,13 @@ npm test
 QA_URL=http://127.0.0.1:4722/ QA_DISTRICTS=2 QA_OUTPUT=<dossier> node tools/qa-road-tv.mjs
 ```
 
-Prévisualisation prévue : https://heros-convergence.72-61-167-161.sslip.io/combat-cible-20261022/
+Prévisualisation publiée et vérifiée : https://heros-convergence.72-61-167-161.sslip.io/combat-cible-20261022/
 Déploiement : script Docker `tools/deploy-targeted-combat-preview.sh`, révision exacte exposée dans `revision.txt`, sans GitHub Actions ni remplacement d'une URL existante.
 
 Limite de validation : Chrome avec résolution iPhone sur le GMK ; pas de test sur iPhone physique ni d'écoute humaine. Aucun achat réel effectué.
+
+## Contrôle du build HTTPS
+
+Les mêmes neuf scénarios passent sur la version compilée et servie par le VPS : `https.json` et captures `https-*`. Aucune erreur JavaScript ni ressource manquante.
+Révision déployée : `7f8a8442372237b274af4ef53deccad4fd3182ae` ; arbre Git : `103f4d80f8ff5b0e0036836895d9388735752719`.
+Le dépôt VPS ne contient pas tous les ancêtres nécessaires au bundle initial. Le script réutilise donc sa base connue et applique un patch binaire natif, puis exige que `git write-tree` corresponde exactement à l'arbre de la révision avant de lancer Docker. Aucun dépôt existant n'est modifié. Les fichiers `revision.txt` et `source-tree.txt` ont été relus en HTTPS et comparés aux valeurs attendues (`deployment.json`).
