@@ -26,17 +26,18 @@ table{width:100%;border-collapse:collapse}td,th{text-align:left;padding:12px;bor
 <input id="admin-email" type="email" autocomplete="email" placeholder="Adresse e-mail de l’administrateur" maxlength="254" hidden>
 <button id="signin-email" type="button" hidden>Recevoir un lien de connexion</button>
 <p id="auth-error" role="status"></p></section>
-<main id="app"><p class="muted">Statistiques : utilisateurs ayant accepté le suivi. Activité estimée sur les 90 dernières secondes.</p>
+<main id="app"><p class="muted">Présence anonyme actualisée toutes les 15 s. « En ligne » inclut le menu ; « En jeu » concerne les parties en cours. Aucune identité ni IP de visiteur n’est affichée ou conservée par ce compteur. Les sessions de 24 h sont estimées par tranches de 5 minutes.</p>
 <div class="cards">
-<div class="metric"><small>Joueurs actifs / 90 s</small><strong id="active">—</strong></div>
-<div class="metric"><small>Sessions / 24 h</small><strong id="visitors">—</strong></div>
+<div class="metric"><small>Visiteurs en ligne / 90 s</small><strong id="online">—</strong></div>
+<div class="metric"><small>En jeu / 90 s</small><strong id="active">—</strong></div>
+<div class="metric"><small>Sessions ~24 h</small><strong id="visitors">—</strong></div>
 <div class="metric"><small>Comptes liés</small><strong id="accounts">—</strong></div>
 <div class="metric"><small>Joueurs enregistrés</small><strong id="players">—</strong></div>
 <div class="metric"><small>Scores du jour</small><strong id="scores">—</strong></div>
 <div class="metric"><small>Achats confirmés / 24 h</small><strong id="orders">—</strong></div>
 <div class="metric"><small>Chiffre d'affaires brut / 24 h</small><strong id="revenue">—</strong></div>
 </div>
-<div class="columns"><section><h2>Acquisition par source / 24 h</h2><table><thead><tr><th>Source</th><th>Sessions</th></tr></thead><tbody id="sources"></tbody></table></section>
+<div class="columns"><section><h2>Acquisition par source ~24 h</h2><table><thead><tr><th>Source</th><th>Sessions</th></tr></thead><tbody id="sources"></tbody></table></section>
 <section><h2>Produits achetés / 24 h</h2><table><thead><tr><th>Produit</th><th>Achats</th></tr></thead><tbody id="products"></tbody></table></section></div>
 <p id="timestamp" class="muted"></p><p id="error" role="alert"></p>
 </main><script type="module" src="./src/cockpit.js"></script></body></html>
