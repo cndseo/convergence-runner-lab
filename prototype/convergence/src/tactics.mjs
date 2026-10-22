@@ -1,3 +1,6 @@
+import {applyTVImpact,TV_RULESET} from './tvRoadRules.mjs';
+import {makeFixedPairs} from './fixedTVCatalog.mjs';
+import {applyCampaignCombat,applyCampaignPatrol} from './campaignCombatRules.mjs';
 // Pure, deterministic rules shared by the level solver and the live game.
 export const MAX_CROWD = 72;
 export const MAX_SHIELDS = 48;
@@ -12,7 +15,7 @@ export function sufferLoss(state, loss) {
   next.count = Math.max(0, next.count - damage + absorbed);
   return next;
 }
-export function applyChoice(state, choice) {
+export function applyChoice(state, choice, legacyBravm=false) {
   if (state.count <= 0) return { ...state };
   let next = { ...state };
   switch (choice.op) {
@@ -29,7 +32,12 @@ export function applyChoice(state, choice) {
       next.count += ok ? choice.value : (choice.elseValue || 0);
       break;
     }
-    case 'damage': return sufferLoss(next, choice.percent ? next.count * choice.value / 100 : choice.value);
+    case 'damage': {
+      // BRAV-M motorcycle strike removes up to three protesters once on contact.
+      // A shield does not turn the physical collision into a second combat tick.
+      if(choice.kind==='bravm'&&!legacyBravm)return {...next,count:Math.max(0,next.count-3)};
+      return sufferLoss(next, choice.percent ? next.count * choice.value / 100 : choice.value);
+    }
     default: throw new Error('Unknown operation: ' + choice.op);
   }
   next.count = Math.max(0, Math.min(MAX_CROWD, Math.floor(next.count)));
@@ -50,9 +58,9 @@ export function gateLabel(c) {
     detail: 'SINON ' + sign(c.elseValue || 0), tone: 'purple'
   };
   if (c.op === 'damage') return {
-    title: '−' + c.value + (c.percent ? '%' : ''),
+    title: '−' + (c.kind==='bravm'?3:c.value) + (c.kind==='bravm'?'':c.percent ? '%' : ''),
     caption: { barrier: 'BARRAGE', van: 'FOURGON', bravm: 'BRAV-M', debris: 'OBSTACLES' }[c.kind] || 'PERTES',
-    detail: 'PROTECTIONS UTILISÉES', tone: 'red'
+    detail: c.kind==='bravm'?'CHARGE : 3 MANIFESTANTS':'PROTECTIONS UTILISÉES', tone: 'red'
   };
   return {
     title: c.op === '%' ? sign(c.value) + '%' : (c.op === '*' ? '×' : c.op === '/' ? '÷' : c.op === '-' ? '−' : '+') + c.value,
@@ -64,92 +72,142 @@ function random(seed) {
   let a = seed >>> 0;
   return () => { a += 0x6D2B79F5; let t = a; t = Math.imul(t ^ t >>> 15, t | 1); t ^= t + Math.imul(t ^ t >>> 7, t | 61); return ((t ^ t >>> 14) >>> 0) / 4294967296; };
 }
-export function solvePlan(plan) {
-  let states = [{ ...initialState(plan.startCount), path: [] }];
+export function solvePlan(plan, legacyBravm=false, {includeMiss=plan.ruleset===TV_RULESET,compact=false}={}) {
+  const campaign=plan.ruleset==='campaign-patrol-20261021'||plan.ruleset===TV_RULESET;
+  const combat=campaign?applyCampaignCombat:applyCombat;
+  let states = [{ ...initialState(plan.startCount), path: [], misses:0, ways:1 }];
   for (const event of plan.events) {
     if (event.type === 'enemy') {
-      states = states.map(s => ({ ...applyCombat(s, event.count, plan.strength), path: s.path }));
+      states = states.map(s => ({ ...combat(s, event.count, plan.strength), path: s.path }));
+    } else if(event.type==='patrol') {
+      states = states.map(s=>({...applyCampaignPatrol(s,plan.level),path:s.path}));
     } else {
-      states = states.flatMap(s => ['left', 'right'].map(side => ({
-        ...applyChoice(s, event[side]), path: [...s.path, side]
+      states = states.flatMap(s => (includeMiss?['left','right','miss']:['left','right']).map(side => ({
+        ...(side==='miss'?applyTVImpact(s):applyChoice(s,event[side],legacyBravm)),
+        path:[...s.path,side],misses:s.misses+(side==='miss'?1:0)
       })));
+    }
+    if(compact){
+      const merged=new Map();
+      for(const s of states){const key=s.count+','+s.shields+','+s.misses;const prior=merged.get(key);if(prior)prior.ways+=s.ways;else merged.set(key,s);}
+      states=[...merged.values()];
     }
   }
   return states.map(s => ({
     ...s,
     capacity: s.count > 0 ? (s.count + s.shields) * plan.strength : 0,
-    survivors: plan.bossHealth ? applyCombat(s, plan.bossHealth, plan.strength).count : s.count
+    survivors: plan.bossHealth ? combat(s, plan.bossHealth, plan.strength).count : s.count
   }));
 }
-export function replayPlan(plan, path) {
+export function replayPlan(plan, path, legacyBravm=false) {
+  const campaign=plan.ruleset==='campaign-patrol-20261021'||plan.ruleset===TV_RULESET;
+  const combat=campaign?applyCampaignCombat:applyCombat;
   let state = initialState(plan.startCount), i = 0;
   for (const e of plan.events) state = e.type === 'enemy'
-    ? applyCombat(state, e.count, plan.strength) : applyChoice(state, e[path[i++]]);
-  return applyCombat(state, plan.bossHealth, plan.strength);
+    ? combat(state,e.count,plan.strength) : e.type === 'patrol'
+    ? applyCampaignPatrol(state,plan.level) : (()=>{
+      const side=path[i++];
+      if(side==='miss'&&plan.ruleset===TV_RULESET)return applyTVImpact(state);
+      if(!['left','right'].includes(side))throw Error('Invalid TV route decision: '+side);
+      return applyChoice(state,e[side],legacyBravm);
+    })();
+  return combat(state,plan.bossHealth,plan.strength);
 }
-export function greedyPath(plan) {
+// Difficulty is measured against all 2^10 legal routes, not just routes
+// that survive the intermediate police lines. Never publish a near-impossible
+// puzzle merely because it has one certified winning path.
+export function difficultyTargets(level) {
+  if (level <= 1) return { min: 0.17, ideal: 0.21, max: 0.27 };
+  if (level <= 3) return { min: 0.14, ideal: 0.19, max: 0.25 };
+  if (level <= 9) return { min: 0.11, ideal: 0.16, max: 0.22 };
+  return { min: 0.08, ideal: 0.13, max: 0.19 };
+}
+export function greedyPath(plan, legacyBravm=false) {
+  const campaign=plan.ruleset==='campaign-patrol-20261021'||plan.ruleset===TV_RULESET;
+  const combat=campaign?applyCampaignCombat:applyCombat;
   let state = initialState(plan.startCount), path = [];
   for (const e of plan.events) {
-    if (e.type === 'enemy') { state = applyCombat(state, e.count, plan.strength); continue; }
-    const l = applyChoice(state, e.left), r = applyChoice(state, e.right);
+    if (e.type === 'enemy') { state = combat(state, e.count, plan.strength); continue; }
+    if (e.type === 'patrol') {state=applyCampaignPatrol(state,plan.level);continue;}
+    const l = applyChoice(state, e.left,legacyBravm), r = applyChoice(state, e.right,legacyBravm);
     const side = l.count >= r.count ? 'left' : 'right';
     state = side === 'left' ? l : r;
     path.push(side);
   }
   return { ...state, path, capacity: state.count > 0 ? (state.count + state.shields) * plan.strength : 0 };
 }
-export function generateTacticalLevel({ level = 1, seed = 1, startCount = 5, strength = 1 } = {}) {
-  level = Math.max(1, Math.floor(level));
-  strength = Math.max(1, Math.floor(strength));
-  const start = initialState(startCount).count;
-  const rand = random(seed + level * 7919 + start * 31);
-  let fallback;
-  for (let attempt = 0; attempt < 96; attempt++) {
-    const n = (lo, hi) => lo + Math.floor(rand() * (hi - lo + 1));
-    const damage = (kind, value, percent = false) => ({ op: 'damage', kind, value, percent });
-    // Linked choices: protection is an investment; smaller groups can qualify
-    // for later conditional recruitment. No "always take the larger number".
-    const pairs = [
-      [{ op: '+', value: n(8, 13) }, { op: '*', value: 2 }],
-      [{ op: 'shield', value: n(10, 18) }, { op: '+', value: n(7, 13) }],
-      [damage('barrier', n(10, 17)), damage('bravm', n(28, 42), true)],
-      [{ op: '/', value: 2 }, { op: '-', value: n(3, 8) }],
-      [{ op: 'conditional', condition: 'atMost', threshold: n(10, 17), value: n(23, 32), elseValue: -5 }, { op: '%', value: 40 }],
-      [{ op: '*', value: 2 }, { op: 'shield', value: n(14, 23) }],
-      [damage('van', n(15, 24)), damage('debris', n(35, 50), true)],
-      [{ op: '%', value: 50 }, { op: 'conditional', condition: 'shield', threshold: 8, value: n(22, 32), elseValue: -4 }],
-      [{ op: '+', value: n(9, 16) }, { op: 'shield', value: n(11, 19) }],
-      [{ op: 'conditional', condition: 'atLeast', threshold: n(30, 44), value: n(12, 20), elseValue: -8 }, { op: '%', value: 25 }]
-    ];
-    const events = [];
-    pairs.forEach((pair, i) => {
-      if (rand() < 0.5) pair.reverse();
-      events.push({ type: 'choice', z: 14 + i * 16, left: pair[0], right: pair[1] });
-      if (i === 4 || i === 7) events.push({
-        type: 'enemy', z: 22 + i * 16, kind: i === 4 ? 'crs' : 'bac',
-        count: n(5, 9) + Math.min(8, Math.floor(level / 3))
-      });
-    });
-    const plan = { version: 2, seed, level, startCount: start, strength, events, trackLength: 180, bossHealth: 0 };
-    const paths = solvePlan(plan);
-    const alive = paths.filter(p => p.count > 0).sort((a, b) => a.capacity - b.capacity);
-    if (!alive.length) continue;
-    const greedy = greedyPath(plan);
-    const max = alive.at(-1).capacity;
-    const quantile = Math.min(0.93, 0.77 + level * 0.012);
-    const target = alive[Math.floor((alive.length - 1) * quantile)].capacity;
-    plan.bossHealth = Math.max(target, greedy.capacity + 1);
-    if (plan.bossHealth > max) plan.bossHealth = target;
-    const winners = alive.filter(p => p.capacity >= plan.bossHealth);
-    plan.proof = {
-      winningPaths: winners.length, totalPaths: paths.length,
-      winningPath: winners.at(-1).path,
-      greedyWins: greedy.capacity >= plan.bossHealth,
-      minSurvivors: Math.min(...winners.map(p => applyCombat(p, plan.bossHealth, strength).count))
-    };
-    fallback = plan;
-    if (!plan.proof.greedyWins && winners.length / paths.length <= 0.30 && winners.length >= 2) return plan;
+// Retain the legacy level layout, rolls and CRS/BAC roster. After a playable
+// seed is selected, rebalance only the boss for the fixed -3 BRAV-M collision.
+function finalizeBravmPlan(plan) {
+  for(const event of plan.events)if(event.type==='choice')
+    for(const gate of [event.left,event.right])
+      if(gate.kind==='bravm'){gate.value=3;gate.percent=false;}
+  const paths=solvePlan(plan);
+  const alive=paths.filter(s=>s.count>0).sort((a,b)=>a.capacity-b.capacity);
+  if(!alive.length)return null;
+  const greedy=greedyPath(plan),bounds=difficultyTargets(plan.level);
+  let choice=null,lower=0;
+  for(const health of [...new Set(alive.map(p=>p.capacity))]){
+    while(lower<alive.length&&alive[lower].capacity<health)lower++;
+    const winners=alive.length-lower,rate=winners/paths.length;
+    if(health<=greedy.capacity||winners<2||rate>=.32)continue;
+    const score=Math.abs(rate-bounds.ideal)+5*
+      (Math.max(0,bounds.min-rate)+Math.max(0,rate-bounds.max));
+    if(!choice||score<choice.score||(score===choice.score&&health>choice.health))
+      choice={health,rate,score,lower};
   }
-  if (!fallback) throw new Error('Unable to certify a playable level');
-  return fallback;
+  if(!choice)return null;
+  plan.bossHealth=choice.health;
+  const winners=alive.slice(choice.lower),witness=winners.at(-1);
+  const survived=replayPlan(plan,witness.path).count;
+  if(survived<=0||replayPlan(plan,greedy.path).count>0)return null;
+  plan.proof={
+    winningPaths:winners.length,totalPaths:paths.length,
+    winningPath:witness.path,greedyWins:false,
+    minSurvivors:Math.min(...winners.map(p=>applyCombat(p,plan.bossHealth,plan.strength).count)),
+    witnessSurvivors:survived,winningRate:choice.rate,difficulty:bounds
+  };
+  return plan;
+}
+
+// Fixed TV economy. The printed amounts are now the rules, NOT UI overlays.
+export function generateTacticalLevel({level=1,seed=1,startCount=5,strength=1}={}){
+ level=Math.max(1,Math.floor(level));
+ strength=Math.max(1,Math.floor(strength));
+ const start=initialState(startCount).count;
+ const rand=random(seed+level*7919+start*31);
+ const bounds=difficultyTargets(level);
+ let fallback=null;
+ for(let attempt=0;attempt<160;attempt++){
+  const n=(lo,hi)=>lo+Math.floor(rand()*(hi-lo+1));
+  const pairs=makeFixedPairs();
+  // Keep the opening recruitment/protection readable, then vary the order
+  // of whole pairs. Every approved PNG and its exact effect stay together.
+  for(let i=pairs.length-1;i>2;i--){
+   const j=n(2,i);[pairs[i],pairs[j]]=[pairs[j],pairs[i]];
+  }
+  const events=[];
+  pairs.forEach((pair,i)=>{
+   if(rand()<.5)pair.reverse();
+   events.push({type:'choice',z:14+i*16,left:pair[0],right:pair[1]});
+   if(i===4||i===7)events.push({
+    type:'enemy',z:22+i*16,kind:i===4?'crs':'bac',
+    // Express resistance in combat rounds, then scale health by strength.
+    // Upgrades must not collapse every route into the crowd cap.
+    count:(n(5,9)+Math.floor(start/8)+Math.min(8,Math.floor(level/3)))*strength
+   });
+  });
+  const plan={version:3,seed,level,startCount:start,strength,events,
+   trackLength:180,bossHealth:0,tvCatalog:'fixed16'};
+  const verified=finalizeBravmPlan(plan);
+  if(!verified)continue;
+  const rate=verified.proof.winningRate;
+  const penalty=6*(Math.max(0,bounds.min-rate)+Math.max(0,rate-bounds.max));
+  const score=Math.abs(rate-bounds.ideal)+penalty;
+  if(!fallback||score<fallback.score)fallback={plan:verified,score};
+  if(rate>=bounds.min&&rate<=bounds.max)return verified;
+ }
+ if(fallback?.plan?.proof?.winningRate>=bounds.min&&
+    fallback.plan.proof.winningRate<=bounds.max)return fallback.plan;
+ throw new Error('Unable to certify fixed-16-TV level at '+JSON.stringify({level,seed,startCount,strength}));
 }

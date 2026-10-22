@@ -1,0 +1,66 @@
+{
+  "url": "http://127.0.0.1:4719/",
+  "errors": [],
+  "badAssets": [],
+  "checks": [
+    "Seven products, four colorful categories and storefront header",
+    "GenZ category filters exactly two SKUs, stock counts preserved",
+    "All, GenZ, Marseille and Costumes filters work",
+    "Close shop and return to Daily without shop skin",
+    "Demo action unchanged: 3 GenZ shots granted"
+  ],
+  "mobile390": {
+    "window": 390,
+    "card": {
+      "x": 12,
+      "width": 366,
+      "right": 378
+    },
+    "scrollWidth": 364,
+    "clientWidth": 364,
+    "products": [
+      {
+        "sku": "genz3",
+        "price": "0,99 €",
+        "disabled": true
+      },
+      {
+        "sku": "genz12",
+        "price": "2,99 €",
+        "disabled": true
+      },
+      {
+        "sku": "marseille1",
+        "price": "2,99 €",
+        "disabled": true
+      },
+      {
+        "sku": "marseille3",
+        "price": "8,97 €",
+        "disabled": true
+      },
+      {
+        "sku": "marseille10",
+        "price": "29,90 €",
+        "disabled": true
+      },
+      {
+        "sku": "spiderman",
+        "price": "1,99 €",
+        "disabled": true
+      },
+      {
+        "sku": "dinosaur",
+        "price": "1,99 €",
+        "disabled": true
+      }
+    ]
+  },
+  "mobile320": {
+    "x": 12,
+    "width": 296,
+    "right": 308,
+    "scroll": 294,
+    "client": 294
+  }
+}

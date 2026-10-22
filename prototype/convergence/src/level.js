@@ -1,35 +1,48 @@
 import * as THREE from 'three';
-import { compactStaticTrack } from './staticScenery.js';
 import { generateTacticalLevel } from './tactics.mjs';
+import { generateCampaignLevel } from './campaignPlan.mjs';
 import { createArcadeGate, animateArcadeGates } from './arcadeGates.js';
-import { placeKenneyRoadFurniture } from './assetLoader.js';
+import { disposeTVGateArtwork, makeMarseilleBonusArtwork } from './tvGateArt.js';
 import { upgradeBossVan } from './bossAssets.js';
-import { placeKenneyCityDetails, disposeKenneyCityDetails } from './kenneyCity.js';
+import { disposeKenneyCityDetails } from './kenneyCity.js';
 import { makeOfficer, makeVan } from './characters.js';
-import { makeAsphaltTexture } from './roadTexture.js';
 import { upgradePoliceOfficer, resetPoliceVisualBudget } from './policeAssets.js';
 import { upgradeBravMotorcycle, resetMotorcycles } from './motorcycleAssets.js';
-import { createParisStreetscape } from './parisEnvironment.js';
+import {StreetPresence} from './streetPresence.js';
+import { ParisEnvironment } from './parisEnvironment.js';
+import { disposeUrbanDecayAssets } from './urbanDecayAssets.js';
+import { updateKenneyPoliceLights } from './kenneyCity.js';
+import { attachReferenceOfficer, resetReferencePolice } from './policeReferenceSprites.js';
 
 export class LevelGenerator {
     constructor(scene, game) {
         this.scene = scene;
         this.game = game;
         this.gates = [];
+        this.marseilleBonus = null;
         this.obstacles = [];
         this.enemies = [];
+        this.patrols = [];
         this.boss = null;
         this.meshes = [];
     }
 
     clear() {
+        this.streetPresence?.dispose();
+        this.streetPresence=null;
+        this.parisEnvironment?.dispose();
+        this.parisEnvironment=null;
+        disposeUrbanDecayAssets(this.meshes);
         disposeKenneyCityDetails(this.meshes);
         this.gates = [];
+        this.marseilleBonus = null;
         this.obstacles = [];
         this.enemies = [];
+        this.patrols = [];
         this.boss = null;
         this.meshes.forEach(m => {
             if (!m.isObject3D) return;
+            disposeTVGateArtwork(m);
             this.scene.remove(m);
             if (m.geometry) m.geometry.dispose();
             if (m.material) {
@@ -43,24 +56,42 @@ export class LevelGenerator {
     generate(level, trackLength) {
         resetPoliceVisualBudget();
         resetMotorcycles();
-        this.plan = generateTacticalLevel({
+        resetReferencePolice();
+        this.plan = (this.game.mode==='daily'?generateTacticalLevel:generateCampaignLevel)({
             level, seed: this.game.levelSeed ?? level * 20261019,
-            startCount: this.game.getStartingCrowdSize(), strength: this.game.strengthUpgrade
+            startCount: this.game.getStartingCrowdSize(), strength: this.game.getEffectiveStrength()
         });
         trackLength = this.plan.trackLength;
-        this.createTrack(trackLength);
-        compactStaticTrack(this.scene, this.meshes);
+        this.parisEnvironment = new ParisEnvironment(this.scene, this.game, trackLength, this.game.geographicLevel);
         this.createGates(level, trackLength);
+        this.createMarseilleBonus(level);
         this.createObstacles(level, trackLength);
         this.createEnemies(level, trackLength);
+        this.patrols=this.plan.events.filter(e=>e.type==='patrol').map(e=>({...e,passed:false}));
         this.createBoss(level, trackLength);
-        createParisStreetscape(this.scene,trackLength,this.meshes);
-        placeKenneyRoadFurniture(this.scene,trackLength,this.meshes);
-        placeKenneyCityDetails(this.scene,trackLength,this.meshes);
+        this.streetPresence=new StreetPresence(this.scene,this.game,this.plan,this.game.geographicLevel);
+        // Geography replaces only static scenery. TV, police and combat objects remain above.
     }
 
     updateVisibility(progress) {
+        this.parisEnvironment?.update(progress);
         animateArcadeGates(this.gates, progress, performance.now() / 1000);
+        updateKenneyPoliceLights(this.meshes,performance.now()/1000);
+        // During an encounter, hide nearby giant choice billboards so the camera
+        // can show the front line. Gate collision/solver data remain untouched.
+        const combatView=['fighting','intro','bravm_charge','final_chase','final_capture'].includes(this.game.state)
+            ||(this.game.state==='paused'&&this.game.pausedState==='fighting');
+        if(combatView)for(const gate of this.gates){
+            // Even portals 30m ahead can cover an encounter in portrait mode.
+            // Hide every giant billboard *visually* until marching resumes.
+            for(const pane of [gate.leftMesh,gate.rightMesh]){
+                if(pane?.userData.root)pane.userData.root.visible=false;
+            }
+        }
+        if(this.marseilleBonus){
+            const bonus=this.marseilleBonus, distance=bonus.z-progress;
+            bonus.leftMesh.userData.root.visible=(!bonus.passed||bonus.tvState==='missed')&&!combatView&&distance<62&&distance>-8;
+        }
         // Preserve all gameplay and collision data, cull only distant visuals.
         for (const enemy of this.enemies) {
             const distance=enemy.z-progress;
@@ -75,59 +106,37 @@ export class LevelGenerator {
         }
     }
 
-    createTrack(trackLength) {
-        // City boulevard / bridge. All geometry is procedural; no image downloads.
-        const mesh=(geometry,color,x,y,z,shadow=false)=>{
-            const obj=new THREE.Mesh(geometry,new THREE.MeshStandardMaterial({color,roughness:.87}));
-            obj.position.set(x,y,z);obj.userData.dynamic=true;obj.receiveShadow=true;
-            obj.castShadow=shadow;this.scene.add(obj);this.meshes.push(obj);return obj;
-        };
-        const surface=mesh(new THREE.PlaneGeometry(11,trackLength+24),0x68717b,0,.025,-trackLength/2);
-        surface.rotation.x=-Math.PI/2;
-        surface.material.color.set(0xffffff);
-        surface.material.map=makeAsphaltTexture(trackLength);
-        surface.material.roughness=.96;
-        const river=mesh(new THREE.PlaneGeometry(220,trackLength+70),0x426784,0,-1.65,-trackLength/2);
-        river.rotation.x=-Math.PI/2;
-        river.material.roughness=.30;
-        river.material.metalness=.12;
-        for(let side of [-1,1]){
-            // Raised concrete verge and metal bridge railings
-            mesh(new THREE.BoxGeometry(.7,.36,trackLength+18),0x9eabb0,side*5.55,.18,-trackLength/2);
-            mesh(new THREE.BoxGeometry(.14,.12,trackLength+18),0x374858,side*5.65,1.24,-trackLength/2);
-            mesh(new THREE.BoxGeometry(.10,.10,trackLength+18),0x516277,side*5.65,.77,-trackLength/2);
-            for(let z=0;z<trackLength+6;z+=5){
-                mesh(new THREE.BoxGeometry(.11,1.3,.10),0x384d5f,side*5.65,.7,-z);
-            }
-        }
-        for(let z=0;z<trackLength+6;z+=8){
-            const dash=mesh(new THREE.PlaneGeometry(.13,3),0xe7e9e4,0,.055,-z);
-            dash.rotation.x=-Math.PI/2;
-        }
-        // Along the far banks: abstract southern-French buildings with tiled roofs
-        for(let z=0;z<trackLength+35;z+=17){
-            for(const side of [-1,1]){
-                const h=4+(Math.floor(z/17)%4)*1.8;
-                const house=mesh(new THREE.BoxGeometry(7.5,h,9),[0xe0c7a0,0xd8b2a1,0xc8b5a6,0xd7c6af][Math.floor(z/17)%4],side*(16+Math.abs(z%3)),h/2-1.5,-z);
-                mesh(new THREE.BoxGeometry(7.8,.45,9.3),0x536475,side*(16+Math.abs(z%3)),h-1.5,-z);
-                for(let floor=1;floor<h/2;floor++)for(let zz of [-2.6,1.8]){
-                    mesh(new THREE.BoxGeometry(.10,.9,.85),0x45586c,side*(16+Math.abs(z%3))-side*3.82,floor*1.55-1.2,-z+zz);
-                }
-            }
-        }
-    }
-
     createGates(level, trackLength) {
         for (const event of this.plan.events.filter(e => e.type === 'choice')) {
-            const gate = { z: event.z, passed: false, leftGate: event.left, rightGate: event.right };
-            gate.leftMesh = this.createGateMesh(event.left, -2.5, event.z);
-            gate.rightMesh = this.createGateMesh(event.right, 2.5, event.z);
+            // The fixed TV catalog owns both bonus numbers and faction identity.
+            // No visual-only change to the chosen faction or computed amount.
+            const gate = { z: event.z, passed: false, tvState:'approaching', leftGate: event.left, rightGate: event.right };
+            const gateOrder=this.gates.length*2;
+            gate.leftMesh = this.createGateMesh(event.left, -2.5, event.z, gateOrder);
+            gate.rightMesh = this.createGateMesh(event.right, 2.5, event.z, gateOrder+1);
             this.gates.push(gate);
         }
     }
 
-    createGateMesh(data, x, z) {
-        return createArcadeGate(data, x, z, this.scene, this.meshes);
+    createMarseilleBonus(level) {
+        if(level!==1 || this.game.mode!=='campaign' || this.game.marseille.levelOneGift.claimed)return;
+        // Place the special reward immediately before the first CRS unit,
+        // *after* the preceding mathematical TV pair (no 11th tactical gate).
+        const firstCRS=this.plan.events.find(e=>e.type==='enemy'&&e.kind==='crs');
+        if(!firstCRS)return;
+        const z=firstCRS.z-4;
+        const root=new THREE.Group();
+        root.name='MARSEILLE_BONUS_TV';root.position.set(0,0,-z);
+        root.userData.dynamic=true;
+        const art=makeMarseilleBonusArtwork(root),pane=art.getObjectByName('TV_LIVE_SCREEN');
+        pane.userData.root=root;
+        this.scene.add(root);this.meshes.push(root);
+        // Separate pickup: never an eleventh decision or a tactical reward.
+        this.marseilleBonus={z,passed:false,tvState:'approaching',leftMesh:pane,leftGate:{op:'support',kind:'marseille'}};
+    }
+
+    createGateMesh(data, x, z, ordinal=0) {
+        return createArcadeGate(data, x, z, this.scene, this.meshes,ordinal);
     }
 
     createObstacles() {
@@ -144,28 +153,33 @@ export class LevelGenerator {
     }
 
     createEnemyCrowd(enemy, z, count) {
-        const displayCount = Math.min(count, 12);
+        // The central fighting unit keeps its tactical size; instanced patrols
+        // occupy the flanks without adding hidden combat difficulty.
+        const displayCount = Math.min(Math.max(count, 1), 24);
         const group = new THREE.Group();
         group.userData.dynamic = true;
 
         for (let i = 0; i < displayCount; i++) {
-            const angle = (i / displayCount) * Math.PI * 2 + Math.random() * 0.5;
-            const radius = Math.sqrt(i / displayCount) * 2.5;
             const stickman = makeOfficer(enemy.kind,i);
+            // Police kit (shields, visor and launchers) faces local +Z,
+            // toward the approaching protesters. Do not reverse the officer.
             stickman.position.set(
-                (i % 6 - 2.5) * .78,
+                (i % 8 - (Math.min(8,displayCount)-1)/2) * .68,
                 0,
-                -Math.floor(i / 6) * .75
+                -Math.floor(i / 8) * .83
             );
             group.add(stickman);
             upgradePoliceOfficer(stickman,enemy.kind);
             if(enemy.kind==='bravm')upgradeBravMotorcycle(stickman);
+            attachReferenceOfficer(stickman,enemy.kind,i);
         }
 
         group.position.set(0, 0, -z);
         this.scene.add(group);
         this.meshes.push(group);
         enemy.meshGroup = group;
+        enemy.officers = [...group.children];
+        enemy.visualOfficerCount = displayCount;
 
         // Count label
         const canvas = document.createElement('canvas');
@@ -180,10 +194,11 @@ export class LevelGenerator {
         ctx.font = 'bold 37px system-ui';ctx.fillText(count.toString(),64,49);
 
         const texture = new THREE.CanvasTexture(canvas);
-        const labelGeo = new THREE.PlaneGeometry(2.4, 1.2);
+        const labelGeo = new THREE.PlaneGeometry(1.75, .88);
         const labelMat = new THREE.MeshBasicMaterial({ map: texture, transparent: true, depthWrite: false });
         const label = new THREE.Mesh(labelGeo, labelMat);
-        label.position.set(0, 4, -z);
+        // Keep the count readable but off the officers' bodies and faces.
+        label.position.set(-2.95, 2.9, -z-.85);
         label.userData.dynamic = true;
         this.scene.add(label);
         this.meshes.push(label);
@@ -209,11 +224,48 @@ export class LevelGenerator {
         enemy.labelMesh.material.map = new THREE.CanvasTexture(canvas);
         enemy.labelMesh.material.needsUpdate = true;
 
-        // Also remove stickmen from the enemy group visually
-        if (enemy.meshGroup && enemy.meshGroup.children.length > 0) {
-            const child = enemy.meshGroup.children[enemy.meshGroup.children.length - 1];
-            enemy.meshGroup.remove(child);
+        // Keep the visible CRS line in proportion to the *actual* tactical
+        // count. A 20-officer proxy for 60 CRS must not vanish after 20 hits.
+        this.updateOfficerVisuals(enemy);
+    }
+
+    updateOfficerVisuals(enemy) {
+        const target = enemy.isBoss ? this.boss : enemy;
+        const officers = target?.officers;
+        if (!officers?.length || !target.meshGroup) return;
+        const original = Math.max(1, enemy.count);
+        const remaining = Math.max(0, enemy.remainingCount);
+        const wanted = remaining > 0
+            ? Math.max(1, Math.ceil(officers.length * remaining / original))
+            : 0;
+        let standing = officers.reduce((n, officer) =>
+            n + Number(officer.parent === target.meshGroup && !officer.userData.combatRetired), 0);
+        while (standing > wanted) {
+            const officer = officers.findLast(o => o.parent === target.meshGroup && !o.userData.combatRetired);
+            if (!officer) break;
+            // The officer is detached and animated as the *same dressed model*.
+            if (!this.game?.crowdManager?.launchOfficerFall?.(officer)) break;
+            standing--;
         }
+        target.visualOfficerCount = standing;
+    }
+
+    updateBossCount(enemy) {
+        if (!this.boss) return;
+        this.updateOfficerVisuals(enemy);
+        const label = this.boss.labelMesh;
+        if (!label) return;
+        const canvas = document.createElement('canvas');
+        canvas.width = 512; canvas.height = 128;
+        const ctx = canvas.getContext('2d');
+        ctx.fillStyle='#f3e8d8'; ctx.font='bold 49px system-ui';
+        ctx.textAlign='center'; ctx.textBaseline='middle';
+        ctx.strokeStyle='#152334';ctx.lineWidth=9;
+        const message='FRONT CRS : '+Math.max(0,enemy.remainingCount);
+        ctx.strokeText(message,256,64);ctx.fillText(message,256,64);
+        label.material.map?.dispose();
+        label.material.map=new THREE.CanvasTexture(canvas);
+        label.material.needsUpdate=true;
     }
 
     createBoss(level, trackLength) {
@@ -221,26 +273,41 @@ export class LevelGenerator {
         this.boss={z:trackLength,health:bossHealth,defeated:false};
         const squad=new THREE.Group();squad.userData.dynamic=true;
         // Final front: CRS line backed by a white van instead of a king stickman.
-        for(let i=0;i<7;i++){
+        for(let i=0;i<13;i++){
             const officer=makeOfficer(i%5===0?'bac':'crs',i);
-            officer.position.set((i-3)*.68,0,i%2*.6);
+            // The model's shield is already oriented toward local +Z.
+            officer.position.set((i%7-3)*.66,0,Math.floor(i/7)*-.86);
             squad.add(officer);
             upgradePoliceOfficer(officer, i%5===0?'bac':'crs');
+            attachReferenceOfficer(officer,i%5===0?'bac':'crs',i);
+        }
+        // Two flanking motorcycle units; scenery only, no additional tactical damage.
+        for(const side of [-1,1]){
+            for(let j=0;j<2;j++){
+                const rider=makeOfficer('bravm',j);
+                rider.position.set(side*(4.2+j*.85),0,-1.1-j*1.9);
+                rider.rotation.y=side*Math.PI/10;
+                squad.add(rider);
+                upgradePoliceOfficer(rider,'bravm');
+                upgradeBravMotorcycle(rider);
+                attachReferenceOfficer(rider,'bravm',j);
+            }
         }
         const vehicle=makeVan();vehicle.scale.set(.85,.85,.85);
         vehicle.position.set(0,0,-4.3);squad.add(vehicle);
         upgradeBossVan(squad,vehicle);
         squad.position.set(0,0,-trackLength);
         this.scene.add(squad);this.meshes.push(squad);
-        this.boss.meshGroup=squad;this.boss.defeatTime=0;this.boss.isDefeating=false;
+        this.boss.meshGroup=squad;this.boss.officers=squad.children.filter(c=>c!==vehicle);this.boss.visualOfficerCount=this.boss.officers.length;
+        this.boss.defeatTime=0;this.boss.isDefeating=false;
         const c=document.createElement('canvas');c.width=512;c.height=128;
         const ctx=c.getContext('2d');
         ctx.fillStyle='#f3e8d8';ctx.font='bold 49px system-ui';
         ctx.textAlign='center';ctx.textBaseline='middle';
         ctx.strokeStyle='#152334';ctx.lineWidth=9;ctx.strokeText('FRONT CRS : '+bossHealth,256,64);
         ctx.fillText('FRONT CRS : '+bossHealth,256,64);
-        const label=new THREE.Mesh(new THREE.PlaneGeometry(7,1.6),new THREE.MeshBasicMaterial({map:new THREE.CanvasTexture(c),transparent:true,depthWrite:false}));
-        label.position.set(0,3.4,-trackLength);label.userData.dynamic=true;this.scene.add(label);this.meshes.push(label);
+        const label=new THREE.Mesh(new THREE.PlaneGeometry(4.0,1.0),new THREE.MeshBasicMaterial({map:new THREE.CanvasTexture(c),transparent:true,depthWrite:false}));
+        label.position.set(-2.6,3.4,-trackLength-1.3);label.userData.dynamic=true;this.scene.add(label);this.meshes.push(label);
         this.boss.labelMesh=label;
     }
 

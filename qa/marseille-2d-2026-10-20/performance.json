@@ -1,0 +1,36 @@
+[
+  {
+    "version": "baseline-3d",
+    "url": "http://127.0.0.1:4320/convergence-runner-lab/convergence/",
+    "peak": {
+      "medianMs": 31.200000000000728,
+      "p95Ms": 31.600000000000364,
+      "drawCalls": 432,
+      "triangles": 250617,
+      "geometries": 662,
+      "textures": 101
+    },
+    "finish": {
+      "state": "playing",
+      "credits": 0
+    },
+    "errors": []
+  },
+  {
+    "version": "premium-2d",
+    "url": "http://127.0.0.1:4324/convergence-runner-lab/convergence/",
+    "peak": {
+      "medianMs": 31.200000000000728,
+      "p95Ms": 31.699999999999818,
+      "drawCalls": 376,
+      "triangles": 179239,
+      "geometries": 517,
+      "textures": 93
+    },
+    "finish": {
+      "state": "playing",
+      "credits": 0
+    },
+    "errors": []
+  }
+]

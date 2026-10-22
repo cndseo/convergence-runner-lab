@@ -1,0 +1,43 @@
+import fs from 'node:fs';
+import assert from 'node:assert/strict';
+import {createRequire} from 'node:module';
+const {chromium}=createRequire(import.meta.url)('playwright-core');
+const url=process.env.QA_URL||'http://127.0.0.1:4320/convergence-runner-lab/convergence/';
+const path=process.env.QA_REPORT||'C:/CITYOS/convergence-qa-20261019/ambience-local.json';
+const report={url,checkedAt:new Date().toISOString(),errors:[],checks:{}};
+const browser=await chromium.launch({executablePath:'C:/Program Files/Google/Chrome/Application/chrome.exe',headless:true,args:['--enable-webgl','--ignore-gpu-blocklist','--autoplay-policy=no-user-gesture-required']});
+try{
+  const page=await browser.newPage({viewport:{width:Number(process.env.QA_WIDTH||390),height:Number(process.env.QA_HEIGHT||844)},isMobile:true,hasTouch:true});
+  page.on('pageerror',e=>report.errors.push(e.message));
+  page.on('response',r=>{if(r.status()>=400)report.errors.push(r.status()+' '+r.url());});
+  await page.goto(url+'?qa=1',{waitUntil:'networkidle'});
+  await page.click('#play-btn');
+  await page.waitForFunction(()=>window.__convergence?.audio?.ambience?.buffers?.length===2&&window.__convergence?.audio?.ambience?.current?.node,{timeout:40000});
+  report.checks.playing=await page.evaluate(()=>{const a=window.__convergence.audio;return {ctx:a.ctx.state,count:a.ambience.buffers.length,durations:a.ambience.buffers.map(b=>Math.round(b.duration*10)/10),playing:a.ambience.enabled,played:a.ambience.played,music:a.isMusicPlaying};});
+  assert.equal(report.checks.playing.ctx,'running');
+  assert.equal(report.checks.playing.playing,true);
+  assert.equal(report.checks.playing.music,false);
+  assert.equal(report.checks.playing.count,2);
+  await page.click('#pause-btn');
+  await page.waitForFunction(()=>window.__convergence.audio.ctx.state==='suspended');
+  report.checks.pause=await page.evaluate(()=>window.__convergence.audio.ctx.state);
+  await page.click('#ambience-toggle-btn');
+  assert.equal(await page.evaluate(()=>window.__convergence.audio.musicGain.gain.value),0);
+  report.checks.mute=true;
+  await page.click('#ambience-toggle-btn');
+  assert.ok(Math.abs(await page.evaluate(()=>window.__convergence.audio.musicGain.gain.value)-.35)<.001);
+  await page.click('#resume-btn');
+  await page.waitForFunction(()=>window.__convergence.audio.ctx.state==='running');
+  report.checks.resume=await page.evaluate(()=>window.__convergence.audio.ctx.state);
+  // Force end of first sample to verify a seamless transition to the second.
+  await page.evaluate(()=>window.__convergence.audio.ambience.current.node.stop());
+  await page.waitForFunction(()=>window.__convergence.audio.ambience.played>=2,{timeout:5000});
+  report.checks.next=await page.evaluate(()=>({played:window.__convergence.audio.ambience.played,duration:window.__convergence.audio.ambience.current.node.buffer.duration}));
+  await page.evaluate(()=>window.__convergence.loseGame());
+  assert.equal(await page.evaluate(()=>window.__convergence.audio.ambience.enabled),false);
+  report.checks.stop=true;
+  assert.deepEqual(report.errors,[]);
+  fs.mkdirSync((await import('node:path')).dirname(path),{recursive:true});
+  fs.writeFileSync(path,JSON.stringify(report,null,2));
+  console.log(JSON.stringify(report,null,2));
+}finally{await browser.close();}

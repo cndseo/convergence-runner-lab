@@ -64,7 +64,12 @@ async function captureCase(width,height,count){
     const g=window.__convergence;g.startGame();g.qaManual=true;let choice=0;
     for(const e of g.levelGenerator.plan.events){
      g.trackZ=e.z;g.crowdManager.updatePlayerPosition(g.playerX,-g.trackZ);
-     if(e.type==='choice'){g.playerX=route[choice++]==='left'?-2.5:2.5;g.checkGateCollisions();}
+     if(e.type==='choice'){
+      g.playerX=route[choice++]==='left'?-2.5:2.5;g.checkGateCollisions();
+      // BRAV-M applies its exact loss on animated contact, not gate entry.
+      for(let i=0;i<120&&g.state==='bravm_charge';i++)g.update(.05);
+      if(g.state==='bravm_charge')throw new Error('BRAV-M charge did not finish');
+     }
      else {g.checkEnemyCollisions();for(let i=0;i<500&&g.state==='fighting';i++)g.updateFight(.13);}
      if(g.state==='lose')break;
     }
@@ -73,7 +78,8 @@ async function captureCase(width,height,count){
    },route);
   }
   const win=await playRoute(plan.proof.winningPath);
-  assert.equal(win.state,'boss_defeated');assert.equal(win.count,replayPlan(plan,plan.proof.winningPath).count);
+  assert.equal(win.state,'boss_defeated');assert.equal(win.events,10);
+  assert.equal(win.count,replayPlan(plan,plan.proof.winningPath).count);
   await page.waitForTimeout(1300);assert.equal(await page.evaluate(()=>window.__convergence.state),'win');
   await page.click('#next-btn');await page.waitForTimeout(500);assert.equal(await page.evaluate(()=>window.__convergence.levelGenerator.plan.level),2);
   await page.evaluate(()=>{window.__convergence.level=1;});

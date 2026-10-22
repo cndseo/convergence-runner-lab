@@ -1,0 +1,18 @@
+{
+  "url": "https://heros-convergence.72-61-167-161.sslip.io/tv-parcours/",
+  "revision": "e8567b079359ab8c79539e76db6f750c6860a2aa",
+  "status": 200,
+  "checked": [
+    {
+      "url": "https://heros-convergence.72-61-167-161.sslip.io/tv-parcours/assets/index-DkjsexlL.js",
+      "status": 200,
+      "sha256": "ed6176fa79732690651ccacb4c96e8b2c8e05988d471a799e08cd98aeddb8fd0"
+    },
+    {
+      "url": "https://heros-convergence.72-61-167-161.sslip.io/tv-parcours/assets/index-BL1SMn_K.css",
+      "status": 200,
+      "sha256": "08935e98ce56f2355d1e6743c716e79e51f041a5fe0095eee1fb945742ef1e71"
+    }
+  ],
+  "method": "Docker Node 24 Alpine on VPS; isolated path; no GitHub Actions"
+}

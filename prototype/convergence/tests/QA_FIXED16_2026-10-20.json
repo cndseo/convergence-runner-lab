@@ -1,0 +1,758 @@
+{
+  "date": "2026-10-20T13:05:21.363493+00:00",
+  "base": "d592eee",
+  "branch": "feature/convergence-fixed16-tv-20261020",
+  "preview": "https://emissions-potter-advise-persistent.trycloudflare.com/convergence-runner-lab/convergence/",
+  "unitTests": {
+    "passed": 48,
+    "failed": 0,
+    "skipped": 0,
+    "certificationTestUnchanged": true,
+    "mainConfigurations": 2400
+  },
+  "build": "passed; existing chunk-size warning",
+  "originalPNGs": {
+    "count": 16,
+    "allManifestHashesMatch": true
+  },
+  "tv": [
+    {
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "stats": {
+        "screens": 20,
+        "uniqueArt": [
+          0,
+          1,
+          9,
+          2,
+          15,
+          10,
+          6,
+          5,
+          8,
+          12,
+          11,
+          3,
+          4,
+          7,
+          14,
+          13
+        ],
+        "textureWidth": 1225,
+        "noPlaceholders": true,
+        "amount": "+10",
+        "firstGate": {
+          "op": "+",
+          "value": 10,
+          "tvKey": "renforts10"
+        },
+        "visible": true,
+        "noPortals": true,
+        "textureHeight": 818,
+        "originalPNG": 20,
+        "adapted": 0,
+        "fullyOccluding": true,
+        "behindBikesHidden": true,
+        "allTextureWidths": [
+          1225,
+          1232,
+          1216,
+          1225,
+          685,
+          681,
+          1216,
+          1240,
+          1216,
+          1225,
+          686,
+          685,
+          1232,
+          1221,
+          1216,
+          1225,
+          1231,
+          1216,
+          684,
+          681
+        ]
+      },
+      "crossing": {
+        "expected": {
+          "count": 15,
+          "shields": 0
+        },
+        "after": {
+          "count": 15,
+          "shields": 0
+        },
+        "passed": true,
+        "breaks": 1,
+        "shards": 14,
+        "gateHistory": 1,
+        "kind": "+"
+      },
+      "cleared": {
+        "shards": 0,
+        "breaks": 1,
+        "history": 1
+      },
+      "tvResponses": [
+        {
+          "name": "tv_bfmtv_bonus_x2_mobilisation.png",
+          "status": 200
+        },
+        {
+          "name": "tv_bfmtv_bonus_14_protections.png",
+          "status": 200
+        },
+        {
+          "name": "tv_bfmtv_bonus_21_protections.png",
+          "status": 200
+        },
+        {
+          "name": "tv_bfmtv_bonus_50pct_ralliement.png",
+          "status": 200
+        },
+        {
+          "name": "tv_cnews_bonus_5_gilets_jaunes.png",
+          "status": 200
+        },
+        {
+          "name": "tv_lci_malus_40pct_obstacles.png",
+          "status": 200
+        },
+        {
+          "name": "tv_lci_malus_div2_dispersion.png",
+          "status": 200
+        },
+        {
+          "name": "tv_cnews_bonus_4_pompiers.png",
+          "status": 200
+        },
+        {
+          "name": "tv_cnews_bonus_6_genz.png",
+          "status": 200
+        },
+        {
+          "name": "tv_bfmtv_bonus_5_boucliers.png",
+          "status": 200
+        },
+        {
+          "name": "tv_lci_malus_20_fourgons.png",
+          "status": 200
+        },
+        {
+          "name": "tv_cnews_bonus_3_infirmieres.png",
+          "status": 200
+        },
+        {
+          "name": "tv_lci_malus_3_manifestants.png",
+          "status": 200
+        },
+        {
+          "name": "tv_lci_malus_15_barrage.png",
+          "status": 200
+        },
+        {
+          "name": "tv_lci_malus_5_departs.png",
+          "status": 200
+        },
+        {
+          "name": "tv_bfmtv_bonus_10_renforts.png",
+          "status": 200
+        }
+      ],
+      "errors": []
+    },
+    {
+      "viewport": {
+        "width": 320,
+        "height": 700
+      },
+      "stats": {
+        "screens": 20,
+        "uniqueArt": [
+          0,
+          1,
+          9,
+          2,
+          15,
+          10,
+          6,
+          5,
+          8,
+          12,
+          11,
+          3,
+          4,
+          7,
+          14,
+          13
+        ],
+        "textureWidth": 1225,
+        "noPlaceholders": true,
+        "amount": "+10",
+        "firstGate": {
+          "op": "+",
+          "value": 10,
+          "tvKey": "renforts10"
+        },
+        "visible": true,
+        "noPortals": true,
+        "textureHeight": 818,
+        "originalPNG": 20,
+        "adapted": 0,
+        "fullyOccluding": true,
+        "behindBikesHidden": true,
+        "allTextureWidths": [
+          1225,
+          1232,
+          1216,
+          1225,
+          685,
+          681,
+          1216,
+          1240,
+          1216,
+          1225,
+          686,
+          685,
+          1232,
+          1221,
+          1216,
+          1225,
+          1231,
+          1216,
+          684,
+          681
+        ]
+      },
+      "crossing": {
+        "expected": {
+          "count": 15,
+          "shields": 0
+        },
+        "after": {
+          "count": 15,
+          "shields": 0
+        },
+        "passed": true,
+        "breaks": 1,
+        "shards": 14,
+        "gateHistory": 1,
+        "kind": "+"
+      },
+      "cleared": {
+        "shards": 0,
+        "breaks": 1,
+        "history": 1
+      },
+      "tvResponses": [
+        {
+          "name": "tv_bfmtv_bonus_14_protections.png",
+          "status": 200
+        },
+        {
+          "name": "tv_lci_malus_20_fourgons.png",
+          "status": 200
+        },
+        {
+          "name": "tv_bfmtv_bonus_21_protections.png",
+          "status": 200
+        },
+        {
+          "name": "tv_cnews_bonus_6_genz.png",
+          "status": 200
+        },
+        {
+          "name": "tv_cnews_bonus_5_gilets_jaunes.png",
+          "status": 200
+        },
+        {
+          "name": "tv_bfmtv_bonus_x2_mobilisation.png",
+          "status": 200
+        },
+        {
+          "name": "tv_lci_malus_5_departs.png",
+          "status": 200
+        },
+        {
+          "name": "tv_lci_malus_div2_dispersion.png",
+          "status": 200
+        },
+        {
+          "name": "tv_bfmtv_bonus_10_renforts.png",
+          "status": 200
+        },
+        {
+          "name": "tv_lci_malus_15_barrage.png",
+          "status": 200
+        },
+        {
+          "name": "tv_lci_malus_3_manifestants.png",
+          "status": 200
+        },
+        {
+          "name": "tv_lci_malus_40pct_obstacles.png",
+          "status": 200
+        },
+        {
+          "name": "tv_cnews_bonus_4_pompiers.png",
+          "status": 200
+        },
+        {
+          "name": "tv_bfmtv_bonus_5_boucliers.png",
+          "status": 200
+        },
+        {
+          "name": "tv_bfmtv_bonus_50pct_ralliement.png",
+          "status": 200
+        },
+        {
+          "name": "tv_cnews_bonus_3_infirmieres.png",
+          "status": 200
+        }
+      ],
+      "errors": []
+    }
+  ],
+  "bravm": [
+    {
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "gate": {
+        "z": 46,
+        "side": "left",
+        "label": {
+          "op": "damage",
+          "kind": "bravm",
+          "value": 3,
+          "percent": false,
+          "tvKey": "bravm3"
+        },
+        "riders": 2,
+        "yaw": [
+          0,
+          0
+        ],
+        "before": 14
+      },
+      "started": {
+        "state": "bravm_charge",
+        "passed": true,
+        "charged": true,
+        "bikes": 2,
+        "history": 0,
+        "count": 14,
+        "bikeWorld": [
+          -49.7,
+          -50.35
+        ]
+      },
+      "approaching": {
+        "state": "bravm_charge",
+        "count": 14,
+        "positions": [
+          -48.46258632480279,
+          -48.92969814010383
+        ]
+      },
+      "impact": {
+        "count": 11,
+        "history": 1,
+        "ragdolls": 3,
+        "shields": 0,
+        "state": "bravm_charge",
+        "lost": 3
+      },
+      "after": {
+        "state": "playing",
+        "charge": false,
+        "history": 1,
+        "count": 11,
+        "errors": []
+      },
+      "responses": [
+        200
+      ],
+      "errors": []
+    },
+    {
+      "viewport": {
+        "width": 320,
+        "height": 700
+      },
+      "gate": {
+        "z": 46,
+        "side": "left",
+        "label": {
+          "op": "damage",
+          "kind": "bravm",
+          "value": 3,
+          "percent": false,
+          "tvKey": "bravm3"
+        },
+        "riders": 2,
+        "yaw": [
+          0,
+          0
+        ],
+        "before": 14
+      },
+      "started": {
+        "state": "bravm_charge",
+        "passed": true,
+        "charged": true,
+        "bikes": 2,
+        "history": 0,
+        "count": 14,
+        "bikeWorld": [
+          -49.7,
+          -50.35
+        ]
+      },
+      "approaching": {
+        "state": "bravm_charge",
+        "count": 14,
+        "positions": [
+          -48.46258632480279,
+          -48.92969814010383
+        ]
+      },
+      "impact": {
+        "count": 11,
+        "history": 1,
+        "ragdolls": 3,
+        "shields": 0,
+        "state": "bravm_charge",
+        "lost": 3
+      },
+      "after": {
+        "state": "playing",
+        "charge": false,
+        "history": 1,
+        "count": 11,
+        "errors": []
+      },
+      "responses": [
+        200
+      ],
+      "errors": []
+    }
+  ],
+  "intro390": [
+    {
+      "checks": [
+        "intro-ready",
+        "voice-started",
+        "flees-behind-police",
+        "first-level-reset",
+        "skip-intro",
+        "final-lock",
+        "final-contact-and-completion",
+        "replay-campaign"
+      ],
+      "errors": [],
+      "assets": []
+    }
+  ],
+  "intro320": [
+    {
+      "checks": [
+        "intro-ready",
+        "voice-started",
+        "flees-behind-police",
+        "first-level-reset",
+        "skip-intro",
+        "final-lock",
+        "final-contact-and-completion",
+        "replay-campaign"
+      ],
+      "errors": [],
+      "assets": []
+    }
+  ],
+  "marseille": [
+    {
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "start": {
+        "state": "fighting",
+        "charges": 1,
+        "population": 5,
+        "leader": true
+      },
+      "finish": {
+        "state": "playing",
+        "defeated": true,
+        "alive": 5,
+        "charges": 0,
+        "calls": 1,
+        "active": false,
+        "actors": 0
+      },
+      "daily": {
+        "allowed": false,
+        "hidden": true,
+        "charges": 3,
+        "calls": 1
+      },
+      "views": [
+        "quarter-front",
+        "front",
+        "quarter-back",
+        "back"
+      ],
+      "errors": []
+    },
+    {
+      "viewport": {
+        "width": 320,
+        "height": 700
+      },
+      "start": {
+        "state": "fighting",
+        "charges": 1,
+        "population": 5,
+        "leader": true
+      },
+      "finish": {
+        "state": "playing",
+        "defeated": true,
+        "alive": 5,
+        "charges": 0,
+        "calls": 1,
+        "active": false,
+        "actors": 0
+      },
+      "daily": {
+        "allowed": false,
+        "hidden": true,
+        "charges": 3,
+        "calls": 1
+      },
+      "views": [
+        "quarter-front",
+        "front",
+        "quarter-back",
+        "back"
+      ],
+      "errors": []
+    }
+  ],
+  "mobile": {
+    "base": "https://emissions-potter-advise-persistent.trycloudflare.com/convergence-runner-lab/convergence/",
+    "cases": [
+      {
+        "width": 390,
+        "height": 844,
+        "count": 5,
+        "rigged": 5,
+        "impostors": 0,
+        "approvedP02": 1,
+        "realistic": 4,
+        "uniqueModels": 4,
+        "animations": [
+          "Walk"
+        ],
+        "fps": 32,
+        "p95FrameMs": 32,
+        "drawCalls": 218,
+        "triangles": 111075,
+        "overflow": false,
+        "state": "playing",
+        "shields": 0,
+        "proof": {
+          "winningPaths": 211,
+          "totalPaths": 1024,
+          "winningPath": [
+            "left",
+            "right",
+            "left",
+            "right",
+            "right",
+            "left",
+            "left",
+            "right",
+            "left",
+            "right"
+          ],
+          "greedyWins": false,
+          "minSurvivors": 1,
+          "witnessSurvivors": 25,
+          "winningRate": 0.2060546875,
+          "difficulty": {
+            "min": 0.17,
+            "ideal": 0.21,
+            "max": 0.27
+          }
+        }
+      },
+      {
+        "width": 390,
+        "height": 844,
+        "count": 50,
+        "rigged": 12,
+        "impostors": 38,
+        "approvedP02": 1,
+        "realistic": 11,
+        "uniqueModels": 11,
+        "animations": [
+          "Walk"
+        ],
+        "fps": 32,
+        "p95FrameMs": 32,
+        "drawCalls": 266,
+        "triangles": 208093,
+        "overflow": false,
+        "state": "playing",
+        "shields": 0,
+        "proof": {
+          "winningPaths": 233,
+          "totalPaths": 1024,
+          "winningPath": [
+            "left",
+            "left",
+            "right",
+            "right",
+            "left",
+            "right",
+            "right",
+            "right",
+            "left",
+            "right"
+          ],
+          "greedyWins": false,
+          "minSurvivors": 1,
+          "witnessSurvivors": 27,
+          "winningRate": 0.2275390625,
+          "difficulty": {
+            "min": 0.17,
+            "ideal": 0.21,
+            "max": 0.27
+          }
+        }
+      },
+      {
+        "width": 320,
+        "height": 700,
+        "count": 5,
+        "rigged": 5,
+        "impostors": 0,
+        "approvedP02": 1,
+        "realistic": 4,
+        "uniqueModels": 4,
+        "animations": [
+          "Walk"
+        ],
+        "fps": 32,
+        "p95FrameMs": 32,
+        "drawCalls": 216,
+        "triangles": 110959,
+        "overflow": false,
+        "state": "playing",
+        "shields": 0,
+        "proof": {
+          "winningPaths": 211,
+          "totalPaths": 1024,
+          "winningPath": [
+            "left",
+            "right",
+            "left",
+            "right",
+            "right",
+            "left",
+            "left",
+            "right",
+            "left",
+            "right"
+          ],
+          "greedyWins": false,
+          "minSurvivors": 1,
+          "witnessSurvivors": 25,
+          "winningRate": 0.2060546875,
+          "difficulty": {
+            "min": 0.17,
+            "ideal": 0.21,
+            "max": 0.27
+          }
+        }
+      },
+      {
+        "width": 320,
+        "height": 700,
+        "count": 50,
+        "rigged": 12,
+        "impostors": 38,
+        "approvedP02": 1,
+        "realistic": 11,
+        "uniqueModels": 11,
+        "animations": [
+          "Walk"
+        ],
+        "fps": 32,
+        "p95FrameMs": 32,
+        "drawCalls": 266,
+        "triangles": 208093,
+        "overflow": false,
+        "state": "playing",
+        "shields": 0,
+        "proof": {
+          "winningPaths": 233,
+          "totalPaths": 1024,
+          "winningPath": [
+            "left",
+            "left",
+            "right",
+            "right",
+            "left",
+            "right",
+            "right",
+            "right",
+            "left",
+            "right"
+          ],
+          "greedyWins": false,
+          "minSurvivors": 1,
+          "witnessSurvivors": 27,
+          "winningRate": 0.2275390625,
+          "difficulty": {
+            "min": 0.17,
+            "ideal": 0.21,
+            "max": 0.27
+          }
+        }
+      }
+    ],
+    "errors": [],
+    "failures": [],
+    "testedAt": "2026-10-20T13:03:45.781Z",
+    "input": "touch drag + pause/resume passed",
+    "runtime": {
+      "win": {
+        "state": "boss_defeated",
+        "count": 25,
+        "shields": 0,
+        "events": 10
+      },
+      "lose": {
+        "state": "lose",
+        "count": 0,
+        "shields": 0,
+        "events": 10
+      },
+      "verified": "winning and greedy routes executed through live collisions and combat"
+    }
+  },
+  "limits": [
+    "Chrome mobile emulation on GMK, no physical iPhone test",
+    "Temporary tunnel requires the GMK and preview processes to stay on"
+  ]
+}

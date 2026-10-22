@@ -1,0 +1,1267 @@
+{
+  "url": "https://experience-convergence.72-61-167-161.sslip.io/",
+  "levels": [
+    {
+      "id": 1,
+      "geo": 1,
+      "level": 1,
+      "state": "playing",
+      "gates": 10,
+      "winners": 530,
+      "stats": [
+        {
+          "id": 1,
+          "slug": "nation",
+          "layout": "garden-circle",
+          "chunks": 4,
+          "landmarks": [
+            "nation",
+            "throne"
+          ],
+          "instances": 12423,
+          "drawGroups": 82,
+          "position": 0
+        },
+        {
+          "id": 1,
+          "slug": "nation",
+          "layout": "garden-circle",
+          "chunks": 4,
+          "landmarks": [
+            "nation",
+            "throne"
+          ],
+          "instances": 15512,
+          "drawGroups": 97,
+          "position": 48
+        },
+        {
+          "id": 1,
+          "slug": "nation",
+          "layout": "garden-circle",
+          "chunks": 4,
+          "landmarks": [
+            "nation",
+            "throne"
+          ],
+          "instances": 12457,
+          "drawGroups": 85,
+          "position": 96
+        },
+        {
+          "id": 1,
+          "slug": "nation",
+          "layout": "garden-circle",
+          "chunks": 4,
+          "landmarks": [
+            "nation",
+            "throne"
+          ],
+          "instances": 8281,
+          "drawGroups": 67,
+          "position": 144
+        },
+        {
+          "id": 1,
+          "slug": "nation",
+          "layout": "garden-circle",
+          "chunks": 3,
+          "landmarks": [
+            "throne"
+          ],
+          "instances": 5603,
+          "drawGroups": 40,
+          "position": 182
+        },
+        {
+          "id": 1,
+          "slug": "nation",
+          "layout": "garden-circle",
+          "chunks": 3,
+          "landmarks": [],
+          "instances": 5561,
+          "drawGroups": 35,
+          "position": 215
+        },
+        {
+          "id": 1,
+          "slug": "nation",
+          "layout": "garden-circle",
+          "chunks": 4,
+          "landmarks": [
+            "nation",
+            "throne"
+          ],
+          "instances": 12423,
+          "drawGroups": 82,
+          "position": 0
+        }
+      ],
+      "gift": true,
+      "drawCalls": 148,
+      "triangles": 241804,
+      "geometries": 100,
+      "hud": "1/12 · Nation"
+    },
+    {
+      "id": 2,
+      "geo": 2,
+      "level": 2,
+      "state": "playing",
+      "gates": 10,
+      "winners": 427,
+      "stats": [
+        {
+          "id": 2,
+          "slug": "diderot",
+          "layout": "bus-boulevard",
+          "chunks": 4,
+          "landmarks": [
+            "diderot",
+            "junction"
+          ],
+          "instances": 15229,
+          "drawGroups": 84,
+          "position": 0
+        },
+        {
+          "id": 2,
+          "slug": "diderot",
+          "layout": "bus-boulevard",
+          "chunks": 4,
+          "landmarks": [
+            "diderot",
+            "junction"
+          ],
+          "instances": 19896,
+          "drawGroups": 103,
+          "position": 48
+        },
+        {
+          "id": 2,
+          "slug": "diderot",
+          "layout": "bus-boulevard",
+          "chunks": 4,
+          "landmarks": [
+            "junction"
+          ],
+          "instances": 16670,
+          "drawGroups": 87,
+          "position": 96
+        },
+        {
+          "id": 2,
+          "slug": "diderot",
+          "layout": "bus-boulevard",
+          "chunks": 4,
+          "landmarks": [
+            "junction"
+          ],
+          "instances": 11228,
+          "drawGroups": 66,
+          "position": 144
+        },
+        {
+          "id": 2,
+          "slug": "diderot",
+          "layout": "bus-boulevard",
+          "chunks": 3,
+          "landmarks": [],
+          "instances": 7033,
+          "drawGroups": 39,
+          "position": 182
+        },
+        {
+          "id": 2,
+          "slug": "diderot",
+          "layout": "bus-boulevard",
+          "chunks": 3,
+          "landmarks": [],
+          "instances": 7033,
+          "drawGroups": 39,
+          "position": 215
+        },
+        {
+          "id": 2,
+          "slug": "diderot",
+          "layout": "bus-boulevard",
+          "chunks": 4,
+          "landmarks": [
+            "diderot",
+            "junction"
+          ],
+          "instances": 15229,
+          "drawGroups": 84,
+          "position": 0
+        }
+      ],
+      "gift": false,
+      "drawCalls": 118,
+      "triangles": 305762,
+      "geometries": 128,
+      "hud": "2/12 · Diderot"
+    },
+    {
+      "id": 3,
+      "geo": 3,
+      "level": 3,
+      "state": "playing",
+      "gates": 10,
+      "winners": 450,
+      "stats": [
+        {
+          "id": 3,
+          "slug": "bastille",
+          "layout": "radial-opera",
+          "chunks": 4,
+          "landmarks": [
+            "bastille",
+            "bastille-opera"
+          ],
+          "instances": 14158,
+          "drawGroups": 89,
+          "position": 0
+        },
+        {
+          "id": 3,
+          "slug": "bastille",
+          "layout": "radial-opera",
+          "chunks": 4,
+          "landmarks": [
+            "bastille",
+            "bastille-opera"
+          ],
+          "instances": 18704,
+          "drawGroups": 106,
+          "position": 48
+        },
+        {
+          "id": 3,
+          "slug": "bastille",
+          "layout": "radial-opera",
+          "chunks": 4,
+          "landmarks": [
+            "bastille",
+            "bastille-opera"
+          ],
+          "instances": 15085,
+          "drawGroups": 93,
+          "position": 96
+        },
+        {
+          "id": 3,
+          "slug": "bastille",
+          "layout": "radial-opera",
+          "chunks": 4,
+          "landmarks": [
+            "bastille",
+            "bastille-opera"
+          ],
+          "instances": 9710,
+          "drawGroups": 71,
+          "position": 144
+        },
+        {
+          "id": 3,
+          "slug": "bastille",
+          "layout": "radial-opera",
+          "chunks": 3,
+          "landmarks": [],
+          "instances": 7221,
+          "drawGroups": 39,
+          "position": 182
+        },
+        {
+          "id": 3,
+          "slug": "bastille",
+          "layout": "radial-opera",
+          "chunks": 3,
+          "landmarks": [],
+          "instances": 7221,
+          "drawGroups": 39,
+          "position": 215
+        },
+        {
+          "id": 3,
+          "slug": "bastille",
+          "layout": "radial-opera",
+          "chunks": 4,
+          "landmarks": [
+            "bastille",
+            "bastille-opera"
+          ],
+          "instances": 14158,
+          "drawGroups": 89,
+          "position": 0
+        }
+      ],
+      "gift": false,
+      "drawCalls": 110,
+      "triangles": 292118,
+      "geometries": 128,
+      "hud": "3/12 · Bastille"
+    },
+    {
+      "id": 4,
+      "geo": 4,
+      "level": 4,
+      "state": "playing",
+      "gates": 10,
+      "winners": 322,
+      "stats": [
+        {
+          "id": 4,
+          "slug": "beaumarchais",
+          "layout": "tree-boulevard",
+          "chunks": 4,
+          "landmarks": [
+            "beaumarchais",
+            "beaumarchais-square"
+          ],
+          "instances": 15497,
+          "drawGroups": 88,
+          "position": 0
+        },
+        {
+          "id": 4,
+          "slug": "beaumarchais",
+          "layout": "tree-boulevard",
+          "chunks": 4,
+          "landmarks": [
+            "beaumarchais",
+            "beaumarchais-square"
+          ],
+          "instances": 21127,
+          "drawGroups": 109,
+          "position": 48
+        },
+        {
+          "id": 4,
+          "slug": "beaumarchais",
+          "layout": "tree-boulevard",
+          "chunks": 4,
+          "landmarks": [
+            "beaumarchais",
+            "beaumarchais-square"
+          ],
+          "instances": 18360,
+          "drawGroups": 99,
+          "position": 96
+        },
+        {
+          "id": 4,
+          "slug": "beaumarchais",
+          "layout": "tree-boulevard",
+          "chunks": 4,
+          "landmarks": [
+            "beaumarchais-square"
+          ],
+          "instances": 13956,
+          "drawGroups": 72,
+          "position": 144
+        },
+        {
+          "id": 4,
+          "slug": "beaumarchais",
+          "layout": "tree-boulevard",
+          "chunks": 3,
+          "landmarks": [],
+          "instances": 9501,
+          "drawGroups": 45,
+          "position": 182
+        },
+        {
+          "id": 4,
+          "slug": "beaumarchais",
+          "layout": "tree-boulevard",
+          "chunks": 3,
+          "landmarks": [],
+          "instances": 9501,
+          "drawGroups": 45,
+          "position": 215
+        },
+        {
+          "id": 4,
+          "slug": "beaumarchais",
+          "layout": "tree-boulevard",
+          "chunks": 4,
+          "landmarks": [
+            "beaumarchais",
+            "beaumarchais-square"
+          ],
+          "instances": 15497,
+          "drawGroups": 88,
+          "position": 0
+        }
+      ],
+      "gift": false,
+      "drawCalls": 121,
+      "triangles": 319560,
+      "geometries": 128,
+      "hud": "4/12 · Beaumarchais"
+    },
+    {
+      "id": 5,
+      "geo": 5,
+      "level": 5,
+      "state": "playing",
+      "gates": 10,
+      "winners": 338,
+      "stats": [
+        {
+          "id": 5,
+          "slug": "republique",
+          "layout": "mineral-square",
+          "chunks": 4,
+          "landmarks": [
+            "republique",
+            "republique-water"
+          ],
+          "instances": 16013,
+          "drawGroups": 77,
+          "position": 0
+        },
+        {
+          "id": 5,
+          "slug": "republique",
+          "layout": "mineral-square",
+          "chunks": 4,
+          "landmarks": [
+            "republique",
+            "republique-water"
+          ],
+          "instances": 20209,
+          "drawGroups": 93,
+          "position": 48
+        },
+        {
+          "id": 5,
+          "slug": "republique",
+          "layout": "mineral-square",
+          "chunks": 4,
+          "landmarks": [
+            "republique",
+            "republique-water"
+          ],
+          "instances": 16096,
+          "drawGroups": 80,
+          "position": 96
+        },
+        {
+          "id": 5,
+          "slug": "republique",
+          "layout": "mineral-square",
+          "chunks": 4,
+          "landmarks": [
+            "republique",
+            "republique-water"
+          ],
+          "instances": 9944,
+          "drawGroups": 62,
+          "position": 144
+        },
+        {
+          "id": 5,
+          "slug": "republique",
+          "layout": "mineral-square",
+          "chunks": 3,
+          "landmarks": [
+            "republique-water"
+          ],
+          "instances": 7143,
+          "drawGroups": 37,
+          "position": 182
+        },
+        {
+          "id": 5,
+          "slug": "republique",
+          "layout": "mineral-square",
+          "chunks": 3,
+          "landmarks": [],
+          "instances": 7125,
+          "drawGroups": 36,
+          "position": 215
+        },
+        {
+          "id": 5,
+          "slug": "republique",
+          "layout": "mineral-square",
+          "chunks": 4,
+          "landmarks": [
+            "republique",
+            "republique-water"
+          ],
+          "instances": 16013,
+          "drawGroups": 77,
+          "position": 0
+        }
+      ],
+      "gift": false,
+      "drawCalls": 103,
+      "triangles": 366234,
+      "geometries": 129,
+      "hud": "5/12 · République"
+    },
+    {
+      "id": 6,
+      "geo": 6,
+      "level": 6,
+      "state": "playing",
+      "gates": 10,
+      "winners": 322,
+      "stats": [
+        {
+          "id": 6,
+          "slug": "saint-martin",
+          "layout": "theatre-gate",
+          "chunks": 4,
+          "landmarks": [
+            "saint-martin",
+            "theatre"
+          ],
+          "instances": 18572,
+          "drawGroups": 99,
+          "position": 0
+        },
+        {
+          "id": 6,
+          "slug": "saint-martin",
+          "layout": "theatre-gate",
+          "chunks": 4,
+          "landmarks": [
+            "saint-martin",
+            "theatre"
+          ],
+          "instances": 22486,
+          "drawGroups": 118,
+          "position": 48
+        },
+        {
+          "id": 6,
+          "slug": "saint-martin",
+          "layout": "theatre-gate",
+          "chunks": 4,
+          "landmarks": [
+            "saint-martin",
+            "theatre"
+          ],
+          "instances": 19340,
+          "drawGroups": 101,
+          "position": 96
+        },
+        {
+          "id": 6,
+          "slug": "saint-martin",
+          "layout": "theatre-gate",
+          "chunks": 4,
+          "landmarks": [
+            "saint-martin",
+            "theatre"
+          ],
+          "instances": 13342,
+          "drawGroups": 80,
+          "position": 144
+        },
+        {
+          "id": 6,
+          "slug": "saint-martin",
+          "layout": "theatre-gate",
+          "chunks": 3,
+          "landmarks": [
+            "theatre"
+          ],
+          "instances": 7727,
+          "drawGroups": 47,
+          "position": 182
+        },
+        {
+          "id": 6,
+          "slug": "saint-martin",
+          "layout": "theatre-gate",
+          "chunks": 3,
+          "landmarks": [],
+          "instances": 7703,
+          "drawGroups": 41,
+          "position": 215
+        },
+        {
+          "id": 6,
+          "slug": "saint-martin",
+          "layout": "theatre-gate",
+          "chunks": 4,
+          "landmarks": [
+            "saint-martin",
+            "theatre"
+          ],
+          "instances": 18572,
+          "drawGroups": 99,
+          "position": 0
+        }
+      ],
+      "gift": false,
+      "drawCalls": 129,
+      "triangles": 352456,
+      "geometries": 129,
+      "hud": "6/12 · Saint-Martin"
+    },
+    {
+      "id": 7,
+      "geo": 7,
+      "level": 7,
+      "state": "playing",
+      "gates": 10,
+      "winners": 328,
+      "stats": [
+        {
+          "id": 7,
+          "slug": "grands-boulevards",
+          "layout": "cinema-avenue",
+          "chunks": 4,
+          "landmarks": [
+            "rex",
+            "passage"
+          ],
+          "instances": 18366,
+          "drawGroups": 87,
+          "position": 0
+        },
+        {
+          "id": 7,
+          "slug": "grands-boulevards",
+          "layout": "cinema-avenue",
+          "chunks": 4,
+          "landmarks": [
+            "rex",
+            "passage"
+          ],
+          "instances": 24910,
+          "drawGroups": 108,
+          "position": 48
+        },
+        {
+          "id": 7,
+          "slug": "grands-boulevards",
+          "layout": "cinema-avenue",
+          "chunks": 4,
+          "landmarks": [
+            "rex",
+            "passage"
+          ],
+          "instances": 20979,
+          "drawGroups": 94,
+          "position": 96
+        },
+        {
+          "id": 7,
+          "slug": "grands-boulevards",
+          "layout": "cinema-avenue",
+          "chunks": 4,
+          "landmarks": [
+            "rex",
+            "passage"
+          ],
+          "instances": 14268,
+          "drawGroups": 71,
+          "position": 144
+        },
+        {
+          "id": 7,
+          "slug": "grands-boulevards",
+          "layout": "cinema-avenue",
+          "chunks": 3,
+          "landmarks": [],
+          "instances": 11013,
+          "drawGroups": 45,
+          "position": 182
+        },
+        {
+          "id": 7,
+          "slug": "grands-boulevards",
+          "layout": "cinema-avenue",
+          "chunks": 3,
+          "landmarks": [],
+          "instances": 11013,
+          "drawGroups": 45,
+          "position": 215
+        },
+        {
+          "id": 7,
+          "slug": "grands-boulevards",
+          "layout": "cinema-avenue",
+          "chunks": 4,
+          "landmarks": [
+            "rex",
+            "passage"
+          ],
+          "instances": 18366,
+          "drawGroups": 87,
+          "position": 0
+        }
+      ],
+      "gift": false,
+      "drawCalls": 117,
+      "triangles": 345778,
+      "geometries": 129,
+      "hud": "7/12 · Grands Boulevards"
+    },
+    {
+      "id": 8,
+      "geo": 8,
+      "level": 8,
+      "state": "playing",
+      "gates": 10,
+      "winners": 320,
+      "stats": [
+        {
+          "id": 8,
+          "slug": "garnier",
+          "layout": "opera-fan",
+          "chunks": 4,
+          "landmarks": [
+            "garnier",
+            "opera-avenues"
+          ],
+          "instances": 15613,
+          "drawGroups": 84,
+          "position": 0
+        },
+        {
+          "id": 8,
+          "slug": "garnier",
+          "layout": "opera-fan",
+          "chunks": 4,
+          "landmarks": [
+            "garnier",
+            "opera-avenues"
+          ],
+          "instances": 20419,
+          "drawGroups": 102,
+          "position": 48
+        },
+        {
+          "id": 8,
+          "slug": "garnier",
+          "layout": "opera-fan",
+          "chunks": 4,
+          "landmarks": [
+            "garnier",
+            "opera-avenues"
+          ],
+          "instances": 15804,
+          "drawGroups": 88,
+          "position": 96
+        },
+        {
+          "id": 8,
+          "slug": "garnier",
+          "layout": "opera-fan",
+          "chunks": 4,
+          "landmarks": [
+            "garnier"
+          ],
+          "instances": 11801,
+          "drawGroups": 68,
+          "position": 144
+        },
+        {
+          "id": 8,
+          "slug": "garnier",
+          "layout": "opera-fan",
+          "chunks": 3,
+          "landmarks": [
+            "garnier"
+          ],
+          "instances": 7660,
+          "drawGroups": 48,
+          "position": 182
+        },
+        {
+          "id": 8,
+          "slug": "garnier",
+          "layout": "opera-fan",
+          "chunks": 3,
+          "landmarks": [],
+          "instances": 7487,
+          "drawGroups": 38,
+          "position": 215
+        },
+        {
+          "id": 8,
+          "slug": "garnier",
+          "layout": "opera-fan",
+          "chunks": 4,
+          "landmarks": [
+            "garnier",
+            "opera-avenues"
+          ],
+          "instances": 15613,
+          "drawGroups": 84,
+          "position": 0
+        }
+      ],
+      "gift": false,
+      "drawCalls": 116,
+      "triangles": 316350,
+      "geometries": 128,
+      "hud": "8/12 · Opéra Garnier"
+    },
+    {
+      "id": 9,
+      "geo": 9,
+      "level": 9,
+      "state": "playing",
+      "gates": 10,
+      "winners": 321,
+      "stats": [
+        {
+          "id": 9,
+          "slug": "madeleine",
+          "layout": "temple-square",
+          "chunks": 4,
+          "landmarks": [
+            "madeleine",
+            "flowers"
+          ],
+          "instances": 14128,
+          "drawGroups": 81,
+          "position": 0
+        },
+        {
+          "id": 9,
+          "slug": "madeleine",
+          "layout": "temple-square",
+          "chunks": 4,
+          "landmarks": [
+            "madeleine",
+            "flowers"
+          ],
+          "instances": 19107,
+          "drawGroups": 99,
+          "position": 48
+        },
+        {
+          "id": 9,
+          "slug": "madeleine",
+          "layout": "temple-square",
+          "chunks": 4,
+          "landmarks": [
+            "madeleine",
+            "flowers"
+          ],
+          "instances": 14197,
+          "drawGroups": 83,
+          "position": 96
+        },
+        {
+          "id": 9,
+          "slug": "madeleine",
+          "layout": "temple-square",
+          "chunks": 4,
+          "landmarks": [
+            "madeleine",
+            "flowers"
+          ],
+          "instances": 9102,
+          "drawGroups": 64,
+          "position": 144
+        },
+        {
+          "id": 9,
+          "slug": "madeleine",
+          "layout": "temple-square",
+          "chunks": 3,
+          "landmarks": [],
+          "instances": 7471,
+          "drawGroups": 38,
+          "position": 182
+        },
+        {
+          "id": 9,
+          "slug": "madeleine",
+          "layout": "temple-square",
+          "chunks": 3,
+          "landmarks": [],
+          "instances": 7471,
+          "drawGroups": 38,
+          "position": 215
+        },
+        {
+          "id": 9,
+          "slug": "madeleine",
+          "layout": "temple-square",
+          "chunks": 4,
+          "landmarks": [
+            "madeleine",
+            "flowers"
+          ],
+          "instances": 14128,
+          "drawGroups": 81,
+          "position": 0
+        }
+      ],
+      "gift": false,
+      "drawCalls": 109,
+      "triangles": 304310,
+      "geometries": 129,
+      "hud": "9/12 · Madeleine"
+    },
+    {
+      "id": 10,
+      "geo": 10,
+      "level": 10,
+      "state": "playing",
+      "gates": 10,
+      "winners": 330,
+      "stats": [
+        {
+          "id": 10,
+          "slug": "concorde",
+          "layout": "obelisk-square",
+          "chunks": 4,
+          "landmarks": [
+            "obelisk",
+            "concorde-fountains",
+            "concorde-statues"
+          ],
+          "instances": 13862,
+          "drawGroups": 83,
+          "position": 0
+        },
+        {
+          "id": 10,
+          "slug": "concorde",
+          "layout": "obelisk-square",
+          "chunks": 4,
+          "landmarks": [
+            "obelisk",
+            "concorde-fountains",
+            "concorde-statues"
+          ],
+          "instances": 17032,
+          "drawGroups": 98,
+          "position": 48
+        },
+        {
+          "id": 10,
+          "slug": "concorde",
+          "layout": "obelisk-square",
+          "chunks": 4,
+          "landmarks": [
+            "obelisk",
+            "concorde-fountains",
+            "concorde-statues"
+          ],
+          "instances": 13082,
+          "drawGroups": 86,
+          "position": 96
+        },
+        {
+          "id": 10,
+          "slug": "concorde",
+          "layout": "obelisk-square",
+          "chunks": 4,
+          "landmarks": [
+            "obelisk",
+            "concorde-fountains",
+            "concorde-statues"
+          ],
+          "instances": 8433,
+          "drawGroups": 68,
+          "position": 144
+        },
+        {
+          "id": 10,
+          "slug": "concorde",
+          "layout": "obelisk-square",
+          "chunks": 3,
+          "landmarks": [
+            "concorde-fountains",
+            "concorde-statues"
+          ],
+          "instances": 5887,
+          "drawGroups": 42,
+          "position": 182
+        },
+        {
+          "id": 10,
+          "slug": "concorde",
+          "layout": "obelisk-square",
+          "chunks": 3,
+          "landmarks": [],
+          "instances": 5843,
+          "drawGroups": 35,
+          "position": 215
+        },
+        {
+          "id": 10,
+          "slug": "concorde",
+          "layout": "obelisk-square",
+          "chunks": 4,
+          "landmarks": [
+            "obelisk",
+            "concorde-fountains",
+            "concorde-statues"
+          ],
+          "instances": 13862,
+          "drawGroups": 83,
+          "position": 0
+        }
+      ],
+      "gift": false,
+      "drawCalls": 110,
+      "triangles": 290422,
+      "geometries": 130,
+      "hud": "10/12 · Concorde"
+    },
+    {
+      "id": 11,
+      "geo": 11,
+      "level": 11,
+      "state": "playing",
+      "gates": 10,
+      "winners": 318,
+      "stats": [
+        {
+          "id": 11,
+          "slug": "champs-elysees",
+          "layout": "grand-perspective",
+          "chunks": 4,
+          "landmarks": [
+            "arc",
+            "champs-gardens"
+          ],
+          "instances": 16896,
+          "drawGroups": 85,
+          "position": 0
+        },
+        {
+          "id": 11,
+          "slug": "champs-elysees",
+          "layout": "grand-perspective",
+          "chunks": 4,
+          "landmarks": [
+            "arc",
+            "champs-gardens"
+          ],
+          "instances": 22888,
+          "drawGroups": 105,
+          "position": 48
+        },
+        {
+          "id": 11,
+          "slug": "champs-elysees",
+          "layout": "grand-perspective",
+          "chunks": 4,
+          "landmarks": [
+            "arc",
+            "champs-gardens"
+          ],
+          "instances": 18685,
+          "drawGroups": 93,
+          "position": 96
+        },
+        {
+          "id": 11,
+          "slug": "champs-elysees",
+          "layout": "grand-perspective",
+          "chunks": 4,
+          "landmarks": [
+            "arc"
+          ],
+          "instances": 15058,
+          "drawGroups": 74,
+          "position": 144
+        },
+        {
+          "id": 11,
+          "slug": "champs-elysees",
+          "layout": "grand-perspective",
+          "chunks": 3,
+          "landmarks": [
+            "arc"
+          ],
+          "instances": 8791,
+          "drawGroups": 51,
+          "position": 182
+        },
+        {
+          "id": 11,
+          "slug": "champs-elysees",
+          "layout": "grand-perspective",
+          "chunks": 3,
+          "landmarks": [
+            "arc"
+          ],
+          "instances": 8791,
+          "drawGroups": 51,
+          "position": 215
+        },
+        {
+          "id": 11,
+          "slug": "champs-elysees",
+          "layout": "grand-perspective",
+          "chunks": 4,
+          "landmarks": [
+            "arc",
+            "champs-gardens"
+          ],
+          "instances": 16896,
+          "drawGroups": 85,
+          "position": 0
+        }
+      ],
+      "gift": false,
+      "drawCalls": 116,
+      "triangles": 378276,
+      "geometries": 130,
+      "hud": "11/12 · Champs-Élysées"
+    },
+    {
+      "id": 12,
+      "geo": 12,
+      "level": 12,
+      "state": "playing",
+      "gates": 10,
+      "winners": 340,
+      "stats": [
+        {
+          "id": 12,
+          "slug": "elysee",
+          "layout": "presidential-court",
+          "chunks": 4,
+          "landmarks": [
+            "marigny"
+          ],
+          "instances": 14914,
+          "drawGroups": 86,
+          "position": 0
+        },
+        {
+          "id": 12,
+          "slug": "elysee",
+          "layout": "presidential-court",
+          "chunks": 4,
+          "landmarks": [
+            "marigny",
+            "elysee"
+          ],
+          "instances": 17289,
+          "drawGroups": 114,
+          "position": 48
+        },
+        {
+          "id": 12,
+          "slug": "elysee",
+          "layout": "presidential-court",
+          "chunks": 4,
+          "landmarks": [
+            "elysee"
+          ],
+          "instances": 13830,
+          "drawGroups": 93,
+          "position": 96
+        },
+        {
+          "id": 12,
+          "slug": "elysee",
+          "layout": "presidential-court",
+          "chunks": 4,
+          "landmarks": [
+            "elysee"
+          ],
+          "instances": 8462,
+          "drawGroups": 72,
+          "position": 144
+        },
+        {
+          "id": 12,
+          "slug": "elysee",
+          "layout": "presidential-court",
+          "chunks": 3,
+          "landmarks": [
+            "elysee"
+          ],
+          "instances": 3104,
+          "drawGroups": 45,
+          "position": 182
+        },
+        {
+          "id": 12,
+          "slug": "elysee",
+          "layout": "presidential-court",
+          "chunks": 3,
+          "landmarks": [
+            "elysee"
+          ],
+          "instances": 3104,
+          "drawGroups": 45,
+          "position": 215
+        },
+        {
+          "id": 12,
+          "slug": "elysee",
+          "layout": "presidential-court",
+          "chunks": 4,
+          "landmarks": [
+            "marigny"
+          ],
+          "instances": 14914,
+          "drawGroups": 86,
+          "position": 0
+        }
+      ],
+      "gift": false,
+      "drawCalls": 103,
+      "triangles": 199824,
+      "geometries": 133,
+      "hud": "12/12 · Élysée"
+    }
+  ],
+  "progression": {
+    "tenth": {
+      "state": "win",
+      "geo": 11,
+      "front": 4,
+      "complete": false
+    },
+    "next": {
+      "scene": 11,
+      "geo": 11
+    },
+    "last": {
+      "state": "final_chase",
+      "phase": "final-chase",
+      "geo": 12,
+      "complete": false
+    },
+    "finished": {
+      "state": "win",
+      "complete": true,
+      "geo": 12
+    }
+  },
+  "gift": {
+    "reserve": 1,
+    "active": false,
+    "count": 5,
+    "gates": 0
+  },
+  "run1": {
+    "state": "win",
+    "geography": 2,
+    "gates": 10,
+    "count": 29,
+    "complete": false,
+    "ticks": 1928
+  },
+  "run12": {
+    "state": "win",
+    "geography": 12,
+    "gates": 10,
+    "count": 25,
+    "complete": true,
+    "ticks": 1990
+  },
+  "errors": [],
+  "badAssets": []
+}

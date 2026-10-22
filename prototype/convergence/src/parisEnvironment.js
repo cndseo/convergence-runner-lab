@@ -1,137 +1,169 @@
 import * as THREE from 'three';
+import {districtForLevel} from './parisDistricts.mjs';
+import {ParisBatch,PALETTE as P,building,tree,lamp,bench,metro,shelter,kiosk,car,crosswalk,disposeParisGroup} from './parisArchitecture.js';
+import {landmarkSpecs,makeLandmark} from './parisMonuments.js';
+import {urbanLayer} from './parisUrbanDetails.js';
+import {texturedGround} from './parisSurface.js';
+import {districtSky,urbanBackdrop} from './parisAtmosphere.js';
 
-// Optimized Paris-inspired streetscape on top of the existing bridge and track.
-// Shared geometry is instanced; all components are decorative, without colliders.
-const mats={
- limestone:new THREE.MeshStandardMaterial({color:0xdccbb3,roughness:.91}),
- trim:new THREE.MeshStandardMaterial({color:0xf0dfc3,roughness:.91}),
- slate:new THREE.MeshStandardMaterial({color:0x46566c,roughness:.92}),
- glass:new THREE.MeshStandardMaterial({color:0x283e58,roughness:.28,metalness:.22}),
- iron:new THREE.MeshStandardMaterial({color:0x202c3b,metalness:.64,roughness:.37}),
- gold:new THREE.MeshStandardMaterial({color:0xfce2a0,emissive:0xffc966,emissiveIntensity:1.25,roughness:.4}),
- foliage:new THREE.MeshStandardMaterial({color:0x57733e,roughness:.95})
-};
-const boxGeo=new THREE.BoxGeometry(1,1,1);
-function instanced(group,material,items){
- if(!items.length)return;
- const mesh=new THREE.InstancedMesh(boxGeo,material,items.length);
- const tmp=new THREE.Object3D();
- items.forEach(([x,y,z,w,h,l,rx=0,ry=0,rz=0],i)=>{
-  tmp.position.set(x,y,z);tmp.scale.set(w,h,l);
-  tmp.rotation.set(rx,ry,rz);tmp.updateMatrix();
-  mesh.setMatrixAt(i,tmp.matrix);
- });
- mesh.instanceMatrix.needsUpdate=true;
- mesh.castShadow=false;mesh.receiveShadow=true;
- group.add(mesh);
-}
-export function createParisStreetscape(scene,trackLength,tracked){
- const scenery=new THREE.Group();
- scenery.name='CONVERGENCE_Paris_Streetscape';
- scenery.userData.dynamic=true;
- const windows=[],cornices=[],balconies=[],railings=[],roofSlopes=[],dormers=[];
- for(let z=0;z<trackLength+35;z+=17){
-  const height=4+(Math.floor(z/17)%4)*1.8;
-  const roofTop=height-1.5;
+const CHUNK=48, AHEAD=116, BEHIND=28;
+export class ParisEnvironment {
+ constructor(scene,game,trackLength,level){
+  this.scene=scene;this.game=game;this.length=trackLength;this.config=districtForLevel(level);
+  this.root=new THREE.Group();this.root.name='CONVERGENCE_PARIS_'+this.config.slug;
+  this.root.userData.dynamic=true;scene.add(this.root);
+  this.chunks=new Map();this.landmarks=new Map();this.specs=landmarkSpecs(this.config,trackLength);
+  this.backdrop=urbanBackdrop(this.config,trackLength);this.root.add(this.backdrop);
+  this.lastRegion=null;this.applyAmbience();this.update(0);
+ }
+ applyAmbience(){
+  const c=this.config,g=this.game;
+  // An owned custom theme still takes precedence over the district's default sky.
+  if(g.equippedTheme!=='default'){g.applyTheme();return;}
+  if(this.scene.background?.isTexture)this.scene.background.dispose();
+  this.scene.background=districtSky(c);
+  this.scene.traverse(o=>{if(o.isHemisphereLight){o.intensity=.58;o.groundColor.set(c.id>8?0x665462:0x777352);}if(o.isAmbientLight)o.intensity=c.id>9?.67:.82;});
+  this.scene.fog=new THREE.FogExp2(c.fog,c.id===11?.0028:.0035);
+  if(g.directionalLight){g.directionalLight.color.set(c.sun);g.directionalLight.intensity=c.light;}
+ }
+ facadeX(progress){
+  const c=this.config;
+  if(c.layout==='presidential-court' && progress>this.length-20)return 26;
+  if(['garden-circle','radial-opera','mineral-square','opera-fan','temple-square','obelisk-square'].includes(c.layout)){
+   const bulge=Math.sin(Math.min(1,Math.max(0,progress/this.length))*Math.PI);
+   return c.facade-5+6*bulge;
+  }
+  return c.facade+([4,6].includes(c.id)?3:[2,7,12].includes(c.id)?2:0);
+ }
+ createChunk(index){
+  const c=this.config,b=new ParisBatch('PARIS_CHUNK_'+index),start=index*CHUNK,end=start+CHUNK;
+  const zz=-(start+end)/2;
+  // A continuous solid ground replaces the former Seine/bridge underneath every district.
+  b.box(0xb6b3a8,0,-.16,zz,150,.25,CHUNK+.06);
+  b.box(c.road,0,-.015,zz,c.width,.08,CHUNK+.04);
+  const plaza=['garden-circle','radial-opera','mineral-square','opera-fan','temple-square','obelisk-square'].includes(c.layout);
+  if(c.layout==='mineral-square'||c.layout==='obelisk-square'){
+   for(let p=start;p<end;p+=4)b.box(0xb2b2a8,0,.032,-p,c.width,.015,.035);
+   for(let x=-c.width/2;x<c.width/2;x+=4)b.box(0xb2b2a8,x,.033,zz,.035,.015,CHUNK);
+  }
   for(const side of [-1,1]){
-   const centerX=side*(16+Math.abs(z%3));
-   const x=centerX-side*3.83;
-   cornices.push([x,roofTop-.48,-z,.28,.2,9.1]);
-   cornices.push([x,1.65,-z,.20,.10,9.1]);
-   // Two inclined panels approximate the iconic Parisian slate mansard roof.
-   for(const slope of [-1,1]){
-    roofSlopes.push([centerX+slope*2.00,roofTop+.34,-z,4.28,.16,9.2,0,0,slope*.32]);
+   const curb=plaza?Math.max(7,c.width/2-3):c.width/2;
+   const front=this.facadeX((start+end)/2)-3.75;
+   if(front>curb){
+    b.box(0xadafa7,side*(curb+(front-curb)/2),.08,zz,front-curb,.18,CHUNK+.03);
+    b.box(0xd0ccc0,side*curb,.12,zz,.18,.27,CHUNK+.04);
    }
-   for(let f=0;f<4;f++){
-    const y=.94+f*1.59;
-    if(y>roofTop-.96)break;
-    for(const dz of [-3.16,-1.06,1.06,3.16]){
-     windows.push([x-side*.055,y,-z+dz,.10,1.13,.80]);
-     cornices.push([x-side*.11,y-.66,-z+dz,.19,.11,.98]);
-     // Small reflective transom and exterior black iron balcony.
-     if(f===1||f===2){
-      balconies.push([x-side*.28,y-.52,-z+dz,.48,.065,1.0]);
-      railings.push([x-side*.45,y-.31,-z+dz,.04,.49,1.0]);
-     }
+   if(c.layout==='grand-perspective'){
+    b.box(0x71805a,side*15.3,.1,zz,3,.22,CHUNK);
+    for(let p=start+3;p<end;p+=8)tree(b,side*15.5,-p,c.leaves,1.2);
+   }
+   if(c.layout==='garden-circle' && index>=0&&index<=2){
+    b.box(0x76885a,side*10.5,.08,zz,5.5,.15,CHUNK);
+   }
+   for(let p=Math.ceil(start/c.spacing)*c.spacing;p<end;p+=c.spacing){
+    if(p<0||p>this.length+24)continue;
+    const seed=Math.floor(p/c.spacing)+c.id*11+(side===1?3:0);
+    const x=side*(this.facadeX(p)+Math.sin(seed*2)*.6);
+    const insideMonument=this.specs.some(s=>s.type!=='arc'&&Math.sign(s.x)===side&&Math.abs(s.progress-p)<21);
+    const insideCourt=c.id===12&&p>this.length-20;
+    if(!insideMonument&&!insideCourt)building(b,{x,z:-p,side,height:c.height+(seed%4-1)*1.3,
+     length:c.spacing-.12,color:[c.stone,0xd3c3ac,0xe4d4bc,0xbfb8aa][seed%4],seed,
+     shop:c.shops[seed%c.shops.length],evening:c.id>=7});
+   }
+   for(let p=Math.ceil(start/18)*18;p<end;p+=18){
+    if(p<0||p>this.length+20)continue;
+    const x=side*(plaza?Math.min(c.width/2-1,18):c.width/2+.85);
+    lamp(b,x,-p,c.id>=7);
+    if(Math.floor(p/18)%3===1)bench(b,x+side*1.25,-p-3,side*Math.PI/2);
+    if(!plaza&&Math.floor(p/18)%3===2){
+     b.cyl(P.green,x+side*.8,.5,-p-4,.28,.9);
+     b.cyl(P.iron,x+side*.8,.97,-p-4,.32,.1);
     }
    }
-   for(const dz of [-2.9,0,2.9]){
-    dormers.push([x-side*.025,roofTop+.55,-z+dz,.16,.54,.56]);
+   if(c.layout!=='grand-perspective')for(let p=Math.ceil(start/c.trees)*c.trees;p<end;p+=c.trees){
+    if(p<1||p>this.length+10)continue;
+    const x=side*(plaza?c.width/2-1:c.width/2+1.3);
+    if(!this.specs.some(s=>Math.abs(s.x-x)<8&&Math.abs(s.progress-p)<14))tree(b,x,-p,c.leaves);
+   }
+  }
+  if(!plaza){
+   for(let p=start;p<end;p+=8)b.box(0xdfdfcd,0,.04,-p,.12,.018,2.7);
+   for(let p=Math.ceil(start/60)*60;p<end;p+=60)if(p>0&&p<this.length-15)crosswalk(b,-p,Math.min(c.width-1,13));
+  }
+  if(c.id===2){
+   b.box(0xc8cdbf,5.5,.04,zz,.12,.02,CHUNK);
+   if(index===1)shelter(b,9.3,-76);
+   if(index===2)car(b,-8.8,-138,{bus:true,color:0x82aaa0});
+  }
+  if(c.id===3||c.id===8){
+   // Diagonal incoming avenues give the two junctions their own ground silhouette.
+   if(index===1||index===2)for(const s of [-1,1])b.box(0x69747a,s*25,.003,zz,8,.035,48,s*.55);
+  }
+  if(c.id===4&&index===1){kiosk(b,9,-94);metro(b,-9,-85);}
+  if(c.id===6&&index===0)metro(b,9,-29,'M • STRASBOURG');
+  if(c.id===7&&index===1){car(b,-10,-88,{color:0xa57551});shelter(b,10,-76);}
+  if(c.id===9&&index===2)car(b,15,-139,{color:0x25374a});
+  if(c.id===10&&index===0)for(const side of [-1,1]){bench(b,side*18,-28);tree(b,side*24,-18,c.leaves);}
+  if(c.id===11&&index===3){
+   b.box(c.road,26,.01,-172,35,.04,10);
+   b.sign('ÉLYSÉE → AV. DE MARIGNY',10,3.5,-162,6,.7);
+   b.sign('← ARC DE TRIOMPHE',-12,3.5,-175,6,.7);
+  }
+  if(c.id===12&&index===0){
+   b.box(c.road,-16,.01,-8,27,.035,9);
+   b.sign('RUE DU FAUBOURG-SAINT-HONORÉ',9,3.1,-13,6.5,.6);
+  }
+  if(index===0){
+   const mx=plaza?c.width/2+1:c.width/2+2.2;
+   if(![4,6,12].includes(c.id))metro(b,mx,-20,'M • '+c.short.toUpperCase());
+   b.sign(c.name.toUpperCase(),-7.6,3.2,-9,4.5,.65);
+  }
+  if(index===3)b.sign(c.exit.toUpperCase()+' →',8.5,3.1,-166,5.6,.65);
+  urbanLayer(b,c,start,end,this.length,p=>this.facadeX(p));
+  const square=[1,5,9,10].includes(c.id);
+  texturedGround(b.group,square?'cobbles':'asphalt',c.road,0,zz,c.width,CHUNK+.02,.029);
+  for(const side of [-1,1]){
+   const curb=plaza?Math.max(7,c.width/2-3):c.width/2,front=this.facadeX((start+end)/2)-3.75;
+   if(front>curb)texturedGround(b.group,'paving',0xd7d1c5,side*(curb+(front-curb)/2),zz,front-curb,CHUNK+.02,.179);
+  }
+  return b.finish();
+ }
+ update(progress=0){
+  // Region-level updates avoid per-frame scene allocations.
+  const region=Math.floor(progress/12);
+  if(region===this.lastRegion)return;
+  this.lastRegion=region;
+  const min=Math.max(-1,Math.floor((progress-BEHIND)/CHUNK));
+  const max=Math.min(Math.ceil((this.length+55)/CHUNK),Math.floor((progress+AHEAD)/CHUNK));
+  for(const [i,group] of this.chunks)if(i<min||i>max){disposeParisGroup(group);this.chunks.delete(i);}
+  for(let i=min;i<=max;i++)if(!this.chunks.has(i)){const group=this.createChunk(i);this.root.add(group);this.chunks.set(i,group);}
+  for(const spec of this.specs){
+   const distance=spec.progress-progress;
+   const visible=spec.type==='arc'||distance>-48&&distance<175;
+   if(visible&&!this.landmarks.has(spec.type)){
+    const group=makeLandmark(spec,this.config);
+    if(spec.type==='arc'){
+     // Remote landmark on the western axis: destination remains the Marigny turn.
+     group.traverse(o=>{if(o.material){const m=o.material.clone();m.fog=false;o.material=m;o.userData.parisOwnedMaterial=true;}});
+    }
+    this.root.add(group);this.landmarks.set(spec.type,group);
+   }else if(!visible&&this.landmarks.has(spec.type)){
+    disposeParisGroup(this.landmarks.get(spec.type));this.landmarks.delete(spec.type);
    }
   }
  }
- instanced(scenery,mats.glass,windows);
- instanced(scenery,mats.trim,cornices);
- instanced(scenery,mats.limestone,balconies);
- instanced(scenery,mats.iron,railings);
- instanced(scenery,mats.slate,roofSlopes);
- instanced(scenery,mats.glass,dormers);
- // Decorative iron balusters: instancing keeps the bridge detailed but cheap.
- const bridgeBalusters=[];
- for(let z=0;z<trackLength;z+=2.35){
-  for(const side of [-1,1])bridgeBalusters.push([side*5.65,.76,-z,.12,1.05,.12]);
- }
- for(let z=0;z<trackLength;z+=2.35){
-  for(const side of [-1,1]){
-   bridgeBalusters.push([side*5.65,.78,-z-.58,.045,.045,1.3,.55,0,0]);
-   bridgeBalusters.push([side*5.65,.78,-z-.58,.045,.045,1.3,-.55,0,0]);
+ dispose(){
+  for(const group of [...this.chunks.values(),...this.landmarks.values()]){
+   group.traverse(o=>{if(o.userData.parisOwnedMaterial)o.material.dispose();});
+   disposeParisGroup(group);
   }
+  disposeParisGroup(this.backdrop);
+  this.chunks.clear();this.landmarks.clear();this.root.removeFromParent();
  }
- instanced(scenery,mats.iron,bridgeBalusters);
- const piers=[],footings=[];
- for(let z=4;z<trackLength;z+=23){
-  for(const side of [-1,1]){
-   piers.push([side*5.9,-1.4,-z,1.15,3.6,2.0]);
-   footings.push([side*5.9,.2,-z,1.5,.5,2.5]);
-  }
+ diagnostics(){
+  let instances=0,drawGroups=0;
+  this.root.traverse(o=>{if(o.isMesh){drawGroups++;instances+=o.isInstancedMesh?o.count:1;}});
+  return {id:this.config.id,slug:this.config.slug,layout:this.config.layout,chunks:this.chunks.size,
+   landmarks:[...this.landmarks.keys()],instances,drawGroups};
  }
- instanced(scenery,mats.limestone,piers);instanced(scenery,mats.trim,footings);
- // Iron balustrades and classic lanterns, spaced to avoid visual clutter.
- const lampBases=[],lampPosts=[],lampCrossbars=[],lampCaps=[],lampBulbs=[];
- for(let z=9;z<trackLength;z+=18){
-  for(const side of [-1,1]){
-   const x=side*6.05,zz=-z;
-   lampBases.push([x,.41,zz,.38,.82,.38]);
-   lampPosts.push([x,2.25,zz,.11,3.35,.11]);
-   lampCrossbars.push([x,4.16,zz,.40,.075,.40]);
-   lampBulbs.push([x,4.46,zz,.29,.50,.29]);
-   lampCaps.push([x,4.77,zz,.45,.16,.45]);
-   lampCaps.push([x,4.91,zz,.20,.15,.20]);
-   lampPosts.push([x,5.06,zz,.065,.18,.065]);
-   for(const offset of [-.55,.55]){
-    lampCrossbars.push([x+offset*.5,3.88,zz,.65,.065,.065]);
-    lampBulbs.push([x+offset,4.10,zz,.18,.32,.18]);
-    lampCaps.push([x+offset,4.31,zz,.29,.10,.29]);
-   }
-   for(const offset of [-.16,.16]){
-    lampPosts.push([x+offset,4.43,zz,.04,.56,.04]);
-   }
-  }
- }
- instanced(scenery,mats.iron,lampBases);
- instanced(scenery,mats.iron,lampPosts);
- instanced(scenery,mats.iron,lampCrossbars);
- instanced(scenery,mats.gold,lampBulbs);
- instanced(scenery,mats.iron,lampCaps);
- // Riverbank plane trees, kept distant from the course for mobile performance.
- const trunks=[],crowns=[];
- for(let z=10;z<trackLength+20;z+=25){
-  for(const side of [-1,1]){
-   const x=side*(25+(z%3)*2),zz=-z;
-   trunks.push([x,.5,zz,.38,4,.38]);
-   crowns.push([x,4.55,zz,3.9,3.4,3.75]);
-  }
- }
- instanced(scenery,new THREE.MeshStandardMaterial({color:0x78634d,roughness:1}),trunks);
- const treeGeometry=new THREE.IcosahedronGeometry(1,1);
- const treeMesh=new THREE.InstancedMesh(treeGeometry,mats.foliage,crowns.length);
- const tree=new THREE.Object3D();
- crowns.forEach(([x,y,z,sx,sy,sz],i)=>{
-  tree.position.set(x,y,z);tree.scale.set(sx/2,sy/2,sz/2);
-  tree.updateMatrix();treeMesh.setMatrixAt(i,tree.matrix);
- });
- treeMesh.instanceMatrix.needsUpdate=true;scenery.add(treeMesh);
- // Slight warmth from the illuminated fixtures complements the cool Seine.
- scene.add(scenery);tracked.push(scenery);
- console.info('Paris architecture + Seine bridge lanterns ready',windows.length,lampBulbs.length);
 }

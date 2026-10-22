@@ -1,0 +1,44 @@
+{
+  "base": "https://heros-convergence.72-61-167-161.sslip.io/densite-fdo/",
+  "small": {
+    "tactical": 11,
+    "rendered": 57,
+    "badge": "👥 57",
+    "instanceCount": 46,
+    "actorCount": 11
+  },
+  "large": {
+    "tactical": 30,
+    "rendered": 139,
+    "badge": "👥 139",
+    "title": "139 participants représentés dans le cortège ; 30 unités tactiques actives",
+    "instances": 127,
+    "actives": 30,
+    "police": {
+      "groups": 54,
+      "visible": {
+        "crs": 36,
+        "bac": 20,
+        "bravm": 12,
+        "spectators": 92
+      },
+      "drawCalls": 4,
+      "limits": {
+        "crowd": 312,
+        "crs": 192,
+        "bac": 128,
+        "bravm": 64,
+        "spectators": 192
+      }
+    }
+  },
+  "charge": {
+    "found": true,
+    "activated": true,
+    "before": 30,
+    "vehicles": 6,
+    "after": 27
+  },
+  "errors": [],
+  "badAssets": []
+}

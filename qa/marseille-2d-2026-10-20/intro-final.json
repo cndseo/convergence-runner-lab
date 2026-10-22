@@ -1,0 +1,96 @@
+{
+  "url": "https://fire-chat-likewise-convertible.trycloudflare.com/convergence-runner-lab/convergence/",
+  "checks": [
+    {
+      "name": "intro-ready",
+      "state": "intro",
+      "texture": "https://fire-chat-likewise-convertible.trycloudflare.com/convergence-runner-lab/convergence/assets/story/target-front.webp",
+      "frontVisible": true,
+      "policeVisible": true,
+      "hudVisible": "none",
+      "voiceDuration": 3.742857142857143,
+      "body": [
+        0,
+        1.3314896432286403,
+        -81.4
+      ],
+      "stage": "PROLOGUE · NIVEAU 1",
+      "playableChoices": 10,
+      "introSkipVisible": true,
+      "lesson": 203
+    },
+    {
+      "name": "voice-started",
+      "phase": "speaking",
+      "state": "intro",
+      "speaking": true,
+      "voiceActive": true,
+      "audioState": "running",
+      "face": true,
+      "elapsed": 1.766300000011922
+    },
+    {
+      "name": "flees-behind-police",
+      "state": "intro",
+      "phase": "speaking",
+      "back": true,
+      "spriteZ": -93.5,
+      "policeZ": -86,
+      "stage": "IL S’ENFUIT"
+    },
+    {
+      "name": "first-level-reset",
+      "state": "playing",
+      "overlay": false,
+      "introSeen": true,
+      "history": 0,
+      "crowd": 5,
+      "trackZ": 0,
+      "visibleHud": "flex"
+    },
+    {
+      "name": "skip-intro",
+      "state": "playing",
+      "overlay": false,
+      "voiceNode": false,
+      "level": 1
+    },
+    {
+      "name": "final-lock",
+      "noEarlyTarget": true,
+      "cannotBegin": true,
+      "targetReady": true,
+      "deniedBeforeDefeat": true,
+      "state": "playing",
+      "level": 10,
+      "health": 57
+    },
+    {
+      "name": "final-contact-and-completion",
+      "start": true,
+      "steerable": true,
+      "aligned": true,
+      "seenChase": true,
+      "seenCapture": true,
+      "frames": 73,
+      "state": "win",
+      "completed": true,
+      "level": 10,
+      "coins": 110,
+      "targetMoved": true,
+      "victoryTitle": "OBJECTIF FINAL ATTEINT !",
+      "finaleButton": "↻ REJOUER LA CAMPAGNE",
+      "portraitVisible": true,
+      "persisted": true
+    },
+    {
+      "name": "replay-campaign",
+      "state": "intro",
+      "level": 1,
+      "complete": false,
+      "introSeen": true
+    }
+  ],
+  "errors": [],
+  "badResponses": []
+}

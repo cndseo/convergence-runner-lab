@@ -1,0 +1,282 @@
+[
+  {
+    "id": "genz-lea",
+    "board": "Planche de personnages urbains Gen Z.png",
+    "original_sha256": "db1f806bdd529e1613f359c033b6e54d85e9775b64e1a1b7c4b0e2852f5cb56b",
+    "crop": [
+      13,
+      92,
+      151,
+      492
+    ],
+    "width": 138,
+    "height": 400,
+    "bytes": 90232
+  },
+  {
+    "id": "genz-emma",
+    "board": "Planche de personnages urbains Gen Z.png",
+    "original_sha256": "db1f806bdd529e1613f359c033b6e54d85e9775b64e1a1b7c4b0e2852f5cb56b",
+    "crop": [
+      781,
+      92,
+      919,
+      492
+    ],
+    "width": 138,
+    "height": 400,
+    "bytes": 95306
+  },
+  {
+    "id": "genz-kay",
+    "board": "Planche de personnages urbains Gen Z.png",
+    "original_sha256": "db1f806bdd529e1613f359c033b6e54d85e9775b64e1a1b7c4b0e2852f5cb56b",
+    "crop": [
+      13,
+      604,
+      151,
+      1004
+    ],
+    "width": 138,
+    "height": 400,
+    "bytes": 91948
+  },
+  {
+    "id": "genz-noah",
+    "board": "Planche de personnages urbains Gen Z.png",
+    "original_sha256": "db1f806bdd529e1613f359c033b6e54d85e9775b64e1a1b7c4b0e2852f5cb56b",
+    "crop": [
+      781,
+      604,
+      919,
+      1004
+    ],
+    "width": 138,
+    "height": 400,
+    "bytes": 92053
+  },
+  {
+    "id": "gilets-thomas",
+    "board": "Fiche de personnages Gilets jaunes.png",
+    "original_sha256": "34d5df73d95bfe8554dd1bfdc354e9c577251c91140f722a0f04a82a0a3a8552",
+    "crop": [
+      13,
+      92,
+      151,
+      492
+    ],
+    "width": 138,
+    "height": 400,
+    "bytes": 90267
+  },
+  {
+    "id": "gilets-marcel",
+    "board": "Fiche de personnages Gilets jaunes.png",
+    "original_sha256": "34d5df73d95bfe8554dd1bfdc354e9c577251c91140f722a0f04a82a0a3a8552",
+    "crop": [
+      781,
+      92,
+      919,
+      492
+    ],
+    "width": 138,
+    "height": 400,
+    "bytes": 92253
+  },
+  {
+    "id": "gilets-sophie",
+    "board": "Fiche de personnages Gilets jaunes.png",
+    "original_sha256": "34d5df73d95bfe8554dd1bfdc354e9c577251c91140f722a0f04a82a0a3a8552",
+    "crop": [
+      13,
+      604,
+      151,
+      1004
+    ],
+    "width": 138,
+    "height": 400,
+    "bytes": 85047
+  },
+  {
+    "id": "gilets-nadia",
+    "board": "Fiche de personnages Gilets jaunes.png",
+    "original_sha256": "34d5df73d95bfe8554dd1bfdc354e9c577251c91140f722a0f04a82a0a3a8552",
+    "crop": [
+      781,
+      604,
+      919,
+      1004
+    ],
+    "width": 138,
+    "height": 400,
+    "bytes": 87789
+  },
+  {
+    "id": "soignants-lucas",
+    "board": "Équipe de secours — fiches personnages 3D.png",
+    "original_sha256": "84016d5420ccca49c7a02e735415662dca9efe8b9fb717aa7881b8067ceac69b",
+    "crop": [
+      13,
+      92,
+      151,
+      492
+    ],
+    "width": 138,
+    "height": 400,
+    "bytes": 88910
+  },
+  {
+    "id": "soignants-amina",
+    "board": "Équipe de secours — fiches personnages 3D.png",
+    "original_sha256": "84016d5420ccca49c7a02e735415662dca9efe8b9fb717aa7881b8067ceac69b",
+    "crop": [
+      781,
+      92,
+      919,
+      492
+    ],
+    "width": 138,
+    "height": 400,
+    "bytes": 90422
+  },
+  {
+    "id": "soignants-yann",
+    "board": "Équipe de secours — fiches personnages 3D.png",
+    "original_sha256": "84016d5420ccca49c7a02e735415662dca9efe8b9fb717aa7881b8067ceac69b",
+    "crop": [
+      13,
+      604,
+      151,
+      1004
+    ],
+    "width": 138,
+    "height": 400,
+    "bytes": 98597
+  },
+  {
+    "id": "soignants-carine",
+    "board": "Équipe de secours — fiches personnages 3D.png",
+    "original_sha256": "84016d5420ccca49c7a02e735415662dca9efe8b9fb717aa7881b8067ceac69b",
+    "crop": [
+      781,
+      604,
+      919,
+      1004
+    ],
+    "width": 138,
+    "height": 400,
+    "bytes": 85297
+  },
+  {
+    "id": "pompiers-hugo",
+    "board": "Profils de pompiers en intervention.png",
+    "original_sha256": "ca8abc4714296e9f85d49f1b74626aa315cce99d3b5933caba2f136bbe30826e",
+    "crop": [
+      13,
+      92,
+      151,
+      492
+    ],
+    "width": 138,
+    "height": 400,
+    "bytes": 93016
+  },
+  {
+    "id": "pompiers-chloe",
+    "board": "Profils de pompiers en intervention.png",
+    "original_sha256": "ca8abc4714296e9f85d49f1b74626aa315cce99d3b5933caba2f136bbe30826e",
+    "crop": [
+      781,
+      92,
+      919,
+      492
+    ],
+    "width": 138,
+    "height": 400,
+    "bytes": 88582
+  },
+  {
+    "id": "pompiers-pierre",
+    "board": "Profils de pompiers en intervention.png",
+    "original_sha256": "ca8abc4714296e9f85d49f1b74626aa315cce99d3b5933caba2f136bbe30826e",
+    "crop": [
+      13,
+      604,
+      151,
+      1004
+    ],
+    "width": 138,
+    "height": 400,
+    "bytes": 95340
+  },
+  {
+    "id": "pompiers-samir",
+    "board": "Profils de pompiers en intervention.png",
+    "original_sha256": "ca8abc4714296e9f85d49f1b74626aa315cce99d3b5933caba2f136bbe30826e",
+    "crop": [
+      781,
+      604,
+      919,
+      1004
+    ],
+    "width": 138,
+    "height": 400,
+    "bytes": 98021
+  },
+  {
+    "id": "lyceens-julie",
+    "board": "Fiche de personnages lycéens stylés.png",
+    "original_sha256": "7ffe05c91ee577e50c7676f7187ba824f14e96d0f5a7e8c6ecdccc38d09a64a8",
+    "crop": [
+      13,
+      97,
+      142,
+      521
+    ],
+    "width": 129,
+    "height": 424,
+    "bytes": 90726
+  },
+  {
+    "id": "lyceens-mathis",
+    "board": "Fiche de personnages lycéens stylés.png",
+    "original_sha256": "7ffe05c91ee577e50c7676f7187ba824f14e96d0f5a7e8c6ecdccc38d09a64a8",
+    "crop": [
+      737,
+      97,
+      866,
+      521
+    ],
+    "width": 129,
+    "height": 424,
+    "bytes": 89439
+  },
+  {
+    "id": "lyceens-leo",
+    "board": "Fiche de personnages lycéens stylés.png",
+    "original_sha256": "7ffe05c91ee577e50c7676f7187ba824f14e96d0f5a7e8c6ecdccc38d09a64a8",
+    "crop": [
+      13,
+      640,
+      142,
+      1064
+    ],
+    "width": 129,
+    "height": 424,
+    "bytes": 92682
+  },
+  {
+    "id": "lyceens-manon",
+    "board": "Fiche de personnages lycéens stylés.png",
+    "original_sha256": "7ffe05c91ee577e50c7676f7187ba824f14e96d0f5a7e8c6ecdccc38d09a64a8",
+    "crop": [
+      737,
+      640,
+      866,
+      1064
+    ],
+    "width": 129,
+    "height": 424,
+    "bytes": 92994
+  }
+]

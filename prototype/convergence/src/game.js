@@ -1,5 +1,19 @@
 import * as THREE from 'three';
+import { HeroSystem } from './heroSystem.js';
+import { PlayerExperience } from './playerExperience.js';
+import { updateReferenceMotorcycleCharge } from './policeReferenceSprites.js';
+import { BravmGateCharge } from './bravmGateCharge.js';
+import {campaignCombatExchange,applyCampaignPatrol} from './campaignCombatRules.mjs';
+import { TVBreakEffects } from './tvBreakEffects.js';
+import { TVChoice } from './tvChoice.js';
 import { applyChoice, sufferLoss, MAX_CROWD } from './tactics.mjs';
+import { explainGateChoice, evaluateResult } from './tacticalFeedback.mjs';
+import { FINAL_CAMPAIGN_LEVEL } from './storyRules.mjs';
+import { migrateParisProgress } from './parisDistricts.mjs';
+import { ParisJourney } from './parisJourney.js';
+import { StoryDirector } from './storyDirector.js';
+import { ChallengeHub } from './challengeHub.js';
+import { DAILY_START_COUNT,DAILY_STRENGTH,dailyChallengeSeed,utcChallengeDate } from './dailyChallenge.mjs';
 import { LevelGenerator } from './level.js';
 import { CrowdManager } from './crowd.js';
 import { UIManager } from './ui.js';
@@ -7,6 +21,11 @@ import { AudioManager } from './audio.js';
 import { updatePoliceAnimations,preloadPoliceHumanoid } from './policeAssets.js';
 import { preloadMotorcycle } from './motorcycleAssets.js';
 import { preloadRunnerHumanoid } from './humanoidAssets.js';
+import { CombatChoreography } from './combatChoreography.js';
+import { LBDSystem } from './lbdSystem.js';
+import { GenzFireworks } from './genzFireworks.js';
+import { TearGasSystem } from './tearGasSystem.js';
+import { MarseilleReinforcements } from './marseilleReinforcements.js';
 
 // Forward movement calibrated for a walking demonstration, not a sprint.
 const MARCH_SPEED = 3.0;
@@ -22,6 +41,13 @@ export class Game {
         // Game state
         this.state = 'menu'; // menu, playing, fighting, win, lose
         this.level = 1;
+        this.parisLevel = 1;
+        this.mode = 'campaign';
+        this.activeCostume = null; // Prototype preview only; never grants paid entitlement.
+        this.dailyDate = null;
+        this.campaignLevelBackup = null;
+        this.campaignComplete = false;
+        this.finalCaptured = false;
         this.coins = 0;
         this.crowdUpgrade = 1;
         this.strengthUpgrade = 1;
@@ -54,7 +80,10 @@ export class Game {
         // Fighting state
         this.fightingEnemy = null;
         this.fightTimer = 0;
-        this.fightInterval = 0.12; // Time between each stickman removal
+        this.fightInterval = 0.30; // Exchanges are readable without changing casualties
+        this.minFightDuration = 9.2; // Let the complete ~8 s voice recording be heard
+        this.fightElapsed = 0;
+        this.combatChoreo = null;
         
         // Player
         this.playerCrowd = null;
@@ -83,9 +112,22 @@ export class Game {
         this.setupInput();
         
         this.ui = new UIManager(this);
+        this.tvChoice = new TVChoice(this);
         this.crowdManager = new CrowdManager(this.scene, this);
         this.levelGenerator = new LevelGenerator(this.scene, this);
         this.audio = new AudioManager();
+        this.lbdSystem = new LBDSystem(this);
+        this.genzFireworks = new GenzFireworks(this);
+        this.tearGasSystem = new TearGasSystem(this);
+        this.marseille = new MarseilleReinforcements(this);
+        this.bravmGateCharge = new BravmGateCharge(this);
+        this.tvBreak = new TVBreakEffects(this);
+        this.story = new StoryDirector(this);
+        this.story.loadAssets();
+        this.challengeHub = new ChallengeHub(this);
+        this.parisJourney = new ParisJourney(this);
+        this.experience = new PlayerExperience(this);
+        this.heroes = new HeroSystem(this);
         // Warm the shared CC0 asset caches while the user views the menu.
         Promise.allSettled([preloadRunnerHumanoid(),preloadPoliceHumanoid(),preloadMotorcycle()]);
         this.animate();
@@ -165,35 +207,7 @@ export class Game {
     setupInput() {
         const canvas = this.renderer.domElement;
         
-        // Mouse
-        canvas.addEventListener('mousedown', (e) => {
-            if (this.state !== 'playing') return;
-            this.isDragging = true;
-            this.lastInputX = e.clientX;
-        });
-        canvas.addEventListener('mousemove', (e) => {
-            if (!this.isDragging || this.state !== 'playing') return;
-            const deltaX = (e.clientX - this.lastInputX) * 0.02;
-            this.playerX = Math.max(-3.5, Math.min(3.5, this.playerX + deltaX));
-            this.lastInputX = e.clientX;
-        });
-        canvas.addEventListener('mouseup', () => { this.isDragging = false; });
-        canvas.addEventListener('mouseleave', () => { this.isDragging = false; });
-
-        // Touch
-        canvas.addEventListener('touchstart', (e) => {
-            if (this.state !== 'playing') return;
-            this.isDragging = true;
-            this.lastInputX = e.touches[0].clientX;
-        }, { passive: true });
-        canvas.addEventListener('touchmove', (e) => {
-            if (!this.isDragging || this.state !== 'playing') return;
-            e.preventDefault();
-            const deltaX = (e.touches[0].clientX - this.lastInputX) * 0.02;
-            this.playerX = Math.max(-3.5, Math.min(3.5, this.playerX + deltaX));
-            this.lastInputX = e.touches[0].clientX;
-        }, { passive: false });
-        canvas.addEventListener('touchend', () => { this.isDragging = false; });
+        // Pointer gestures and road TV taps share one handler in TVChoice.
 
         // Keyboard
         this.keys = {};
@@ -201,19 +215,52 @@ export class Game {
         window.addEventListener('keyup', (e) => { this.keys[e.key] = false; });
     }
 
-    startGame() {
+    get geographicLevel() { return this.mode==='daily'?1:this.parisLevel; }
+
+    startWithIntro({force=false,newRun=false}={}) {
+        this.startGame({newRun});
+        // The story remains available on demand; Play starts with a real decision.
+        if(force && this.level===1){
+            this.story.beginIntro();
+        }
+    }
+
+    startDailyChallenge(day=utcChallengeDate()) {
+        if(this.mode!=='daily')this.campaignLevelBackup=this.level;
+        this.mode='daily';
+        this.dailyDate=day;
+        this.levelSeed=dailyChallengeSeed(day);
+        this.level=1;
+        this.startGame();
+    }
+
+    startGame({newRun=false}={}) {
+        if(this.heroes?.needsChoice()){this.heroes.open(true);return;}
+        if(newRun && this.mode==='campaign' && this.level===1)this.marseille.resetLevelOneGift();
+        // A free visual demo lasts one playthrough, not a permanent paid unlock.
+        if(this.demoCostumeConsumed && this.demoCostumeOnce){
+            this.activeCostume=null;this.demoCostumeOnce=false;this.demoCostumeConsumed=false;
+        }
         this.state = 'playing';
+        this.finalCaptured=false;
         this.shields = 0;
         this.gateHistory = [];
+        this.ui.clearTacticalHint?.();
         this.runId = (this.runId || 0) + 1;
+        this.tvBonusImpact=null;
         this.trackZ = 0;
         this.playerX = 0;
         this.speed = MARCH_SPEED;
+        // No artificial offset of the player's group during combat.
         
         // Init and start audio
         this.audio.init();
         this.audio.resume();
-        this.audio.startMusic();
+        this.audio.startCrowdAmbience();
+        this.audio.preloadCombatVoice?.();
+        this.audio.preloadMarseilleAttack?.();
+        this.audio.preloadBravmMotorbike?.();
+        this.audio.preloadCombatImpacts?.();
         
         // Clear scene objects
         this.clearLevel();
@@ -222,21 +269,43 @@ export class Game {
         this.trackLength = 180;
         this.levelGenerator.generate(this.level, this.trackLength);
         this.trackLength = this.levelGenerator.plan.trackLength;
+        this.story.prepareFinalTarget();
         this.levelGenerator.updateVisibility(this.trackZ);
         
         // Create player crowd
         const startCount = this.getStartingCrowdSize();
         this.crowdManager.createPlayerCrowd(startCount);
+        if(this.demoCostumeOnce)this.demoCostumeConsumed=true;
         
         this.ui.showHUD();
+        document.getElementById('gesture-hint').textContent=this.mode==='campaign'?'GLISSER POUR DIRIGER · TOUCHER UNE TV POUR CHOISIR':'GLISSER POUR CHOISIR';
         this.ui.updateCount(startCount);
+        this.parisJourney?.announce();
+        this.experience?.start();
+        this.heroes?.start();
     }
 
     getStartingCrowdSize() {
-        return Math.min(MAX_CROWD, 5 + (this.crowdUpgrade - 1) * 3);
+        if(this.mode==='daily')return DAILY_START_COUNT;
+        return Math.min(MAX_CROWD, (this.heroes?.active?11:5) + (this.crowdUpgrade - 1) * 3);
+    }
+
+    getEffectiveStrength(){
+        return this.mode==='daily'?DAILY_STRENGTH:this.strengthUpgrade;
     }
 
     clearLevel() {
+        this.tvChoice?.close();
+        this.story?.clear();
+        this.audio.stopCombatVoice?.();
+        this.lbdSystem?.clear();
+        this.genzFireworks?.clear();
+        this.tearGasSystem?.clear();
+        this.marseille?.clear();
+        this.bravmGateCharge?.clear();
+        this.tvBreak?.clear();
+        this.combatChoreo?.dispose();
+        this.combatChoreo=null;
         // Remove all dynamic objects
         const toRemove = [];
         this.scene.traverse((obj) => {
@@ -260,27 +329,66 @@ export class Game {
     }
 
     update(delta) {
+        this.tvChoice?.update(delta);
+        if(this.bravmGateCharge?.current?.nonBlocking)this.bravmGateCharge.update(delta);
+        this.experience?.update(delta);
+        this.heroes?.update(delta);
+        this.tvBreak?.update(delta);
+        if(['playing','fighting','bravm_charge','boss_defeated','final_chase','intro'].includes(this.state))
+            this.levelGenerator.streetPresence?.update(this.trackZ,delta);
+        if(['intro','final_chase','final_capture'].includes(this.state)) {
+            this.levelGenerator.parisEnvironment?.update(this.state==='intro'?(this.story.line||0):this.trackZ);
+            this.story?.update(delta);
+            return;
+        }
         this.levelGenerator.updateVisibility(this.trackZ);
-        updatePoliceAnimations(delta);
+        if(this.state!=='paused')updatePoliceAnimations(delta);
+        // During the paid campaign reinforcement cinematic, LBD shots pause.
+        // Daily challenges never activate this effect.
+        if(!this.marseille?.active && !this.marseille?.pending)this.lbdSystem?.update(delta);
+        this.genzFireworks?.update(delta);
+        this.tearGasSystem?.update(delta);
+        this.marseille?.update(delta);
+        updateReferenceMotorcycleCharge(this,delta);
+        if(this.state==='bravm_charge'){
+            this.bravmGateCharge.update(delta);
+            this.crowdManager.update(delta);
+            this.ui.updateCount(this.crowdManager.getPlayerCount());
+            return;
+        }
         if (this.state === 'boss_defeated') {
             this.crowdManager.update(delta);
+            this.combatChoreo?.step(delta);
+            if(this.combatChoreo?.finished)this.combatChoreo=null;
             this.levelGenerator.updateBossDefeat(delta);
             return;
         }
 
         if (this.state === 'fighting') {
-            this.updateFight(delta);
+            if(!this.marseille?.active && !this.marseille?.pending)this.updateFight(delta);
             this.crowdManager.update(delta);
+            this.combatChoreo?.step(delta);
+            if(this.combatChoreo?.finished)this.combatChoreo=null;
             this.ui.updateCount(this.crowdManager.getPlayerCount());
             
-            // Camera shake and zoom during fight
+            // Smooth cinematic framing, with a brief impulse only on real
+            // collisions. No continuous shaking or obscured front lines.
             this.fightCameraTime = (this.fightCameraTime || 0) + delta;
-            const shakeX = Math.sin(this.fightCameraTime * 25) * 0.15;
-            const shakeY = Math.cos(this.fightCameraTime * 30) * 0.08;
-            this.camera.position.x = this.playerX * 0.3 + shakeX;
-            this.camera.position.z = -this.trackZ + 12; // Zoom in closer
-            this.camera.position.y = 10 + shakeY;
-            this.camera.lookAt(this.playerX * 0.3, 1, -this.trackZ - 5);
+            const enter = Math.min(1, this.fightCameraTime / .82);
+            const pressure = this.fightingEnemy?.count
+                ? 1 - this.fightingEnemy.remainingCount / this.fightingEnemy.count : 0;
+            const pulse = this.experience?.reducedMotion?0:Math.max(this.combatChoreo?.impactPulse || 0, this.marseille?.impactPulse || 0);
+            const shakeX = Math.sin(this.fightCameraTime * 27) * .075 * pulse;
+            const shakeY = Math.cos(this.fightCameraTime * 23) * .045 * pulse;
+            const supportFrame=this.marseille?.active ? .65 : 0;
+            this.fightCameraTarget ??= new THREE.Vector3();
+            this.fightCameraTarget.set(
+                this.playerX * .29 + .75 * enter + shakeX,
+                this.crowdManager.getCameraHeight() - .65 * enter + .12 * pressure + shakeY + supportFrame,
+                -this.trackZ + this.crowdManager.getCameraDistance() - .65 * enter + .1 * pressure + supportFrame
+            );
+            this.camera.position.lerp(this.fightCameraTarget, Math.min(1, delta * 6.5));
+            this.camera.lookAt(this.playerX * .28, 1.0, -this.trackZ - .9);
             return;
         }
 
@@ -295,16 +403,19 @@ export class Game {
         }
 
         // Move forward
-        this.trackZ += this.speed * delta;
+        this.trackZ += this.speed * (this.heroes?.speedFactor??1) * (this.heroes?.effect==='cohesion'?1:(this.lbdSystem?.marchFactor ?? 1)) * (this.heroes?.effect==='smoke-guard'?1:(this.tearGasSystem?.slowFactor ?? 1)) * delta;
 
-        // Update crowd position
+        // Combat poses operate on individual runners, never teleport the whole group.
         this.crowdManager.updatePlayerPosition(this.playerX, -this.trackZ);
 
         // Update camera
         this.camera.position.x = this.playerX * 0.3;
-        this.camera.position.y = 6.3;
-        this.camera.position.z = -this.trackZ + 8.4;
-        this.camera.lookAt(this.playerX * 0.3, .8, -this.trackZ - 8.0);
+        const cameraBlend=Math.min(1,delta*3);
+        this.camera.position.y += (this.crowdManager.getCameraHeight()-this.camera.position.y)*cameraBlend;
+        this.marchCameraDistance??=8.4;
+        this.marchCameraDistance+=(this.crowdManager.getCameraDistance()-this.marchCameraDistance)*cameraBlend;
+        this.camera.position.z = -this.trackZ + this.marchCameraDistance;
+        this.camera.lookAt(this.playerX * 0.3, .8, -this.trackZ - 5.0);
 
         // Update light position to follow player
         this.directionalLight.position.set(
@@ -323,6 +434,9 @@ export class Game {
         this.checkObstacleCollisions();
         if (this.state !== 'playing') return;
 
+        // Flank patrols are real, deterministic encounters in campaign mode.
+        this.checkPatrolCollisions();
+        if (this.state !== 'playing') return;
         // Check enemy collisions
         this.checkEnemyCollisions();
         if (this.state !== 'playing') return;
@@ -332,14 +446,32 @@ export class Game {
             this.checkBossFight();
         }
 
-        // Update crowd animation
+        // Update crowd animation, including the non-blocking combat recovery.
         this.crowdManager.update(delta);
+        if(this.combatChoreo?.recovering)this.combatChoreo.step(delta);
+        if(this.combatChoreo?.finished)this.combatChoreo=null;
 
         // Update UI
         this.ui.updateCount(this.crowdManager.getPlayerCount());
     }
 
+    checkMarseilleBonusCollision() {
+        const bonus=this.levelGenerator.marseilleBonus;
+        if(this.state!=='playing'||!bonus||bonus.passed||
+            Math.abs(this.trackZ-bonus.z)>=1||Math.abs(this.playerX)>3.05)return;
+        if(!this.marseille.grantLevelOneGift())return;
+        bonus.passed=true;
+        this.tvBreak.trigger(bonus,'left');
+        bonus.leftMesh.userData.root.visible=false;
+        this.audio.playGateGood();
+        this.ui.showFloatingText('MARSEILLAIS +1 EN RÉSERVE','#ffe18b');
+        // The flashing action button appears only during a real CRS/BAC fight.
+        // Reserve only: no activate(), no change to crowd, shields or gateHistory.
+    }
+
     checkGateCollisions() {
+        if(this.mode==='campaign'){this.tvChoice.collisions();return;}
+        this.checkMarseilleBonusCollision();
         const gates = this.levelGenerator.gates;
         for (let i = gates.length - 1; i >= 0; i--) {
             const gate = gates[i];
@@ -349,42 +481,61 @@ export class Game {
             const playerZ = -this.trackZ;
 
             if (Math.abs(playerZ - gateZ) < 1.0) {
+                // Campaign must never auto-collect TV bonuses via the crowd's width.
+                if(this.mode==='campaign')return;
                 // Check if player is on left or right gate
-                if (this.playerX < 0 && gate.leftGate) {
-                    this.applyGate(gate.leftGate);
-                    gate.passed = true;
-                    this.highlightGate(gate, 'left');
-                } else if (this.playerX >= 0 && gate.rightGate) {
-                    this.applyGate(gate.rightGate);
-                    gate.passed = true;
-                    this.highlightGate(gate, 'right');
-                }
+                const side=this.playerX<0?'left':'right';
+                const choice=side==='left'?gate.leftGate:gate.rightGate;
+                if(!choice)continue;
+                gate.passed=true;
+                this.tvBreak?.trigger(gate,side);
+                this.highlightGate(gate,side);
+                if(choice.op==='damage'&&choice.kind==='bravm'){
+                    this.bravmGateCharge.start(gate,choice,side);
+                }else this.applyGate(choice,side);
+                return;
             }
         }
     }
 
-    applyGate(gateData) {
+    applyGate(gateData,side=null) {
         const before = { count: this.crowdManager.getPlayerCount(), shields: this.shields };
         const after = applyChoice(before, gateData);
         this.shields = after.shields;
         const change = after.count - before.count;
-        if (change > 0) this.crowdManager.addToPlayerCrowd(change);
-        if (change < 0) this.crowdManager.removeFromPlayerCrowd(-change);
+        if (change > 0) {
+            this.crowdManager.addToPlayerCrowd(change,gateData.bonusFaction,gateData);
+            if(gateData.bonusFaction){
+                const added=this.crowdManager.playerStickmen.slice(-change);
+                for(const runner of added)runner.userData.bonusFaction=gateData.bonusFaction;
+                if(gateData.bonusFaction==='genz')this.genzFireworks?.addGenz(change);
+            }
+        }
+        if (change < 0) this.crowdManager.removeFromPlayerCrowd(-change,
+            {knockdown:gateData.kind==='bravm'});
         const guard = after.shields - before.shields;
         if (change || guard) {
             const good = change > 0 || guard > 0;
-            good ? this.audio.playGateGood() : this.audio.playGateBad();
+            // BRAV-M collisions retain knockdown and camera feedback, but no
+            // synthetic negative-gate buzz on top of the motorcycle engines.
+            if(good)this.audio.playGateGood();
+            else if(gateData.kind!=='bravm')this.audio.playGateBad();
             this.ui.showFloatingText((change ? (change > 0 ? '+' : '') + change : '') +
                 (guard ? '  ◇ ' + (guard > 0 ? '+' : '') + guard : ''), good ? '#a8f0d1' : '#ff817b');
             this.ui.screenShake(good ? 2 : 4);
         } else this.ui.showFloatingText('Condition non remplie', '#ddc5ff');
-        this.gateHistory.push({ choice: gateData, before, after });
-        if (after.count === 0) this.loseGame();
+        this.gateHistory.push({ choice: gateData, before, after, side });
+        this.experience?.gate(before,after);
+        if(after.count>0)this.ui.showTacticalHint(explainGateChoice(gateData,before,after));
+        if (after.count === 0) this.loseGame('gate');
     }
 
     highlightGate(gate, side) {
         const mesh = side === 'left' ? gate.leftMesh : gate.rightMesh;
-        if (mesh) {
+        // HD television uses MeshBasicMaterial: injecting an emissive property
+        // here corrupts WebGL uniforms. Its dedicated glass-shatter FX already
+        // provides collision feedback without changing the TV material.
+        if (mesh?.material?.isMeshStandardMaterial) {
             mesh.material.emissive = new THREE.Color(0xffffff);
             mesh.material.emissiveIntensity = 0.5;
             setTimeout(() => {
@@ -419,10 +570,32 @@ export class Game {
                     this.ui.showFloatingText(`-${loss}`, '#ff5722');
 
                     if (this.crowdManager.getPlayerCount() <= 0) {
-                        this.loseGame();
+                        this.loseGame('obstacle');
                     }
                 }
             }
+        }
+    }
+
+    checkPatrolCollisions() {
+        if(this.mode!=='campaign')return;
+        for(const patrol of this.levelGenerator.patrols||[]){
+            if(patrol.passed || this.trackZ<patrol.z-.6)continue;
+            // Register before mutating the party: a frame drop cannot cause a double hit.
+            patrol.passed=true;
+            const before={count:this.crowdManager.getPlayerCount(),shields:this.shields};
+            const after=applyCampaignPatrol(before,this.geographicLevel);
+            const lost=before.count-after.count,blocked=before.shields-after.shields;
+            this.shields=after.shields;
+            if(lost>0)this.crowdManager.removeFromPlayerCrowd(lost,{knockdown:true});
+            this.levelGenerator.streetPresence?.triggerPatrol(patrol.z);
+            this.audio.playCombatImpact?.('baton',{reaction:lost>0});
+            this.ui.screenShake(lost?6:3);
+            this.crowdManager.spawnImpactFlash(new THREE.Vector3(this.playerX,1,-this.trackZ),0xf1bf85);
+            this.ui.showFloatingText('PATROUILLE '+(lost?'-'+lost:'BLOQUÉ')+(blocked?' / -'+blocked+' protections':''),lost?'#ff817b':'#f5d591');
+            this.ui.updateCount(this.crowdManager.getPlayerCount());
+            if(after.count<=0){this.loseGame('patrol');return;}
+            return;
         }
     }
 
@@ -436,10 +609,18 @@ export class Game {
             if (Math.abs(playerZ - enemyZ) < 2.0) {
                 // Start fight - switch to fighting state
                 this.state = 'fighting';
+                this.audio.playCombatVoice?.();
                 this.fightingEnemy = enemy;
                 this.fightingEnemy.remainingCount = enemy.count;
-                this.fightTimer = 0;
+                this.fightTimer = -0.44; // Approach and shield-ready before the first exchange
+                this.fightElapsed = 0;
+                const initialStrike=this.mode==='campaign'?Math.max(1,Math.floor(this.crowdManager.getPlayerCount()/7))*this.getEffectiveStrength():this.getEffectiveStrength();
+                this.fightInterval = Math.max(0.30, (this.minFightDuration - 0.44) / Math.ceil(enemy.count / Math.max(1, initialStrike)));
                 this.fightCameraTime = 0;
+                this.combatChoreo?.dispose();
+                this.combatChoreo = new CombatChoreography(this,enemy);
+                // Fireworks may be purely visual if Gen Z was recruited.
+                this.genzFireworks?.showButton();
                 this.speed = 0;
                 this.audio.playHit();
                 this.ui.screenShake(10);
@@ -456,7 +637,14 @@ export class Game {
     }
 
     updateFight(delta) {
-        this.fightTimer += delta;
+        this.fightElapsed += delta;
+        // Once the tactical exchange is over, hold the camera until the
+        // complete combat recording has had time to play. No extra casualties.
+        if (this.fightingEnemy?.remainingCount <= 0 && this.fightElapsed >= this.minFightDuration) {
+            this.fightTimer = this.fightInterval;
+        } else {
+            this.fightTimer += delta;
+        }
 
         if (this.fightTimer >= this.fightInterval) {
             this.fightTimer -= this.fightInterval;
@@ -466,39 +654,65 @@ export class Game {
 
             if (!enemy) return;
 
-            // Remove one from each side per tick
-            const strength = this.strengthUpgrade;
+            // Resolve losses exactly as in the certified tactical solver.
+            const shieldsBefore = this.shields;
+            const strength = this.getEffectiveStrength();
 
-            // Player kills enemy stickmen (strength determines how many enemy die per tick)
-            const enemyKills = Math.min(strength, enemy.remainingCount);
-            enemy.remainingCount -= enemyKills;
-
-            // Enemy kills one player stickman per tick
-            if (enemy.remainingCount > 0) {
-                const absorbed = this.shields > 0;
-                if (absorbed) this.shields--;
-                else this.crowdManager.removeFromPlayerCrowd(1);
-                // Fly-off effect for the removed stickman
-                this.crowdManager.spawnDeathEffect(this.playerX, -this.trackZ, 0x2196F3);
+            let enemyKills=0;
+            if(this.mode==='campaign'){
+                // Exactly the same exchange as the certified campaign solver.
+                const result=campaignCombatExchange({count:playerCount,shields:this.shields},enemy.remainingCount,strength);
+                enemyKills=result.killed;
+                enemy.remainingCount=result.remaining;
+                this.shields=result.after.shields;
+                if(result.lost>0)this.crowdManager.removeFromPlayerCrowd(result.lost,{knockdown:true});
+                if(result.absorbed>0)this.audio.playShieldContact?.(this.combatChoreo?.exchange??0);
+                if(result.hits>0)this.crowdManager.spawnDeathEffect(this.playerX,-this.trackZ,0x2196F3);
+            }else{
+                // Legacy daily rules must match the original verified solver.
+                enemyKills=Math.min(strength,enemy.remainingCount);
+                enemy.remainingCount-=enemyKills;
+                if(enemy.remainingCount>0){
+                    const absorbed=this.shields>0;
+                    if(absorbed){this.shields--;this.audio.playShieldContact?.(this.combatChoreo?.exchange??0);}
+                    else this.crowdManager.removeFromPlayerCrowd(1);
+                    this.crowdManager.spawnDeathEffect(this.playerX,-this.trackZ,0x2196F3);
+                }
             }
 
             // Spawn red death effect for enemy dying
             if (enemyKills > 0) {
                 const enemyX = (Math.random() - 0.5) * 3;
                 this.crowdManager.spawnDeathEffect(enemyX, -enemy.z, 0xf44336);
-                this.audio.playFightHit();
             }
+            // One genuine recorded hit/reaction per resolved tactical exchange.
+            // Shields stop injuries, so a blocked contact never triggers a cry.
+            const protestersLost=playerCount-this.crowdManager.getPlayerCount();
+            if(protestersLost>0)this.audio.playCombatImpact?.('baton',{reaction:true});
+            else if(enemyKills>0)this.audio.playCombatImpact?.('counter',{reaction:true});
 
             // Update enemy visual count or boss health bar
             if (enemy.isBoss) {
                 this.ui.updateBossHealthBar(enemy.remainingCount, enemy.count);
+                this.levelGenerator.updateBossCount(enemy);
                 this.levelGenerator.shakeBoss();
             } else {
                 this.levelGenerator.updateEnemyLabel(enemy);
             }
+            this.combatChoreo?.onExchange({
+                policeLost: enemyKills,
+                protestersLost,
+                blocked: this.shields < shieldsBefore
+            });
 
             // Check fight outcome
             if (enemy.remainingCount <= 0) {
+                if (this.fightElapsed < this.minFightDuration) {
+                    this.fightTimer = -100;
+                    return;
+                }
+                this.audio.stopCombatVoice?.();
+                this.combatChoreo?.finish();
                 // Player wins
                 enemy.defeated = true;
                 if (enemy.isBoss) {
@@ -511,7 +725,11 @@ export class Game {
                     );
                     // Delay win screen for dramatic effect
                     const runId = this.runId;
-                    setTimeout(() => { if (this.runId === runId && this.state === 'boss_defeated') this.winGame(); }, 1200);
+                    setTimeout(() => {
+                        if(this.runId!==runId || this.state!=='boss_defeated')return;
+                        if(this.mode==='campaign'&&this.geographicLevel===FINAL_CAMPAIGN_LEVEL)this.story.beginFinalChase();
+                        else this.winGame();
+                    }, 1200);
                     this.state = 'boss_defeated';
                     this.fightingEnemy = null;
                     this.fightCameraTime = 0;
@@ -539,12 +757,14 @@ export class Game {
     checkBossFight() {
         const boss = this.levelGenerator.boss;
         if (!boss || boss.defeated) {
-            this.winGame();
+            if(this.mode==='campaign' && this.geographicLevel===FINAL_CAMPAIGN_LEVEL && !this.finalCaptured)this.story.beginFinalChase();
+            else this.winGame();
             return;
         }
 
         // Start boss fight in fighting mode
         this.state = 'fighting';
+        this.audio.playCombatVoice?.();
         this.audio.playBossAppear();
         this.ui.screenShake(12);
         this.fightCameraTime = 0;
@@ -554,10 +774,16 @@ export class Game {
             remainingCount: boss.health,
             defeated: false,
             isBoss: true,
-            meshGroup: null
+            meshGroup: boss.meshGroup,
+            kind: 'crs'
         };
-        this.fightTimer = 0;
+        this.fightTimer = -0.44;
+        this.fightElapsed = 0;
+        this.fightInterval = Math.max(0.30, (this.minFightDuration - 0.44) / Math.ceil(boss.health / Math.max(1, this.getEffectiveStrength())));
         this.speed = 0;
+        this.combatChoreo?.dispose();
+        this.combatChoreo=new CombatChoreography(this,this.fightingEnemy);
+        this.genzFireworks?.showButton();
 
         // Show boss health bar
         this.ui.showBossHealthBar(boss.health);
@@ -572,25 +798,56 @@ export class Game {
 
     winGame() {
         if (this.state === 'win' || this.state === 'lose') return;
+        if(this.mode==='campaign' && this.geographicLevel===FINAL_CAMPAIGN_LEVEL && !this.finalCaptured){
+            if(this.levelGenerator.boss?.defeated)this.story.beginFinalChase();
+            return;
+        }
+        this.audio.stopCombatVoice?.();
+        if(this.mode==='daily'){
+            this.experience?.finish(true);
+            const report=evaluateResult({won:true,survivors:this.crowdManager.getPlayerCount(),gateHistory:this.gateHistory,level:1});
+            this.state='win';this.audio.stopCrowdAmbience();this.audio.stopMusic();this.audio.playWin();
+            this.ui.showWin(0,report);this.challengeHub.complete(true);return;
+        }
+        this.experience?.finish(true);
+        this.heroes?.finish(true);
+        const report=evaluateResult({won:true,survivors:this.crowdManager.getPlayerCount(),gateHistory:this.gateHistory,level:this.level});
         this.state = 'win';
         const earnedCoins = Math.floor(this.crowdManager.getPlayerCount() * 2 + this.level * 10);
         this.coins += earnedCoins;
-        this.level++;
+        if(this.geographicLevel===FINAL_CAMPAIGN_LEVEL && this.finalCaptured)this.campaignComplete=true;
+        else { this.level++; this.parisLevel=Math.min(12,this.parisLevel+1); }
         this.saveProgress();
+        this.audio.stopCrowdAmbience();
         this.audio.stopMusic();
         this.audio.playWin();
-        this.ui.showWin(earnedCoins);
+        this.ui.showWin(earnedCoins, report);
+        this.heroes?.result();
     }
 
-    loseGame() {
+    loseGame(source = null) {
         if (this.state === 'win' || this.state === 'lose') return;
+        const lossSource=source || (this.fightingEnemy?'combat':'unknown');
+        this.experience?.finish(false,lossSource);
+        this.heroes?.finish(false);
+        const report=evaluateResult({won:false,survivors:this.crowdManager.getPlayerCount(),gateHistory:this.gateHistory,lossSource,level:this.level});
+        if(lossSource==='combat'&&this.fightingEnemy?.remainingCount>0)report.detail+=' Il restait '+this.fightingEnemy.remainingCount+' adversaires au front.';
+        if(lossSource==='gate'&&this.gateHistory.length){const last=this.gateHistory.at(-1);report.detail+=' Dernière TV : '+last.before.count+' → '+last.after.count+' manifestants.';}
+        this.combatChoreo?.dispose();
+        this.combatChoreo=null;
+        this.audio.stopCombatVoice?.();
+        if(this.mode==='daily'){
+            this.state='lose';this.audio.stopCrowdAmbience();this.audio.stopMusic();this.audio.playLose();
+            this.ui.showLose(report);this.challengeHub.complete(false);return;
+        }
         this.state = 'lose';
         const earnedCoins = Math.floor(this.level * 2);
         this.coins += earnedCoins;
         this.saveProgress();
+        this.audio.stopCrowdAmbience();
         this.audio.stopMusic();
         this.audio.playLose();
-        this.ui.showLose();
+        this.ui.showLose(report);
     }
 
     upgradecrowd() {
@@ -690,13 +947,17 @@ export class Game {
         skyCtx.fillStyle = gradient;
         skyCtx.fillRect(0, 0, 1, 512);
         const skyTexture = new THREE.CanvasTexture(skyCanvas);
+        if(this.scene.background?.isTexture)this.scene.background.dispose();
         this.scene.background = skyTexture;
         this.scene.fog = new THREE.FogExp2(theme.fog, 0.006);
     }
 
     saveProgress() {
+        if(this.parisDevSelection)return; // Never overwrite campaign saves while jumping between preview districts.
         const data = {
+            parisVersion: 1, parisLevel: this.parisLevel,
             level: this.level,
+            campaignComplete: this.campaignComplete,
             coins: this.coins,
             crowdUpgrade: this.crowdUpgrade,
             strengthUpgrade: this.strengthUpgrade,
@@ -712,7 +973,8 @@ export class Game {
         const data = localStorage.getItem('convergence_vertical_v1');
         if (data) {
             const parsed = JSON.parse(data);
-            this.level = parsed.level || 1;
+            this.level = Math.max(1,Math.min(FINAL_CAMPAIGN_LEVEL,parsed.level||1));
+            Object.assign(this,migrateParisProgress(parsed));
             this.coins = parsed.coins || 0;
             this.crowdUpgrade = parsed.crowdUpgrade || 1;
             this.strengthUpgrade = parsed.strengthUpgrade || 1;
@@ -729,7 +991,10 @@ export class Game {
 
     animate() {
         requestAnimationFrame(() => this.animate());
-        const delta = Math.min(this.clock.getDelta(), 0.05);
+        const frameDelta = this.clock.getDelta();
+        if(this.heroes?.dialog)return; // Only the visible wardrobe renders while it is open.
+        this.experience?.sampleFrame(frameDelta);
+        const delta = Math.min(frameDelta, 0.05);
         if (!this.qaManual) this.update(delta);
         this.renderer.render(this.scene, this.camera);
     }

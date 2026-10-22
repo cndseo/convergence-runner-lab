@@ -1,6 +1,9 @@
 import * as THREE from 'three';
+import {familyRoster,changeRoster} from './heroRules.mjs';
+import {crowdDensity,crowdSlot} from './humanDensity.mjs';
 import { makeCitizen } from './characters.js';
 import { attachAnimatedHumanoid, updateAnimatedHumanoids, clearHumanoids } from './humanoidAssets.js';
+import { applyCostumeToCrowd, disposeRunnerCostume } from './characterCostumes.js';
 
 export class CrowdManager {
     constructor(scene, game) {
@@ -10,7 +13,11 @@ export class CrowdManager {
         this.playerGroup = null;
         this.playerCount = 0;
         this.animTime = 0;
+        this.density = crowdDensity(0);
+        this.densityGrowth = 1;
+        this.previousVisualTotal = 0;
         this.flyingBodies = [];    // Ragdoll stickmen flying away
+        this.fallingOfficers = []; // Retain the real equipped CRS models during a fall
         this.impactFlashes = [];   // Impact burst rings
         this.sparkParticles = [];  // Small spark particles
         this.trailParticles = [];  // Trailing particles behind flying bodies
@@ -28,8 +35,13 @@ export class CrowdManager {
         this.playerStickmen = [];
         this.playerGroup = null;
         this.playerCount = 0;
+        this.density = crowdDensity(0);
+        this.previousVisualTotal = 0;
+        this.densityGrowth = 1;
         
         // Clean up effects
+        this.fallingOfficers.forEach(f => { this.scene.remove(f.officer); });
+        this.fallingOfficers = [];
         this.flyingBodies.forEach(b => { this.scene.remove(b.mesh); });
         this.flyingBodies = [];
         this.impactFlashes.forEach(f => { this.scene.remove(f.mesh); });
@@ -43,6 +55,8 @@ export class CrowdManager {
     createPlayerCrowd(count) {
         this.clear();
         this.playerCount = count;
+        this.roster=this.game?.heroes?.active?familyRoster(count,this.game.heroes.profile.family):[];
+        this.refreshDensity();
         this.playerGroup = new THREE.Group();
         this.playerGroup.userData.dynamic = true;
 
@@ -51,6 +65,12 @@ export class CrowdManager {
         }
 
         this.scene.add(this.playerGroup);
+        // Flag the costume before the asynchronous humanoid loader can run.
+        const costume=this.game?.activeCostume;
+        if(costume && this.game?.mode!=='daily' && this.playerStickmen[1]){
+            this.playerStickmen[1].userData.costumeAvatar=costume;
+            applyCostumeToCrowd(this,costume);
+        }
         attachAnimatedHumanoid(this);
     }
 
@@ -66,6 +86,8 @@ export class CrowdManager {
         const pos = this.getFormationPosition(index);
         stickman.position.set(pos.x, 0, pos.z);
         stickman.userData.index = index;
+        if(this.roster?.[index]){stickman.userData.community=this.roster[index];stickman.userData.bonusFaction=this.roster[index];}
+        if(index===0&&this.game?.heroes?.active)stickman.userData.heroProfile=this.game.heroes.profile;
         // Start with a pop-in scale animation
         stickman.scale.set(0, 0, 0);
         stickman.userData.spawnTime = this.animTime;
@@ -74,13 +96,37 @@ export class CrowdManager {
         this.playerStickmen.push(stickman);
     }
 
-    getFormationPosition(index) {
-        if(index === 0) return {x:0, z:1.05};
-        index--;
-        const cols = this.playerCount > 8 ? 5 : 3;
-        const row = Math.floor(index / cols);
-        return { x: (index % cols - (cols - 1) / 2) * .53, z: .55 - row * .70 };
+    refreshDensity() {
+        const shields=Math.max(0,Math.min(48,Math.floor(this.game?.shields||0)));
+        if(this.playerCount===this.density.count && (this.playerCount?shields*2:0)===this.density.protectors)return;
+        const next=crowdDensity(this.playerCount,shields);
+        if(next.count!==this.density.count||next.protectors!==this.density.protectors){
+            this.previousVisualTotal=this.density.total;
+            this.densityGrowth=next.total>this.density.total ? 0 : 1;
+            this.density=next;
+        }
     }
+
+    getFormationPosition(index,out={}) {
+        return crowdSlot(index,this.density,out);
+    }
+
+    getCombatFormationPosition(index,out={}) {
+        const enemy=this.game?.fightingEnemy;
+        if(!enemy)return this.getFormationPosition(index,out);
+        crowdSlot(index,this.density,out);
+        out.z+=this.game.trackZ-enemy.z+1.33;
+        return out;
+    }
+
+    getVisualPosition(index,out={}) {
+        return this.game?.state==='fighting'
+            ? this.getCombatFormationPosition(index,out) : this.getFormationPosition(index,out);
+    }
+
+    getCameraExpansion(){return Math.max(0,this.density.depth-1.4);}
+    getCameraHeight(){return 6.3+this.getCameraExpansion()*.72;}
+    getCameraDistance(){return 8.4+this.getCameraExpansion()*1.45+Math.max(0,this.density.columns-7)*.4;}
 
     createStickman(color) {
         const group = new THREE.Group();
@@ -123,19 +169,22 @@ export class CrowdManager {
         return group;
     }
 
-    addToPlayerCrowd(amount) {
+    addToPlayerCrowd(amount, faction=null, choice=null) {
         const startIndex = this.playerCount;
         this.playerCount += amount;
+        if(this.game?.heroes?.active)this.roster=changeRoster(this.roster,this.playerCount,choice||{bonusFaction:faction},this.game.heroes.profile.family);
+        this.refreshDensity();
 
         for (let i = 0; i < amount; i++) {
             this.addStickmanToGroup(startIndex + i);
+            if(faction)this.playerStickmen.at(-1).userData.bonusFaction=faction;
         }
         // Gate reinforcements must also become skinned walkers / LOD sprites.
         // Previously newly recruited citizens stayed as geometric placeholders.
         attachAnimatedHumanoid(this);
     }
 
-    removeFromPlayerCrowd(amount) {
+    removeFromPlayerCrowd(amount, {knockdown=false}={}) {
         amount = Math.min(amount, this.playerCount);
         if (amount <= 0) return;
 
@@ -150,36 +199,70 @@ export class CrowdManager {
                 } else {
                     ragdollColor = this.game ? this.game.getPlayerColor() : 0x2196F3;
                 }
-                if (i < 5) this.launchRagdoll(stickman, ragdollColor);
+                if (i < 5) this.launchRagdoll(stickman, ragdollColor, null, {knockdown});
                 const h=stickman.userData.realHumanoid;
                 if(h){h.mixer.stopAllAction();h.mixer.uncacheRoot(h.model);h.dispose?.();h.model.traverse(n=>{if(n.isSkinnedMesh)n.skeleton?.dispose();});}
+                disposeRunnerCostume(stickman);
                 this.playerGroup.remove(stickman);
             }
         }
         this.playerCount = Math.max(0, this.playerCount - amount);
+        if(this.roster)this.roster=this.roster.slice(0,this.playerCount);
+        this.refreshDensity();
     }
 
-    removeEnemyCrowd(enemy) {
-        if (enemy.meshGroup) {
-            // Launch remaining enemy stickmen as ragdolls
-            const children = [...enemy.meshGroup.children];
-            children.forEach(child => {
-                this.launchRagdoll(child, 0xf44336, enemy.meshGroup);
-            });
-            setTimeout(() => {
-                if (enemy.meshGroup) {
-                    this.scene.remove(enemy.meshGroup);
-                    enemy.meshGroup.traverse(c => {
-                        if (c.geometry) c.geometry.dispose();
-                        if (c.material) c.material.dispose();
-                    });
-                }
-            }, 100);
+    launchOfficerFall(officer) {
+        if (!officer?.parent || officer.userData.combatRetired) return false;
+        // Re-parent the actual equipped officer to world space: helmet, shield
+        // and uniform remain visible for the whole fall (no dummy stickman).
+        officer.updateWorldMatrix(true, true);
+        this.scene.attach(officer);
+        officer.userData.combatRetired = true;
+        this.fallingOfficers.push({
+            officer, elapsed: 0, duration: 2.15,
+            origin: officer.position.clone(), rotation: officer.rotation.clone(),
+            scale: officer.scale.clone(),
+            side: (this.fallingOfficers.length % 2 ? -1 : 1)
+        });
+        return true;
+    }
+
+    updateFallingOfficers(dt) {
+        for (let i = this.fallingOfficers.length - 1; i >= 0; i--) {
+            const fx = this.fallingOfficers[i];
+            fx.elapsed += dt;
+            const progress = Math.min(1, fx.elapsed / .52);
+            const ease = progress * progress * (3 - 2 * progress);
+            const officer = fx.officer;
+            // Stumble sideways, fall to the street and stay down briefly.
+            officer.rotation.set(
+                fx.rotation.x - .13 * ease,
+                fx.rotation.y,
+                fx.rotation.z + fx.side * 1.48 * ease
+            );
+            officer.position.set(
+                fx.origin.x + fx.side * .13 * ease,
+                fx.origin.y + .12 * ease,
+                fx.origin.z + .12 * ease
+            );
+            const fade = Math.max(0, Math.min(1, (fx.duration - fx.elapsed) / .30));
+            officer.scale.copy(fx.scale).multiplyScalar(Math.max(.001, fade));
+            if (fx.elapsed >= fx.duration) {
+                this.scene.remove(officer);
+                this.fallingOfficers.splice(i, 1);
+            }
         }
     }
 
+    removeEnemyCrowd(enemy) {
+        // Officers already fell one by one during the exchange.
+        // Only clean up the now-empty unit; do not explode the whole squad.
+        if(enemy.meshGroup)enemy.meshGroup.visible=false;
+        if(enemy.labelMesh)enemy.labelMesh.visible=false;
+    }
+
     // ============ RAGDOLL FLYING STICKMAN ============
-    launchRagdoll(stickman, color, parentGroup) {
+    launchRagdoll(stickman, color, parentGroup, {knockdown=false}={}) {
         // Get world position of the stickman
         const worldPos = new THREE.Vector3();
         stickman.getWorldPosition(worldPos);
@@ -194,16 +277,14 @@ export class CrowdManager {
         const launchPower = 4 + Math.random() * 6;
         const upPower = 6 + Math.random() * 5;
 
-        ragdoll.userData.velocity = new THREE.Vector3(
-            Math.cos(launchAngle) * launchPower,
-            upPower,
-            Math.sin(launchAngle) * launchPower
-        );
-        ragdoll.userData.angularVel = new THREE.Vector3(
-            (Math.random() - 0.5) * 15,
-            (Math.random() - 0.5) * 10,
-            (Math.random() - 0.5) * 15
-        );
+        ragdoll.userData.velocity = knockdown
+            ? new THREE.Vector3(Math.cos(launchAngle)*2.6,2.8,3.5)
+            : new THREE.Vector3(Math.cos(launchAngle)*launchPower,upPower,
+                Math.sin(launchAngle)*launchPower);
+        ragdoll.userData.angularVel = knockdown
+            ? new THREE.Vector3(7,(Math.random()-.5)*2,4)
+            : new THREE.Vector3((Math.random()-.5)*15,(Math.random()-.5)*10,
+                (Math.random()-.5)*15);
         ragdoll.userData.life = 1.5;
         ragdoll.userData.maxLife = 1.5;
         ragdoll.userData.color = color;
@@ -308,6 +389,9 @@ export class CrowdManager {
         this.spawnSparks(pos, color, 4);
     }
 
+    // The real rendered formation: animated actors and GPU instances together.
+    getDisplayedCount() { return this.density.total; }
+
     getPlayerCount() {
         return this.playerCount;
     }
@@ -319,12 +403,14 @@ export class CrowdManager {
     }
 
     update(delta) {
-        updateAnimatedHumanoids(this,delta);
+        this.refreshDensity();
+        this.densityGrowth=Math.min(1,this.densityGrowth+delta*3);
         if(this.playerStickmen.some(r=>!r.userData.realHumanoid&&!r.userData.lowDetail))attachAnimatedHumanoid(this);
         this.animTime += delta * 2.6; // Measured walking cadence for fallback low-detail citizens
         
         // Animate low-detail demonstrators walking
         if (this.playerStickmen.length > 0) {
+            const slot=this._formationTarget??={x:0,z:0};
             this.playerStickmen.forEach((stickman, i) => {
                 // Spawn pop-in animation
                 if (stickman.userData.spawning) {
@@ -342,7 +428,9 @@ export class CrowdManager {
                     }
                 }
 
-                const target = this.getFormationPosition(i);
+                const target = this.game?.state==='fighting'
+                    ? this.getCombatFormationPosition(i,slot)
+                    : this.getFormationPosition(i,slot);
                 stickman.position.x += (target.x - stickman.position.x) * Math.min(1, delta * 8);
                 stickman.position.z += (target.z - stickman.position.z) * Math.min(1, delta * 8);
                 const offset = i * 0.7;
@@ -379,8 +467,11 @@ export class CrowdManager {
             });
         }
 
+        updateAnimatedHumanoids(this,delta);
+
         // Update all effects
         this.updateFlyingBodies(delta);
+        this.updateFallingOfficers(delta);
         this.updateImpactFlashes(delta);
         this.updateSparkParticles(delta);
         this.updateTrailParticles(delta);

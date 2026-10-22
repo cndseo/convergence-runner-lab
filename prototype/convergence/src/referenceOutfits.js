@@ -1,4 +1,7 @@
 import * as T from 'three';
+import {artFor} from './heroArt.mjs';
+import {sculptHero} from './heroSculpt.js';
+import {dressHeroDetails} from './heroCostumes.js';
 import {RoundedBoxGeometry} from 'three/addons/geometries/RoundedBoxGeometry.js';
 import {mergeGeometries} from 'three/addons/utils/BufferGeometryUtils.js';
 
@@ -82,8 +85,8 @@ function backpack(b,color,style){
  b.box([.06,.17,.09],[.18,-.08,.21],color,.019);
  b.add(new T.TorusGeometry(.052,.012,6,12,Math.PI),dark,[0,.17,.21]);
  for(const x of [-.14,.14]){
-  line(b,[x,.20,.08],[x,.1,-.135],.023,color);
-  line(b,[x,.1,-.135],[x,-.20,-.12],.023,color);
+  line(b,[x,.20,.08],[x,.1,-.135],style.key?.startsWith('hero-')?.013:.023,style.key?.startsWith('hero-')?dark:color);
+  line(b,[x,.1,-.135],[x,-.20,-.12],style.key?.startsWith('hero-')?.013:.023,style.key?.startsWith('hero-')?dark:color);
  }
  const pack=style.pack;
  if(pack==='hiking'){
@@ -124,7 +127,7 @@ function paintBody(model,spec){
    const mask=new Float32Array(pos.count*3);
    model.updateMatrixWorld(true);
    for(let i=0;i<pos.count;i++){
-    const p=V().fromBufferAttribute(pos,i).applyMatrix4(n.matrixWorld);
+    const p=(spec.key.startsWith('hero-')?n.getVertexPosition(i,V()):V().fromBufferAttribute(pos,i)).applyMatrix4(n.matrixWorld);
     let hand=0,arm=0,leg=0,foot=0;
     for(let j=0;j<4;j++){
      const name=n.skeleton.bones[indices.getComponent(i,j)]?.name||'',w=weights.getComponent(i,j);
@@ -190,7 +193,9 @@ function crossed(b,pos,size){
  b.box([size,size*.30,.019],pos,red,.005);
 }
 export function dressReferenceWalker(model,spec){
+ const heroArt=artFor(spec);
  paintBody(model,spec);
+ if(heroArt)sculptHero(model,spec);
  const chest=wp(bone(model,'Spine2')).add(V(0,-.06,0));
  const body=builder(model,'Spine2',chest,spec.key);
  const headPos=wp(bone(model,'Head'));
@@ -204,10 +209,10 @@ export function dressReferenceWalker(model,spec){
  applyPose();model.updateMatrixWorld(true);
  if(spec.vest){
   const fit=fitVest(model,chest);
-  const g=new T.CylinderGeometry(fit.rx*.97,fit.rx,.43,24,4,true);g.scale(1,1,fit.rz/fit.rx);
+  const g=new T.CylinderGeometry(fit.rx*(heroArt?.90:.97),fit.rx,.43,24,4,true,heroArt?Math.PI+.20:0,heroArt?Math.PI*2-.40:Math.PI*2);g.scale(1,1,fit.rz/fit.rx);
   body.add(g,yellow,[0,-.015,fit.z]);
   for(const y of [-.14,.025]){
-   const stripe=new T.CylinderGeometry(fit.rx+.003,fit.rx+.004,.047,24,1,true);stripe.scale(1,1,fit.rz/fit.rx);
+   const stripe=new T.CylinderGeometry(fit.rx*(heroArt?.94:1)+.003,fit.rx+.004,heroArt?.036:.047,24,1,true,heroArt?Math.PI+.20:0,heroArt?Math.PI*2-.40:Math.PI*2);stripe.scale(1,1,fit.rz/fit.rx);
    body.add(stripe,0xe1e6dd,[0,y,fit.z],[0,0,0],true);
   }
   for(const x of [-.13,.13]){
@@ -218,19 +223,20 @@ export function dressReferenceWalker(model,spec){
   body.box([.018,.4,.015],[0,-.01,fit.z-fit.rz-.008],0x525945,.003);
   for(const x of [-.115,.115])body.box([.12,.10,.02],[x,-.14,fit.z-fit.rz-.006],yellow,.008);
  }
- if(spec.hood){
+ if(spec.hood&&!heroArt){
   const hood=new T.TorusGeometry(.107,.040,8,20,Math.PI*1.65);
   body.add(hood,spec.top,[0,.255,.075],[.65,0,.55]);
   body.ellipsoid([.125,.085,.065],[0,.245,.12],spec.top);
  }
  if(spec.bag!==undefined)backpack(body,spec.bag,spec);
- if(spec.key==='pompier'){
+ if(spec.key==='pompier'||spec.faction==='pompiers'){
   // The detailed original fire uniform and helmet are retained and dressed in red.
   for(const y of [-.20,.08]){
    const g=new T.CylinderGeometry(.22,.235,.052,24,1,true);g.scale(1,1,.80);
    body.add(g,yellow,[0,y,0],[0,0,0],true);
   }
   body.box([.10,.11,.04],[.15,.12,-.15],dark,.01);
+  if(!heroArt){
   const helmet=new T.SphereGeometry(.145,24,14,0,Math.PI*2,0,Math.PI*.62);helmet.scale(1,1.12,1.08);
   head.add(helmet,0xe2232a,[0,.13,0]);
   head.add(new T.CylinderGeometry(.148,.153,.027,24),red,[0,.09,0]);
@@ -238,6 +244,7 @@ export function dressReferenceWalker(model,spec){
   head.box([.24,.075,.025],[0,.04,.115],red,.012);
   for(const x of [-.13,.13])head.box([.025,.10,.08],[x,.065,0],red,.013);
   head.ellipsoid([.145,.013,.065],[0,.09,-.13],0x8e2830);
+  }
   for(const side of ['L','R']){
    for(const [a,c,r] of [[side+'_Forearm',side+'_Hand',.065],[side+'_Calf',side+'_Foot',.082]]){
     const pa=wp(bone(model,a)),pb=wp(bone(model,c)),mid=pa.clone().lerp(pb,.62),d=pb.clone().sub(pa).normalize();
@@ -264,7 +271,7 @@ export function dressReferenceWalker(model,spec){
   crossed(head,[0,.19,.106],.075);
   crossed(head,[0,.19,-.111],.075);
  }
- if(spec.cap!==undefined){
+ if(spec.cap!==undefined&&!heroArt){
   const g=new T.SphereGeometry(.128,20,12,0,Math.PI*2,0,Math.PI/2);g.scale(1,.88,1.06);
   head.add(g,spec.cap,[0,.15,0]);
   // A forward brim meets the crown at the forehead.
@@ -275,7 +282,7 @@ export function dressReferenceWalker(model,spec){
   for(const x of [-.13,.13])body.box([.105,.105,.025],[x,-.12,-.135],0x48683a,.012);
   body.box([.02,.35,.02],[0,.02,-.14],0xaba17c,.004);
  }
- if(spec.hair){
+ if(spec.hair&&!heroArt){
   const col={blonde:0xb38a46,red:0x9d4d28,grey:0x9a9c98,beanie:0x20282e,ponytail:0x65412c,dark:0x302722}[spec.hair];
   if(spec.hair==='beanie'){
    const g=new T.SphereGeometry(.116,20,12,0,Math.PI*2,0,Math.PI*.58);g.scale(1,1.06,1.03);
@@ -302,6 +309,39 @@ export function dressReferenceWalker(model,spec){
    }
   }
  }
+ // Hero accessories are real bone-attached geometry, shared by all profiles.
+ if(spec.headphones&&!heroArt){
+  head.add(new T.TorusGeometry(.139,.012,6,16,Math.PI),dark,[0,.10,0]);
+  for(const x of [-.137,.137])head.box([.04,.08,.065],[x,.075,0],dark,.018);
+ }
+ if(spec.beard&&!heroArt)head.ellipsoid([.066,.037,.038],[0,-.035,-.072],spec.grey?0x90918b:0x40332c);
+ if(spec.scarf||spec.heroEquipment==='solidarity-scarf'){
+  const col=spec.heroEquipment==='solidarity-scarf'?0xc44858:spec.scarf;
+  body.add(new T.TorusGeometry(.09,.025,6,16),col,[0,.23,0],[Math.PI/2,0,0]);
+  body.box([.075,.21,.035],[.055,.12,-.13],col,.015,[0,0,-.2]);
+ }
+ if(spec.medicalKit){
+  for(const x of [-.06,.06])line(body,[x,.24,-.13],[x,.06,-.17],.008,0x293344);
+  body.add(new T.TorusGeometry(.06,.008,6,16,Math.PI),0x293344,[0,.06,-.17],[0,0,Math.PI]);
+  body.ellipsoid([.025,.025,.008],[.06,.02,-.18],0xb6c1c7);
+  body.box([.055,.075,.014],[-.12,.10,-.17],0x72b5c7,.005);
+  body.box([.13,.09,.015],[0,.015,.349],0xe6eaec,.005);
+  // Blue care badge deliberately avoids protected humanitarian emblems.
+  body.box([.08,.02,.018],[0,.015,.36],0x539db9,.004);
+ }
+ if(spec.airTank&&!heroArt){
+  body.tube(.075,.40,[0,-.02,.36],0xc6c5a6);
+  for(const y of [-.12,.10])body.box([.16,.035,.022],[0,y,.435],dark,.004);
+  body.tube(.025,.055,[0,.205,.36],dark);
+ }
+ if(spec.heroEquipment==='reflective-pack'){
+  for(const y of [-.12,.06])body.box([.27,.04,.018],[0,y,.36],0xe6eeaf,.004);
+ }
+ if(spec.heroEquipment==='armband'){
+  const arm=builder(model,'L_UpperArm',wp(bone(model,'L_UpperArm')).lerp(wp(bone(model,'L_Forearm')),.6),'hero-armband');
+  arm.add(new T.CylinderGeometry(.073,.073,.075,12,1,true),0xeead5e);arm.finish();
+ }
+ if(heroArt)dressHeroDetails(model,spec,{body,head,builder,bone,wp,line,fitVest});
  body.finish();head.finish();
  const dynamic=[];let smoke=null,flag=null;
  if(spec.prop){

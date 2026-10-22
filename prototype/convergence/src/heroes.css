@@ -1,0 +1,29 @@
+.hero-dialog{position:fixed;inset:0;z-index:250;overflow:auto;overscroll-behavior:contain;pointer-events:auto;background:#080f16;color:#f5f2ec;padding:max(16px,env(safe-area-inset-top)) 14px max(22px,env(safe-area-inset-bottom));font-family:inherit}
+.hero-panel{max-width:620px;margin:auto}.hero-header{position:relative;padding-right:36px}.hero-eyebrow{font-size:10px;letter-spacing:.16em;color:#d9b67a}.hero-header h2{font-size:30px;margin:8px 0 16px;text-transform:none;letter-spacing:-.03em}.hero-close{position:absolute;right:0;top:0;width:36px;height:36px;background:#223442;border:1px solid #536371;color:white;border-radius:50%;font-size:25px}
+.hero-families{display:flex;gap:6px;overflow-x:auto;padding-bottom:10px}.hero-family{flex:1;min-width:70px;border:1px solid #3d4b58;border-radius:9px;background:#14212c;color:#bdc6d0;font-size:11px;padding:12px 7px;white-space:nowrap}.hero-family[aria-pressed=true]{border-color:var(--family);color:var(--family);background:#29323b}.hero-family:disabled{opacity:.4}
+.hero-stage{height:300px;position:relative;border:1px solid #374754;border-radius:16px;overflow:hidden;background:#15212d}.hero-viewport{position:absolute;inset:0}.hero-viewport canvas{display:block}.hero-status{position:absolute;top:15px;left:15px;right:15px;z-index:2;font-size:12px;background:#15212ddd;padding:10px;border-radius:8px}.hero-description{position:absolute;bottom:14px;left:16px;right:16px;pointer-events:none;display:flex;flex-direction:column;text-shadow:0 2px 6px #000;background:linear-gradient(transparent,#15212d99);padding-top:8px}.hero-description strong{font-size:25px}.hero-description span{font-size:11px;color:#d0dae2}.hero-drag{position:absolute;top:14px;right:12px;font-size:9px;letter-spacing:.12em;color:#a2b4c3;pointer-events:none}
+.hero-profiles{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin:12px 0}.hero-profile,.hero-item{background:#182733;color:#e6edf1;border:1px solid #3c5060;border-radius:9px;padding:12px 5px;font-size:13px;font-weight:700;min-height:48px}.hero-profile small{display:block;color:#a7b8c6;font-size:9px;font-weight:400;line-height:1.4;margin-top:5px}.hero-profile[aria-pressed=true],.hero-item[aria-pressed=true]{background:#3b3b32;border-color:#e8c789;color:#ffe4b3}.hero-profile:disabled,.hero-item:disabled{opacity:.4}.hero-equipment{display:grid;grid-template-columns:1fr 1fr;gap:6px}.hero-note{font-size:11px;line-height:1.6;color:#bdcbd6;margin:12px 0}.hero-confirm{width:100%;font-size:13px!important;background:#edc98b!important;color:#1a2027!important}.hero-confirm:disabled{opacity:.4}.hero-panel .result-download{display:block;margin:13px auto;font-size:10px}.hero-dialog button:focus-visible{outline:2px solid #f9ddaf;outline-offset:2px}
+.hero-roster{position:absolute;top:max(119px,calc(env(safe-area-inset-top) + 105px));left:10px;right:10px;text-align:center;font-size:10px;line-height:1.5;color:#fff;text-shadow:0 1px 3px #000;background:#101925ab;border-radius:8px;padding:5px;pointer-events:none;z-index:12}.hero-power{position:absolute;bottom:max(150px,calc(env(safe-area-inset-bottom) + 134px));left:10px;max-width:46%;padding:12px 9px;border:1px solid #e0bc80;border-radius:12px;background:#162330eb;color:#f0d39f;font-size:10px;font-weight:bold;pointer-events:auto;min-height:44px;z-index:45}.hero-power:disabled{opacity:.55}.hero-power[hidden],.hero-roster[hidden],.hero-status[hidden]{display:none}
+@media(max-height:740px){.hero-stage{height:245px}.hero-header h2{font-size:26px;margin-bottom:10px}.hero-profile{padding:9px 4px}.hero-note{margin:8px 0}}
+@media(min-width:700px){.hero-stage{height:390px}.hero-family{font-size:13px}}
+
+.hero-reward{font-size:12px;line-height:1.5;color:#e8c789;max-width:320px;text-align:center;margin:10px auto}.hero-reward[hidden]{display:none}
+
+.hero-zoom{position:absolute;right:10px;top:34px;z-index:2;padding:8px 12px;border:1px solid #ffffff55;border-radius:18px;background:#14202ee8;color:#f0f4f6;font:600 11px system-ui;cursor:pointer}.hero-zoom:focus-visible{outline:2px solid #bba5ff;outline-offset:3px}
+
+
+/* Authentic 2D character wardrobe — the gameplay still uses its GLB avatars. */
+.hero-stage{height:398px;background:radial-gradient(ellipse at 49% 45%,#22313e 0%,#121f2b 69%,#0b141f 100%)}
+.hero-viewport{position:absolute;inset:0;overflow:hidden;pointer-events:none}
+.hero-art-figure{position:absolute;height:100%;width:auto;max-width:62%;object-fit:contain;bottom:0;left:49%;transform:translateX(-50%);filter:drop-shadow(0 3px 16px #0007)}
+.hero-art-face{position:absolute;right:12px;top:41px;width:104px;height:117px;object-fit:cover;border:1px solid #d1ac73;border-radius:10px;box-shadow:0 8px 28px #0009}
+.hero-drag{left:15px;right:auto;top:12px;color:#e0bf8d;font-size:10px;font-weight:700}
+.hero-description{bottom:0;left:0;right:0;padding:48px 16px 16px;background:linear-gradient(transparent,#0b141ff0);z-index:2}
+.hero-profiles{gap:7px;margin:12px 0}
+.hero-profile{display:flex;align-items:center;flex-direction:column;gap:4px;padding:6px 3px 8px;min-height:113px;line-height:1.1}
+.hero-profile img{display:block;width:51px;height:52px;object-fit:cover;border-radius:7px;border:1px solid #59707f;background:#101923}
+.hero-profile strong{font-size:12px}
+.hero-profile small{margin:0;font-size:9px}
+.hero-profile[aria-pressed=true] img{border-color:#e8c789}
+@media(max-height:740px){.hero-stage{height:320px}.hero-profile{min-height:104px}.hero-profile img{height:45px;width:45px}}
+@media(min-width:700px){.hero-stage{height:475px}.hero-art-face{right:24px;top:50px;width:135px;height:152px}.hero-art-figure{max-width:50%}}

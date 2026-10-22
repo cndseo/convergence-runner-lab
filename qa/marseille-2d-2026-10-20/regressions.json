@@ -1,0 +1,158 @@
+[
+  {
+    "viewport": {
+      "width": 390,
+      "height": 844
+    },
+    "costumes": [
+      {
+        "id": "spiderman",
+        "meshes": 31,
+        "sprites": 0,
+        "maps": [
+          {
+            "name": "ORIGINAL_ART_FABRIC_DECAL",
+            "width": 256,
+            "height": 320
+          },
+          {
+            "name": "ORIGINAL_ART_FABRIC_DECAL",
+            "width": 256,
+            "height": 320
+          },
+          {
+            "name": "ORIGINAL_ART_FABRIC_DECAL",
+            "width": 256,
+            "height": 320
+          },
+          {
+            "name": "ORIGINAL_ART_FABRIC_DECAL",
+            "width": 256,
+            "height": 320
+          }
+        ],
+        "name": "SPIDERMAN_3D_FROM_USER_REFERENCE",
+        "tail": false,
+        "leader": true,
+        "count": 5
+      },
+      {
+        "id": "dinosaur",
+        "meshes": 65,
+        "sprites": 0,
+        "maps": [
+          {
+            "name": "ORIGINAL_ART_FABRIC_DECAL",
+            "width": 256,
+            "height": 320
+          },
+          {
+            "name": "ORIGINAL_ART_FABRIC_DECAL",
+            "width": 256,
+            "height": 320
+          }
+        ],
+        "name": "DINOSAUR_INFLATABLE_3D_FROM_USER_REFERENCE",
+        "tail": true,
+        "leader": true,
+        "count": 5
+      }
+    ],
+    "state": {
+      "started": true,
+      "before": 1.4999999999999996,
+      "credits": 0,
+      "paused": {
+        "active": true,
+        "elapsed": 1.4999999999999996,
+        "credits": 0
+      },
+      "finished": {
+        "state": "playing",
+        "active": false
+      },
+      "cancelled": false,
+      "chargeBefore": 1,
+      "chargeAfter": 1
+    },
+    "errors": []
+  },
+  {
+    "viewport": {
+      "width": 320,
+      "height": 700
+    },
+    "costumes": [
+      {
+        "id": "spiderman",
+        "meshes": 31,
+        "sprites": 0,
+        "maps": [
+          {
+            "name": "ORIGINAL_ART_FABRIC_DECAL",
+            "width": 256,
+            "height": 320
+          },
+          {
+            "name": "ORIGINAL_ART_FABRIC_DECAL",
+            "width": 256,
+            "height": 320
+          },
+          {
+            "name": "ORIGINAL_ART_FABRIC_DECAL",
+            "width": 256,
+            "height": 320
+          },
+          {
+            "name": "ORIGINAL_ART_FABRIC_DECAL",
+            "width": 256,
+            "height": 320
+          }
+        ],
+        "name": "SPIDERMAN_3D_FROM_USER_REFERENCE",
+        "tail": false,
+        "leader": true,
+        "count": 5
+      },
+      {
+        "id": "dinosaur",
+        "meshes": 65,
+        "sprites": 0,
+        "maps": [
+          {
+            "name": "ORIGINAL_ART_FABRIC_DECAL",
+            "width": 256,
+            "height": 320
+          },
+          {
+            "name": "ORIGINAL_ART_FABRIC_DECAL",
+            "width": 256,
+            "height": 320
+          }
+        ],
+        "name": "DINOSAUR_INFLATABLE_3D_FROM_USER_REFERENCE",
+        "tail": true,
+        "leader": true,
+        "count": 5
+      }
+    ],
+    "state": {
+      "started": true,
+      "before": 1.4999999999999996,
+      "credits": 0,
+      "paused": {
+        "active": true,
+        "elapsed": 1.4999999999999996,
+        "credits": 0
+      },
+      "finished": {
+        "state": "playing",
+        "active": false
+      },
+      "cancelled": false,
+      "chargeBefore": 1,
+      "chargeAfter": 1
+    },
+    "errors": []
+  }
+]

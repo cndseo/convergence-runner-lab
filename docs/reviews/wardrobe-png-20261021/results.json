@@ -1,0 +1,38 @@
+{
+  "base": "http://127.0.0.1:4694/",
+  "profiles": [
+    "genz-lea",
+    "genz-emma",
+    "genz-kay",
+    "genz-noah",
+    "gilets-thomas",
+    "gilets-marcel",
+    "gilets-sophie",
+    "gilets-nadia",
+    "soignants-lucas",
+    "soignants-amina",
+    "soignants-yann",
+    "soignants-carine",
+    "pompiers-hugo",
+    "pompiers-chloe",
+    "pompiers-pierre",
+    "pompiers-samir",
+    "lyceens-julie",
+    "lyceens-mathis",
+    "lyceens-leo",
+    "lyceens-manon"
+  ],
+  "errors": [],
+  "badAssets": [],
+  "checks": [
+    "20 portraits + 20 fiches visage correctement affichés; aucun WebGL dans le vestiaire; téléchargement PNG",
+    "Sélection sauvegardée et modèle 3D conservé pendant la partie (11 membres)",
+    "Vestiaire testé aux tailles 390x844 et 320x700"
+  ],
+  "result": {
+    "level": 2,
+    "hero": "genz-lea",
+    "count": 11,
+    "glb": "hero-genz-lea"
+  }
+}

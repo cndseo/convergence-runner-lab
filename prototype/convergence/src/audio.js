@@ -1,3 +1,6 @@
+import {CrowdAmbience} from './crowdAmbience.js';
+import {CombatImpactSounds} from './combatImpactSounds.js';
+
 export class AudioManager {
     constructor() {
         this.ctx = null;
@@ -7,6 +10,9 @@ export class AudioManager {
         this.isMusicPlaying = false;
         this.musicNodes = [];
         this.initialized = false;
+        this.ambience = new CrowdAmbience(this);
+        this.combatImpacts = new CombatImpactSounds(this);
+        this.ambienceMuted = false;
     }
 
     init() {
@@ -27,10 +33,300 @@ export class AudioManager {
         this.initialized = true;
     }
 
+    preloadCombatImpacts() {
+        return this.combatImpacts.preload(import.meta.env.BASE_URL);
+    }
+    playCombatImpact(type,options) {
+        return this.combatImpacts.play(type,options);
+    }
+
     resume() {
         if (this.ctx && this.ctx.state === 'suspended') {
             this.ctx.resume();
         }
+    }
+
+    startCrowdAmbience(){ return this.ambience.start(); }
+    toggleAmbienceMute(){
+      this.ambienceMuted=!this.ambienceMuted;
+      if(this.musicGain)this.musicGain.gain.value=this.ambienceMuted?0:.35;
+      return this.ambienceMuted;
+    }
+    stopCrowdAmbience(){ this.ambience.stop(); }
+    pauseAudio(){ return this.ctx?.suspend(); }
+    resumeAudio(){ return this.ctx?.resume(); }
+
+    // Audio supplied in the user's introduction video; plays only during
+    // the scripted prologue, from the already-unlocked game AudioContext.
+    async preloadIntroVoice(){
+        if(this.introVoiceBuffer)return;
+        if(this.introVoiceLoading)return this.introVoiceLoading;
+        if(!this.initialized)this.init();
+        this.introVoiceLoading=(async()=>{
+            try{
+                const url=import.meta.env.BASE_URL+'assets/story/intro-voice.mp3';
+                const response=await fetch(url);
+                if(!response.ok)throw new Error('intro recording unavailable');
+                this.introVoiceBuffer=await this.ctx.decodeAudioData(await response.arrayBuffer());
+            }catch(error){console.warn('Intro audio:',error.message);this.introVoiceBuffer=null;}
+            finally{this.introVoiceLoading=null;}
+        })();
+        return this.introVoiceLoading;
+    }
+    playIntroVoice(){
+        if(!this.introVoiceBuffer || !this.ctx)return false;
+        this.introVoiceRequested=true;
+        if(this.ctx.state!=='running'){
+            this.ctx.resume().then(()=>{
+                if(this.introVoiceRequested && this.ctx.state==='running')this.playIntroVoice();
+            }).catch(()=>{});
+            return false;
+        }
+        this.stopIntroVoice();
+        this.introVoiceRequested=true;
+        const source=this.ctx.createBufferSource(), gain=this.ctx.createGain();
+        source.buffer=this.introVoiceBuffer;gain.gain.value=.94;
+        source.connect(gain);gain.connect(this.masterGain);
+        if(this.musicGain)this.musicGain.gain.setTargetAtTime(.07,this.ctx.currentTime,.12);
+        this.introVoiceNode=source;
+        source.onended=()=>{
+            if(this.introVoiceNode!==source)return;
+            this.introVoiceNode=null;
+            if(this.musicGain)this.musicGain.gain.setTargetAtTime(this.ambienceMuted?0:.35,this.ctx.currentTime,.25);
+        };
+        source.start();
+        return true;
+    }
+    stopIntroVoice(){
+        this.introVoiceRequested=false;
+        try{this.introVoiceNode?.stop();}catch{}
+        this.introVoiceNode=null;
+        if(this.ctx&&this.musicGain)this.musicGain.gain.setTargetAtTime(this.ambienceMuted?0:.35,this.ctx.currentTime,.15);
+    }
+
+    // Optional supplied recording during combat; gracefully skip if absent.
+    async preloadCombatVoice(){
+        if(this.combatVoiceBuffer)return Promise.resolve();
+        if(this.combatVoiceLoading)return this.combatVoiceLoading;
+        if(!this.initialized)this.init();
+        this.combatVoiceLoading=(async()=>{
+            try{
+                const url=import.meta.env.BASE_URL+'assets/audio/pourquoi-tu-me-frappe.ogg';
+                const response=await fetch(url);
+                if(!response.ok)throw new Error('combat recording not installed');
+                this.combatVoiceBuffer=await this.ctx.decodeAudioData(await response.arrayBuffer());
+            }catch(error){this.combatVoiceBuffer=null;}
+            finally{this.combatVoiceLoading=null;}
+        })();
+        return this.combatVoiceLoading;
+    }
+    playCombatVoice(){
+        if(!this.ctx||this.ctx.state!=='running')return;
+        this.combatVoiceRequested=true;
+        if(!this.combatVoiceBuffer){
+            this.preloadCombatVoice().then(()=>{
+                if(this.combatVoiceBuffer&&this.combatVoiceRequested)this.playCombatVoice();
+            });
+            return;
+        }
+        if(this.combatVoiceNode)return;
+        const source=this.ctx.createBufferSource();
+        const gain=this.ctx.createGain();
+        source.buffer=this.combatVoiceBuffer;
+        gain.gain.value=.82;
+        source.connect(gain);gain.connect(this.sfxGain);
+        if(this.musicGain){
+            this.musicGain.gain.setTargetAtTime(this.ambienceMuted?0:.12,this.ctx.currentTime,.12);
+        }
+        this.combatVoiceNode=source;
+        source.onended=()=>{
+            if(this.combatVoiceNode===source)this.combatVoiceNode=null;
+            if(this.musicGain)this.musicGain.gain.setTargetAtTime(this.ambienceMuted?0:.35,this.ctx.currentTime,.30);
+        };
+        source.start();
+    }
+    stopCombatVoice(){
+        this.combatVoiceRequested=false;
+        try{this.combatVoiceNode?.stop();}catch{}
+        this.combatVoiceNode=null;
+        if(this.ctx&&this.musicGain)this.musicGain.gain.setTargetAtTime(this.ambienceMuted?0:.35,this.ctx.currentTime,.18);
+    }
+
+    // Audio supplied specifically for the Marseille 2D counterattack (7.15 s).
+    // WebAudio shares the game's unlocked iPhone-compatible AudioContext.
+    async preloadMarseilleAttack() {
+        if (this.marseilleAttackBuffer) return this.marseilleAttackBuffer;
+        if (this.marseilleAttackLoading) return this.marseilleAttackLoading;
+        if (!this.initialized) this.init();
+        this.marseilleAttackLoading=(async()=>{
+            try {
+                const response=await fetch(import.meta.env.BASE_URL+'assets/audio/marseille-attack.m4a');
+                if(!response.ok)throw new Error('Marseille attack recording missing');
+                this.marseilleAttackBuffer=await this.ctx.decodeAudioData(await response.arrayBuffer());
+                return this.marseilleAttackBuffer;
+            }catch(error) {
+                console.warn('Marseille attack recording:',error?.message);
+                return null; // no impact on visuals, fighting or credits
+            }finally {this.marseilleAttackLoading=null;}
+        })();
+        return this.marseilleAttackLoading;
+    }
+    playMarseilleAttack() {
+        if(!this.marseilleAttackBuffer||!this.ctx||this.ctx.state!=='running')return false;
+        this.stopMarseilleAttack();
+        this.stopCombatVoice();
+        const source=this.ctx.createBufferSource();
+        const gain=this.ctx.createGain();
+        source.buffer=this.marseilleAttackBuffer;
+        gain.gain.value=.90;
+        source.connect(gain);
+        gain.connect(this.sfxGain);
+        this.marseilleAttackNode=source;
+        if(this.musicGain)this.musicGain.gain.setTargetAtTime(this.ambienceMuted?0:.10,this.ctx.currentTime,.12);
+        source.onended=()=>{
+            if(this.marseilleAttackNode!==source)return;
+            this.marseilleAttackNode=null;
+            if(this.musicGain)this.musicGain.gain.setTargetAtTime(this.ambienceMuted?0:.35,this.ctx.currentTime,.25);
+        };
+        source.start(0); // exactly once at the start of the attack
+        return true;
+    }
+    stopMarseilleAttack() {
+        try{this.marseilleAttackNode?.stop();}catch{}
+        this.marseilleAttackNode=null;
+        if(this.ctx&&this.musicGain)
+            this.musicGain.gain.setTargetAtTime(this.ambienceMuted?0:.35,this.ctx.currentTime,.15);
+    }
+
+    // Public-domain motorbike pass-by (ezwa / PDSounds, via Wikimedia Commons).
+    // Load once, lazily after the first user gesture, and share the unlocked
+    // Web Audio context used by all other effects. No streaming during gameplay.
+    async preloadBravmMotorbike() {
+        if (this.bravmMotorbikeBuffer) return this.bravmMotorbikeBuffer;
+        if (this.bravmMotorbikeLoading) return this.bravmMotorbikeLoading;
+        if (!this.initialized) return null;
+        this.bravmMotorbikeLoading=(async()=>{
+            try {
+                const response=await fetch(import.meta.env.BASE_URL+'assets/audio/bravm-motorbike-4.mp3');
+                if (!response.ok) throw new Error('motorbike asset unavailable');
+                const buffer=await this.ctx.decodeAudioData(await response.arrayBuffer());
+                // The original public-domain field recording is very quiet
+                // (roughly -36 dBFS RMS / 0.13 peak). Normalize once in RAM
+                // without re-encoding or changing its natural engine timbre.
+                let peak=0;
+                for(let channel=0;channel<buffer.numberOfChannels;channel++){
+                    const data=buffer.getChannelData(channel);
+                    for(let i=0;i<data.length;i++)peak=Math.max(peak,Math.abs(data[i]));
+                }
+                const boost=peak>0?Math.min(8,.84/peak):1;
+                if(boost>1){
+                    for(let channel=0;channel<buffer.numberOfChannels;channel++){
+                        const data=buffer.getChannelData(channel);
+                        for(let i=0;i<data.length;i++)data[i]*=boost;
+                    }
+                }
+                this.bravmMotorbikeBuffer=buffer;
+                return buffer;
+            } catch(error) {
+                console.warn('BRAV-M motorbike audio unavailable:',error?.message);
+                return null;
+            } finally {this.bravmMotorbikeLoading=null;}
+        })();
+        return this.bravmMotorbikeLoading;
+    }
+
+    playBravmMotorbikeCharge() {
+        if (!this.initialized || !this.ctx) return false;
+        this.stopBravmMotorbikeCharge();
+        const generation=++this.bravmMotorbikeGeneration;
+        if (!this.bravmMotorbikeBuffer) {
+            // If still loading at first collision, start only while this
+            // charge stays active; clear() invalidates the generation token.
+            this.preloadBravmMotorbike().then(buffer=>{
+                if (buffer && this.bravmMotorbikeGeneration===generation) this.startBravmMotorbikeSample(generation);
+            });
+            return false;
+        }
+        return this.startBravmMotorbikeSample(generation);
+    }
+
+    startBravmMotorbikeSample(generation) {
+        if (this.bravmMotorbikeGeneration!==generation ||
+            this.ctx?.state!=='running' || !this.bravmMotorbikeBuffer || !this.sfxGain) return false;
+        const ctx=this.ctx,now=ctx.currentTime;
+        // A full 3-second approach: two independently pitched motorcycles
+        // coming from opposite sides, building to a loud near-field pass.
+        const bus=ctx.createGain();
+        bus.gain.setValueAtTime(.001,now);
+        bus.gain.linearRampToValueAtTime(.55,now+.22);
+        bus.gain.linearRampToValueAtTime(1.12,now+1.60);
+        bus.gain.setValueAtTime(1.12,now+2.55);
+        bus.gain.linearRampToValueAtTime(.001,now+3.20);
+        bus.connect(this.sfxGain);
+        // Reduce the city ambience so the real engine recording is audible.
+        if(this.musicGain)
+            this.musicGain.gain.setTargetAtTime(this.ambienceMuted?0:.10,now,.14);
+        const sources=[];
+        for(const [index,rate,pan,offset] of [[0,1.0,-.47,0],[1,.98,.47,.07]]){
+            const source=ctx.createBufferSource(),gain=ctx.createGain();
+            source.buffer=this.bravmMotorbikeBuffer;
+            source.playbackRate.value=rate;
+            gain.gain.value=index===0?.9:.72;
+            source.connect(gain);
+            if(ctx.createStereoPanner){
+                const stereo=ctx.createStereoPanner();stereo.pan.value=pan;
+                gain.connect(stereo);stereo.connect(bus);
+            }else gain.connect(bus);
+            source.start(now+offset);
+            source.stop(now+3.22);
+            sources.push(source);
+        }
+        this.bravmMotorbikeNodes={sources,bus};
+        return true;
+    }
+
+    stopBravmMotorbikeCharge() {
+        this.bravmMotorbikeGeneration=(this.bravmMotorbikeGeneration||0)+1;
+        const active=this.bravmMotorbikeNodes;
+        this.bravmMotorbikeNodes=null;
+        if(!active)return;
+        // Natural fade: prevent a hard cut when the animation resolves early.
+        const now=this.ctx?.currentTime||0;
+        if(this.musicGain)
+            this.musicGain.gain.setTargetAtTime(this.ambienceMuted?0:.35,now+.11,.24);
+        active.bus.gain.cancelScheduledValues(now);
+        active.bus.gain.setValueAtTime(Math.max(.001,active.bus.gain.value),now);
+        active.bus.gain.linearRampToValueAtTime(.001,now+.11);
+        for(const node of active.sources){
+            try{node.stop(now+.12);}catch{} // already ended naturally
+        }
+    }
+
+    // Short synthesized steps/impact layered under the original spoken recording.
+    // One-shot buffers: no asset downloads and no overlapping crowd loops.
+    playMarseilleFootfall() {
+        if(!this.ctx||this.ctx.state!=='running'||!this.sfxGain)return false;
+        const now=this.ctx.currentTime,osc=this.ctx.createOscillator(),gain=this.ctx.createGain();
+        osc.type='sine';
+        osc.frequency.setValueAtTime(94,now);
+        osc.frequency.exponentialRampToValueAtTime(48,now+.085);
+        gain.gain.setValueAtTime(.075,now);
+        gain.gain.exponentialRampToValueAtTime(.001,now+.095);
+        osc.connect(gain);gain.connect(this.sfxGain);
+        osc.start(now);osc.stop(now+.10);
+        return true;
+    }
+    playMarseilleImpact() {
+        if(!this.ctx||this.ctx.state!=='running'||!this.sfxGain)return false;
+        const now=this.ctx.currentTime,osc=this.ctx.createOscillator(),gain=this.ctx.createGain();
+        osc.type='triangle';
+        osc.frequency.setValueAtTime(135,now);
+        osc.frequency.exponentialRampToValueAtTime(42,now+.27);
+        gain.gain.setValueAtTime(.15,now);
+        gain.gain.exponentialRampToValueAtTime(.001,now+.31);
+        osc.connect(gain);gain.connect(this.sfxGain);
+        osc.start(now);osc.stop(now+.32);
+        return true;
     }
 
     // ============ BACKGROUND MUSIC ============
@@ -203,6 +499,39 @@ export class AudioManager {
         noise.start(now);
     }
 
+    playLbdShot() {
+        if (!this.initialized || this.ctx.state !== 'running') return;
+        const now=this.ctx.currentTime;
+        const osc=this.ctx.createOscillator();
+        const gain=this.ctx.createGain();
+        osc.type='triangle';
+        osc.frequency.setValueAtTime(480,now);
+        osc.frequency.exponentialRampToValueAtTime(78,now+.13);
+        gain.gain.setValueAtTime(.11,now);
+        gain.gain.exponentialRampToValueAtTime(.001,now+.15);
+        osc.connect(gain);gain.connect(this.sfxGain);
+        osc.start(now);osc.stop(now+.16);
+    }
+
+    // Low, brief shield contact sound panned slightly across the front.
+    // Quieter while the user's recorded voice is playing. Cosmetic only.
+    playShieldContact(exchange=0) {
+        if (!this.initialized || this.ctx?.state!=='running') return;
+        const now=this.ctx.currentTime;
+        const tone=this.ctx.createOscillator(), gain=this.ctx.createGain();
+        tone.type='triangle';
+        tone.frequency.setValueAtTime(175,now);
+        tone.frequency.exponentialRampToValueAtTime(68,now+.095);
+        gain.gain.setValueAtTime(this.combatVoiceNode?.035:.09,now);
+        gain.gain.exponentialRampToValueAtTime(.001,now+.115);
+        const stereo=this.ctx.createStereoPanner?.();
+        if(stereo){
+            stereo.pan.value=exchange%2===0?-.28:.28;
+            tone.connect(gain);gain.connect(stereo);stereo.connect(this.sfxGain);
+        } else {tone.connect(gain);gain.connect(this.sfxGain);}
+        tone.start(now);tone.stop(now+.12);
+    }
+
     playFightHit() {
         if (!this.initialized) return;
         const now = this.ctx.currentTime;
@@ -211,7 +540,7 @@ export class AudioManager {
         osc.type = 'triangle';
         osc.frequency.setValueAtTime(150 + Math.random() * 100, now);
         osc.frequency.exponentialRampToValueAtTime(40, now + 0.08);
-        gain.gain.setValueAtTime(0.25, now);
+        gain.gain.setValueAtTime(this.combatVoiceNode ? 0.09 : 0.25, now);
         gain.gain.exponentialRampToValueAtTime(0.01, now + 0.1);
         osc.connect(gain);
         gain.connect(this.sfxGain);

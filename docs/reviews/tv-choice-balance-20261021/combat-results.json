@@ -1,0 +1,74 @@
+{
+  "base": "http://127.0.0.1:4701/",
+  "initial": {
+    "ruleset": "campaign-patrol-20261021",
+    "tactical": 24,
+    "rendered": 108,
+    "patrolCount": 5,
+    "fronts": [
+      {
+        "kind": "crs",
+        "health": 14,
+        "visible": 14
+      },
+      {
+        "kind": "crs",
+        "health": 10,
+        "visible": 10
+      },
+      {
+        "kind": "bac",
+        "health": 14,
+        "visible": 14
+      },
+      {
+        "kind": "crs",
+        "health": 10,
+        "visible": 10
+      }
+    ],
+    "batonCapacity": 32,
+    "buttons": "👥 108"
+  },
+  "strike": {
+    "z": 37,
+    "passed": true,
+    "before": 24,
+    "after": 21,
+    "again": 21,
+    "batons": 16,
+    "rendered": 98,
+    "activated": true,
+    "hud": "👥 98"
+  },
+  "shields": {
+    "before": 21,
+    "after": 21,
+    "shields": 0,
+    "passed": true
+  },
+  "barrage": {
+    "state": "playing",
+    "health": 14,
+    "officers": 14,
+    "remaining": 0,
+    "before": {
+      "count": 21,
+      "shields": 0
+    },
+    "after": 12,
+    "exchanges": 9
+  },
+  "errors": [],
+  "missing": [],
+  "patrol": {
+    "z": 37,
+    "batons": 16,
+    "visible": {
+      "crs": 120,
+      "bac": 48,
+      "bravm": 15,
+      "spectators": 92
+    }
+  }
+}

@@ -8,11 +8,13 @@
     "preview": "vite preview",
     "test": "node --test tests/*.test.mjs",
     "test:mobile": "node tools/smoke-mobile.mjs",
-    "assets:bake": "node tools/bake-atlas.mjs"
+    "assets:bake": "node tools/bake-atlas.mjs",
+    "assets:urban": "node tools/build-urban-decay-assets.mjs"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
+  "engines": {"node": ">=24"},
   "description": "",
   "dependencies": {
     "three": "^0.184.0",

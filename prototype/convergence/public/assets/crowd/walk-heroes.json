@@ -1,0 +1,122 @@
+{
+  "format": "hero-communities-walk-v1",
+  "image": "walk-heroes.webp",
+  "width": 1536,
+  "height": 3840,
+  "columns": 12,
+  "rows": 20,
+  "animation": "Walk",
+  "license": "MIT (see assets/realistic/LICENSE.txt)",
+  "variation": "20 rows grouped by community, 4 profiles per community; hero remains skinned 3D",
+  "characters": [
+    {
+      "key": "genz-lea",
+      "source": "female-adult-05",
+      "prop": null
+    },
+    {
+      "key": "genz-emma",
+      "source": "female-adult-12",
+      "prop": null
+    },
+    {
+      "key": "genz-kay",
+      "source": "male-adult-04",
+      "prop": null
+    },
+    {
+      "key": "genz-noah",
+      "source": "male-adult-07",
+      "prop": null
+    },
+    {
+      "key": "gilets-thomas",
+      "source": "male-adult-10",
+      "prop": null
+    },
+    {
+      "key": "gilets-marcel",
+      "source": "male-adult-07",
+      "prop": null
+    },
+    {
+      "key": "gilets-sophie",
+      "source": "female-adult-05",
+      "prop": null
+    },
+    {
+      "key": "gilets-nadia",
+      "source": "female-adult-12",
+      "prop": null
+    },
+    {
+      "key": "soignants-lucas",
+      "source": "medical-male-01",
+      "prop": null
+    },
+    {
+      "key": "soignants-amina",
+      "source": "medical-female-02",
+      "prop": null
+    },
+    {
+      "key": "soignants-yann",
+      "source": "medical-male-01",
+      "prop": null
+    },
+    {
+      "key": "soignants-carine",
+      "source": "medical-female-02",
+      "prop": null
+    },
+    {
+      "key": "pompiers-hugo",
+      "source": "fire-male-01",
+      "prop": null
+    },
+    {
+      "key": "pompiers-chloe",
+      "source": "female-adult-05",
+      "prop": null
+    },
+    {
+      "key": "pompiers-pierre",
+      "source": "fire-male-01",
+      "prop": null
+    },
+    {
+      "key": "pompiers-samir",
+      "source": "fire-male-01",
+      "prop": null
+    },
+    {
+      "key": "lyceens-julie",
+      "source": "female-adult-05",
+      "prop": null
+    },
+    {
+      "key": "lyceens-mathis",
+      "source": "male-adult-10",
+      "prop": null
+    },
+    {
+      "key": "lyceens-leo",
+      "source": "male-adult-07",
+      "prop": null
+    },
+    {
+      "key": "lyceens-manon",
+      "source": "female-adult-12",
+      "prop": null
+    }
+  ],
+  "plane": {
+    "columns": 12,
+    "rows": 20,
+    "cellWidth": 128,
+    "cellHeight": 192,
+    "planeWidth": 2.2,
+    "planeHeight": 3.3,
+    "centerY": 1.48
+  }
+}
