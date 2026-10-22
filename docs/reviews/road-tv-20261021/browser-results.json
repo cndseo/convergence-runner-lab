@@ -1,0 +1,477 @@
+{
+  "base": "https://heros-convergence.72-61-167-161.sslip.io/tv-parcours/",
+  "checks": [
+    {
+      "test": "tap-left",
+      "state": "playing",
+      "z": 5.003,
+      "count": 60,
+      "shields": 0,
+      "history": [
+        {
+          "side": "left",
+          "choice": {
+            "op": "*",
+            "value": 2,
+            "tvKey": "mobilisation2"
+          },
+          "before": {
+            "count": 30,
+            "shields": 0
+          },
+          "after": {
+            "count": 60,
+            "shields": 0
+          }
+        }
+      ],
+      "broken": 1,
+      "pair": "chosen",
+      "sounds": {
+        "breaks": 1,
+        "impacts": 0
+      }
+    },
+    {
+      "test": "tap-right",
+      "state": "playing",
+      "z": 5.003,
+      "count": 40,
+      "shields": 0,
+      "history": [
+        {
+          "side": "right",
+          "choice": {
+            "op": "+",
+            "value": 10,
+            "tvKey": "renforts10"
+          },
+          "before": {
+            "count": 30,
+            "shields": 0
+          },
+          "after": {
+            "count": 40,
+            "shields": 0
+          }
+        }
+      ],
+      "broken": 1,
+      "pair": "chosen",
+      "sounds": {
+        "breaks": 1,
+        "impacts": 0
+      }
+    },
+    {
+      "test": "street-does-not-select",
+      "ok": true
+    },
+    {
+      "test": "drag-out-and-back-no-tap",
+      "ok": true
+    },
+    {
+      "test": "miss",
+      "start": 30,
+      "protection": 0,
+      "state": "playing",
+      "z": 13.1,
+      "count": 27,
+      "shields": 0,
+      "history": [
+        {
+          "side": "miss",
+          "choice": {
+            "op": "impact",
+            "kind": "tv"
+          },
+          "before": {
+            "count": 30,
+            "shields": 0
+          },
+          "after": {
+            "count": 27,
+            "shields": 0
+          }
+        }
+      ],
+      "broken": 0,
+      "pair": "missed",
+      "sounds": {
+        "breaks": 0,
+        "impacts": 1
+      }
+    },
+    {
+      "test": "miss",
+      "start": 60,
+      "protection": 2,
+      "state": "playing",
+      "z": 13.1,
+      "count": 57,
+      "shields": 0,
+      "history": [
+        {
+          "side": "miss",
+          "choice": {
+            "op": "impact",
+            "kind": "tv"
+          },
+          "before": {
+            "count": 60,
+            "shields": 2
+          },
+          "after": {
+            "count": 57,
+            "shields": 0
+          }
+        }
+      ],
+      "broken": 0,
+      "pair": "missed",
+      "sounds": {
+        "breaks": 0,
+        "impacts": 1
+      }
+    },
+    {
+      "test": "miss",
+      "start": 60,
+      "protection": 20,
+      "state": "playing",
+      "z": 13.1,
+      "count": 60,
+      "shields": 15,
+      "history": [
+        {
+          "side": "miss",
+          "choice": {
+            "op": "impact",
+            "kind": "tv"
+          },
+          "before": {
+            "count": 60,
+            "shields": 20
+          },
+          "after": {
+            "count": 60,
+            "shields": 15
+          }
+        }
+      ],
+      "broken": 0,
+      "pair": "missed",
+      "sounds": {
+        "breaks": 0,
+        "impacts": 1
+      }
+    },
+    {
+      "test": "miss",
+      "start": 1,
+      "protection": 0,
+      "state": "lose",
+      "z": 13.1,
+      "count": 0,
+      "shields": 0,
+      "history": [
+        {
+          "side": "miss",
+          "choice": {
+            "op": "impact",
+            "kind": "tv"
+          },
+          "before": {
+            "count": 1,
+            "shields": 0
+          },
+          "after": {
+            "count": 0,
+            "shields": 0
+          }
+        }
+      ],
+      "broken": 0,
+      "pair": "missed",
+      "sounds": {
+        "breaks": 0,
+        "impacts": 1
+      }
+    },
+    {
+      "test": "miss",
+      "start": 72,
+      "protection": 0,
+      "state": "playing",
+      "z": 13.1,
+      "count": 66,
+      "shields": 0,
+      "history": [
+        {
+          "side": "miss",
+          "choice": {
+            "op": "impact",
+            "kind": "tv"
+          },
+          "before": {
+            "count": 72,
+            "shields": 0
+          },
+          "after": {
+            "count": 66,
+            "shields": 0
+          }
+        }
+      ],
+      "broken": 0,
+      "pair": "missed",
+      "sounds": {
+        "breaks": 0,
+        "impacts": 1
+      }
+    },
+    {
+      "test": "impact-boundary-and-late-release",
+      "ok": true
+    },
+    {
+      "test": "pause-blur-visibility-resume-no-stale-tap",
+      "ok": true
+    },
+    {
+      "test": "combat-hidden-tv-and-recovery",
+      "ok": true
+    },
+    {
+      "test": "bravm-immediate-once-no-pause",
+      "ok": true
+    },
+    {
+      "test": "save-reload",
+      "ok": true
+    },
+    {
+      "test": "daily-legacy-collision",
+      "ok": true
+    }
+  ],
+  "districts": [
+    {
+      "id": 1,
+      "survivors": 32,
+      "solverSurvivors": 32,
+      "choices": [
+        "right",
+        "right",
+        "left",
+        "right",
+        "left",
+        "right",
+        "left",
+        "right",
+        "left",
+        "left"
+      ]
+    },
+    {
+      "id": 2,
+      "survivors": 28,
+      "solverSurvivors": 28,
+      "choices": [
+        "right",
+        "right",
+        "right",
+        "left",
+        "left",
+        "right",
+        "right",
+        "right",
+        "left",
+        "right"
+      ]
+    },
+    {
+      "id": 3,
+      "survivors": 48,
+      "solverSurvivors": 48,
+      "choices": [
+        "right",
+        "right",
+        "left",
+        "left",
+        "right",
+        "left",
+        "left",
+        "left",
+        "left",
+        "left"
+      ]
+    },
+    {
+      "id": 4,
+      "survivors": 32,
+      "solverSurvivors": 32,
+      "choices": [
+        "right",
+        "right",
+        "left",
+        "left",
+        "left",
+        "left",
+        "left",
+        "left",
+        "left",
+        "left"
+      ]
+    },
+    {
+      "id": 5,
+      "survivors": 30,
+      "solverSurvivors": 30,
+      "choices": [
+        "right",
+        "left",
+        "right",
+        "right",
+        "left",
+        "right",
+        "left",
+        "left",
+        "right",
+        "left"
+      ]
+    },
+    {
+      "id": 6,
+      "survivors": 42,
+      "solverSurvivors": 42,
+      "choices": [
+        "left",
+        "left",
+        "left",
+        "right",
+        "left",
+        "left",
+        "right",
+        "right",
+        "left",
+        "right"
+      ]
+    },
+    {
+      "id": 7,
+      "survivors": 28,
+      "solverSurvivors": 28,
+      "choices": [
+        "right",
+        "right",
+        "left",
+        "right",
+        "left",
+        "left",
+        "left",
+        "right",
+        "right",
+        "left"
+      ]
+    },
+    {
+      "id": 8,
+      "survivors": 29,
+      "solverSurvivors": 29,
+      "choices": [
+        "left",
+        "left",
+        "left",
+        "left",
+        "right",
+        "left",
+        "left",
+        "right",
+        "right",
+        "right"
+      ]
+    },
+    {
+      "id": 9,
+      "survivors": 33,
+      "solverSurvivors": 33,
+      "choices": [
+        "right",
+        "left",
+        "right",
+        "right",
+        "left",
+        "right",
+        "right",
+        "left",
+        "right",
+        "left"
+      ]
+    },
+    {
+      "id": 10,
+      "survivors": 42,
+      "solverSurvivors": 42,
+      "choices": [
+        "left",
+        "left",
+        "left",
+        "left",
+        "left",
+        "right",
+        "right",
+        "right",
+        "right",
+        "left"
+      ]
+    },
+    {
+      "id": 11,
+      "survivors": 39,
+      "solverSurvivors": 39,
+      "choices": [
+        "right",
+        "right",
+        "right",
+        "left",
+        "left",
+        "left",
+        "right",
+        "left",
+        "left",
+        "left"
+      ]
+    },
+    {
+      "id": 12,
+      "survivors": 35,
+      "solverSurvivors": 35,
+      "choices": [
+        "left",
+        "left",
+        "left",
+        "right",
+        "right",
+        "left",
+        "right",
+        "right",
+        "right",
+        "right"
+      ]
+    }
+  ],
+  "errors": [],
+  "badAssets": [],
+  "performance": {
+    "displayed": 312,
+    "targetingMs": 0.0062999999523162846,
+    "calls": 194,
+    "triangles": 404362,
+    "frames": {
+      "medianMs": 18.19999999999709,
+      "p95Ms": 18.60000000000582
+    }
+  }
+}

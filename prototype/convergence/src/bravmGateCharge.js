@@ -12,7 +12,7 @@ const smooth=x=>{const t=Math.max(0,Math.min(1,x));return t*t*(3-2*t);};
 
 export class BravmGateCharge {
   constructor(game){this.game=game;this.current=null;}
-  start(gate,choice,side){
+  start(gate,choice,side,{nonBlocking=false}={}){
     if(this.current)return false;
     const g=this.game,root=(side==='left'?gate.leftMesh:gate.rightMesh)?.userData?.root;
     const bikes=[...(root?.userData?.bravmRiders||[])];
@@ -44,15 +44,16 @@ export class BravmGateCharge {
     // Keep runner stationary while the motorcycle approaches. The regular
     // game update loop is frozen so no second portal or combat can resolve.
     this.current={gate,choice,side,actors:actorList,elapsed:0,hit:false,
-      impactZ:-g.trackZ,impactX:g.playerX,runId:g.runId,speed:g.speed};
-    g.state='bravm_charge';
-    g.speed=0;
+      impactZ:-g.trackZ,impactX:g.playerX,runId:g.runId,speed:g.speed,nonBlocking};
+    if(!nonBlocking){g.state='bravm_charge';g.speed=0;}
     g.audio.playBravmMotorbikeCharge?.();
     return true;
   }
   update(dt){
     const c=this.current,g=this.game;
-    if(!c||g.state!=='bravm_charge')return;
+    if(!c||g.state==='paused'||(!c.nonBlocking&&g.state!=='bravm_charge'))return;
+    if(c.nonBlocking&&['lose','win','menu'].includes(g.state)){this.clear();return;}
+    if(c.nonBlocking){c.impactZ=-g.trackZ;c.impactX=g.playerX;}
     if(c.runId!==g.runId){this.clear();return;}
     c.elapsed+=Math.min(.05,Math.max(0,dt));
     const t=c.elapsed,u=smooth(t/CHARGE_TIME);
@@ -72,7 +73,7 @@ export class BravmGateCharge {
     if(t>=CHARGE_TIME&&!c.hit){
       c.hit=true; // set before mutating game state to prevent reentrant damage
       const before=g.crowdManager.getPlayerCount();
-      g.applyGate(c.choice,c.side);
+      if(!c.nonBlocking)g.applyGate(c.choice,c.side);
       const lost=before-g.crowdManager.getPlayerCount();
       c.lost=lost;
       if(lost>0){
@@ -86,7 +87,7 @@ export class BravmGateCharge {
     }
     if(t>=CHARGE_TIME+RECOVERY_TIME||g.state==='lose'){
       this.clear();
-      if(g.state==='bravm_charge'){g.state='playing';g.speed=c.speed;}
+      if(!c.nonBlocking&&g.state==='bravm_charge'){g.state='playing';g.speed=c.speed;}
     }
   }
   clear(){

@@ -37,6 +37,7 @@ export class UIManager {
         const pause = document.getElementById('pause-btn'), panel = document.getElementById('pause-panel');
         pause.addEventListener('click', () => {
             if (!['playing','fighting','bravm_charge'].includes(this.game.state)) return;
+            this.game.tvChoice?.close();
             this.game.pausedState = this.game.state;
             this.game.state = 'paused'; panel.classList.remove('hidden');
             this.game.marseille?.showButton();this.game.genzFireworks?.showButton(); // Hide attack action immediately during pause.

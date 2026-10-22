@@ -27,7 +27,7 @@ test('large real barrages exchange blows with strength proportional to crowd',()
 test('five active flank patrols and four substantive barrages per advanced level with certified path',()=>{
  for(let level=1;level<=12;level++)for(const seed of [1,17,20261021,level*20261019]){
   const plan=generateCampaignLevel({level,seed});
-  assert.equal(plan.ruleset,'campaign-patrol-20261021');
+  assert.equal(plan.ruleset,'campaign-road-tv-20261021');
   const patrols=plan.events.filter(e=>e.type==='patrol');
   const fronts=plan.events.filter(e=>e.type==='enemy');
   assert.equal(patrols.length,level===1?3:5);
@@ -36,16 +36,16 @@ test('five active flank patrols and four substantive barrages per advanced level
   assert.equal(plan.events.filter(e=>e.type==='choice').length,10);
   assert.ok(patrols.every(p=>p.z>14&&p.z<180));
   assert.ok(patrols.every(p=>!fronts.some(f=>Math.abs(f.z-p.z)<3)));
-  assert.ok(plan.proof.winningRate>=campaignTargets(level).min);
+  assert.ok(plan.proof.attentiveWinningRate>=campaignTargets(level).min);
   assert.ok(replayPlan(plan,plan.proof.winningPath).count>0);
   if(level<=3)assert.ok(replayPlan(plan,greedyPath(plan).path).count>0);
  }
 });
 
-test('all 1024 routes solved from identical state transitions',()=>{
+test('all 59049 routes solved from identical state transitions',()=>{
  const plan=generateCampaignLevel({level:5,seed:20261021});
  const results=solvePlan(plan);
- assert.equal(results.length,1024);
+ assert.equal(results.length,59049);
  for(const row of results){
   const end=replayPlan(plan,row.path);
   assert.equal(row.survivors,end.count);

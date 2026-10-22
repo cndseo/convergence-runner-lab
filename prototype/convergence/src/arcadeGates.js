@@ -39,7 +39,7 @@ export function animateArcadeGates(gates,progress,time) {
   const distance=g.z-progress;
   for(const side of ['leftMesh','rightMesh']){
    const root=g[side]?.userData.root;
-   if(root)root.visible=!g.passed&&distance<62&&distance>-8;
+   if(root)root.visible=(!g.passed||g.tvState==='missed')&&distance<62&&distance>-8;
   }
  }
 }

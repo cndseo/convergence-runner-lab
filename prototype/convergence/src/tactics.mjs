@@ -1,3 +1,4 @@
+import {applyTVImpact,TV_RULESET} from './tvRoadRules.mjs';
 import {makeFixedPairs} from './fixedTVCatalog.mjs';
 import {applyCampaignCombat,applyCampaignPatrol} from './campaignCombatRules.mjs';
 // Pure, deterministic rules shared by the level solver and the live game.
@@ -71,19 +72,25 @@ function random(seed) {
   let a = seed >>> 0;
   return () => { a += 0x6D2B79F5; let t = a; t = Math.imul(t ^ t >>> 15, t | 1); t ^= t + Math.imul(t ^ t >>> 7, t | 61); return ((t ^ t >>> 14) >>> 0) / 4294967296; };
 }
-export function solvePlan(plan, legacyBravm=false) {
-  const campaign=plan.ruleset==='campaign-patrol-20261021';
+export function solvePlan(plan, legacyBravm=false, {includeMiss=plan.ruleset===TV_RULESET,compact=false}={}) {
+  const campaign=plan.ruleset==='campaign-patrol-20261021'||plan.ruleset===TV_RULESET;
   const combat=campaign?applyCampaignCombat:applyCombat;
-  let states = [{ ...initialState(plan.startCount), path: [] }];
+  let states = [{ ...initialState(plan.startCount), path: [], misses:0, ways:1 }];
   for (const event of plan.events) {
     if (event.type === 'enemy') {
       states = states.map(s => ({ ...combat(s, event.count, plan.strength), path: s.path }));
     } else if(event.type==='patrol') {
       states = states.map(s=>({...applyCampaignPatrol(s,plan.level),path:s.path}));
     } else {
-      states = states.flatMap(s => ['left', 'right'].map(side => ({
-        ...applyChoice(s, event[side],legacyBravm), path: [...s.path, side]
+      states = states.flatMap(s => (includeMiss?['left','right','miss']:['left','right']).map(side => ({
+        ...(side==='miss'?applyTVImpact(s):applyChoice(s,event[side],legacyBravm)),
+        path:[...s.path,side],misses:s.misses+(side==='miss'?1:0)
       })));
+    }
+    if(compact){
+      const merged=new Map();
+      for(const s of states){const key=s.count+','+s.shields+','+s.misses;const prior=merged.get(key);if(prior)prior.ways+=s.ways;else merged.set(key,s);}
+      states=[...merged.values()];
     }
   }
   return states.map(s => ({
@@ -93,12 +100,17 @@ export function solvePlan(plan, legacyBravm=false) {
   }));
 }
 export function replayPlan(plan, path, legacyBravm=false) {
-  const campaign=plan.ruleset==='campaign-patrol-20261021';
+  const campaign=plan.ruleset==='campaign-patrol-20261021'||plan.ruleset===TV_RULESET;
   const combat=campaign?applyCampaignCombat:applyCombat;
   let state = initialState(plan.startCount), i = 0;
   for (const e of plan.events) state = e.type === 'enemy'
     ? combat(state,e.count,plan.strength) : e.type === 'patrol'
-    ? applyCampaignPatrol(state,plan.level) : applyChoice(state,e[path[i++]],legacyBravm);
+    ? applyCampaignPatrol(state,plan.level) : (()=>{
+      const side=path[i++];
+      if(side==='miss'&&plan.ruleset===TV_RULESET)return applyTVImpact(state);
+      if(!['left','right'].includes(side))throw Error('Invalid TV route decision: '+side);
+      return applyChoice(state,e[side],legacyBravm);
+    })();
   return combat(state,plan.bossHealth,plan.strength);
 }
 // Difficulty is measured against all 2^10 legal routes, not just routes
@@ -111,7 +123,7 @@ export function difficultyTargets(level) {
   return { min: 0.08, ideal: 0.13, max: 0.19 };
 }
 export function greedyPath(plan, legacyBravm=false) {
-  const campaign=plan.ruleset==='campaign-patrol-20261021';
+  const campaign=plan.ruleset==='campaign-patrol-20261021'||plan.ruleset===TV_RULESET;
   const combat=campaign?applyCampaignCombat:applyCombat;
   let state = initialState(plan.startCount), path = [];
   for (const e of plan.events) {

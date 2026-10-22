@@ -207,35 +207,7 @@ export class Game {
     setupInput() {
         const canvas = this.renderer.domElement;
         
-        // Mouse
-        canvas.addEventListener('mousedown', (e) => {
-            if (!['playing','final_chase'].includes(this.state)) return;
-            this.isDragging = true;
-            this.lastInputX = e.clientX;
-        });
-        canvas.addEventListener('mousemove', (e) => {
-            if (!this.isDragging || !['playing','final_chase'].includes(this.state)) return;
-            const deltaX = (e.clientX - this.lastInputX) * 0.02;
-            this.playerX = Math.max(-3.5, Math.min(3.5, this.playerX + deltaX));
-            this.lastInputX = e.clientX;
-        });
-        canvas.addEventListener('mouseup', () => { this.isDragging = false; });
-        canvas.addEventListener('mouseleave', () => { this.isDragging = false; });
-
-        // Touch
-        canvas.addEventListener('touchstart', (e) => {
-            if (!['playing','final_chase'].includes(this.state)) return;
-            this.isDragging = true;
-            this.lastInputX = e.touches[0].clientX;
-        }, { passive: true });
-        canvas.addEventListener('touchmove', (e) => {
-            if (!this.isDragging || !['playing','final_chase'].includes(this.state)) return;
-            e.preventDefault();
-            const deltaX = (e.touches[0].clientX - this.lastInputX) * 0.02;
-            this.playerX = Math.max(-3.5, Math.min(3.5, this.playerX + deltaX));
-            this.lastInputX = e.touches[0].clientX;
-        }, { passive: false });
-        canvas.addEventListener('touchend', () => { this.isDragging = false; });
+        // Pointer gestures and road TV taps share one handler in TVChoice.
 
         // Keyboard
         this.keys = {};
@@ -275,6 +247,7 @@ export class Game {
         this.gateHistory = [];
         this.ui.clearTacticalHint?.();
         this.runId = (this.runId || 0) + 1;
+        this.tvBonusImpact=null;
         this.trackZ = 0;
         this.playerX = 0;
         this.speed = MARCH_SPEED;
@@ -356,8 +329,8 @@ export class Game {
     }
 
     update(delta) {
-        // Choosing a TV pauses movement, police contacts and ambient hazards.
-        if(this.state==='tv_choice')return;
+        this.tvChoice?.update(delta);
+        if(this.bravmGateCharge?.current?.nonBlocking)this.bravmGateCharge.update(delta);
         this.experience?.update(delta);
         this.heroes?.update(delta);
         this.tvBreak?.update(delta);
@@ -497,6 +470,7 @@ export class Game {
     }
 
     checkGateCollisions() {
+        if(this.mode==='campaign'){this.tvChoice.collisions();return;}
         this.checkMarseilleBonusCollision();
         const gates = this.levelGenerator.gates;
         for (let i = gates.length - 1; i >= 0; i--) {
@@ -506,9 +480,6 @@ export class Game {
             const gateZ = -gate.z;
             const playerZ = -this.trackZ;
 
-            if (this.mode==='campaign' && gate.z-this.trackZ<6 && gate.z-this.trackZ>-2) {
-                if(this.tvChoice.open(gate))return;
-            }
             if (Math.abs(playerZ - gateZ) < 1.0) {
                 // Campaign must never auto-collect TV bonuses via the crowd's width.
                 if(this.mode==='campaign')return;
@@ -688,7 +659,7 @@ export class Game {
             const strength = this.getEffectiveStrength();
 
             let enemyKills=0;
-            if(this.mode==='campaign'&&this.levelGenerator.plan?.ruleset==='campaign-patrol-20261021'){
+            if(this.mode==='campaign'){
                 // Exactly the same exchange as the certified campaign solver.
                 const result=campaignCombatExchange({count:playerCount,shields:this.shields},enemy.remainingCount,strength);
                 enemyKills=result.killed;

@@ -1,0 +1,4713 @@
+{
+  "formula": "min(12,max(2,ceil(tacticalCount*0.08)))",
+  "tacticalCap": 72,
+  "visualCap": 312,
+  "initialTacticalCount": 5,
+  "paidSupport": false,
+  "rows": [
+    {
+      "level": 1,
+      "seed": 1,
+      "boss": 17,
+      "patrols": 3,
+      "barrages": 2,
+      "winningPaths": 6704,
+      "totalPaths": 59049,
+      "winningRate": 0.11353282866771665,
+      "attentiveWinningRate": 0.326171875,
+      "byMisses": [
+        {
+          "misses": 0,
+          "totalPaths": 1024,
+          "winningPaths": 334,
+          "winningRate": 0.326171875
+        },
+        {
+          "misses": 1,
+          "totalPaths": 5120,
+          "winningPaths": 1218,
+          "winningRate": 0.237890625
+        },
+        {
+          "misses": 2,
+          "totalPaths": 11520,
+          "winningPaths": 1969,
+          "winningRate": 0.17092013888888888
+        },
+        {
+          "misses": 3,
+          "totalPaths": 15360,
+          "winningPaths": 1833,
+          "winningRate": 0.1193359375
+        },
+        {
+          "misses": 4,
+          "totalPaths": 13440,
+          "winningPaths": 995,
+          "winningRate": 0.0740327380952381
+        },
+        {
+          "misses": 5,
+          "totalPaths": 8064,
+          "winningPaths": 314,
+          "winningRate": 0.038938492063492064
+        },
+        {
+          "misses": 6,
+          "totalPaths": 3360,
+          "winningPaths": 41,
+          "winningRate": 0.012202380952380952
+        },
+        {
+          "misses": 7,
+          "totalPaths": 960,
+          "winningPaths": 0,
+          "winningRate": 0
+        },
+        {
+          "misses": 8,
+          "totalPaths": 180,
+          "winningPaths": 0,
+          "winningRate": 0
+        },
+        {
+          "misses": 9,
+          "totalPaths": 20,
+          "winningPaths": 0,
+          "winningRate": 0
+        },
+        {
+          "misses": 10,
+          "totalPaths": 1,
+          "winningPaths": 0,
+          "winningRate": 0
+        }
+      ],
+      "winningPath": [
+        "right",
+        "left",
+        "left",
+        "left",
+        "left",
+        "right",
+        "left",
+        "left",
+        "left",
+        "right"
+      ],
+      "witnessSurvivors": 32,
+      "minSurvivors": 1,
+      "greedyWins": true,
+      "difficulty": {
+        "min": 0.25,
+        "ideal": 0.32
+      }
+    },
+    {
+      "level": 1,
+      "seed": 17,
+      "boss": 17,
+      "patrols": 3,
+      "barrages": 2,
+      "winningPaths": 6704,
+      "totalPaths": 59049,
+      "winningRate": 0.11353282866771665,
+      "attentiveWinningRate": 0.326171875,
+      "byMisses": [
+        {
+          "misses": 0,
+          "totalPaths": 1024,
+          "winningPaths": 334,
+          "winningRate": 0.326171875
+        },
+        {
+          "misses": 1,
+          "totalPaths": 5120,
+          "winningPaths": 1218,
+          "winningRate": 0.237890625
+        },
+        {
+          "misses": 2,
+          "totalPaths": 11520,
+          "winningPaths": 1969,
+          "winningRate": 0.17092013888888888
+        },
+        {
+          "misses": 3,
+          "totalPaths": 15360,
+          "winningPaths": 1833,
+          "winningRate": 0.1193359375
+        },
+        {
+          "misses": 4,
+          "totalPaths": 13440,
+          "winningPaths": 995,
+          "winningRate": 0.0740327380952381
+        },
+        {
+          "misses": 5,
+          "totalPaths": 8064,
+          "winningPaths": 314,
+          "winningRate": 0.038938492063492064
+        },
+        {
+          "misses": 6,
+          "totalPaths": 3360,
+          "winningPaths": 41,
+          "winningRate": 0.012202380952380952
+        },
+        {
+          "misses": 7,
+          "totalPaths": 960,
+          "winningPaths": 0,
+          "winningRate": 0
+        },
+        {
+          "misses": 8,
+          "totalPaths": 180,
+          "winningPaths": 0,
+          "winningRate": 0
+        },
+        {
+          "misses": 9,
+          "totalPaths": 20,
+          "winningPaths": 0,
+          "winningRate": 0
+        },
+        {
+          "misses": 10,
+          "totalPaths": 1,
+          "winningPaths": 0,
+          "winningRate": 0
+        }
+      ],
+      "winningPath": [
+        "right",
+        "left",
+        "left",
+        "left",
+        "right",
+        "left",
+        "left",
+        "right",
+        "left",
+        "right"
+      ],
+      "witnessSurvivors": 32,
+      "minSurvivors": 1,
+      "greedyWins": true,
+      "difficulty": {
+        "min": 0.25,
+        "ideal": 0.32
+      }
+    },
+    {
+      "level": 1,
+      "seed": 20261021,
+      "boss": 17,
+      "patrols": 3,
+      "barrages": 2,
+      "winningPaths": 6704,
+      "totalPaths": 59049,
+      "winningRate": 0.11353282866771665,
+      "attentiveWinningRate": 0.326171875,
+      "byMisses": [
+        {
+          "misses": 0,
+          "totalPaths": 1024,
+          "winningPaths": 334,
+          "winningRate": 0.326171875
+        },
+        {
+          "misses": 1,
+          "totalPaths": 5120,
+          "winningPaths": 1218,
+          "winningRate": 0.237890625
+        },
+        {
+          "misses": 2,
+          "totalPaths": 11520,
+          "winningPaths": 1969,
+          "winningRate": 0.17092013888888888
+        },
+        {
+          "misses": 3,
+          "totalPaths": 15360,
+          "winningPaths": 1833,
+          "winningRate": 0.1193359375
+        },
+        {
+          "misses": 4,
+          "totalPaths": 13440,
+          "winningPaths": 995,
+          "winningRate": 0.0740327380952381
+        },
+        {
+          "misses": 5,
+          "totalPaths": 8064,
+          "winningPaths": 314,
+          "winningRate": 0.038938492063492064
+        },
+        {
+          "misses": 6,
+          "totalPaths": 3360,
+          "winningPaths": 41,
+          "winningRate": 0.012202380952380952
+        },
+        {
+          "misses": 7,
+          "totalPaths": 960,
+          "winningPaths": 0,
+          "winningRate": 0
+        },
+        {
+          "misses": 8,
+          "totalPaths": 180,
+          "winningPaths": 0,
+          "winningRate": 0
+        },
+        {
+          "misses": 9,
+          "totalPaths": 20,
+          "winningPaths": 0,
+          "winningRate": 0
+        },
+        {
+          "misses": 10,
+          "totalPaths": 1,
+          "winningPaths": 0,
+          "winningRate": 0
+        }
+      ],
+      "winningPath": [
+        "left",
+        "right",
+        "right",
+        "left",
+        "left",
+        "left",
+        "left",
+        "right",
+        "left",
+        "left"
+      ],
+      "witnessSurvivors": 32,
+      "minSurvivors": 1,
+      "greedyWins": true,
+      "difficulty": {
+        "min": 0.25,
+        "ideal": 0.32
+      }
+    },
+    {
+      "level": 1,
+      "seed": 20261019,
+      "boss": 17,
+      "patrols": 3,
+      "barrages": 2,
+      "winningPaths": 6704,
+      "totalPaths": 59049,
+      "winningRate": 0.11353282866771665,
+      "attentiveWinningRate": 0.326171875,
+      "byMisses": [
+        {
+          "misses": 0,
+          "totalPaths": 1024,
+          "winningPaths": 334,
+          "winningRate": 0.326171875
+        },
+        {
+          "misses": 1,
+          "totalPaths": 5120,
+          "winningPaths": 1218,
+          "winningRate": 0.237890625
+        },
+        {
+          "misses": 2,
+          "totalPaths": 11520,
+          "winningPaths": 1969,
+          "winningRate": 0.17092013888888888
+        },
+        {
+          "misses": 3,
+          "totalPaths": 15360,
+          "winningPaths": 1833,
+          "winningRate": 0.1193359375
+        },
+        {
+          "misses": 4,
+          "totalPaths": 13440,
+          "winningPaths": 995,
+          "winningRate": 0.0740327380952381
+        },
+        {
+          "misses": 5,
+          "totalPaths": 8064,
+          "winningPaths": 314,
+          "winningRate": 0.038938492063492064
+        },
+        {
+          "misses": 6,
+          "totalPaths": 3360,
+          "winningPaths": 41,
+          "winningRate": 0.012202380952380952
+        },
+        {
+          "misses": 7,
+          "totalPaths": 960,
+          "winningPaths": 0,
+          "winningRate": 0
+        },
+        {
+          "misses": 8,
+          "totalPaths": 180,
+          "winningPaths": 0,
+          "winningRate": 0
+        },
+        {
+          "misses": 9,
+          "totalPaths": 20,
+          "winningPaths": 0,
+          "winningRate": 0
+        },
+        {
+          "misses": 10,
+          "totalPaths": 1,
+          "winningPaths": 0,
+          "winningRate": 0
+        }
+      ],
+      "winningPath": [
+        "right",
+        "right",
+        "left",
+        "right",
+        "left",
+        "right",
+        "left",
+        "right",
+        "left",
+        "left"
+      ],
+      "witnessSurvivors": 32,
+      "minSurvivors": 1,
+      "greedyWins": true,
+      "difficulty": {
+        "min": 0.25,
+        "ideal": 0.32
+      }
+    },
+    {
+      "level": 2,
+      "seed": 1,
+      "boss": 13,
+      "patrols": 5,
+      "barrages": 4,
+      "winningPaths": 2449,
+      "totalPaths": 59049,
+      "winningRate": 0.04147403004284577,
+      "attentiveWinningRate": 0.2158203125,
+      "byMisses": [
+        {
+          "misses": 0,
+          "totalPaths": 1024,
+          "winningPaths": 221,
+          "winningRate": 0.2158203125
+        },
+        {
+          "misses": 1,
+          "totalPaths": 5120,
+          "winningPaths": 678,
+          "winningRate": 0.132421875
+        },
+        {
+          "misses": 2,
+          "totalPaths": 11520,
+          "winningPaths": 808,
+          "winningRate": 0.07013888888888889
+        },
+        {
+          "misses": 3,
+          "totalPaths": 15360,
+          "winningPaths": 524,
+          "winningRate": 0.03411458333333333
+        },
+        {
+          "misses": 4,
+          "totalPaths": 13440,
+          "winningPaths": 188,
+          "winningRate": 0.013988095238095239
+        },
+        {
+          "misses": 5,
+          "totalPaths": 8064,
+          "winningPaths": 28,
+          "winningRate": 0.003472222222222222
+        },
+        {
+          "misses": 6,
+          "totalPaths": 3360,
+          "winningPaths": 2,
+          "winningRate": 0.0005952380952380953
+        },
+        {
+          "misses": 7,
+          "totalPaths": 960,
+          "winningPaths": 0,
+          "winningRate": 0
+        },
+        {
+          "misses": 8,
+          "totalPaths": 180,
+          "winningPaths": 0,
+          "winningRate": 0
+        },
+        {
+          "misses": 9,
+          "totalPaths": 20,
+          "winningPaths": 0,
+          "winningRate": 0
+        },
+        {
+          "misses": 10,
+          "totalPaths": 1,
+          "winningPaths": 0,
+          "winningRate": 0
+        }
+      ],
+      "winningPath": [
+        "right",
+        "right",
+        "left",
+        "right",
+        "right",
+        "right",
+        "right",
+        "right",
+        "left",
+        "left"
+      ],
+      "witnessSurvivors": 47,
+      "minSurvivors": 1,
+      "greedyWins": true,
+      "difficulty": {
+        "min": 0.15,
+        "ideal": 0.23
+      }
+    },
+    {
+      "level": 2,
+      "seed": 17,
+      "boss": 9,
+      "patrols": 5,
+      "barrages": 4,
+      "winningPaths": 3171,
+      "totalPaths": 59049,
+      "winningRate": 0.05370116344053244,
+      "attentiveWinningRate": 0.23046875,
+      "byMisses": [
+        {
+          "misses": 0,
+          "totalPaths": 1024,
+          "winningPaths": 236,
+          "winningRate": 0.23046875
+        },
+        {
+          "misses": 1,
+          "totalPaths": 5120,
+          "winningPaths": 782,
+          "winningRate": 0.152734375
+        },
+        {
+          "misses": 2,
+          "totalPaths": 11520,
+          "winningPaths": 1033,
+          "winningRate": 0.08967013888888889
+        },
+        {
+          "misses": 3,
+          "totalPaths": 15360,
+          "winningPaths": 768,
+          "winningRate": 0.05
+        },
+        {
+          "misses": 4,
+          "totalPaths": 13440,
+          "winningPaths": 300,
+          "winningRate": 0.022321428571428572
+        },
+        {
+          "misses": 5,
+          "totalPaths": 8064,
+          "winningPaths": 51,
+          "winningRate": 0.006324404761904762
+        },
+        {
+          "misses": 6,
+          "totalPaths": 3360,
+          "winningPaths": 1,
+          "winningRate": 0.00029761904761904765
+        },
+        {
+          "misses": 7,
+          "totalPaths": 960,
+          "winningPaths": 0,
+          "winningRate": 0
+        },
+        {
+          "misses": 8,
+          "totalPaths": 180,
+          "winningPaths": 0,
+          "winningRate": 0
+        },
+        {
+          "misses": 9,
+          "totalPaths": 20,
+          "winningPaths": 0,
+          "winningRate": 0
+        },
+        {
+          "misses": 10,
+          "totalPaths": 1,
+          "winningPaths": 0,
+          "winningRate": 0
+        }
+      ],
+      "winningPath": [
+        "left",
+        "right",
+        "left",
+        "left",
+        "right",
+        "right",
+        "right",
+        "right",
+        "right",
+        "left"
+      ],
+      "witnessSurvivors": 32,
+      "minSurvivors": 1,
+      "greedyWins": true,
+      "difficulty": {
+        "min": 0.15,
+        "ideal": 0.23
+      }
+    },
+    {
+      "level": 2,
+      "seed": 20261021,
+      "boss": 9,
+      "patrols": 5,
+      "barrages": 4,
+      "winningPaths": 1793,
+      "totalPaths": 59049,
+      "winningRate": 0.030364612440515505,
+      "attentiveWinningRate": 0.2099609375,
+      "byMisses": [
+        {
+          "misses": 0,
+          "totalPaths": 1024,
+          "winningPaths": 215,
+          "winningRate": 0.2099609375
+        },
+        {
+          "misses": 1,
+          "totalPaths": 5120,
+          "winningPaths": 581,
+          "winningRate": 0.1134765625
+        },
+        {
+          "misses": 2,
+          "totalPaths": 11520,
+          "winningPaths": 591,
+          "winningRate": 0.05130208333333333
+        },
+        {
+          "misses": 3,
+          "totalPaths": 15360,
+          "winningPaths": 316,
+          "winningRate": 0.020572916666666666
+        },
+        {
+          "misses": 4,
+          "totalPaths": 13440,
+          "winningPaths": 83,
+          "winningRate": 0.006175595238095238
+        },
+        {
+          "misses": 5,
+          "totalPaths": 8064,
+          "winningPaths": 7,
+          "winningRate": 0.0008680555555555555
+        },
+        {
+          "misses": 6,
+          "totalPaths": 3360,
+          "winningPaths": 0,
+          "winningRate": 0
+        },
+        {
+          "misses": 7,
+          "totalPaths": 960,
+          "winningPaths": 0,
+          "winningRate": 0
+        },
+        {
+          "misses": 8,
+          "totalPaths": 180,
+          "winningPaths": 0,
+          "winningRate": 0
+        },
+        {
+          "misses": 9,
+          "totalPaths": 20,
+          "winningPaths": 0,
+          "winningRate": 0
+        },
+        {
+          "misses": 10,
+          "totalPaths": 1,
+          "winningPaths": 0,
+          "winningRate": 0
+        }
+      ],
+      "winningPath": [
+        "right",
+        "left",
+        "right",
+        "right",
+        "right",
+        "right",
+        "left",
+        "left",
+        "right",
+        "left"
+      ],
+      "witnessSurvivors": 43,
+      "minSurvivors": 1,
+      "greedyWins": true,
+      "difficulty": {
+        "min": 0.15,
+        "ideal": 0.23
+      }
+    },
+    {
+      "level": 2,
+      "seed": 40522038,
+      "boss": 9,
+      "patrols": 5,
+      "barrages": 4,
+      "winningPaths": 2926,
+      "totalPaths": 59049,
+      "winningRate": 0.04955206692746702,
+      "attentiveWinningRate": 0.2275390625,
+      "byMisses": [
+        {
+          "misses": 0,
+          "totalPaths": 1024,
+          "winningPaths": 233,
+          "winningRate": 0.2275390625
+        },
+        {
+          "misses": 1,
+          "totalPaths": 5120,
+          "winningPaths": 777,
+          "winningRate": 0.1517578125
+        },
+        {
+          "misses": 2,
+          "totalPaths": 11520,
+          "winningPaths": 964,
+          "winningRate": 0.08368055555555555
+        },
+        {
+          "misses": 3,
+          "totalPaths": 15360,
+          "winningPaths": 676,
+          "winningRate": 0.04401041666666667
+        },
+        {
+          "misses": 4,
+          "totalPaths": 13440,
+          "winningPaths": 237,
+          "winningRate": 0.01763392857142857
+        },
+        {
+          "misses": 5,
+          "totalPaths": 8064,
+          "winningPaths": 39,
+          "winningRate": 0.004836309523809524
+        },
+        {
+          "misses": 6,
+          "totalPaths": 3360,
+          "winningPaths": 0,
+          "winningRate": 0
+        },
+        {
+          "misses": 7,
+          "totalPaths": 960,
+          "winningPaths": 0,
+          "winningRate": 0
+        },
+        {
+          "misses": 8,
+          "totalPaths": 180,
+          "winningPaths": 0,
+          "winningRate": 0
+        },
+        {
+          "misses": 9,
+          "totalPaths": 20,
+          "winningPaths": 0,
+          "winningRate": 0
+        },
+        {
+          "misses": 10,
+          "totalPaths": 1,
+          "winningPaths": 0,
+          "winningRate": 0
+        }
+      ],
+      "winningPath": [
+        "right",
+        "right",
+        "right",
+        "left",
+        "left",
+        "right",
+        "right",
+        "right",
+        "left",
+        "right"
+      ],
+      "witnessSurvivors": 28,
+      "minSurvivors": 1,
+      "greedyWins": true,
+      "difficulty": {
+        "min": 0.15,
+        "ideal": 0.23
+      }
+    },
+    {
+      "level": 3,
+      "seed": 1,
+      "boss": 14,
+      "patrols": 5,
+      "barrages": 4,
+      "winningPaths": 2628,
+      "totalPaths": 59049,
+      "winningRate": 0.044505410760554795,
+      "attentiveWinningRate": 0.2275390625,
+      "byMisses": [
+        {
+          "misses": 0,
+          "totalPaths": 1024,
+          "winningPaths": 233,
+          "winningRate": 0.2275390625
+        },
+        {
+          "misses": 1,
+          "totalPaths": 5120,
+          "winningPaths": 704,
+          "winningRate": 0.1375
+        },
+        {
+          "misses": 2,
+          "totalPaths": 11520,
+          "winningPaths": 854,
+          "winningRate": 0.07413194444444444
+        },
+        {
+          "misses": 3,
+          "totalPaths": 15360,
+          "winningPaths": 579,
+          "winningRate": 0.0376953125
+        },
+        {
+          "misses": 4,
+          "totalPaths": 13440,
+          "winningPaths": 216,
+          "winningRate": 0.01607142857142857
+        },
+        {
+          "misses": 5,
+          "totalPaths": 8064,
+          "winningPaths": 40,
+          "winningRate": 0.00496031746031746
+        },
+        {
+          "misses": 6,
+          "totalPaths": 3360,
+          "winningPaths": 2,
+          "winningRate": 0.0005952380952380953
+        },
+        {
+          "misses": 7,
+          "totalPaths": 960,
+          "winningPaths": 0,
+          "winningRate": 0
+        },
+        {
+          "misses": 8,
+          "totalPaths": 180,
+          "winningPaths": 0,
+          "winningRate": 0
+        },
+        {
+          "misses": 9,
+          "totalPaths": 20,
+          "winningPaths": 0,
+          "winningRate": 0
+        },
+        {
+          "misses": 10,
+          "totalPaths": 1,
+          "winningPaths": 0,
+          "winningRate": 0
+        }
+      ],
+      "winningPath": [
+        "left",
+        "right",
+        "left",
+        "right",
+        "right",
+        "right",
+        "left",
+        "left",
+        "left",
+        "right"
+      ],
+      "witnessSurvivors": 49,
+      "minSurvivors": 1,
+      "greedyWins": true,
+      "difficulty": {
+        "min": 0.15,
+        "ideal": 0.23
+      }
+    },
+    {
+      "level": 3,
+      "seed": 17,
+      "boss": 9,
+      "patrols": 5,
+      "barrages": 4,
+      "winningPaths": 2250,
+      "totalPaths": 59049,
+      "winningRate": 0.03810394756896814,
+      "attentiveWinningRate": 0.21875,
+      "byMisses": [
+        {
+          "misses": 0,
+          "totalPaths": 1024,
+          "winningPaths": 224,
+          "winningRate": 0.21875
+        },
+        {
+          "misses": 1,
+          "totalPaths": 5120,
+          "winningPaths": 630,
+          "winningRate": 0.123046875
+        },
+        {
+          "misses": 2,
+          "totalPaths": 11520,
+          "winningPaths": 744,
+          "winningRate": 0.06458333333333334
+        },
+        {
+          "misses": 3,
+          "totalPaths": 15360,
+          "winningPaths": 476,
+          "winningRate": 0.030989583333333334
+        },
+        {
+          "misses": 4,
+          "totalPaths": 13440,
+          "winningPaths": 156,
+          "winningRate": 0.011607142857142858
+        },
+        {
+          "misses": 5,
+          "totalPaths": 8064,
+          "winningPaths": 20,
+          "winningRate": 0.00248015873015873
+        },
+        {
+          "misses": 6,
+          "totalPaths": 3360,
+          "winningPaths": 0,
+          "winningRate": 0
+        },
+        {
+          "misses": 7,
+          "totalPaths": 960,
+          "winningPaths": 0,
+          "winningRate": 0
+        },
+        {
+          "misses": 8,
+          "totalPaths": 180,
+          "winningPaths": 0,
+          "winningRate": 0
+        },
+        {
+          "misses": 9,
+          "totalPaths": 20,
+          "winningPaths": 0,
+          "winningRate": 0
+        },
+        {
+          "misses": 10,
+          "totalPaths": 1,
+          "winningPaths": 0,
+          "winningRate": 0
+        }
+      ],
+      "winningPath": [
+        "left",
+        "left",
+        "right",
+        "left",
+        "left",
+        "right",
+        "left",
+        "left",
+        "right",
+        "right"
+      ],
+      "witnessSurvivors": 50,
+      "minSurvivors": 1,
+      "greedyWins": true,
+      "difficulty": {
+        "min": 0.15,
+        "ideal": 0.23
+      }
+    },
+    {
+      "level": 3,
+      "seed": 20261021,
+      "boss": 14,
+      "patrols": 5,
+      "barrages": 4,
+      "winningPaths": 2698,
+      "totalPaths": 59049,
+      "winningRate": 0.04569086690714491,
+      "attentiveWinningRate": 0.2373046875,
+      "byMisses": [
+        {
+          "misses": 0,
+          "totalPaths": 1024,
+          "winningPaths": 243,
+          "winningRate": 0.2373046875
+        },
+        {
+          "misses": 1,
+          "totalPaths": 5120,
+          "winningPaths": 729,
+          "winningRate": 0.1423828125
+        },
+        {
+          "misses": 2,
+          "totalPaths": 11520,
+          "winningPaths": 874,
+          "winningRate": 0.07586805555555555
+        },
+        {
+          "misses": 3,
+          "totalPaths": 15360,
+          "winningPaths": 598,
+          "winningRate": 0.03893229166666667
+        },
+        {
+          "misses": 4,
+          "totalPaths": 13440,
+          "winningPaths": 217,
+          "winningRate": 0.016145833333333335
+        },
+        {
+          "misses": 5,
+          "totalPaths": 8064,
+          "winningPaths": 35,
+          "winningRate": 0.004340277777777778
+        },
+        {
+          "misses": 6,
+          "totalPaths": 3360,
+          "winningPaths": 2,
+          "winningRate": 0.0005952380952380953
+        },
+        {
+          "misses": 7,
+          "totalPaths": 960,
+          "winningPaths": 0,
+          "winningRate": 0
+        },
+        {
+          "misses": 8,
+          "totalPaths": 180,
+          "winningPaths": 0,
+          "winningRate": 0
+        },
+        {
+          "misses": 9,
+          "totalPaths": 20,
+          "winningPaths": 0,
+          "winningRate": 0
+        },
+        {
+          "misses": 10,
+          "totalPaths": 1,
+          "winningPaths": 0,
+          "winningRate": 0
+        }
+      ],
+      "winningPath": [
+        "right",
+        "right",
+        "right",
+        "left",
+        "left",
+        "right",
+        "left",
+        "left",
+        "left",
+        "left"
+      ],
+      "witnessSurvivors": 47,
+      "minSurvivors": 1,
+      "greedyWins": true,
+      "difficulty": {
+        "min": 0.15,
+        "ideal": 0.23
+      }
+    },
+    {
+      "level": 3,
+      "seed": 60783057,
+      "boss": 11,
+      "patrols": 5,
+      "barrages": 4,
+      "winningPaths": 3027,
+      "totalPaths": 59049,
+      "winningRate": 0.05126251079611848,
+      "attentiveWinningRate": 0.2412109375,
+      "byMisses": [
+        {
+          "misses": 0,
+          "totalPaths": 1024,
+          "winningPaths": 247,
+          "winningRate": 0.2412109375
+        },
+        {
+          "misses": 1,
+          "totalPaths": 5120,
+          "winningPaths": 777,
+          "winningRate": 0.1517578125
+        },
+        {
+          "misses": 2,
+          "totalPaths": 11520,
+          "winningPaths": 989,
+          "winningRate": 0.08585069444444444
+        },
+        {
+          "misses": 3,
+          "totalPaths": 15360,
+          "winningPaths": 694,
+          "winningRate": 0.045182291666666666
+        },
+        {
+          "misses": 4,
+          "totalPaths": 13440,
+          "winningPaths": 264,
+          "winningRate": 0.019642857142857142
+        },
+        {
+          "misses": 5,
+          "totalPaths": 8064,
+          "winningPaths": 54,
+          "winningRate": 0.006696428571428571
+        },
+        {
+          "misses": 6,
+          "totalPaths": 3360,
+          "winningPaths": 2,
+          "winningRate": 0.0005952380952380953
+        },
+        {
+          "misses": 7,
+          "totalPaths": 960,
+          "winningPaths": 0,
+          "winningRate": 0
+        },
+        {
+          "misses": 8,
+          "totalPaths": 180,
+          "winningPaths": 0,
+          "winningRate": 0
+        },
+        {
+          "misses": 9,
+          "totalPaths": 20,
+          "winningPaths": 0,
+          "winningRate": 0
+        },
+        {
+          "misses": 10,
+          "totalPaths": 1,
+          "winningPaths": 0,
+          "winningRate": 0
+        }
+      ],
+      "winningPath": [
+        "right",
+        "right",
+        "left",
+        "left",
+        "right",
+        "left",
+        "left",
+        "left",
+        "left",
+        "left"
+      ],
+      "witnessSurvivors": 48,
+      "minSurvivors": 1,
+      "greedyWins": true,
+      "difficulty": {
+        "min": 0.15,
+        "ideal": 0.23
+      }
+    },
+    {
+      "level": 4,
+      "seed": 1,
+      "boss": 10,
+      "patrols": 5,
+      "barrages": 4,
+      "winningPaths": 1863,
+      "totalPaths": 59049,
+      "winningRate": 0.03155006858710562,
+      "attentiveWinningRate": 0.1640625,
+      "byMisses": [
+        {
+          "misses": 0,
+          "totalPaths": 1024,
+          "winningPaths": 168,
+          "winningRate": 0.1640625
+        },
+        {
+          "misses": 1,
+          "totalPaths": 5120,
+          "winningPaths": 530,
+          "winningRate": 0.103515625
+        },
+        {
+          "misses": 2,
+          "totalPaths": 11520,
+          "winningPaths": 628,
+          "winningRate": 0.05451388888888889
+        },
+        {
+          "misses": 3,
+          "totalPaths": 15360,
+          "winningPaths": 395,
+          "winningRate": 0.025716145833333332
+        },
+        {
+          "misses": 4,
+          "totalPaths": 13440,
+          "winningPaths": 130,
+          "winningRate": 0.009672619047619048
+        },
+        {
+          "misses": 5,
+          "totalPaths": 8064,
+          "winningPaths": 12,
+          "winningRate": 0.001488095238095238
+        },
+        {
+          "misses": 6,
+          "totalPaths": 3360,
+          "winningPaths": 0,
+          "winningRate": 0
+        },
+        {
+          "misses": 7,
+          "totalPaths": 960,
+          "winningPaths": 0,
+          "winningRate": 0
+        },
+        {
+          "misses": 8,
+          "totalPaths": 180,
+          "winningPaths": 0,
+          "winningRate": 0
+        },
+        {
+          "misses": 9,
+          "totalPaths": 20,
+          "winningPaths": 0,
+          "winningRate": 0
+        },
+        {
+          "misses": 10,
+          "totalPaths": 1,
+          "winningPaths": 0,
+          "winningRate": 0
+        }
+      ],
+      "winningPath": [
+        "left",
+        "left",
+        "right",
+        "right",
+        "left",
+        "right",
+        "right",
+        "left",
+        "right",
+        "left"
+      ],
+      "witnessSurvivors": 37,
+      "minSurvivors": 1,
+      "greedyWins": true,
+      "difficulty": {
+        "min": 0.09,
+        "ideal": 0.17
+      }
+    },
+    {
+      "level": 4,
+      "seed": 17,
+      "boss": 10,
+      "patrols": 5,
+      "barrages": 4,
+      "winningPaths": 2637,
+      "totalPaths": 59049,
+      "winningRate": 0.044657826550830663,
+      "attentiveWinningRate": 0.1640625,
+      "byMisses": [
+        {
+          "misses": 0,
+          "totalPaths": 1024,
+          "winningPaths": 168,
+          "winningRate": 0.1640625
+        },
+        {
+          "misses": 1,
+          "totalPaths": 5120,
+          "winningPaths": 621,
+          "winningRate": 0.1212890625
+        },
+        {
+          "misses": 2,
+          "totalPaths": 11520,
+          "winningPaths": 882,
+          "winningRate": 0.0765625
+        },
+        {
+          "misses": 3,
+          "totalPaths": 15360,
+          "winningPaths": 652,
+          "winningRate": 0.04244791666666667
+        },
+        {
+          "misses": 4,
+          "totalPaths": 13440,
+          "winningPaths": 266,
+          "winningRate": 0.019791666666666666
+        },
+        {
+          "misses": 5,
+          "totalPaths": 8064,
+          "winningPaths": 47,
+          "winningRate": 0.005828373015873016
+        },
+        {
+          "misses": 6,
+          "totalPaths": 3360,
+          "winningPaths": 1,
+          "winningRate": 0.00029761904761904765
+        },
+        {
+          "misses": 7,
+          "totalPaths": 960,
+          "winningPaths": 0,
+          "winningRate": 0
+        },
+        {
+          "misses": 8,
+          "totalPaths": 180,
+          "winningPaths": 0,
+          "winningRate": 0
+        },
+        {
+          "misses": 9,
+          "totalPaths": 20,
+          "winningPaths": 0,
+          "winningRate": 0
+        },
+        {
+          "misses": 10,
+          "totalPaths": 1,
+          "winningPaths": 0,
+          "winningRate": 0
+        }
+      ],
+      "winningPath": [
+        "left",
+        "right",
+        "right",
+        "right",
+        "right",
+        "left",
+        "left",
+        "left",
+        "left",
+        "left"
+      ],
+      "witnessSurvivors": 25,
+      "minSurvivors": 1,
+      "greedyWins": true,
+      "difficulty": {
+        "min": 0.09,
+        "ideal": 0.17
+      }
+    },
+    {
+      "level": 4,
+      "seed": 20261021,
+      "boss": 12,
+      "patrols": 5,
+      "barrages": 4,
+      "winningPaths": 2200,
+      "totalPaths": 59049,
+      "winningRate": 0.03725719317854663,
+      "attentiveWinningRate": 0.181640625,
+      "byMisses": [
+        {
+          "misses": 0,
+          "totalPaths": 1024,
+          "winningPaths": 186,
+          "winningRate": 0.181640625
+        },
+        {
+          "misses": 1,
+          "totalPaths": 5120,
+          "winningPaths": 620,
+          "winningRate": 0.12109375
+        },
+        {
+          "misses": 2,
+          "totalPaths": 11520,
+          "winningPaths": 745,
+          "winningRate": 0.0646701388888889
+        },
+        {
+          "misses": 3,
+          "totalPaths": 15360,
+          "winningPaths": 477,
+          "winningRate": 0.0310546875
+        },
+        {
+          "misses": 4,
+          "totalPaths": 13440,
+          "winningPaths": 149,
+          "winningRate": 0.011086309523809524
+        },
+        {
+          "misses": 5,
+          "totalPaths": 8064,
+          "winningPaths": 23,
+          "winningRate": 0.0028521825396825395
+        },
+        {
+          "misses": 6,
+          "totalPaths": 3360,
+          "winningPaths": 0,
+          "winningRate": 0
+        },
+        {
+          "misses": 7,
+          "totalPaths": 960,
+          "winningPaths": 0,
+          "winningRate": 0
+        },
+        {
+          "misses": 8,
+          "totalPaths": 180,
+          "winningPaths": 0,
+          "winningRate": 0
+        },
+        {
+          "misses": 9,
+          "totalPaths": 20,
+          "winningPaths": 0,
+          "winningRate": 0
+        },
+        {
+          "misses": 10,
+          "totalPaths": 1,
+          "winningPaths": 0,
+          "winningRate": 0
+        }
+      ],
+      "winningPath": [
+        "right",
+        "right",
+        "right",
+        "left",
+        "right",
+        "right",
+        "left",
+        "right",
+        "right",
+        "left"
+      ],
+      "witnessSurvivors": 37,
+      "minSurvivors": 1,
+      "greedyWins": true,
+      "difficulty": {
+        "min": 0.09,
+        "ideal": 0.17
+      }
+    },
+    {
+      "level": 4,
+      "seed": 81044076,
+      "boss": 9,
+      "patrols": 5,
+      "barrages": 4,
+      "winningPaths": 2253,
+      "totalPaths": 59049,
+      "winningRate": 0.03815475283239344,
+      "attentiveWinningRate": 0.1572265625,
+      "byMisses": [
+        {
+          "misses": 0,
+          "totalPaths": 1024,
+          "winningPaths": 161,
+          "winningRate": 0.1572265625
+        },
+        {
+          "misses": 1,
+          "totalPaths": 5120,
+          "winningPaths": 581,
+          "winningRate": 0.1134765625
+        },
+        {
+          "misses": 2,
+          "totalPaths": 11520,
+          "winningPaths": 754,
+          "winningRate": 0.06545138888888889
+        },
+        {
+          "misses": 3,
+          "totalPaths": 15360,
+          "winningPaths": 529,
+          "winningRate": 0.034440104166666666
+        },
+        {
+          "misses": 4,
+          "totalPaths": 13440,
+          "winningPaths": 193,
+          "winningRate": 0.014360119047619047
+        },
+        {
+          "misses": 5,
+          "totalPaths": 8064,
+          "winningPaths": 34,
+          "winningRate": 0.004216269841269841
+        },
+        {
+          "misses": 6,
+          "totalPaths": 3360,
+          "winningPaths": 1,
+          "winningRate": 0.00029761904761904765
+        },
+        {
+          "misses": 7,
+          "totalPaths": 960,
+          "winningPaths": 0,
+          "winningRate": 0
+        },
+        {
+          "misses": 8,
+          "totalPaths": 180,
+          "winningPaths": 0,
+          "winningRate": 0
+        },
+        {
+          "misses": 9,
+          "totalPaths": 20,
+          "winningPaths": 0,
+          "winningRate": 0
+        },
+        {
+          "misses": 10,
+          "totalPaths": 1,
+          "winningPaths": 0,
+          "winningRate": 0
+        }
+      ],
+      "winningPath": [
+        "right",
+        "right",
+        "left",
+        "left",
+        "left",
+        "left",
+        "left",
+        "left",
+        "left",
+        "left"
+      ],
+      "witnessSurvivors": 32,
+      "minSurvivors": 1,
+      "greedyWins": true,
+      "difficulty": {
+        "min": 0.09,
+        "ideal": 0.17
+      }
+    },
+    {
+      "level": 5,
+      "seed": 1,
+      "boss": 15,
+      "patrols": 5,
+      "barrages": 4,
+      "winningPaths": 2298,
+      "totalPaths": 59049,
+      "winningRate": 0.038916831783772796,
+      "attentiveWinningRate": 0.177734375,
+      "byMisses": [
+        {
+          "misses": 0,
+          "totalPaths": 1024,
+          "winningPaths": 182,
+          "winningRate": 0.177734375
+        },
+        {
+          "misses": 1,
+          "totalPaths": 5120,
+          "winningPaths": 611,
+          "winningRate": 0.1193359375
+        },
+        {
+          "misses": 2,
+          "totalPaths": 11520,
+          "winningPaths": 765,
+          "winningRate": 0.06640625
+        },
+        {
+          "misses": 3,
+          "totalPaths": 15360,
+          "winningPaths": 521,
+          "winningRate": 0.033919270833333334
+        },
+        {
+          "misses": 4,
+          "totalPaths": 13440,
+          "winningPaths": 188,
+          "winningRate": 0.013988095238095239
+        },
+        {
+          "misses": 5,
+          "totalPaths": 8064,
+          "winningPaths": 29,
+          "winningRate": 0.0035962301587301585
+        },
+        {
+          "misses": 6,
+          "totalPaths": 3360,
+          "winningPaths": 2,
+          "winningRate": 0.0005952380952380953
+        },
+        {
+          "misses": 7,
+          "totalPaths": 960,
+          "winningPaths": 0,
+          "winningRate": 0
+        },
+        {
+          "misses": 8,
+          "totalPaths": 180,
+          "winningPaths": 0,
+          "winningRate": 0
+        },
+        {
+          "misses": 9,
+          "totalPaths": 20,
+          "winningPaths": 0,
+          "winningRate": 0
+        },
+        {
+          "misses": 10,
+          "totalPaths": 1,
+          "winningPaths": 0,
+          "winningRate": 0
+        }
+      ],
+      "winningPath": [
+        "left",
+        "right",
+        "right",
+        "left",
+        "left",
+        "left",
+        "right",
+        "right",
+        "left",
+        "right"
+      ],
+      "witnessSurvivors": 47,
+      "minSurvivors": 1,
+      "greedyWins": true,
+      "difficulty": {
+        "min": 0.09,
+        "ideal": 0.17
+      }
+    },
+    {
+      "level": 5,
+      "seed": 17,
+      "boss": 13,
+      "patrols": 5,
+      "barrages": 4,
+      "winningPaths": 2327,
+      "totalPaths": 59049,
+      "winningRate": 0.039407949330217275,
+      "attentiveWinningRate": 0.1728515625,
+      "byMisses": [
+        {
+          "misses": 0,
+          "totalPaths": 1024,
+          "winningPaths": 177,
+          "winningRate": 0.1728515625
+        },
+        {
+          "misses": 1,
+          "totalPaths": 5120,
+          "winningPaths": 610,
+          "winningRate": 0.119140625
+        },
+        {
+          "misses": 2,
+          "totalPaths": 11520,
+          "winningPaths": 772,
+          "winningRate": 0.06701388888888889
+        },
+        {
+          "misses": 3,
+          "totalPaths": 15360,
+          "winningPaths": 536,
+          "winningRate": 0.034895833333333334
+        },
+        {
+          "misses": 4,
+          "totalPaths": 13440,
+          "winningPaths": 192,
+          "winningRate": 0.014285714285714285
+        },
+        {
+          "misses": 5,
+          "totalPaths": 8064,
+          "winningPaths": 38,
+          "winningRate": 0.004712301587301587
+        },
+        {
+          "misses": 6,
+          "totalPaths": 3360,
+          "winningPaths": 2,
+          "winningRate": 0.0005952380952380953
+        },
+        {
+          "misses": 7,
+          "totalPaths": 960,
+          "winningPaths": 0,
+          "winningRate": 0
+        },
+        {
+          "misses": 8,
+          "totalPaths": 180,
+          "winningPaths": 0,
+          "winningRate": 0
+        },
+        {
+          "misses": 9,
+          "totalPaths": 20,
+          "winningPaths": 0,
+          "winningRate": 0
+        },
+        {
+          "misses": 10,
+          "totalPaths": 1,
+          "winningPaths": 0,
+          "winningRate": 0
+        }
+      ],
+      "winningPath": [
+        "right",
+        "right",
+        "left",
+        "right",
+        "left",
+        "right",
+        "left",
+        "left",
+        "left",
+        "right"
+      ],
+      "witnessSurvivors": 42,
+      "minSurvivors": 1,
+      "greedyWins": true,
+      "difficulty": {
+        "min": 0.09,
+        "ideal": 0.17
+      }
+    },
+    {
+      "level": 5,
+      "seed": 20261021,
+      "boss": 9,
+      "patrols": 5,
+      "barrages": 4,
+      "winningPaths": 2662,
+      "totalPaths": 59049,
+      "winningRate": 0.04508120374604142,
+      "attentiveWinningRate": 0.171875,
+      "byMisses": [
+        {
+          "misses": 0,
+          "totalPaths": 1024,
+          "winningPaths": 176,
+          "winningRate": 0.171875
+        },
+        {
+          "misses": 1,
+          "totalPaths": 5120,
+          "winningPaths": 660,
+          "winningRate": 0.12890625
+        },
+        {
+          "misses": 2,
+          "totalPaths": 11520,
+          "winningPaths": 891,
+          "winningRate": 0.07734375
+        },
+        {
+          "misses": 3,
+          "totalPaths": 15360,
+          "winningPaths": 639,
+          "winningRate": 0.0416015625
+        },
+        {
+          "misses": 4,
+          "totalPaths": 13440,
+          "winningPaths": 246,
+          "winningRate": 0.01830357142857143
+        },
+        {
+          "misses": 5,
+          "totalPaths": 8064,
+          "winningPaths": 48,
+          "winningRate": 0.005952380952380952
+        },
+        {
+          "misses": 6,
+          "totalPaths": 3360,
+          "winningPaths": 2,
+          "winningRate": 0.0005952380952380953
+        },
+        {
+          "misses": 7,
+          "totalPaths": 960,
+          "winningPaths": 0,
+          "winningRate": 0
+        },
+        {
+          "misses": 8,
+          "totalPaths": 180,
+          "winningPaths": 0,
+          "winningRate": 0
+        },
+        {
+          "misses": 9,
+          "totalPaths": 20,
+          "winningPaths": 0,
+          "winningRate": 0
+        },
+        {
+          "misses": 10,
+          "totalPaths": 1,
+          "winningPaths": 0,
+          "winningRate": 0
+        }
+      ],
+      "winningPath": [
+        "right",
+        "left",
+        "right",
+        "right",
+        "right",
+        "right",
+        "left",
+        "right",
+        "left",
+        "left"
+      ],
+      "witnessSurvivors": 32,
+      "minSurvivors": 1,
+      "greedyWins": true,
+      "difficulty": {
+        "min": 0.09,
+        "ideal": 0.17
+      }
+    },
+    {
+      "level": 5,
+      "seed": 101305095,
+      "boss": 9,
+      "patrols": 5,
+      "barrages": 4,
+      "winningPaths": 2252,
+      "totalPaths": 59049,
+      "winningRate": 0.038137817744585,
+      "attentiveWinningRate": 0.1611328125,
+      "byMisses": [
+        {
+          "misses": 0,
+          "totalPaths": 1024,
+          "winningPaths": 165,
+          "winningRate": 0.1611328125
+        },
+        {
+          "misses": 1,
+          "totalPaths": 5120,
+          "winningPaths": 554,
+          "winningRate": 0.108203125
+        },
+        {
+          "misses": 2,
+          "totalPaths": 11520,
+          "winningPaths": 745,
+          "winningRate": 0.0646701388888889
+        },
+        {
+          "misses": 3,
+          "totalPaths": 15360,
+          "winningPaths": 534,
+          "winningRate": 0.034765625
+        },
+        {
+          "misses": 4,
+          "totalPaths": 13440,
+          "winningPaths": 213,
+          "winningRate": 0.015848214285714285
+        },
+        {
+          "misses": 5,
+          "totalPaths": 8064,
+          "winningPaths": 40,
+          "winningRate": 0.00496031746031746
+        },
+        {
+          "misses": 6,
+          "totalPaths": 3360,
+          "winningPaths": 1,
+          "winningRate": 0.00029761904761904765
+        },
+        {
+          "misses": 7,
+          "totalPaths": 960,
+          "winningPaths": 0,
+          "winningRate": 0
+        },
+        {
+          "misses": 8,
+          "totalPaths": 180,
+          "winningPaths": 0,
+          "winningRate": 0
+        },
+        {
+          "misses": 9,
+          "totalPaths": 20,
+          "winningPaths": 0,
+          "winningRate": 0
+        },
+        {
+          "misses": 10,
+          "totalPaths": 1,
+          "winningPaths": 0,
+          "winningRate": 0
+        }
+      ],
+      "winningPath": [
+        "right",
+        "left",
+        "right",
+        "right",
+        "left",
+        "right",
+        "left",
+        "left",
+        "right",
+        "left"
+      ],
+      "witnessSurvivors": 30,
+      "minSurvivors": 1,
+      "greedyWins": true,
+      "difficulty": {
+        "min": 0.09,
+        "ideal": 0.17
+      }
+    },
+    {
+      "level": 6,
+      "seed": 1,
+      "boss": 9,
+      "patrols": 5,
+      "barrages": 4,
+      "winningPaths": 2377,
+      "totalPaths": 59049,
+      "winningRate": 0.040254703720638794,
+      "attentiveWinningRate": 0.154296875,
+      "byMisses": [
+        {
+          "misses": 0,
+          "totalPaths": 1024,
+          "winningPaths": 158,
+          "winningRate": 0.154296875
+        },
+        {
+          "misses": 1,
+          "totalPaths": 5120,
+          "winningPaths": 597,
+          "winningRate": 0.1166015625
+        },
+        {
+          "misses": 2,
+          "totalPaths": 11520,
+          "winningPaths": 813,
+          "winningRate": 0.07057291666666667
+        },
+        {
+          "misses": 3,
+          "totalPaths": 15360,
+          "winningPaths": 580,
+          "winningRate": 0.037760416666666664
+        },
+        {
+          "misses": 4,
+          "totalPaths": 13440,
+          "winningPaths": 201,
+          "winningRate": 0.014955357142857144
+        },
+        {
+          "misses": 5,
+          "totalPaths": 8064,
+          "winningPaths": 28,
+          "winningRate": 0.003472222222222222
+        },
+        {
+          "misses": 6,
+          "totalPaths": 3360,
+          "winningPaths": 0,
+          "winningRate": 0
+        },
+        {
+          "misses": 7,
+          "totalPaths": 960,
+          "winningPaths": 0,
+          "winningRate": 0
+        },
+        {
+          "misses": 8,
+          "totalPaths": 180,
+          "winningPaths": 0,
+          "winningRate": 0
+        },
+        {
+          "misses": 9,
+          "totalPaths": 20,
+          "winningPaths": 0,
+          "winningRate": 0
+        },
+        {
+          "misses": 10,
+          "totalPaths": 1,
+          "winningPaths": 0,
+          "winningRate": 0
+        }
+      ],
+      "winningPath": [
+        "right",
+        "left",
+        "left",
+        "right",
+        "right",
+        "right",
+        "left",
+        "left",
+        "right",
+        "right"
+      ],
+      "witnessSurvivors": 29,
+      "minSurvivors": 1,
+      "greedyWins": true,
+      "difficulty": {
+        "min": 0.09,
+        "ideal": 0.17
+      }
+    },
+    {
+      "level": 6,
+      "seed": 17,
+      "boss": 12,
+      "patrols": 5,
+      "barrages": 4,
+      "winningPaths": 2156,
+      "totalPaths": 59049,
+      "winningRate": 0.036512049314975696,
+      "attentiveWinningRate": 0.181640625,
+      "byMisses": [
+        {
+          "misses": 0,
+          "totalPaths": 1024,
+          "winningPaths": 186,
+          "winningRate": 0.181640625
+        },
+        {
+          "misses": 1,
+          "totalPaths": 5120,
+          "winningPaths": 589,
+          "winningRate": 0.1150390625
+        },
+        {
+          "misses": 2,
+          "totalPaths": 11520,
+          "winningPaths": 710,
+          "winningRate": 0.06163194444444445
+        },
+        {
+          "misses": 3,
+          "totalPaths": 15360,
+          "winningPaths": 474,
+          "winningRate": 0.030859375
+        },
+        {
+          "misses": 4,
+          "totalPaths": 13440,
+          "winningPaths": 171,
+          "winningRate": 0.012723214285714286
+        },
+        {
+          "misses": 5,
+          "totalPaths": 8064,
+          "winningPaths": 24,
+          "winningRate": 0.002976190476190476
+        },
+        {
+          "misses": 6,
+          "totalPaths": 3360,
+          "winningPaths": 2,
+          "winningRate": 0.0005952380952380953
+        },
+        {
+          "misses": 7,
+          "totalPaths": 960,
+          "winningPaths": 0,
+          "winningRate": 0
+        },
+        {
+          "misses": 8,
+          "totalPaths": 180,
+          "winningPaths": 0,
+          "winningRate": 0
+        },
+        {
+          "misses": 9,
+          "totalPaths": 20,
+          "winningPaths": 0,
+          "winningRate": 0
+        },
+        {
+          "misses": 10,
+          "totalPaths": 1,
+          "winningPaths": 0,
+          "winningRate": 0
+        }
+      ],
+      "winningPath": [
+        "right",
+        "left",
+        "left",
+        "left",
+        "left",
+        "left",
+        "left",
+        "left",
+        "left",
+        "left"
+      ],
+      "witnessSurvivors": 42,
+      "minSurvivors": 1,
+      "greedyWins": true,
+      "difficulty": {
+        "min": 0.09,
+        "ideal": 0.17
+      }
+    },
+    {
+      "level": 6,
+      "seed": 20261021,
+      "boss": 11,
+      "patrols": 5,
+      "barrages": 4,
+      "winningPaths": 1878,
+      "totalPaths": 59049,
+      "winningRate": 0.031804094904232076,
+      "attentiveWinningRate": 0.1748046875,
+      "byMisses": [
+        {
+          "misses": 0,
+          "totalPaths": 1024,
+          "winningPaths": 179,
+          "winningRate": 0.1748046875
+        },
+        {
+          "misses": 1,
+          "totalPaths": 5120,
+          "winningPaths": 535,
+          "winningRate": 0.1044921875
+        },
+        {
+          "misses": 2,
+          "totalPaths": 11520,
+          "winningPaths": 627,
+          "winningRate": 0.054427083333333334
+        },
+        {
+          "misses": 3,
+          "totalPaths": 15360,
+          "winningPaths": 399,
+          "winningRate": 0.0259765625
+        },
+        {
+          "misses": 4,
+          "totalPaths": 13440,
+          "winningPaths": 124,
+          "winningRate": 0.009226190476190476
+        },
+        {
+          "misses": 5,
+          "totalPaths": 8064,
+          "winningPaths": 14,
+          "winningRate": 0.001736111111111111
+        },
+        {
+          "misses": 6,
+          "totalPaths": 3360,
+          "winningPaths": 0,
+          "winningRate": 0
+        },
+        {
+          "misses": 7,
+          "totalPaths": 960,
+          "winningPaths": 0,
+          "winningRate": 0
+        },
+        {
+          "misses": 8,
+          "totalPaths": 180,
+          "winningPaths": 0,
+          "winningRate": 0
+        },
+        {
+          "misses": 9,
+          "totalPaths": 20,
+          "winningPaths": 0,
+          "winningRate": 0
+        },
+        {
+          "misses": 10,
+          "totalPaths": 1,
+          "winningPaths": 0,
+          "winningRate": 0
+        }
+      ],
+      "winningPath": [
+        "right",
+        "left",
+        "right",
+        "left",
+        "left",
+        "right",
+        "right",
+        "right",
+        "right",
+        "right"
+      ],
+      "witnessSurvivors": 32,
+      "minSurvivors": 1,
+      "greedyWins": true,
+      "difficulty": {
+        "min": 0.09,
+        "ideal": 0.17
+      }
+    },
+    {
+      "level": 6,
+      "seed": 121566114,
+      "boss": 10,
+      "patrols": 5,
+      "barrages": 4,
+      "winningPaths": 2103,
+      "totalPaths": 59049,
+      "winningRate": 0.035614489661128894,
+      "attentiveWinningRate": 0.1748046875,
+      "byMisses": [
+        {
+          "misses": 0,
+          "totalPaths": 1024,
+          "winningPaths": 179,
+          "winningRate": 0.1748046875
+        },
+        {
+          "misses": 1,
+          "totalPaths": 5120,
+          "winningPaths": 566,
+          "winningRate": 0.110546875
+        },
+        {
+          "misses": 2,
+          "totalPaths": 11520,
+          "winningPaths": 703,
+          "winningRate": 0.061024305555555554
+        },
+        {
+          "misses": 3,
+          "totalPaths": 15360,
+          "winningPaths": 464,
+          "winningRate": 0.030208333333333334
+        },
+        {
+          "misses": 4,
+          "totalPaths": 13440,
+          "winningPaths": 166,
+          "winningRate": 0.012351190476190476
+        },
+        {
+          "misses": 5,
+          "totalPaths": 8064,
+          "winningPaths": 25,
+          "winningRate": 0.0031001984126984125
+        },
+        {
+          "misses": 6,
+          "totalPaths": 3360,
+          "winningPaths": 0,
+          "winningRate": 0
+        },
+        {
+          "misses": 7,
+          "totalPaths": 960,
+          "winningPaths": 0,
+          "winningRate": 0
+        },
+        {
+          "misses": 8,
+          "totalPaths": 180,
+          "winningPaths": 0,
+          "winningRate": 0
+        },
+        {
+          "misses": 9,
+          "totalPaths": 20,
+          "winningPaths": 0,
+          "winningRate": 0
+        },
+        {
+          "misses": 10,
+          "totalPaths": 1,
+          "winningPaths": 0,
+          "winningRate": 0
+        }
+      ],
+      "winningPath": [
+        "left",
+        "left",
+        "left",
+        "right",
+        "left",
+        "left",
+        "right",
+        "right",
+        "left",
+        "right"
+      ],
+      "witnessSurvivors": 42,
+      "minSurvivors": 1,
+      "greedyWins": true,
+      "difficulty": {
+        "min": 0.09,
+        "ideal": 0.17
+      }
+    },
+    {
+      "level": 7,
+      "seed": 1,
+      "boss": 13,
+      "patrols": 5,
+      "barrages": 4,
+      "winningPaths": 1872,
+      "totalPaths": 59049,
+      "winningRate": 0.0317024843773815,
+      "attentiveWinningRate": 0.1650390625,
+      "byMisses": [
+        {
+          "misses": 0,
+          "totalPaths": 1024,
+          "winningPaths": 169,
+          "winningRate": 0.1650390625
+        },
+        {
+          "misses": 1,
+          "totalPaths": 5120,
+          "winningPaths": 530,
+          "winningRate": 0.103515625
+        },
+        {
+          "misses": 2,
+          "totalPaths": 11520,
+          "winningPaths": 628,
+          "winningRate": 0.05451388888888889
+        },
+        {
+          "misses": 3,
+          "totalPaths": 15360,
+          "winningPaths": 385,
+          "winningRate": 0.025065104166666668
+        },
+        {
+          "misses": 4,
+          "totalPaths": 13440,
+          "winningPaths": 138,
+          "winningRate": 0.010267857142857143
+        },
+        {
+          "misses": 5,
+          "totalPaths": 8064,
+          "winningPaths": 22,
+          "winningRate": 0.002728174603174603
+        },
+        {
+          "misses": 6,
+          "totalPaths": 3360,
+          "winningPaths": 0,
+          "winningRate": 0
+        },
+        {
+          "misses": 7,
+          "totalPaths": 960,
+          "winningPaths": 0,
+          "winningRate": 0
+        },
+        {
+          "misses": 8,
+          "totalPaths": 180,
+          "winningPaths": 0,
+          "winningRate": 0
+        },
+        {
+          "misses": 9,
+          "totalPaths": 20,
+          "winningPaths": 0,
+          "winningRate": 0
+        },
+        {
+          "misses": 10,
+          "totalPaths": 1,
+          "winningPaths": 0,
+          "winningRate": 0
+        }
+      ],
+      "winningPath": [
+        "right",
+        "right",
+        "right",
+        "left",
+        "left",
+        "left",
+        "left",
+        "right",
+        "left",
+        "right"
+      ],
+      "witnessSurvivors": 42,
+      "minSurvivors": 1,
+      "greedyWins": true,
+      "difficulty": {
+        "min": 0.09,
+        "ideal": 0.17
+      }
+    },
+    {
+      "level": 7,
+      "seed": 17,
+      "boss": 9,
+      "patrols": 5,
+      "barrages": 4,
+      "winningPaths": 1815,
+      "totalPaths": 59049,
+      "winningRate": 0.030737184372300972,
+      "attentiveWinningRate": 0.1513671875,
+      "byMisses": [
+        {
+          "misses": 0,
+          "totalPaths": 1024,
+          "winningPaths": 155,
+          "winningRate": 0.1513671875
+        },
+        {
+          "misses": 1,
+          "totalPaths": 5120,
+          "winningPaths": 485,
+          "winningRate": 0.0947265625
+        },
+        {
+          "misses": 2,
+          "totalPaths": 11520,
+          "winningPaths": 610,
+          "winningRate": 0.05295138888888889
+        },
+        {
+          "misses": 3,
+          "totalPaths": 15360,
+          "winningPaths": 397,
+          "winningRate": 0.025846354166666665
+        },
+        {
+          "misses": 4,
+          "totalPaths": 13440,
+          "winningPaths": 142,
+          "winningRate": 0.010565476190476191
+        },
+        {
+          "misses": 5,
+          "totalPaths": 8064,
+          "winningPaths": 25,
+          "winningRate": 0.0031001984126984125
+        },
+        {
+          "misses": 6,
+          "totalPaths": 3360,
+          "winningPaths": 1,
+          "winningRate": 0.00029761904761904765
+        },
+        {
+          "misses": 7,
+          "totalPaths": 960,
+          "winningPaths": 0,
+          "winningRate": 0
+        },
+        {
+          "misses": 8,
+          "totalPaths": 180,
+          "winningPaths": 0,
+          "winningRate": 0
+        },
+        {
+          "misses": 9,
+          "totalPaths": 20,
+          "winningPaths": 0,
+          "winningRate": 0
+        },
+        {
+          "misses": 10,
+          "totalPaths": 1,
+          "winningPaths": 0,
+          "winningRate": 0
+        }
+      ],
+      "winningPath": [
+        "right",
+        "right",
+        "left",
+        "left",
+        "left",
+        "left",
+        "right",
+        "left",
+        "left",
+        "left"
+      ],
+      "witnessSurvivors": 39,
+      "minSurvivors": 1,
+      "greedyWins": false,
+      "difficulty": {
+        "min": 0.09,
+        "ideal": 0.17
+      }
+    },
+    {
+      "level": 7,
+      "seed": 20261021,
+      "boss": 10,
+      "patrols": 5,
+      "barrages": 4,
+      "winningPaths": 1883,
+      "totalPaths": 59049,
+      "winningRate": 0.03188877034327423,
+      "attentiveWinningRate": 0.1669921875,
+      "byMisses": [
+        {
+          "misses": 0,
+          "totalPaths": 1024,
+          "winningPaths": 171,
+          "winningRate": 0.1669921875
+        },
+        {
+          "misses": 1,
+          "totalPaths": 5120,
+          "winningPaths": 511,
+          "winningRate": 0.0998046875
+        },
+        {
+          "misses": 2,
+          "totalPaths": 11520,
+          "winningPaths": 636,
+          "winningRate": 0.05520833333333333
+        },
+        {
+          "misses": 3,
+          "totalPaths": 15360,
+          "winningPaths": 409,
+          "winningRate": 0.026627604166666666
+        },
+        {
+          "misses": 4,
+          "totalPaths": 13440,
+          "winningPaths": 133,
+          "winningRate": 0.009895833333333333
+        },
+        {
+          "misses": 5,
+          "totalPaths": 8064,
+          "winningPaths": 23,
+          "winningRate": 0.0028521825396825395
+        },
+        {
+          "misses": 6,
+          "totalPaths": 3360,
+          "winningPaths": 0,
+          "winningRate": 0
+        },
+        {
+          "misses": 7,
+          "totalPaths": 960,
+          "winningPaths": 0,
+          "winningRate": 0
+        },
+        {
+          "misses": 8,
+          "totalPaths": 180,
+          "winningPaths": 0,
+          "winningRate": 0
+        },
+        {
+          "misses": 9,
+          "totalPaths": 20,
+          "winningPaths": 0,
+          "winningRate": 0
+        },
+        {
+          "misses": 10,
+          "totalPaths": 1,
+          "winningPaths": 0,
+          "winningRate": 0
+        }
+      ],
+      "winningPath": [
+        "left",
+        "right",
+        "left",
+        "right",
+        "right",
+        "right",
+        "left",
+        "right",
+        "right",
+        "right"
+      ],
+      "witnessSurvivors": 25,
+      "minSurvivors": 1,
+      "greedyWins": true,
+      "difficulty": {
+        "min": 0.09,
+        "ideal": 0.17
+      }
+    },
+    {
+      "level": 7,
+      "seed": 141827133,
+      "boss": 10,
+      "patrols": 5,
+      "barrages": 4,
+      "winningPaths": 1892,
+      "totalPaths": 59049,
+      "winningRate": 0.0320411861335501,
+      "attentiveWinningRate": 0.169921875,
+      "byMisses": [
+        {
+          "misses": 0,
+          "totalPaths": 1024,
+          "winningPaths": 174,
+          "winningRate": 0.169921875
+        },
+        {
+          "misses": 1,
+          "totalPaths": 5120,
+          "winningPaths": 511,
+          "winningRate": 0.0998046875
+        },
+        {
+          "misses": 2,
+          "totalPaths": 11520,
+          "winningPaths": 636,
+          "winningRate": 0.05520833333333333
+        },
+        {
+          "misses": 3,
+          "totalPaths": 15360,
+          "winningPaths": 414,
+          "winningRate": 0.026953125
+        },
+        {
+          "misses": 4,
+          "totalPaths": 13440,
+          "winningPaths": 134,
+          "winningRate": 0.009970238095238095
+        },
+        {
+          "misses": 5,
+          "totalPaths": 8064,
+          "winningPaths": 23,
+          "winningRate": 0.0028521825396825395
+        },
+        {
+          "misses": 6,
+          "totalPaths": 3360,
+          "winningPaths": 0,
+          "winningRate": 0
+        },
+        {
+          "misses": 7,
+          "totalPaths": 960,
+          "winningPaths": 0,
+          "winningRate": 0
+        },
+        {
+          "misses": 8,
+          "totalPaths": 180,
+          "winningPaths": 0,
+          "winningRate": 0
+        },
+        {
+          "misses": 9,
+          "totalPaths": 20,
+          "winningPaths": 0,
+          "winningRate": 0
+        },
+        {
+          "misses": 10,
+          "totalPaths": 1,
+          "winningPaths": 0,
+          "winningRate": 0
+        }
+      ],
+      "winningPath": [
+        "right",
+        "right",
+        "left",
+        "right",
+        "left",
+        "left",
+        "left",
+        "right",
+        "right",
+        "left"
+      ],
+      "witnessSurvivors": 28,
+      "minSurvivors": 1,
+      "greedyWins": true,
+      "difficulty": {
+        "min": 0.09,
+        "ideal": 0.17
+      }
+    },
+    {
+      "level": 8,
+      "seed": 1,
+      "boss": 9,
+      "patrols": 5,
+      "barrages": 4,
+      "winningPaths": 2105,
+      "totalPaths": 59049,
+      "winningRate": 0.035648359836745754,
+      "attentiveWinningRate": 0.1484375,
+      "byMisses": [
+        {
+          "misses": 0,
+          "totalPaths": 1024,
+          "winningPaths": 152,
+          "winningRate": 0.1484375
+        },
+        {
+          "misses": 1,
+          "totalPaths": 5120,
+          "winningPaths": 541,
+          "winningRate": 0.1056640625
+        },
+        {
+          "misses": 2,
+          "totalPaths": 11520,
+          "winningPaths": 715,
+          "winningRate": 0.062065972222222224
+        },
+        {
+          "misses": 3,
+          "totalPaths": 15360,
+          "winningPaths": 480,
+          "winningRate": 0.03125
+        },
+        {
+          "misses": 4,
+          "totalPaths": 13440,
+          "winningPaths": 180,
+          "winningRate": 0.013392857142857142
+        },
+        {
+          "misses": 5,
+          "totalPaths": 8064,
+          "winningPaths": 35,
+          "winningRate": 0.004340277777777778
+        },
+        {
+          "misses": 6,
+          "totalPaths": 3360,
+          "winningPaths": 2,
+          "winningRate": 0.0005952380952380953
+        },
+        {
+          "misses": 7,
+          "totalPaths": 960,
+          "winningPaths": 0,
+          "winningRate": 0
+        },
+        {
+          "misses": 8,
+          "totalPaths": 180,
+          "winningPaths": 0,
+          "winningRate": 0
+        },
+        {
+          "misses": 9,
+          "totalPaths": 20,
+          "winningPaths": 0,
+          "winningRate": 0
+        },
+        {
+          "misses": 10,
+          "totalPaths": 1,
+          "winningPaths": 0,
+          "winningRate": 0
+        }
+      ],
+      "winningPath": [
+        "left",
+        "left",
+        "right",
+        "right",
+        "right",
+        "left",
+        "left",
+        "right",
+        "right",
+        "left"
+      ],
+      "witnessSurvivors": 44,
+      "minSurvivors": 1,
+      "greedyWins": true,
+      "difficulty": {
+        "min": 0.09,
+        "ideal": 0.17
+      }
+    },
+    {
+      "level": 8,
+      "seed": 17,
+      "boss": 9,
+      "patrols": 5,
+      "barrages": 4,
+      "winningPaths": 2071,
+      "totalPaths": 59049,
+      "winningRate": 0.035072566851259125,
+      "attentiveWinningRate": 0.1572265625,
+      "byMisses": [
+        {
+          "misses": 0,
+          "totalPaths": 1024,
+          "winningPaths": 161,
+          "winningRate": 0.1572265625
+        },
+        {
+          "misses": 1,
+          "totalPaths": 5120,
+          "winningPaths": 535,
+          "winningRate": 0.1044921875
+        },
+        {
+          "misses": 2,
+          "totalPaths": 11520,
+          "winningPaths": 690,
+          "winningRate": 0.059895833333333336
+        },
+        {
+          "misses": 3,
+          "totalPaths": 15360,
+          "winningPaths": 483,
+          "winningRate": 0.0314453125
+        },
+        {
+          "misses": 4,
+          "totalPaths": 13440,
+          "winningPaths": 167,
+          "winningRate": 0.012425595238095237
+        },
+        {
+          "misses": 5,
+          "totalPaths": 8064,
+          "winningPaths": 33,
+          "winningRate": 0.004092261904761905
+        },
+        {
+          "misses": 6,
+          "totalPaths": 3360,
+          "winningPaths": 2,
+          "winningRate": 0.0005952380952380953
+        },
+        {
+          "misses": 7,
+          "totalPaths": 960,
+          "winningPaths": 0,
+          "winningRate": 0
+        },
+        {
+          "misses": 8,
+          "totalPaths": 180,
+          "winningPaths": 0,
+          "winningRate": 0
+        },
+        {
+          "misses": 9,
+          "totalPaths": 20,
+          "winningPaths": 0,
+          "winningRate": 0
+        },
+        {
+          "misses": 10,
+          "totalPaths": 1,
+          "winningPaths": 0,
+          "winningRate": 0
+        }
+      ],
+      "winningPath": [
+        "left",
+        "right",
+        "right",
+        "right",
+        "left",
+        "left",
+        "right",
+        "left",
+        "right",
+        "left"
+      ],
+      "witnessSurvivors": 41,
+      "minSurvivors": 1,
+      "greedyWins": true,
+      "difficulty": {
+        "min": 0.09,
+        "ideal": 0.17
+      }
+    },
+    {
+      "level": 8,
+      "seed": 20261021,
+      "boss": 13,
+      "patrols": 5,
+      "barrages": 4,
+      "winningPaths": 2026,
+      "totalPaths": 59049,
+      "winningRate": 0.03431048789987976,
+      "attentiveWinningRate": 0.1884765625,
+      "byMisses": [
+        {
+          "misses": 0,
+          "totalPaths": 1024,
+          "winningPaths": 193,
+          "winningRate": 0.1884765625
+        },
+        {
+          "misses": 1,
+          "totalPaths": 5120,
+          "winningPaths": 580,
+          "winningRate": 0.11328125
+        },
+        {
+          "misses": 2,
+          "totalPaths": 11520,
+          "winningPaths": 665,
+          "winningRate": 0.05772569444444445
+        },
+        {
+          "misses": 3,
+          "totalPaths": 15360,
+          "winningPaths": 423,
+          "winningRate": 0.0275390625
+        },
+        {
+          "misses": 4,
+          "totalPaths": 13440,
+          "winningPaths": 143,
+          "winningRate": 0.010639880952380953
+        },
+        {
+          "misses": 5,
+          "totalPaths": 8064,
+          "winningPaths": 22,
+          "winningRate": 0.002728174603174603
+        },
+        {
+          "misses": 6,
+          "totalPaths": 3360,
+          "winningPaths": 0,
+          "winningRate": 0
+        },
+        {
+          "misses": 7,
+          "totalPaths": 960,
+          "winningPaths": 0,
+          "winningRate": 0
+        },
+        {
+          "misses": 8,
+          "totalPaths": 180,
+          "winningPaths": 0,
+          "winningRate": 0
+        },
+        {
+          "misses": 9,
+          "totalPaths": 20,
+          "winningPaths": 0,
+          "winningRate": 0
+        },
+        {
+          "misses": 10,
+          "totalPaths": 1,
+          "winningPaths": 0,
+          "winningRate": 0
+        }
+      ],
+      "winningPath": [
+        "right",
+        "right",
+        "left",
+        "right",
+        "right",
+        "right",
+        "right",
+        "right",
+        "right",
+        "right"
+      ],
+      "witnessSurvivors": 42,
+      "minSurvivors": 1,
+      "greedyWins": true,
+      "difficulty": {
+        "min": 0.09,
+        "ideal": 0.17
+      }
+    },
+    {
+      "level": 8,
+      "seed": 162088152,
+      "boss": 9,
+      "patrols": 5,
+      "barrages": 4,
+      "winningPaths": 1811,
+      "totalPaths": 59049,
+      "winningRate": 0.03066944402106725,
+      "attentiveWinningRate": 0.15234375,
+      "byMisses": [
+        {
+          "misses": 0,
+          "totalPaths": 1024,
+          "winningPaths": 156,
+          "winningRate": 0.15234375
+        },
+        {
+          "misses": 1,
+          "totalPaths": 5120,
+          "winningPaths": 503,
+          "winningRate": 0.0982421875
+        },
+        {
+          "misses": 2,
+          "totalPaths": 11520,
+          "winningPaths": 605,
+          "winningRate": 0.05251736111111111
+        },
+        {
+          "misses": 3,
+          "totalPaths": 15360,
+          "winningPaths": 393,
+          "winningRate": 0.0255859375
+        },
+        {
+          "misses": 4,
+          "totalPaths": 13440,
+          "winningPaths": 132,
+          "winningRate": 0.009821428571428571
+        },
+        {
+          "misses": 5,
+          "totalPaths": 8064,
+          "winningPaths": 22,
+          "winningRate": 0.002728174603174603
+        },
+        {
+          "misses": 6,
+          "totalPaths": 3360,
+          "winningPaths": 0,
+          "winningRate": 0
+        },
+        {
+          "misses": 7,
+          "totalPaths": 960,
+          "winningPaths": 0,
+          "winningRate": 0
+        },
+        {
+          "misses": 8,
+          "totalPaths": 180,
+          "winningPaths": 0,
+          "winningRate": 0
+        },
+        {
+          "misses": 9,
+          "totalPaths": 20,
+          "winningPaths": 0,
+          "winningRate": 0
+        },
+        {
+          "misses": 10,
+          "totalPaths": 1,
+          "winningPaths": 0,
+          "winningRate": 0
+        }
+      ],
+      "winningPath": [
+        "left",
+        "left",
+        "left",
+        "left",
+        "right",
+        "left",
+        "left",
+        "right",
+        "right",
+        "right"
+      ],
+      "witnessSurvivors": 29,
+      "minSurvivors": 1,
+      "greedyWins": false,
+      "difficulty": {
+        "min": 0.09,
+        "ideal": 0.17
+      }
+    },
+    {
+      "level": 9,
+      "seed": 1,
+      "boss": 11,
+      "patrols": 5,
+      "barrages": 4,
+      "winningPaths": 2282,
+      "totalPaths": 59049,
+      "winningRate": 0.03864587037883791,
+      "attentiveWinningRate": 0.173828125,
+      "byMisses": [
+        {
+          "misses": 0,
+          "totalPaths": 1024,
+          "winningPaths": 178,
+          "winningRate": 0.173828125
+        },
+        {
+          "misses": 1,
+          "totalPaths": 5120,
+          "winningPaths": 591,
+          "winningRate": 0.1154296875
+        },
+        {
+          "misses": 2,
+          "totalPaths": 11520,
+          "winningPaths": 772,
+          "winningRate": 0.06701388888888889
+        },
+        {
+          "misses": 3,
+          "totalPaths": 15360,
+          "winningPaths": 533,
+          "winningRate": 0.03470052083333333
+        },
+        {
+          "misses": 4,
+          "totalPaths": 13440,
+          "winningPaths": 175,
+          "winningRate": 0.013020833333333334
+        },
+        {
+          "misses": 5,
+          "totalPaths": 8064,
+          "winningPaths": 31,
+          "winningRate": 0.0038442460317460315
+        },
+        {
+          "misses": 6,
+          "totalPaths": 3360,
+          "winningPaths": 2,
+          "winningRate": 0.0005952380952380953
+        },
+        {
+          "misses": 7,
+          "totalPaths": 960,
+          "winningPaths": 0,
+          "winningRate": 0
+        },
+        {
+          "misses": 8,
+          "totalPaths": 180,
+          "winningPaths": 0,
+          "winningRate": 0
+        },
+        {
+          "misses": 9,
+          "totalPaths": 20,
+          "winningPaths": 0,
+          "winningRate": 0
+        },
+        {
+          "misses": 10,
+          "totalPaths": 1,
+          "winningPaths": 0,
+          "winningRate": 0
+        }
+      ],
+      "winningPath": [
+        "right",
+        "left",
+        "right",
+        "left",
+        "right",
+        "right",
+        "left",
+        "left",
+        "left",
+        "right"
+      ],
+      "witnessSurvivors": 43,
+      "minSurvivors": 1,
+      "greedyWins": true,
+      "difficulty": {
+        "min": 0.09,
+        "ideal": 0.17
+      }
+    },
+    {
+      "level": 9,
+      "seed": 17,
+      "boss": 11,
+      "patrols": 5,
+      "barrages": 4,
+      "winningPaths": 2294,
+      "totalPaths": 59049,
+      "winningRate": 0.038849091432539076,
+      "attentiveWinningRate": 0.1708984375,
+      "byMisses": [
+        {
+          "misses": 0,
+          "totalPaths": 1024,
+          "winningPaths": 175,
+          "winningRate": 0.1708984375
+        },
+        {
+          "misses": 1,
+          "totalPaths": 5120,
+          "winningPaths": 579,
+          "winningRate": 0.1130859375
+        },
+        {
+          "misses": 2,
+          "totalPaths": 11520,
+          "winningPaths": 755,
+          "winningRate": 0.06553819444444445
+        },
+        {
+          "misses": 3,
+          "totalPaths": 15360,
+          "winningPaths": 550,
+          "winningRate": 0.035807291666666664
+        },
+        {
+          "misses": 4,
+          "totalPaths": 13440,
+          "winningPaths": 198,
+          "winningRate": 0.014732142857142857
+        },
+        {
+          "misses": 5,
+          "totalPaths": 8064,
+          "winningPaths": 35,
+          "winningRate": 0.004340277777777778
+        },
+        {
+          "misses": 6,
+          "totalPaths": 3360,
+          "winningPaths": 2,
+          "winningRate": 0.0005952380952380953
+        },
+        {
+          "misses": 7,
+          "totalPaths": 960,
+          "winningPaths": 0,
+          "winningRate": 0
+        },
+        {
+          "misses": 8,
+          "totalPaths": 180,
+          "winningPaths": 0,
+          "winningRate": 0
+        },
+        {
+          "misses": 9,
+          "totalPaths": 20,
+          "winningPaths": 0,
+          "winningRate": 0
+        },
+        {
+          "misses": 10,
+          "totalPaths": 1,
+          "winningPaths": 0,
+          "winningRate": 0
+        }
+      ],
+      "winningPath": [
+        "left",
+        "left",
+        "right",
+        "right",
+        "right",
+        "right",
+        "left",
+        "right",
+        "right",
+        "right"
+      ],
+      "witnessSurvivors": 43,
+      "minSurvivors": 1,
+      "greedyWins": true,
+      "difficulty": {
+        "min": 0.09,
+        "ideal": 0.17
+      }
+    },
+    {
+      "level": 9,
+      "seed": 20261021,
+      "boss": 11,
+      "patrols": 5,
+      "barrages": 4,
+      "winningPaths": 2233,
+      "totalPaths": 59049,
+      "winningRate": 0.03781605107622483,
+      "attentiveWinningRate": 0.1669921875,
+      "byMisses": [
+        {
+          "misses": 0,
+          "totalPaths": 1024,
+          "winningPaths": 171,
+          "winningRate": 0.1669921875
+        },
+        {
+          "misses": 1,
+          "totalPaths": 5120,
+          "winningPaths": 598,
+          "winningRate": 0.116796875
+        },
+        {
+          "misses": 2,
+          "totalPaths": 11520,
+          "winningPaths": 752,
+          "winningRate": 0.06527777777777778
+        },
+        {
+          "misses": 3,
+          "totalPaths": 15360,
+          "winningPaths": 504,
+          "winningRate": 0.0328125
+        },
+        {
+          "misses": 4,
+          "totalPaths": 13440,
+          "winningPaths": 173,
+          "winningRate": 0.012872023809523809
+        },
+        {
+          "misses": 5,
+          "totalPaths": 8064,
+          "winningPaths": 33,
+          "winningRate": 0.004092261904761905
+        },
+        {
+          "misses": 6,
+          "totalPaths": 3360,
+          "winningPaths": 2,
+          "winningRate": 0.0005952380952380953
+        },
+        {
+          "misses": 7,
+          "totalPaths": 960,
+          "winningPaths": 0,
+          "winningRate": 0
+        },
+        {
+          "misses": 8,
+          "totalPaths": 180,
+          "winningPaths": 0,
+          "winningRate": 0
+        },
+        {
+          "misses": 9,
+          "totalPaths": 20,
+          "winningPaths": 0,
+          "winningRate": 0
+        },
+        {
+          "misses": 10,
+          "totalPaths": 1,
+          "winningPaths": 0,
+          "winningRate": 0
+        }
+      ],
+      "winningPath": [
+        "right",
+        "right",
+        "left",
+        "right",
+        "right",
+        "right",
+        "left",
+        "left",
+        "left",
+        "right"
+      ],
+      "witnessSurvivors": 42,
+      "minSurvivors": 1,
+      "greedyWins": true,
+      "difficulty": {
+        "min": 0.09,
+        "ideal": 0.17
+      }
+    },
+    {
+      "level": 9,
+      "seed": 182349171,
+      "boss": 9,
+      "patrols": 5,
+      "barrages": 4,
+      "winningPaths": 1459,
+      "totalPaths": 59049,
+      "winningRate": 0.02470829311249979,
+      "attentiveWinningRate": 0.107421875,
+      "byMisses": [
+        {
+          "misses": 0,
+          "totalPaths": 1024,
+          "winningPaths": 110,
+          "winningRate": 0.107421875
+        },
+        {
+          "misses": 1,
+          "totalPaths": 5120,
+          "winningPaths": 408,
+          "winningRate": 0.0796875
+        },
+        {
+          "misses": 2,
+          "totalPaths": 11520,
+          "winningPaths": 520,
+          "winningRate": 0.04513888888888889
+        },
+        {
+          "misses": 3,
+          "totalPaths": 15360,
+          "winningPaths": 314,
+          "winningRate": 0.020442708333333334
+        },
+        {
+          "misses": 4,
+          "totalPaths": 13440,
+          "winningPaths": 99,
+          "winningRate": 0.007366071428571428
+        },
+        {
+          "misses": 5,
+          "totalPaths": 8064,
+          "winningPaths": 8,
+          "winningRate": 0.000992063492063492
+        },
+        {
+          "misses": 6,
+          "totalPaths": 3360,
+          "winningPaths": 0,
+          "winningRate": 0
+        },
+        {
+          "misses": 7,
+          "totalPaths": 960,
+          "winningPaths": 0,
+          "winningRate": 0
+        },
+        {
+          "misses": 8,
+          "totalPaths": 180,
+          "winningPaths": 0,
+          "winningRate": 0
+        },
+        {
+          "misses": 9,
+          "totalPaths": 20,
+          "winningPaths": 0,
+          "winningRate": 0
+        },
+        {
+          "misses": 10,
+          "totalPaths": 1,
+          "winningPaths": 0,
+          "winningRate": 0
+        }
+      ],
+      "winningPath": [
+        "right",
+        "left",
+        "right",
+        "right",
+        "left",
+        "right",
+        "right",
+        "left",
+        "right",
+        "left"
+      ],
+      "witnessSurvivors": 33,
+      "minSurvivors": 1,
+      "greedyWins": false,
+      "difficulty": {
+        "min": 0.09,
+        "ideal": 0.17
+      }
+    },
+    {
+      "level": 10,
+      "seed": 1,
+      "boss": 10,
+      "patrols": 5,
+      "barrages": 4,
+      "winningPaths": 1925,
+      "totalPaths": 59049,
+      "winningRate": 0.0326000440312283,
+      "attentiveWinningRate": 0.169921875,
+      "byMisses": [
+        {
+          "misses": 0,
+          "totalPaths": 1024,
+          "winningPaths": 174,
+          "winningRate": 0.169921875
+        },
+        {
+          "misses": 1,
+          "totalPaths": 5120,
+          "winningPaths": 531,
+          "winningRate": 0.1037109375
+        },
+        {
+          "misses": 2,
+          "totalPaths": 11520,
+          "winningPaths": 653,
+          "winningRate": 0.05668402777777778
+        },
+        {
+          "misses": 3,
+          "totalPaths": 15360,
+          "winningPaths": 412,
+          "winningRate": 0.026822916666666665
+        },
+        {
+          "misses": 4,
+          "totalPaths": 13440,
+          "winningPaths": 133,
+          "winningRate": 0.009895833333333333
+        },
+        {
+          "misses": 5,
+          "totalPaths": 8064,
+          "winningPaths": 22,
+          "winningRate": 0.002728174603174603
+        },
+        {
+          "misses": 6,
+          "totalPaths": 3360,
+          "winningPaths": 0,
+          "winningRate": 0
+        },
+        {
+          "misses": 7,
+          "totalPaths": 960,
+          "winningPaths": 0,
+          "winningRate": 0
+        },
+        {
+          "misses": 8,
+          "totalPaths": 180,
+          "winningPaths": 0,
+          "winningRate": 0
+        },
+        {
+          "misses": 9,
+          "totalPaths": 20,
+          "winningPaths": 0,
+          "winningRate": 0
+        },
+        {
+          "misses": 10,
+          "totalPaths": 1,
+          "winningPaths": 0,
+          "winningRate": 0
+        }
+      ],
+      "winningPath": [
+        "left",
+        "right",
+        "left",
+        "left",
+        "left",
+        "left",
+        "right",
+        "right",
+        "right",
+        "right"
+      ],
+      "witnessSurvivors": 26,
+      "minSurvivors": 1,
+      "greedyWins": true,
+      "difficulty": {
+        "min": 0.09,
+        "ideal": 0.17
+      }
+    },
+    {
+      "level": 10,
+      "seed": 17,
+      "boss": 10,
+      "patrols": 5,
+      "barrages": 4,
+      "winningPaths": 1978,
+      "totalPaths": 59049,
+      "winningRate": 0.03349760368507511,
+      "attentiveWinningRate": 0.1767578125,
+      "byMisses": [
+        {
+          "misses": 0,
+          "totalPaths": 1024,
+          "winningPaths": 181,
+          "winningRate": 0.1767578125
+        },
+        {
+          "misses": 1,
+          "totalPaths": 5120,
+          "winningPaths": 540,
+          "winningRate": 0.10546875
+        },
+        {
+          "misses": 2,
+          "totalPaths": 11520,
+          "winningPaths": 672,
+          "winningRate": 0.058333333333333334
+        },
+        {
+          "misses": 3,
+          "totalPaths": 15360,
+          "winningPaths": 425,
+          "winningRate": 0.027669270833333332
+        },
+        {
+          "misses": 4,
+          "totalPaths": 13440,
+          "winningPaths": 137,
+          "winningRate": 0.010193452380952381
+        },
+        {
+          "misses": 5,
+          "totalPaths": 8064,
+          "winningPaths": 23,
+          "winningRate": 0.0028521825396825395
+        },
+        {
+          "misses": 6,
+          "totalPaths": 3360,
+          "winningPaths": 0,
+          "winningRate": 0
+        },
+        {
+          "misses": 7,
+          "totalPaths": 960,
+          "winningPaths": 0,
+          "winningRate": 0
+        },
+        {
+          "misses": 8,
+          "totalPaths": 180,
+          "winningPaths": 0,
+          "winningRate": 0
+        },
+        {
+          "misses": 9,
+          "totalPaths": 20,
+          "winningPaths": 0,
+          "winningRate": 0
+        },
+        {
+          "misses": 10,
+          "totalPaths": 1,
+          "winningPaths": 0,
+          "winningRate": 0
+        }
+      ],
+      "winningPath": [
+        "right",
+        "left",
+        "left",
+        "left",
+        "right",
+        "right",
+        "left",
+        "left",
+        "right",
+        "right"
+      ],
+      "witnessSurvivors": 25,
+      "minSurvivors": 1,
+      "greedyWins": true,
+      "difficulty": {
+        "min": 0.09,
+        "ideal": 0.17
+      }
+    },
+    {
+      "level": 10,
+      "seed": 20261021,
+      "boss": 12,
+      "patrols": 5,
+      "barrages": 4,
+      "winningPaths": 2178,
+      "totalPaths": 59049,
+      "winningRate": 0.036884621246761166,
+      "attentiveWinningRate": 0.177734375,
+      "byMisses": [
+        {
+          "misses": 0,
+          "totalPaths": 1024,
+          "winningPaths": 182,
+          "winningRate": 0.177734375
+        },
+        {
+          "misses": 1,
+          "totalPaths": 5120,
+          "winningPaths": 594,
+          "winningRate": 0.116015625
+        },
+        {
+          "misses": 2,
+          "totalPaths": 11520,
+          "winningPaths": 713,
+          "winningRate": 0.06189236111111111
+        },
+        {
+          "misses": 3,
+          "totalPaths": 15360,
+          "winningPaths": 486,
+          "winningRate": 0.031640625
+        },
+        {
+          "misses": 4,
+          "totalPaths": 13440,
+          "winningPaths": 173,
+          "winningRate": 0.012872023809523809
+        },
+        {
+          "misses": 5,
+          "totalPaths": 8064,
+          "winningPaths": 28,
+          "winningRate": 0.003472222222222222
+        },
+        {
+          "misses": 6,
+          "totalPaths": 3360,
+          "winningPaths": 2,
+          "winningRate": 0.0005952380952380953
+        },
+        {
+          "misses": 7,
+          "totalPaths": 960,
+          "winningPaths": 0,
+          "winningRate": 0
+        },
+        {
+          "misses": 8,
+          "totalPaths": 180,
+          "winningPaths": 0,
+          "winningRate": 0
+        },
+        {
+          "misses": 9,
+          "totalPaths": 20,
+          "winningPaths": 0,
+          "winningRate": 0
+        },
+        {
+          "misses": 10,
+          "totalPaths": 1,
+          "winningPaths": 0,
+          "winningRate": 0
+        }
+      ],
+      "winningPath": [
+        "right",
+        "left",
+        "left",
+        "left",
+        "right",
+        "left",
+        "left",
+        "left",
+        "right",
+        "left"
+      ],
+      "witnessSurvivors": 43,
+      "minSurvivors": 1,
+      "greedyWins": true,
+      "difficulty": {
+        "min": 0.09,
+        "ideal": 0.17
+      }
+    },
+    {
+      "level": 10,
+      "seed": 202610190,
+      "boss": 12,
+      "patrols": 5,
+      "barrages": 4,
+      "winningPaths": 1979,
+      "totalPaths": 59049,
+      "winningRate": 0.03351453877288354,
+      "attentiveWinningRate": 0.1611328125,
+      "byMisses": [
+        {
+          "misses": 0,
+          "totalPaths": 1024,
+          "winningPaths": 165,
+          "winningRate": 0.1611328125
+        },
+        {
+          "misses": 1,
+          "totalPaths": 5120,
+          "winningPaths": 537,
+          "winningRate": 0.1048828125
+        },
+        {
+          "misses": 2,
+          "totalPaths": 11520,
+          "winningPaths": 663,
+          "winningRate": 0.05755208333333333
+        },
+        {
+          "misses": 3,
+          "totalPaths": 15360,
+          "winningPaths": 441,
+          "winningRate": 0.0287109375
+        },
+        {
+          "misses": 4,
+          "totalPaths": 13440,
+          "winningPaths": 148,
+          "winningRate": 0.011011904761904763
+        },
+        {
+          "misses": 5,
+          "totalPaths": 8064,
+          "winningPaths": 23,
+          "winningRate": 0.0028521825396825395
+        },
+        {
+          "misses": 6,
+          "totalPaths": 3360,
+          "winningPaths": 2,
+          "winningRate": 0.0005952380952380953
+        },
+        {
+          "misses": 7,
+          "totalPaths": 960,
+          "winningPaths": 0,
+          "winningRate": 0
+        },
+        {
+          "misses": 8,
+          "totalPaths": 180,
+          "winningPaths": 0,
+          "winningRate": 0
+        },
+        {
+          "misses": 9,
+          "totalPaths": 20,
+          "winningPaths": 0,
+          "winningRate": 0
+        },
+        {
+          "misses": 10,
+          "totalPaths": 1,
+          "winningPaths": 0,
+          "winningRate": 0
+        }
+      ],
+      "winningPath": [
+        "left",
+        "left",
+        "left",
+        "left",
+        "left",
+        "right",
+        "right",
+        "right",
+        "right",
+        "left"
+      ],
+      "witnessSurvivors": 42,
+      "minSurvivors": 1,
+      "greedyWins": false,
+      "difficulty": {
+        "min": 0.09,
+        "ideal": 0.17
+      }
+    },
+    {
+      "level": 11,
+      "seed": 1,
+      "boss": 9,
+      "patrols": 5,
+      "barrages": 4,
+      "winningPaths": 1316,
+      "totalPaths": 59049,
+      "winningRate": 0.022286575555894257,
+      "attentiveWinningRate": 0.0986328125,
+      "byMisses": [
+        {
+          "misses": 0,
+          "totalPaths": 1024,
+          "winningPaths": 101,
+          "winningRate": 0.0986328125
+        },
+        {
+          "misses": 1,
+          "totalPaths": 5120,
+          "winningPaths": 353,
+          "winningRate": 0.0689453125
+        },
+        {
+          "misses": 2,
+          "totalPaths": 11520,
+          "winningPaths": 460,
+          "winningRate": 0.03993055555555555
+        },
+        {
+          "misses": 3,
+          "totalPaths": 15360,
+          "winningPaths": 291,
+          "winningRate": 0.0189453125
+        },
+        {
+          "misses": 4,
+          "totalPaths": 13440,
+          "winningPaths": 101,
+          "winningRate": 0.007514880952380953
+        },
+        {
+          "misses": 5,
+          "totalPaths": 8064,
+          "winningPaths": 10,
+          "winningRate": 0.001240079365079365
+        },
+        {
+          "misses": 6,
+          "totalPaths": 3360,
+          "winningPaths": 0,
+          "winningRate": 0
+        },
+        {
+          "misses": 7,
+          "totalPaths": 960,
+          "winningPaths": 0,
+          "winningRate": 0
+        },
+        {
+          "misses": 8,
+          "totalPaths": 180,
+          "winningPaths": 0,
+          "winningRate": 0
+        },
+        {
+          "misses": 9,
+          "totalPaths": 20,
+          "winningPaths": 0,
+          "winningRate": 0
+        },
+        {
+          "misses": 10,
+          "totalPaths": 1,
+          "winningPaths": 0,
+          "winningRate": 0
+        }
+      ],
+      "winningPath": [
+        "right",
+        "left",
+        "right",
+        "right",
+        "right",
+        "left",
+        "right",
+        "right",
+        "left",
+        "left"
+      ],
+      "witnessSurvivors": 27,
+      "minSurvivors": 1,
+      "greedyWins": true,
+      "difficulty": {
+        "min": 0.09,
+        "ideal": 0.17
+      }
+    },
+    {
+      "level": 11,
+      "seed": 17,
+      "boss": 9,
+      "patrols": 5,
+      "barrages": 4,
+      "winningPaths": 1737,
+      "totalPaths": 59049,
+      "winningRate": 0.029416247523243406,
+      "attentiveWinningRate": 0.1552734375,
+      "byMisses": [
+        {
+          "misses": 0,
+          "totalPaths": 1024,
+          "winningPaths": 159,
+          "winningRate": 0.1552734375
+        },
+        {
+          "misses": 1,
+          "totalPaths": 5120,
+          "winningPaths": 498,
+          "winningRate": 0.097265625
+        },
+        {
+          "misses": 2,
+          "totalPaths": 11520,
+          "winningPaths": 582,
+          "winningRate": 0.050520833333333334
+        },
+        {
+          "misses": 3,
+          "totalPaths": 15360,
+          "winningPaths": 364,
+          "winningRate": 0.023697916666666666
+        },
+        {
+          "misses": 4,
+          "totalPaths": 13440,
+          "winningPaths": 118,
+          "winningRate": 0.008779761904761905
+        },
+        {
+          "misses": 5,
+          "totalPaths": 8064,
+          "winningPaths": 16,
+          "winningRate": 0.001984126984126984
+        },
+        {
+          "misses": 6,
+          "totalPaths": 3360,
+          "winningPaths": 0,
+          "winningRate": 0
+        },
+        {
+          "misses": 7,
+          "totalPaths": 960,
+          "winningPaths": 0,
+          "winningRate": 0
+        },
+        {
+          "misses": 8,
+          "totalPaths": 180,
+          "winningPaths": 0,
+          "winningRate": 0
+        },
+        {
+          "misses": 9,
+          "totalPaths": 20,
+          "winningPaths": 0,
+          "winningRate": 0
+        },
+        {
+          "misses": 10,
+          "totalPaths": 1,
+          "winningPaths": 0,
+          "winningRate": 0
+        }
+      ],
+      "winningPath": [
+        "left",
+        "left",
+        "right",
+        "right",
+        "right",
+        "left",
+        "left",
+        "right",
+        "left",
+        "right"
+      ],
+      "witnessSurvivors": 37,
+      "minSurvivors": 1,
+      "greedyWins": false,
+      "difficulty": {
+        "min": 0.09,
+        "ideal": 0.17
+      }
+    },
+    {
+      "level": 11,
+      "seed": 20261021,
+      "boss": 9,
+      "patrols": 5,
+      "barrages": 4,
+      "winningPaths": 1870,
+      "totalPaths": 59049,
+      "winningRate": 0.03166861420176464,
+      "attentiveWinningRate": 0.1708984375,
+      "byMisses": [
+        {
+          "misses": 0,
+          "totalPaths": 1024,
+          "winningPaths": 175,
+          "winningRate": 0.1708984375
+        },
+        {
+          "misses": 1,
+          "totalPaths": 5120,
+          "winningPaths": 528,
+          "winningRate": 0.103125
+        },
+        {
+          "misses": 2,
+          "totalPaths": 11520,
+          "winningPaths": 629,
+          "winningRate": 0.054600694444444445
+        },
+        {
+          "misses": 3,
+          "totalPaths": 15360,
+          "winningPaths": 393,
+          "winningRate": 0.0255859375
+        },
+        {
+          "misses": 4,
+          "totalPaths": 13440,
+          "winningPaths": 129,
+          "winningRate": 0.009598214285714286
+        },
+        {
+          "misses": 5,
+          "totalPaths": 8064,
+          "winningPaths": 16,
+          "winningRate": 0.001984126984126984
+        },
+        {
+          "misses": 6,
+          "totalPaths": 3360,
+          "winningPaths": 0,
+          "winningRate": 0
+        },
+        {
+          "misses": 7,
+          "totalPaths": 960,
+          "winningPaths": 0,
+          "winningRate": 0
+        },
+        {
+          "misses": 8,
+          "totalPaths": 180,
+          "winningPaths": 0,
+          "winningRate": 0
+        },
+        {
+          "misses": 9,
+          "totalPaths": 20,
+          "winningPaths": 0,
+          "winningRate": 0
+        },
+        {
+          "misses": 10,
+          "totalPaths": 1,
+          "winningPaths": 0,
+          "winningRate": 0
+        }
+      ],
+      "winningPath": [
+        "right",
+        "left",
+        "right",
+        "right",
+        "left",
+        "right",
+        "left",
+        "right",
+        "right",
+        "left"
+      ],
+      "witnessSurvivors": 39,
+      "minSurvivors": 1,
+      "greedyWins": true,
+      "difficulty": {
+        "min": 0.09,
+        "ideal": 0.17
+      }
+    },
+    {
+      "level": 11,
+      "seed": 222871209,
+      "boss": 9,
+      "patrols": 5,
+      "barrages": 4,
+      "winningPaths": 1765,
+      "totalPaths": 59049,
+      "winningRate": 0.029890429981879456,
+      "attentiveWinningRate": 0.177734375,
+      "byMisses": [
+        {
+          "misses": 0,
+          "totalPaths": 1024,
+          "winningPaths": 182,
+          "winningRate": 0.177734375
+        },
+        {
+          "misses": 1,
+          "totalPaths": 5120,
+          "winningPaths": 512,
+          "winningRate": 0.1
+        },
+        {
+          "misses": 2,
+          "totalPaths": 11520,
+          "winningPaths": 589,
+          "winningRate": 0.05112847222222222
+        },
+        {
+          "misses": 3,
+          "totalPaths": 15360,
+          "winningPaths": 350,
+          "winningRate": 0.022786458333333332
+        },
+        {
+          "misses": 4,
+          "totalPaths": 13440,
+          "winningPaths": 117,
+          "winningRate": 0.008705357142857143
+        },
+        {
+          "misses": 5,
+          "totalPaths": 8064,
+          "winningPaths": 15,
+          "winningRate": 0.0018601190476190475
+        },
+        {
+          "misses": 6,
+          "totalPaths": 3360,
+          "winningPaths": 0,
+          "winningRate": 0
+        },
+        {
+          "misses": 7,
+          "totalPaths": 960,
+          "winningPaths": 0,
+          "winningRate": 0
+        },
+        {
+          "misses": 8,
+          "totalPaths": 180,
+          "winningPaths": 0,
+          "winningRate": 0
+        },
+        {
+          "misses": 9,
+          "totalPaths": 20,
+          "winningPaths": 0,
+          "winningRate": 0
+        },
+        {
+          "misses": 10,
+          "totalPaths": 1,
+          "winningPaths": 0,
+          "winningRate": 0
+        }
+      ],
+      "winningPath": [
+        "right",
+        "right",
+        "right",
+        "left",
+        "left",
+        "left",
+        "right",
+        "left",
+        "left",
+        "left"
+      ],
+      "witnessSurvivors": 39,
+      "minSurvivors": 1,
+      "greedyWins": true,
+      "difficulty": {
+        "min": 0.09,
+        "ideal": 0.17
+      }
+    },
+    {
+      "level": 12,
+      "seed": 1,
+      "boss": 9,
+      "patrols": 5,
+      "barrages": 4,
+      "winningPaths": 1430,
+      "totalPaths": 59049,
+      "winningRate": 0.02421717556605531,
+      "attentiveWinningRate": 0.12109375,
+      "byMisses": [
+        {
+          "misses": 0,
+          "totalPaths": 1024,
+          "winningPaths": 124,
+          "winningRate": 0.12109375
+        },
+        {
+          "misses": 1,
+          "totalPaths": 5120,
+          "winningPaths": 406,
+          "winningRate": 0.079296875
+        },
+        {
+          "misses": 2,
+          "totalPaths": 11520,
+          "winningPaths": 483,
+          "winningRate": 0.04192708333333333
+        },
+        {
+          "misses": 3,
+          "totalPaths": 15360,
+          "winningPaths": 303,
+          "winningRate": 0.0197265625
+        },
+        {
+          "misses": 4,
+          "totalPaths": 13440,
+          "winningPaths": 103,
+          "winningRate": 0.007663690476190476
+        },
+        {
+          "misses": 5,
+          "totalPaths": 8064,
+          "winningPaths": 11,
+          "winningRate": 0.0013640873015873015
+        },
+        {
+          "misses": 6,
+          "totalPaths": 3360,
+          "winningPaths": 0,
+          "winningRate": 0
+        },
+        {
+          "misses": 7,
+          "totalPaths": 960,
+          "winningPaths": 0,
+          "winningRate": 0
+        },
+        {
+          "misses": 8,
+          "totalPaths": 180,
+          "winningPaths": 0,
+          "winningRate": 0
+        },
+        {
+          "misses": 9,
+          "totalPaths": 20,
+          "winningPaths": 0,
+          "winningRate": 0
+        },
+        {
+          "misses": 10,
+          "totalPaths": 1,
+          "winningPaths": 0,
+          "winningRate": 0
+        }
+      ],
+      "winningPath": [
+        "right",
+        "right",
+        "right",
+        "right",
+        "left",
+        "right",
+        "left",
+        "left",
+        "left",
+        "right"
+      ],
+      "witnessSurvivors": 37,
+      "minSurvivors": 1,
+      "greedyWins": false,
+      "difficulty": {
+        "min": 0.09,
+        "ideal": 0.17
+      }
+    },
+    {
+      "level": 12,
+      "seed": 17,
+      "boss": 9,
+      "patrols": 5,
+      "barrages": 4,
+      "winningPaths": 1970,
+      "totalPaths": 59049,
+      "winningRate": 0.03336212298260766,
+      "attentiveWinningRate": 0.1767578125,
+      "byMisses": [
+        {
+          "misses": 0,
+          "totalPaths": 1024,
+          "winningPaths": 181,
+          "winningRate": 0.1767578125
+        },
+        {
+          "misses": 1,
+          "totalPaths": 5120,
+          "winningPaths": 571,
+          "winningRate": 0.1115234375
+        },
+        {
+          "misses": 2,
+          "totalPaths": 11520,
+          "winningPaths": 662,
+          "winningRate": 0.057465277777777775
+        },
+        {
+          "misses": 3,
+          "totalPaths": 15360,
+          "winningPaths": 400,
+          "winningRate": 0.026041666666666668
+        },
+        {
+          "misses": 4,
+          "totalPaths": 13440,
+          "winningPaths": 135,
+          "winningRate": 0.010044642857142858
+        },
+        {
+          "misses": 5,
+          "totalPaths": 8064,
+          "winningPaths": 21,
+          "winningRate": 0.0026041666666666665
+        },
+        {
+          "misses": 6,
+          "totalPaths": 3360,
+          "winningPaths": 0,
+          "winningRate": 0
+        },
+        {
+          "misses": 7,
+          "totalPaths": 960,
+          "winningPaths": 0,
+          "winningRate": 0
+        },
+        {
+          "misses": 8,
+          "totalPaths": 180,
+          "winningPaths": 0,
+          "winningRate": 0
+        },
+        {
+          "misses": 9,
+          "totalPaths": 20,
+          "winningPaths": 0,
+          "winningRate": 0
+        },
+        {
+          "misses": 10,
+          "totalPaths": 1,
+          "winningPaths": 0,
+          "winningRate": 0
+        }
+      ],
+      "winningPath": [
+        "right",
+        "right",
+        "right",
+        "left",
+        "left",
+        "left",
+        "left",
+        "right",
+        "right",
+        "left"
+      ],
+      "witnessSurvivors": 39,
+      "minSurvivors": 1,
+      "greedyWins": true,
+      "difficulty": {
+        "min": 0.09,
+        "ideal": 0.17
+      }
+    },
+    {
+      "level": 12,
+      "seed": 20261021,
+      "boss": 9,
+      "patrols": 5,
+      "barrages": 4,
+      "winningPaths": 1680,
+      "totalPaths": 59049,
+      "winningRate": 0.02845094751816288,
+      "attentiveWinningRate": 0.13671875,
+      "byMisses": [
+        {
+          "misses": 0,
+          "totalPaths": 1024,
+          "winningPaths": 140,
+          "winningRate": 0.13671875
+        },
+        {
+          "misses": 1,
+          "totalPaths": 5120,
+          "winningPaths": 471,
+          "winningRate": 0.0919921875
+        },
+        {
+          "misses": 2,
+          "totalPaths": 11520,
+          "winningPaths": 565,
+          "winningRate": 0.04904513888888889
+        },
+        {
+          "misses": 3,
+          "totalPaths": 15360,
+          "winningPaths": 365,
+          "winningRate": 0.023763020833333332
+        },
+        {
+          "misses": 4,
+          "totalPaths": 13440,
+          "winningPaths": 123,
+          "winningRate": 0.009151785714285715
+        },
+        {
+          "misses": 5,
+          "totalPaths": 8064,
+          "winningPaths": 16,
+          "winningRate": 0.001984126984126984
+        },
+        {
+          "misses": 6,
+          "totalPaths": 3360,
+          "winningPaths": 0,
+          "winningRate": 0
+        },
+        {
+          "misses": 7,
+          "totalPaths": 960,
+          "winningPaths": 0,
+          "winningRate": 0
+        },
+        {
+          "misses": 8,
+          "totalPaths": 180,
+          "winningPaths": 0,
+          "winningRate": 0
+        },
+        {
+          "misses": 9,
+          "totalPaths": 20,
+          "winningPaths": 0,
+          "winningRate": 0
+        },
+        {
+          "misses": 10,
+          "totalPaths": 1,
+          "winningPaths": 0,
+          "winningRate": 0
+        }
+      ],
+      "winningPath": [
+        "right",
+        "left",
+        "right",
+        "left",
+        "right",
+        "left",
+        "right",
+        "left",
+        "left",
+        "left"
+      ],
+      "witnessSurvivors": 35,
+      "minSurvivors": 1,
+      "greedyWins": false,
+      "difficulty": {
+        "min": 0.09,
+        "ideal": 0.17
+      }
+    },
+    {
+      "level": 12,
+      "seed": 243132228,
+      "boss": 9,
+      "patrols": 5,
+      "barrages": 4,
+      "winningPaths": 1204,
+      "totalPaths": 59049,
+      "winningRate": 0.020389845721350067,
+      "attentiveWinningRate": 0.1044921875,
+      "byMisses": [
+        {
+          "misses": 0,
+          "totalPaths": 1024,
+          "winningPaths": 107,
+          "winningRate": 0.1044921875
+        },
+        {
+          "misses": 1,
+          "totalPaths": 5120,
+          "winningPaths": 352,
+          "winningRate": 0.06875
+        },
+        {
+          "misses": 2,
+          "totalPaths": 11520,
+          "winningPaths": 416,
+          "winningRate": 0.03611111111111111
+        },
+        {
+          "misses": 3,
+          "totalPaths": 15360,
+          "winningPaths": 242,
+          "winningRate": 0.015755208333333333
+        },
+        {
+          "misses": 4,
+          "totalPaths": 13440,
+          "winningPaths": 76,
+          "winningRate": 0.005654761904761905
+        },
+        {
+          "misses": 5,
+          "totalPaths": 8064,
+          "winningPaths": 11,
+          "winningRate": 0.0013640873015873015
+        },
+        {
+          "misses": 6,
+          "totalPaths": 3360,
+          "winningPaths": 0,
+          "winningRate": 0
+        },
+        {
+          "misses": 7,
+          "totalPaths": 960,
+          "winningPaths": 0,
+          "winningRate": 0
+        },
+        {
+          "misses": 8,
+          "totalPaths": 180,
+          "winningPaths": 0,
+          "winningRate": 0
+        },
+        {
+          "misses": 9,
+          "totalPaths": 20,
+          "winningPaths": 0,
+          "winningRate": 0
+        },
+        {
+          "misses": 10,
+          "totalPaths": 1,
+          "winningPaths": 0,
+          "winningRate": 0
+        }
+      ],
+      "winningPath": [
+        "left",
+        "left",
+        "left",
+        "right",
+        "right",
+        "left",
+        "right",
+        "right",
+        "right",
+        "right"
+      ],
+      "witnessSurvivors": 35,
+      "minSurvivors": 1,
+      "greedyWins": false,
+      "difficulty": {
+        "min": 0.09,
+        "ideal": 0.17
+      }
+    }
+  ]
+}
