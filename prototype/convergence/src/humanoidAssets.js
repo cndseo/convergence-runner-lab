@@ -182,7 +182,7 @@ export function updateAnimatedHumanoids(crowd,dt) {
  const layout=crowd.density;
  const slot=crowd._densitySlot??=( {x:0,z:0} );
  const reduced=crowd.game?.experience?.reducedMotion;
- for(let i=crowd.playerCount;i<layout.total&&n<imp.rows.length;i++){
+ for(let i=crowd.playerStickmen.length;i<layout.total&&n<imp.rows.length;i++){
   crowd.getVisualPosition(i,slot);
   const guard=i>=layout.marchers;
   const grow=i>=crowd.previousVisualTotal ? crowd.densityGrowth : 1;

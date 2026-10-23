@@ -49,7 +49,9 @@ export function generateCampaignLevel({level=1,seed=1,startCount=5,strength=1}={
     });
     const plan={version:5,ruleset:TV_RULESET,seed,level,startCount:5,strength:1,
       events,trackLength:180,bossHealth:0,tvCatalog:'fixed16'};
-    const paths=solvePlan(plan,false,{includeMiss:false,compact:true}),greedy=greedyPath(plan);
+    // Keep the existing resistance calibration; the final proof uses exact arithmetic.
+    const calibration={...plan,legacyTVLimits:true};
+    const paths=solvePlan(calibration,false,{includeMiss:false,compact:true}),greedy=greedyPath(calibration);
     for(let health=9;health<=90;health++){
       if(level<=3&&applyCampaignCombat(greedy,health).count===0)continue;
       const rate=paths.filter(p=>applyCampaignCombat(p,health).count>0).reduce((n,p)=>n+p.ways,0)/1024;

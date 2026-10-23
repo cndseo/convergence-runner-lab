@@ -1,0 +1,40 @@
+{
+  "revision": "b4bab317a86cf2d892e301de861ae5f4d936dae3",
+  "imageBefore": "convergence-payments-api:presence-20261022",
+  "imageAfter": "convergence-payments-api:tv-contract-b4bab317a86c",
+  "rollbackContainer": "convergence-payments-api-tv-before-b4bab317a86c",
+  "environmentPreserved": true,
+  "mountsPreserved": true,
+  "protectedServerHashes": [
+    "a1dbd84933023f826be402d6c03f548feab8d1909d0b8b994f91eceb04e7b9e1  /app/server/server.mjs",
+    "2f64253a36f6768236adcb491a6db17f47c5e5b7d7699362543683d98ac1fcfc  /app/server/account.mjs",
+    "38966297d11cb64b443f6b3016bca197fcc118f42c37ac7d08d2d92f3c32d3a9  /app/server/identity.mjs"
+  ],
+  "health": {
+    "ok": true,
+    "leaderboard": true,
+    "payments": "live",
+    "currency": "eur"
+  },
+  "daily": {
+    "day": "2026-10-23",
+    "seed": 2779148563,
+    "survivors": 33,
+    "shields": 0,
+    "won": true,
+    "path": [
+      "right",
+      "left",
+      "right",
+      "left",
+      "left",
+      "left",
+      "right",
+      "left",
+      "right",
+      "left"
+    ],
+    "totalChoices": 10,
+    "winningRoutes": 219
+  }
+}

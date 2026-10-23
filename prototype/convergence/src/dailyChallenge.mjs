@@ -29,7 +29,7 @@ export function dailyChallengeSeed(day) {
 }
 export function createDailyPlan(day) {
   return generateTacticalLevel({
-    level: DAILY_LEVEL, seed: dailyChallengeSeed(day),
+    level: DAILY_LEVEL, seed: dailyChallengeSeed(day), exactTV:true,
     startCount: DAILY_START_COUNT, strength: DAILY_STRENGTH
   });
 }

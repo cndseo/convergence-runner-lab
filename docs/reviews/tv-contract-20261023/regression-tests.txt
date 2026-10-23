@@ -1,0 +1,174 @@
+
+> count-master-game@1.0.0 test
+> node --test tests/*.test.mjs
+
+Ô£ö Guest scores and purchases survive Google login on second device (515.1793ms)
+Ô£ö Guest merge preserves paid inventory and carries best campaign progress (566.1212ms)
+Ô£ö identity, admin and progress endpoints reject unauthorized calls (512.5148ms)
+Ô£ö a different authenticated user cannot claim an already-linked guest account (56.6768ms)
+Ô£ö passwordless personal recovery code restores purchases on a second device and can be rotated (313.6155ms)
+(node:47212) [MODULE_TYPELESS_PACKAGE_JSON] Warning: Module type of file:///C:/CITYOS/convergence-tv-contract-20261023/prototype/convergence/src/challengeHub.js is not specified and it doesn't parse as CommonJS.
+Reparsing as ES module because module syntax was detected. This incurs a performance overhead.
+To eliminate this warning, add "type": "module" to \\?\C:\CITYOS\convergence-tv-contract-20261023\prototype\convergence\package.json.
+(Use `node --trace-warnings ...` to show where the warning was created)
+Ô£ö prices exactly match approved Ôé¼1.99 per character and Ôé¼2.99 per Marseille intervention (1.4876ms)
+Ô£ö paid characters are visual only, and all boosters are campaign-only consumables (0.4004ms)
+Ô£ö GenZ bundles are server-priced consumables, independently from Marseille support (0.1345ms)
+Ô£ö BRAV-M portal always subtracts exactly three and keeps shields unchanged (1.7247ms)
+Ô£ö solver and gameplay choices include only one BRAV-M penalty per crossing (120.0069ms)
+(node:10032) [MODULE_TYPELESS_PACKAGE_JSON] Warning: Module type of file:///C:/CITYOS/convergence-tv-contract-20261023/prototype/convergence/src/audio.js is not specified and it doesn't parse as CommonJS.
+Reparsing as ES module because module syntax was detected. This incurs a performance overhead.
+To eliminate this warning, add "type": "module" to \\?\C:\CITYOS\convergence-tv-contract-20261023\prototype\convergence\package.json.
+(Use `node --trace-warnings ...` to show where the warning was created)
+Ô£ö Motorbike 4 field recording triggers exactly one paired left/right sound during BRAV-M charge (2.1028ms)
+Ô£ö motorcycle recording uses the selected file and preloads after starting campaign audio (146.2786ms)
+Ô£ö BRAV-M begins around 30 meters away, approaches for 3 seconds, damages once and plays no artificial impact (2.4342ms)
+Ô£ö patrol strikes remove real tactical protesters and first exhaust protection (7.7715ms)
+Ô£ö large real barrages exchange blows with strength proportional to crowd (2.0929ms)
+Ô£ö five active flank patrols and four substantive barrages per advanced level with certified path (4730.1538ms)
+Ô£ö all 59049 routes solved from identical state transitions (1883.0206ms)
+Ô£ö real first level is challenging yet has a substantial fraction of winning choices (124.2497ms)
+Ô£ö every real saved-level seed is certified across levels and upgraded crowds (14006.3603ms)
+Ô£ö certified path stays alive after each choice and each line of police (16.7201ms)
+Ô£ö alternate level seeds and long-term levels remain certified (257.9968ms)
+(node:45136) [MODULE_TYPELESS_PACKAGE_JSON] Warning: Module type of file:///C:/CITYOS/convergence-tv-contract-20261023/prototype/convergence/src/characterModels3D.js is not specified and it doesn't parse as CommonJS.
+Reparsing as ES module because module syntax was detected. This incurs a performance overhead.
+To eliminate this warning, add "type": "module" to \\?\C:\CITYOS\convergence-tv-contract-20261023\prototype\convergence\package.json.
+(Use `node --trace-warnings ...` to show where the warning was created)
+Ô£ö approved Spider-Man costume is articulated 3D, not a flat billboard (28.3321ms)
+Ô£ö dinosaur inflatable has depth, open mouth, eyes, feet and flexible tail (3.9041ms)
+Ô£ö 12 distinct Marseille actors contain no Sprite or image planes, all rigged for walking (40.5814ms)
+Ô£ö combat choreography transitions and recoveries are deterministic (4.0238ms)
+(node:45316) [MODULE_TYPELESS_PACKAGE_JSON] Warning: Module type of file:///C:/CITYOS/convergence-tv-contract-20261023/prototype/convergence/src/combatImpactSounds.js is not specified and it doesn't parse as CommonJS.
+Reparsing as ES module because module syntax was detected. This incurs a performance overhead.
+To eliminate this warning, add "type": "module" to \\?\C:\CITYOS\convergence-tv-contract-20261023\prototype\convergence\package.json.
+(Use `node --trace-warnings ...` to show where the warning was created)
+Ô£ö sampled baton, human reactions and body thud are short and rate-limited (1.5573ms)
+Ô£ö no synthetic tones, no impact when audio locked or assets missing (0.2993ms)
+Ô£ö combat sound assets are source-licensed locally and connected to BRAV-M and CRS hits (74.7734ms)
+Ô£ö no payments enabled by default, empty daily ranking, and profiles are anonymous (473.956ms)
+Ô£ö leaderboard validates all 10 choices on server, does not trust client score (663.3731ms)
+Ô£ö Stripe checkout uses fixed EUR catalog and grants only via verified paid webhook (515.2349ms)
+Ô£ö one UTC daily seed shared across locales and changing at midnight UTC (2.6459ms)
+Ô£ö identical daily plans at same date with exactly 10 portals, proved winning (108.0696ms)
+Ô£ö forged or incomplete score submissions cannot be accepted (0.3055ms)
+Ô£ö share text displays score but not winning route or private data (0.6366ms)
+Ô£ö GenZ virtual ammo checkout grants only on signed paid webhook and spends exactly once (1849.1651ms)
+Ô£ö twenty explicit identity recipes and all five communities (3.0938ms)
+Ô£ö senior and younger faces stay distinct in the declarative catalog (0.2561ms)
+Ô£ö every selected hero has two authentic cropped PNGs (69.8922ms)
+Ô£ö wardrobe is strictly illustrated; GLBs are retained for gameplay (0.9328ms)
+Ô£ö twenty stable identities, four per family, and bounded atlas rows (3.1645ms)
+Ô£ö save migration is isolated, validated, and retains one permanent hero (1.3064ms)
+Ô£ö doubling copies family composition and certified TV recruitment remains exact (1.3531ms)
+Ô£ö all twelve districts have a free route with hero baseline and preserve actual family totals at every event (6119.5895ms)
+Ô£ö visual growth is monotonic, 3ÔÇô6x, bounded, and never resurrects an empty crowd (1.1813ms)
+Ô£ö each protection adds two visible supporters, losses remove them without changing the roster (0.3402ms)
+Ô£ö ranks sit behind the leader, within a compact corridor, with no duplicate slots (10.9456ms)
+Ô£ö every district has all patrol types throughout the route, clear of the playable corridor (2.7932ms)
+Ô£ö email login issues a short-lived single-use ticket without Supabase (261.0625ms)
+Ô£ö Google callback enforces state cookie, nonce, proof exchange and one-time use (121.3284ms)
+Ô£ö without external credentials every login method is safely unavailable (33.1255ms)
+Ô£ö production identity rejects insecure game origin (3.7147ms)
+Ô£ö LBD shots can originate far from the player (1.8156ms)
+Ô£ö high velocity bullets cannot tunnel through a moving target sphere (0.2614ms)
+Ô£ö injury categories are defined and deterministic (0.1711ms)
+Ô£ö live payments require an HTTPS storefront, a Stripe client and signed webhooks (1.478ms)
+Ô£ö explicitly configured live catalog reports live and retains updated GenZ pack counts (466.3945ms)
+(node:16488) [MODULE_TYPELESS_PACKAGE_JSON] Warning: Module type of file:///C:/CITYOS/convergence-tv-contract-20261023/prototype/convergence/src/marseilleReinforcements.js is not specified and it doesn't parse as CommonJS.
+Reparsing as ES module because module syntax was detected. This incurs a performance overhead.
+To eliminate this warning, add "type": "module" to \\?\C:\CITYOS\convergence-tv-contract-20261023\prototype\convergence\package.json.
+(Use `node --trace-warnings ...` to show where the warning was created)
+Ô£ö TV gift adds once to the same purchased stock and consumes without a payment API (1.2925ms)
+Ô£ö server synchronization preserves exactly one outstanding gift (0.2049ms)
+Ô£ö reload restores the gift and its claimed flag without allowing a duplicate (0.2458ms)
+Ô£ö new run replaces an unused gift and preserves all purchased charges (0.1839ms)
+Ô£ö later levels and daily challenge cannot grant or spend this bonus (0.1917ms)
+Ô£ö purchased attacks keep the existing consume endpoint and 299 cent price (75.6497ms)
+Ô£ö attack action is visible only when combat allows manual use (0.5036ms)
+Ô£ö support routes enter from three directions, never teleport, and exit at different times (37.9308ms)
+Ô£ö CRS react progressively, retreat continuously, and keep moving off the road (0.5107ms)
+Ô£ö real Stripe webhook grants 1/3/10 charges idempotently; one trigger consumes one (1667.6286ms)
+Ô£ö old ten-front completion migrates into Paris without skipping the two final districts (1.9126ms)
+Ô£ö geography persists independently of tactical difficulty and survives daily-mode saves (0.2939ms)
+Ô£ö only the twelfth geographic destination permits the final symbolic capture (0.4051ms)
+Ô£ö all twelve campaign districts have certified free routes without paid support (12166.0958ms)
+Ô£ö competitive Daily uses exact TV arithmetic and the server-verified replay (11.2813ms)
+Ô£ö duels share a valid date and declared target, never purchases or a winning route (1.2217ms)
+Ô£ö local diagnostic is opt-in, bounded, strips sensitive fields and erases on withdrawal (9.6557ms)
+Ô£ö the displayed participant count follows the actual renderer layout (1.3512ms)
+Ô£ö visible police reserves scale with crowd size, with mobile upper bounds (1.9912ms)
+Ô£ö pure visual response has no damage or inventory inputs (0.4039ms)
+Ô£ö 3 approved cutouts exist and were transferred without corruption (81.2485ms)
+Ô£ö share background is a reusable image; numbers remain generated per result (3.6644ms)
+Ô£ö share card clamps invalid values and handles campaign and daily results (0.2814ms)
+Ô£ö share URL and dynamic score remain accurate and carry challenge date (0.7255ms)
+Ô£ö steering reacts after a two-pixel swipe away from TVs but preserves TV tap tolerance (1.0406ms)
+Ô£ö drag steering is thirty percent more responsive in CSS pixels and still clamps to lanes (0.3356ms)
+Ô£ö intro speech happens before escape and shelter phases (23.5965ms)
+Ô£ö character cannot be caught at any non-final level or before the last CRS front falls (51.9648ms)
+Ô£ö last-level contact is possible, but requires real proximity (0.2493ms)
+(node:45548) [MODULE_TYPELESS_PACKAGE_JSON] Warning: Module type of file:///C:/CITYOS/convergence-tv-contract-20261023/prototype/convergence/src/streetPatina.js is not specified and it doesn't parse as CommonJS.
+Reparsing as ES module because module syntax was detected. This incurs a performance overhead.
+To eliminate this warning, add "type": "module" to \\?\C:\CITYOS\convergence-tv-contract-20261023\prototype\convergence\package.json.
+(Use `node --trace-warnings ...` to show where the warning was created)
+Ô£ö street improvements stay outside player lane and use instancing (17.8333ms)
+Ô£ö tiny levels remain valid (1.4877ms)
+Ô£ö production Stripe Payment Links and Stripe Checkout are both accepted (2.4726ms)
+Ô£ö checkout accepts neither domains impersonating Stripe nor insecure links (0.3225ms)
+Ô£ö obsolete crowd personalization checkout link is absent (30.3168ms)
+Ô£ö Stripe Payment Links tie each paid order to one anonymous profile, with exactly-once fulfillment (1050.4347ms)
+Ô£ö gate feedback shows exact population and protection deltas (2.1003ms)
+Ô£ö barriers and conditions explain facts without revealing optimal choices (0.3325ms)
+Ô£ö a bonus above the former display cap remains exact in feedback (0.2002ms)
+Ô£ö loss report distinguishes sources and provides grounded guidance (0.3459ms)
+Ô£ö victory stars are cosmetic and only count actual survivors (0.2711ms)
+Ô£ö arithmetic, rounding, conditions and shield consumption (2.2969ms)
+Ô£ö 800 generated levels: witness wins, losing routes exist, greedy loses (5134.7443ms)
+Ô£ö same configuration reproduces the same puzzle (14.3231ms)
+(node:23536) [MODULE_TYPELESS_PACKAGE_JSON] Warning: Module type of file:///C:/CITYOS/convergence-tv-contract-20261023/prototype/convergence/src/bravmGateCharge.js is not specified and it doesn't parse as CommonJS.
+Reparsing as ES module because module syntax was detected. This incurs a performance overhead.
+To eliminate this warning, add "type": "module" to \\?\C:\CITYOS\convergence-tv-contract-20261023\prototype\convergence\package.json.
+(Use `node --trace-warnings ...` to show where the warning was created)
+Ô£ö BRAV-M: contact removes three real units once, without stopping campaign or spending shields (41.5494ms)
+Ô£ö BRAV-M: pause, late tap, swept arrival and restart cannot lose or duplicate the hit (0.4261ms)
+Ô£ö Marseille: pause after charge consumption preserves the attack and prevents a second activation (3.9524ms)
+Ô£ö Marseille: a paused preload remains valid, a restarted run cannot consume a charge (0.4081ms)
+Ô£ö Marseille: real officer count reaches zero at the animated impact, not nine seconds later (37.1447ms)
+Ô£ö HUD arithmetic uses real units while dense crowd visuals are preserved (1.0602ms)
+Ô£ö all 16 approved PNG hashes and the Marseille gift remain byte-identical (153.0192ms)
+Ô£ö every TV has exact independent arithmetic before, at and above the former caps (60.5172ms)
+Ô£ö a mismatched sign, value, faction or hidden damage kind is rejected before applying a TV (0.6933ms)
+Ô£ö specific families are added exactly and multiplication preserves the composition (0.5889ms)
+Ô£ö successive bonuses, penalties, multiplier and shields retain exact resources (1.0569ms)
+Ô£ö exact Daily plans remain verifiable and within the existing ranking storage range (396.138ms)
+Ô£ö sixteen correct PNG choices; no generated image overlay (129.3122ms)
+Ô£ö 20 choices in every generated level are drawn exclusively from the 16 fixed PNGs (2738.9371ms)
+Ô£ö bonus human factions and all six penalties preserve exact arithmetic (0.3024ms)
+Ô£ö one stable image per exact operation and no hidden alternate amount (1.8724ms)
+Ô£ö fixed PNG values, enemies, and winning path agree over 100 seeds (1510.2564ms)
+Ô£ö impact examples, caps, shields, extinction and no resurrection (2.0483ms)
+Ô£ö atomic pair state rejects double tap, second TV and missed/late tap (0.2668ms)
+Ô£ö short taps only; dragging out and back cannot become a tap (0.1612ms)
+Ô£ö exact 3^10 enumeration equals compressed proof and shared replay (635.3655ms)
+Ô£ö twelve districts remain free with multiple seeded layouts and miss statistics (1691.2991ms)
+Ô£ö Daily retains two choices and rejects miss routes (24.8988ms)
+(node:20072) [MODULE_TYPELESS_PACKAGE_JSON] Warning: Module type of file:///C:/CITYOS/convergence-tv-contract-20261023/prototype/convergence/src/urbanDecayAssets.js is not specified and it doesn't parse as CommonJS.
+Reparsing as ES module because module syntax was detected. This incurs a performance overhead.
+To eliminate this warning, add "type": "module" to \\?\C:\CITYOS\convergence-tv-contract-20261023\prototype\convergence\package.json.
+(Use `node --trace-warnings ...` to show where the warning was created)
+{"name":"hospital-delabre.glb","bytes":345272,"meshCount":17,"triangles":3428,"bounds":[13,8.51,9.41]}
+Ô£ö 3D urban asset loads: hospital-delabre.glb (92.6605ms)
+{"name":"lycee-delabre.glb","bytes":304380,"meshCount":16,"triangles":3008,"bounds":[14.7,8.45,9.39]}
+Ô£ö 3D urban asset loads: lycee-delabre.glb (8.23ms)
+{"name":"campement-trottoir.glb","bytes":198264,"meshCount":18,"triangles":1884,"bounds":[7.7,2.06,9.2]}
+Ô£ö 3D urban asset loads: campement-trottoir.glb (21.4743ms)
+Ô£ö scenery never obstructs player lane or alters tactical gates (0.3831ms)
+Ôä╣ tests 127
+Ôä╣ suites 0
+Ôä╣ pass 127
+Ôä╣ fail 0
+Ôä╣ cancelled 0
+Ôä╣ skipped 0
+Ôä╣ todo 0
+Ôä╣ duration_ms 15048.65

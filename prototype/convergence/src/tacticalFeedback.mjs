@@ -1,12 +1,14 @@
 // Short, strictly factual feedback derived from the SAME states as the
 // certified tactical solver. No extra damage, healing, preview or route hint.
+import {tvDefinition} from './fixedTVCatalog.mjs';
 export function explainGateChoice(choice, before, after) {
   const population = after.count - before.count;
   const protection = after.shields - before.shields;
   const pieces = [];
   let tone = 'neutral';
   if (population > 0) {
-    pieces.push(`+${population} manifestant${population > 1 ? 's' : ''}`);
+    const resource=choice.tvKey&&choice.bonusFaction?tvDefinition(choice.tvKey).resourceName:`manifestant${population>1?'s':''}`;
+    pieces.push(`+${population} ${resource}`);
     tone = 'positive';
   } else if (population < 0) {
     pieces.push(`${population} manifestants`);
@@ -32,12 +34,10 @@ export function explainGateChoice(choice, before, after) {
   } else if (choice.op === 'damage') {
     reason = choice.kind==='bravm' ? 'Charge BRAV-M : trois manifestants renversés' :
       protection < 0 ? 'Les protections ont limité les pertes' : 'Barrage traversé';
-  } else if (after.count === 72 && before.count < 72) {
-    reason = 'Plafond de foule atteint : 72';
   } else if (choice.op === '/' || choice.op === '-') {
     reason = choice.op==='/'?'La foule est divisée, arrondie à l’entier inférieur':'Ces départs retirent directement des manifestants';
   } else if (choice.op === '*') {
-    reason = 'Mobilisation multipliée, limitée à 72';
+    reason = 'Effectif réellement multiplié';
   } else {
     reason = 'Chaque choix influence les rencontres suivantes';
   }

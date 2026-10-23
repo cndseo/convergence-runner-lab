@@ -1,5 +1,5 @@
 import * as THREE from 'three';
-import {fixedTVFile,FIXED_TV_KEYS} from './fixedTVCatalog.mjs';
+import {fixedTVFile,FIXED_TV_KEYS,MARSEILLE_TV} from './fixedTVCatalog.mjs';
 import {gateLabel} from './tactics.mjs';
 
 // TV images are final, fixed graphical assets. NO generated numbers, NO overlay
@@ -40,8 +40,8 @@ export function makeTVGateArtwork(choice,root){
 }
 export function makeMarseilleBonusArtwork(root){
  // Native file including its transparent margins; only position/scale change.
- return makePNGTVArtwork('tv-marseille-attack.png',root,
-  {source:'bonus-png',bonus:'marseille'},'marseille-bonus',4.8,1065/1254);
+ return makePNGTVArtwork(MARSEILLE_TV.file,root,
+  {source:'bonus-png',bonus:'marseille',tvKey:MARSEILLE_TV.id},MARSEILLE_TV.folder,4.8,1065/1254);
 }
 function makePNGTVArtwork(file,root,metadata,folder='tv-final',width=3.2,anchor=1){
  const item=acquire(file,folder);

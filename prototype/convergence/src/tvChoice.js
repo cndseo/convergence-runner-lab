@@ -1,4 +1,5 @@
 import * as THREE from 'three';
+import {canonicalTVChoice} from './fixedTVCatalog.mjs';
 import {TV_TAP_SLOP,canTapTV,claimTV,isTVTap,applyTVImpact,TV_IMPACT_LEAD} from './tvRoadRules.mjs';
 import {FirstTVTutorial} from './firstTVTutorial.js';
 import {steeringThreshold,steerFromPixels} from './steeringRules.mjs';
@@ -56,7 +57,9 @@ export class TVChoice {
  hit(x,y){return this.targets().filter(t=>x>=t.left&&x<=t.right&&y>=t.top&&y<=t.bottom).sort((a,b)=>Math.hypot(x-a.x,y-a.y)-Math.hypot(x-b.x,y-b.y))[0]||null;}
  choose(gate,side){
   if(!this.eligible(gate)||!['left','right'].includes(side)||!gate[side+'Mesh'])return false;
-  const g=this.game,choice=gate[side+'Gate'];
+  const g=this.game,choice=canonicalTVChoice(gate[side+'Gate']);
+  const shown=gate[side+'Mesh'].userData.root?.userData.tvScreen?.userData.tvKey;
+  if(shown!==choice.tvKey)throw Error('Visible TV differs from selected effect');
   if(!claimTV(gate,'chosen'))return false;
   this.tutorial.resolve(gate);
   gate.tvSide=side;

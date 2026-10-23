@@ -23,10 +23,10 @@ test('all twelve campaign districts have certified free routes without paid supp
     }
   }
 });
-test('competitive daily plan retains legacy rules and verified replay',()=>{
+test('competitive Daily uses exact TV arithmetic and the server-verified replay',()=>{
   const day='2026-10-21',plan=createDailyPlan(day);
-  assert.equal(plan.version,3);assert.equal(plan.ruleset,undefined);
-  assert.deepEqual(plan,generateTacticalLevel({level:1,seed:plan.seed,startCount:5,strength:1}));
+  assert.equal(plan.version,4);assert.equal(plan.ruleset,undefined);
+  assert.deepEqual(plan,generateTacticalLevel({level:1,seed:plan.seed,startCount:5,strength:1,exactTV:true}));
   const result=computeDailyScore(day,plan.proof.winningPath);assert.equal(result.survivors,replayPlan(plan,plan.proof.winningPath).count);
 });
 test('duels share a valid date and declared target, never purchases or a winning route',()=>{

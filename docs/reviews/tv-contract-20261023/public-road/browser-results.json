@@ -1,0 +1,290 @@
+{
+  "base": "https://jeu.laconvergence.fr/",
+  "checks": [
+    {
+      "test": "tap-left",
+      "state": "playing",
+      "z": 5.003,
+      "count": 60,
+      "shields": 0,
+      "history": [
+        {
+          "side": "left",
+          "choice": {
+            "tvKey": "mobilisation2",
+            "op": "*",
+            "value": 2
+          },
+          "before": {
+            "count": 30,
+            "shields": 0
+          },
+          "after": {
+            "count": 60,
+            "shields": 0
+          }
+        }
+      ],
+      "broken": 1,
+      "pair": "chosen",
+      "sounds": {
+        "breaks": 1,
+        "impacts": 0
+      }
+    },
+    {
+      "test": "tap-right",
+      "state": "playing",
+      "z": 5.003,
+      "count": 40,
+      "shields": 0,
+      "history": [
+        {
+          "side": "right",
+          "choice": {
+            "tvKey": "renforts10",
+            "op": "+",
+            "value": 10
+          },
+          "before": {
+            "count": 30,
+            "shields": 0
+          },
+          "after": {
+            "count": 40,
+            "shields": 0
+          }
+        }
+      ],
+      "broken": 1,
+      "pair": "chosen",
+      "sounds": {
+        "breaks": 1,
+        "impacts": 0
+      }
+    },
+    {
+      "test": "street-does-not-select",
+      "ok": true
+    },
+    {
+      "test": "drag-out-and-back-no-tap",
+      "ok": true
+    },
+    {
+      "test": "miss",
+      "start": 30,
+      "protection": 0,
+      "state": "playing",
+      "z": 13.1,
+      "count": 27,
+      "shields": 0,
+      "history": [
+        {
+          "side": "miss",
+          "choice": {
+            "op": "impact",
+            "kind": "tv"
+          },
+          "before": {
+            "count": 30,
+            "shields": 0
+          },
+          "after": {
+            "count": 27,
+            "shields": 0
+          }
+        }
+      ],
+      "broken": 0,
+      "pair": "missed",
+      "sounds": {
+        "breaks": 0,
+        "impacts": 1
+      }
+    },
+    {
+      "test": "miss",
+      "start": 60,
+      "protection": 2,
+      "state": "playing",
+      "z": 13.1,
+      "count": 57,
+      "shields": 0,
+      "history": [
+        {
+          "side": "miss",
+          "choice": {
+            "op": "impact",
+            "kind": "tv"
+          },
+          "before": {
+            "count": 60,
+            "shields": 2
+          },
+          "after": {
+            "count": 57,
+            "shields": 0
+          }
+        }
+      ],
+      "broken": 0,
+      "pair": "missed",
+      "sounds": {
+        "breaks": 0,
+        "impacts": 1
+      }
+    },
+    {
+      "test": "miss",
+      "start": 60,
+      "protection": 20,
+      "state": "playing",
+      "z": 13.1,
+      "count": 60,
+      "shields": 15,
+      "history": [
+        {
+          "side": "miss",
+          "choice": {
+            "op": "impact",
+            "kind": "tv"
+          },
+          "before": {
+            "count": 60,
+            "shields": 20
+          },
+          "after": {
+            "count": 60,
+            "shields": 15
+          }
+        }
+      ],
+      "broken": 0,
+      "pair": "missed",
+      "sounds": {
+        "breaks": 0,
+        "impacts": 1
+      }
+    },
+    {
+      "test": "miss",
+      "start": 1,
+      "protection": 0,
+      "state": "lose",
+      "z": 13.1,
+      "count": 0,
+      "shields": 0,
+      "history": [
+        {
+          "side": "miss",
+          "choice": {
+            "op": "impact",
+            "kind": "tv"
+          },
+          "before": {
+            "count": 1,
+            "shields": 0
+          },
+          "after": {
+            "count": 0,
+            "shields": 0
+          }
+        }
+      ],
+      "broken": 0,
+      "pair": "missed",
+      "sounds": {
+        "breaks": 0,
+        "impacts": 1
+      }
+    },
+    {
+      "test": "miss",
+      "start": 72,
+      "protection": 0,
+      "state": "playing",
+      "z": 13.1,
+      "count": 66,
+      "shields": 0,
+      "history": [
+        {
+          "side": "miss",
+          "choice": {
+            "op": "impact",
+            "kind": "tv"
+          },
+          "before": {
+            "count": 72,
+            "shields": 0
+          },
+          "after": {
+            "count": 66,
+            "shields": 0
+          }
+        }
+      ],
+      "broken": 0,
+      "pair": "missed",
+      "sounds": {
+        "breaks": 0,
+        "impacts": 1
+      }
+    },
+    {
+      "test": "impact-boundary-and-late-release",
+      "ok": true
+    },
+    {
+      "test": "pause-blur-visibility-resume-no-stale-tap",
+      "ok": true
+    },
+    {
+      "test": "combat-hidden-tv-and-recovery",
+      "ok": true
+    },
+    {
+      "test": "bravm-contact-once-no-pause",
+      "ok": true
+    },
+    {
+      "test": "save-reload",
+      "ok": true
+    },
+    {
+      "test": "daily-legacy-collision",
+      "ok": true
+    }
+  ],
+  "districts": [
+    {
+      "id": 2,
+      "survivors": 28,
+      "solverSurvivors": 28,
+      "choices": [
+        "right",
+        "right",
+        "right",
+        "left",
+        "left",
+        "right",
+        "right",
+        "right",
+        "left",
+        "right"
+      ]
+    }
+  ],
+  "errors": [],
+  "badAssets": [],
+  "performance": {
+    "displayed": 312,
+    "targetingMs": 0.011400000095367431,
+    "calls": 192,
+    "triangles": 437730,
+    "frames": {
+      "medianMs": 18.400000000001455,
+      "p95Ms": 18.799999999995634
+    }
+  }
+}
