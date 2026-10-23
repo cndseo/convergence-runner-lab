@@ -19,7 +19,7 @@ Les protections absorbent les malus d'impact selon les règles existantes ; les 
 - 127 tests de régression, dont 6 nouveaux contrats : 560 états pour les 16 TV, combinaisons successives, familles, munitions/réserves inchangées, intégrité des PNG, refus des divergences.
 - Chrome mobile 390 × 844 : **240 occurrences**, deux côtés de chaque paire des 12 quartiers ; vrais événements tactiles, choix unique, chiffres HUD et états du moteur vérifiés.
 - **32 cas au-delà des anciens plafonds**, plus Marseille et parcours Daily complet.
-- Captures de chaque TV avant/après ; contrôle des fichiers PNG réellement chargés et de leurs proportions. Les captures `visual/` corrigent le positionnement du scénario de capture ; `local/results.json` contient les 240 occurrences.
+- Captures de chaque TV avant/après ; contrôle des fichiers PNG réellement chargés et de leurs proportions. `local/results.json` contient les 240 occurrences ; les captures de livraison proviennent du site public.
 - **48 configurations**, soit 2 834 352 possibilités ternaires prises en compte. Dispositions, patrouilles, effectifs CRS et résistance finale **identiques à la référence** ; parcours gratuits gagnants.
 - Daily v4 utilise le même calcul exact côté client et serveur. L'ancien générateur v3 reste disponible pour les références historiques. Les nouvelles routes sont certifiées compatibles avec le stockage de scores existant, sans tronquer les scores.
 - Contrôle physique iPhone et écoute humaine non réalisés.
