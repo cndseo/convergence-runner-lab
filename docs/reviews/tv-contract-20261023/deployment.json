@@ -1,0 +1,168 @@
+{
+  "url": "https://jeu.laconvergence.fr/",
+  "checkedAt": "2026-10-23T00:00:41.486Z",
+  "revision": "b4bab317a86cf2d892e301de861ae5f4d936dae3\ntv_contract_exact_20261023",
+  "assets": [
+    {
+      "id": "renforts10",
+      "file": "tv_bfmtv_bonus_10_renforts.png",
+      "sha256": "5357a4843b671aa2f63c833f3c216e49c63e375f844546c517fb48780d072aa8",
+      "originalSha256": "f4ae51885e215cb3eda0ee43819c84bec543c90b7482f3e177801b46b2cc7c46",
+      "status": 200,
+      "pixelSha256": "9c7d5bb7fe4d51dace922aba0b0aa4fc0639b384fa0a628f3d10d349aca5df3c",
+      "pixelsIdentical": true
+    },
+    {
+      "id": "mobilisation2",
+      "file": "tv_bfmtv_bonus_x2_mobilisation.png",
+      "sha256": "3394c360255298bd875d495c3031a1fc0f0278ddb9dfcc360f4f036ccced1bb6",
+      "originalSha256": "912cb1a9293dfbee01c8aa4660940e2cd64dd1ce815e78f12c7881781cc58479",
+      "status": 200,
+      "pixelSha256": "49807910704aef3124ea4aedc87be2f9819ce381ea026d46bc7d2a7e9e6e7b2e",
+      "pixelsIdentical": true
+    },
+    {
+      "id": "protections14",
+      "file": "tv_bfmtv_bonus_14_protections.png",
+      "sha256": "ea575fd4b0f972c8b1c6b4111bc4e4395b7374fccc87565792afe2e766323c5c",
+      "originalSha256": "fda2245ac7f46d377a11bcf2599233862965a0010bed688b25ed26986097c29c",
+      "status": 200,
+      "pixelSha256": "0838a64ac30037b6d72d49ecb9b8cde74b883dcf1b231d68bb0481f9f9a78fa3",
+      "pixelsIdentical": true
+    },
+    {
+      "id": "protections21",
+      "file": "tv_bfmtv_bonus_21_protections.png",
+      "sha256": "e3190d4b076a7b39bcb592516dcdadc792ec13fd226052725d6e30ad085b1fa6",
+      "originalSha256": "7305e3abdba00aa180de85cdb57c91939cfe22efc8c15efe0ca9bec1b4bb86a0",
+      "status": 200,
+      "pixelSha256": "63fce41f27d99d88f5e63396509b9eef9547f165b6f66f962a7c7b00025c6924",
+      "pixelsIdentical": true
+    },
+    {
+      "id": "boucliers5",
+      "file": "tv_bfmtv_bonus_5_boucliers.png",
+      "sha256": "fb2cf4ed39962beb79c803232922d763b2fde41d6e3a5c473c0065b81ec7c087",
+      "originalSha256": "aeda9d0e8c254e8fb10044c805e965a577a4b0e8c6631c7715eb883a661b2167",
+      "status": 200,
+      "pixelSha256": "d7305be503b6d2d75b9897ad4ddf9ab4c232fc663fdfa8085e7ae2bfd03166ae",
+      "pixelsIdentical": true
+    },
+    {
+      "id": "ralliement50",
+      "file": "tv_bfmtv_bonus_50pct_ralliement.png",
+      "sha256": "70f19e46b8f0abbaf9cf46d75c1c27ca42630179fe0e2e06943c7d9101605cd4",
+      "originalSha256": "65632ef3264dafcd724ed627dce79275f3f8400924335c7aef916144bf1cd2d8",
+      "status": 200,
+      "pixelSha256": "04aa032f920d6c067fb08c6a7c7e23d8bba21714f7f6ac61c55845fb28f5030c",
+      "pixelsIdentical": true
+    },
+    {
+      "id": "genz6",
+      "file": "tv_cnews_bonus_6_genz.png",
+      "sha256": "f37ce882d1ec0f1bc1c0a375157f76a3207f1f55471ddbe2f641d6a87bc20f7e",
+      "originalSha256": "a6854f46a6cbb5e9477b5ae43236a7722d1b687beb0f30d5c9899de265eaeb58",
+      "status": 200,
+      "pixelSha256": "4e915303105fef8c8c45eb8966490c4a062037ec8de04c46c8fed8d28c3397bd",
+      "pixelsIdentical": true
+    },
+    {
+      "id": "pompiers4",
+      "file": "tv_cnews_bonus_4_pompiers.png",
+      "sha256": "102a1338f7bb3581b61daa5335572c253343b68126619cb6e8fa331461aee47c",
+      "originalSha256": "760fd2d5b4be520071d7bd5f7357656c0fe44cb6ac8dc3bd73dbb468c5d01fb3",
+      "status": 200,
+      "pixelSha256": "42d0e94d82abb8cedb6186eba98e3cb2281c9c3e387307ac3c0fb4dcf454dfae",
+      "pixelsIdentical": true
+    },
+    {
+      "id": "infirmieres3",
+      "file": "tv_cnews_bonus_3_infirmieres.png",
+      "sha256": "6895bc2804473a1fc453b04cb398e8cc8346307a49e7b85b0b9af971420a04da",
+      "originalSha256": "a15284fe0fdb1acf8d3ebfa236ca1d567e1f7749a96fca50326e23537f41dbcd",
+      "status": 200,
+      "pixelSha256": "1f32054b54586e22f81da872d42bf25e1508fa764fe546e05c241d246f288e2c",
+      "pixelsIdentical": true
+    },
+    {
+      "id": "gilets5",
+      "file": "tv_cnews_bonus_5_gilets_jaunes.png",
+      "sha256": "4b9a3b258e96cac3b8fb05efa6cd2362f315a7a4cad9fdafcdd231ef54352435",
+      "originalSha256": "91cecc5830d8f7a8d11b1c175dd8120383daf0d08be50ef251a9d23ae3d85453",
+      "status": 200,
+      "pixelSha256": "ecfe192d2c9eed32a8860a79e6e613ce739dc5670d842b692fb6f8a71d95fd90",
+      "pixelsIdentical": true
+    },
+    {
+      "id": "barrage15",
+      "file": "tv_lci_malus_15_barrage.png",
+      "sha256": "51762c62de056ba42761d68b735c4014d4ed23f29ff8a6c0bf9dd6c287487ffe",
+      "originalSha256": "84b291179893174adf66e7744f33dd569c8df7e5613180bc91e26403c2be1721",
+      "status": 200,
+      "pixelSha256": "1de49e5ef2d616441bc7986c40ec81046cf57a103835d25819fd422abef2b9ad",
+      "pixelsIdentical": true
+    },
+    {
+      "id": "fourgons20",
+      "file": "tv_lci_malus_20_fourgons.png",
+      "sha256": "a07a6325fbedf69bb679c5b1e4296f5478c46a2bd217ff20fcf01cca0ca8385f",
+      "originalSha256": "b2e62403e93a13bbde580e31d5e143ff0a31598f4e4c9db7bc5d542bdf2b169a",
+      "status": 200,
+      "pixelSha256": "2f7b2711a82b5514cd0fa5cb26a0b584b82bd74f4f67f5e8c075f89f74e7a35a",
+      "pixelsIdentical": true
+    },
+    {
+      "id": "obstacles40",
+      "file": "tv_lci_malus_40pct_obstacles.png",
+      "sha256": "4b8bbd2bb7fb9bc94d8fa45a60aa3d7d14a642f58868f2fbc5b4de2af9028e8f",
+      "originalSha256": "57c6755deff813852308b5760b4d584e12c5b1d844d9506f221ceca4b5d76e56",
+      "status": 200,
+      "pixelSha256": "ec5be8734462864adeb2a1c15732170c379de4910cca04bb1e6841ce4431c64f",
+      "pixelsIdentical": true
+    },
+    {
+      "id": "departs5",
+      "file": "tv_lci_malus_5_departs.png",
+      "sha256": "4ff20337ee2cd3babccf076548cfa7ae491808378479f8192a61fb26f9f32948",
+      "originalSha256": "783ee462f0efddc74c27cfe01926d28dd1bdd91702d8f63786bce031002bcdc1",
+      "status": 200,
+      "pixelSha256": "6558ca561cbd8509f1c66039e724b340ea2bf2a8d3d320c2b21ebb5ee2d03b84",
+      "pixelsIdentical": true
+    },
+    {
+      "id": "dispersion2",
+      "file": "tv_lci_malus_div2_dispersion.png",
+      "sha256": "9d583e0ea7d2f76a876990effe4d764970097c3562e39a6b62fd2aa1bfc179b1",
+      "originalSha256": "93edf2def13326eddf40d96a2819388d0c9e9db71d2a92a3cc89630ee75a9796",
+      "status": 200,
+      "pixelSha256": "139019f487d96488c29b7df9768d00a305f17fef85a3fd68ac88cd0c2b68336e",
+      "pixelsIdentical": true
+    },
+    {
+      "id": "bravm3",
+      "file": "tv_lci_malus_3_manifestants.png",
+      "sha256": "22ff6200beb1f2667b5fc71080ab1950196bcebf4a1f27fe162944c9c613e40b",
+      "originalSha256": "a22d0c1f395706a10e8ea1765cf28c886b1eba5ebeb6e52a28ad8b00af0c4d47",
+      "status": 200,
+      "pixelSha256": "cede85bc7bf445aa50d7d284b1fd4eaa886a0e513ca6408643d30a71f5bd329d",
+      "pixelsIdentical": true
+    },
+    {
+      "id": "marseille1",
+      "file": "tv-marseille-attack.png",
+      "sha256": "6109f9a6aec1abb58bbf4f75677b963037be544ad98a49872e51634743ef8d20",
+      "originalSha256": "5119ef75fb8d7ebc096506bf45372c7f19d0271dc87f413a38fd694b6caeeb35",
+      "status": 200,
+      "pixelSha256": "50c2c7544e805433a693be4b04c5bb8bb80492a8da1fa755f7cc7418c843d491",
+      "pixelsIdentical": true
+    }
+  ],
+  "cockpit.html": "byte-identical",
+  "assets/accountPortal-BPM8ZsIr.js": "byte-identical",
+  "apiHealth": {
+    "ok": true,
+    "leaderboard": true,
+    "payments": "live",
+    "currency": "eur"
+  }
+}

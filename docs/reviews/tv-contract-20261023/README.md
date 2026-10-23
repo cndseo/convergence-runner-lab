@@ -29,3 +29,17 @@ Les protections absorbent les malus d'impact selon les règles existantes ; les 
 Builds Docker sans GitHub Actions, prévisualisation indépendante puis publication Hostinger dans `domains/laconvergence.fr/public_html/jeu`, après les validations. Les assets existants et `cockpit.html` sont préservés ; le nouveau fichier d'entrée est publié en dernier. Sauvegarde des fichiers d'entrée avant remplacement.
 
 La mise à jour serveur porte uniquement sur les quatre modules purs de règles TV/Daily de l'image existante. Identifiants de connexion, comptes Google/e-mail, configuration Stripe, données et code serveur sont conservés. Vérifications et révisions dans `deployment.json` une fois la publication terminée.
+
+## Livraison vérifiée sur le domaine public
+
+- Jeu public : https://jeu.laconvergence.fr/ ; PR : https://github.com/cndseo/convergence-runner-lab/pull/37 (non fusionnée).
+- Prévisualisation : https://heros-convergence.72-61-167-161.sslip.io/tv-coherentes-20261023/
+- Révision déployée : `b4bab317a86cf2d892e301de861ae5f4d936dae3`, arbre `c2b60ba3fbb533a4b194dece97ac5bd4cf16bfa0`. Les commits de preuves suivants ne changent pas le code applicatif.
+- Sur le site public : 20 occurrences couvrant les 16 TV, 32 cas aux anciens plafonds, Marseille +1 sans attaque automatique, Daily terminé avec **33 survivants**, identiques au calcul serveur.
+- Contrôle de régression public : 15 contrôles tactiles/souris/pause/sauvegarde/Daily ; quartier 2 terminé avec **28 survivants, contre 28 dans le simulateur**. 312 silhouettes ; projection moyenne 0,0114 ms et frames médianes 18,4 ms sur Chrome du GMK (aucune prétention de benchmark iPhone physique).
+- Aucune erreur JavaScript ni ressource manquante dans ces parcours.
+- Les 17 PNG chargés depuis le domaine public sont identiques **pixel par pixel** aux originaux. Hostinger réencode les PNG sans changer leurs pixels ; leurs empreintes de transport peuvent donc différer. Les fichiers d'origine sur Hostinger restent intacts. Voir `deployment.json`.
+- `cockpit.html` et son ancien module partagé restent strictement identiques en production. Les empreintes du code serveur des comptes/paiements, l'environnement et les volumes sont conservés (`api-deployment.json`). Aucun fichier privé de configuration n'est inclus dans ces preuves.
+- Sauvegarde des fichiers d'entrée hors du dossier public et conservation des anciens assets ; ancienne instance API arrêtée conservée pour retour arrière.
+
+Les captures de référence sont celles du dossier `public/`. Les JSON `local/`, `visual/` et `preview/` conservent les résultats des contrôles précédents sans dupliquer leurs captures.

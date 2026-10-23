@@ -1,0 +1,967 @@
+{
+  "base": "https://jeu.laconvergence.fr/",
+  "phase": "public",
+  "occurrences": [
+    {
+      "district": 2,
+      "index": 0,
+      "side": "left",
+      "key": "mobilisation2",
+      "file": "tv_bfmtv_bonus_x2_mobilisation.png",
+      "before": {
+        "count": 30,
+        "shields": 5
+      },
+      "after": {
+        "count": 60,
+        "shields": 5,
+        "ammo": 0,
+        "marseille": 0
+      },
+      "models": 60
+    },
+    {
+      "district": 2,
+      "index": 0,
+      "side": "right",
+      "key": "renforts10",
+      "file": "tv_bfmtv_bonus_10_renforts.png",
+      "before": {
+        "count": 30,
+        "shields": 5
+      },
+      "after": {
+        "count": 40,
+        "shields": 5,
+        "ammo": 0,
+        "marseille": 0
+      },
+      "models": 40
+    },
+    {
+      "district": 2,
+      "index": 1,
+      "side": "left",
+      "key": "gilets5",
+      "file": "tv_cnews_bonus_5_gilets_jaunes.png",
+      "before": {
+        "count": 30,
+        "shields": 5
+      },
+      "after": {
+        "count": 35,
+        "shields": 5,
+        "ammo": 0,
+        "marseille": 0
+      },
+      "models": 35
+    },
+    {
+      "district": 2,
+      "index": 1,
+      "side": "right",
+      "key": "protections14",
+      "file": "tv_bfmtv_bonus_14_protections.png",
+      "before": {
+        "count": 30,
+        "shields": 5
+      },
+      "after": {
+        "count": 30,
+        "shields": 19,
+        "ammo": 0,
+        "marseille": 0
+      },
+      "models": 30
+    },
+    {
+      "district": 2,
+      "index": 2,
+      "side": "left",
+      "key": "genz6",
+      "file": "tv_cnews_bonus_6_genz.png",
+      "before": {
+        "count": 30,
+        "shields": 5
+      },
+      "after": {
+        "count": 36,
+        "shields": 5,
+        "ammo": 0,
+        "marseille": 0
+      },
+      "models": 36
+    },
+    {
+      "district": 2,
+      "index": 2,
+      "side": "right",
+      "key": "ralliement50",
+      "file": "tv_bfmtv_bonus_50pct_ralliement.png",
+      "before": {
+        "count": 30,
+        "shields": 5
+      },
+      "after": {
+        "count": 45,
+        "shields": 5,
+        "ammo": 0,
+        "marseille": 0
+      },
+      "models": 45
+    },
+    {
+      "district": 2,
+      "index": 3,
+      "side": "left",
+      "key": "protections21",
+      "file": "tv_bfmtv_bonus_21_protections.png",
+      "before": {
+        "count": 30,
+        "shields": 5
+      },
+      "after": {
+        "count": 30,
+        "shields": 26,
+        "ammo": 0,
+        "marseille": 0
+      },
+      "models": 30
+    },
+    {
+      "district": 2,
+      "index": 3,
+      "side": "right",
+      "key": "mobilisation2",
+      "file": "tv_bfmtv_bonus_x2_mobilisation.png",
+      "before": {
+        "count": 30,
+        "shields": 5
+      },
+      "after": {
+        "count": 60,
+        "shields": 5,
+        "ammo": 0,
+        "marseille": 0
+      },
+      "models": 60
+    },
+    {
+      "district": 2,
+      "index": 4,
+      "side": "left",
+      "key": "pompiers4",
+      "file": "tv_cnews_bonus_4_pompiers.png",
+      "before": {
+        "count": 30,
+        "shields": 5
+      },
+      "after": {
+        "count": 34,
+        "shields": 5,
+        "ammo": 0,
+        "marseille": 0
+      },
+      "models": 34
+    },
+    {
+      "district": 2,
+      "index": 4,
+      "side": "right",
+      "key": "boucliers5",
+      "file": "tv_bfmtv_bonus_5_boucliers.png",
+      "before": {
+        "count": 30,
+        "shields": 5
+      },
+      "after": {
+        "count": 30,
+        "shields": 10,
+        "ammo": 0,
+        "marseille": 0
+      },
+      "models": 30
+    },
+    {
+      "district": 2,
+      "index": 5,
+      "side": "left",
+      "key": "fourgons20",
+      "file": "tv_lci_malus_20_fourgons.png",
+      "before": {
+        "count": 30,
+        "shields": 5
+      },
+      "after": {
+        "count": 15,
+        "shields": 0,
+        "ammo": 0,
+        "marseille": 0
+      },
+      "models": 15
+    },
+    {
+      "district": 2,
+      "index": 5,
+      "side": "right",
+      "key": "obstacles40",
+      "file": "tv_lci_malus_40pct_obstacles.png",
+      "before": {
+        "count": 30,
+        "shields": 5
+      },
+      "after": {
+        "count": 23,
+        "shields": 0,
+        "ammo": 0,
+        "marseille": 0
+      },
+      "models": 23
+    },
+    {
+      "district": 2,
+      "index": 6,
+      "side": "left",
+      "key": "infirmieres3",
+      "file": "tv_cnews_bonus_3_infirmieres.png",
+      "before": {
+        "count": 30,
+        "shields": 5
+      },
+      "after": {
+        "count": 33,
+        "shields": 5,
+        "ammo": 0,
+        "marseille": 0
+      },
+      "models": 33
+    },
+    {
+      "district": 2,
+      "index": 6,
+      "side": "right",
+      "key": "renforts10",
+      "file": "tv_bfmtv_bonus_10_renforts.png",
+      "before": {
+        "count": 30,
+        "shields": 5
+      },
+      "after": {
+        "count": 40,
+        "shields": 5,
+        "ammo": 0,
+        "marseille": 0
+      },
+      "models": 40
+    },
+    {
+      "district": 2,
+      "index": 7,
+      "side": "left",
+      "key": "dispersion2",
+      "file": "tv_lci_malus_div2_dispersion.png",
+      "before": {
+        "count": 30,
+        "shields": 5
+      },
+      "after": {
+        "count": 15,
+        "shields": 5,
+        "ammo": 0,
+        "marseille": 0
+      },
+      "models": 15
+    },
+    {
+      "district": 2,
+      "index": 7,
+      "side": "right",
+      "key": "departs5",
+      "file": "tv_lci_malus_5_departs.png",
+      "before": {
+        "count": 30,
+        "shields": 5
+      },
+      "after": {
+        "count": 25,
+        "shields": 5,
+        "ammo": 0,
+        "marseille": 0
+      },
+      "models": 25
+    },
+    {
+      "district": 2,
+      "index": 8,
+      "side": "left",
+      "key": "protections14",
+      "file": "tv_bfmtv_bonus_14_protections.png",
+      "before": {
+        "count": 30,
+        "shields": 5
+      },
+      "after": {
+        "count": 30,
+        "shields": 19,
+        "ammo": 0,
+        "marseille": 0
+      },
+      "models": 30
+    },
+    {
+      "district": 2,
+      "index": 8,
+      "side": "right",
+      "key": "gilets5",
+      "file": "tv_cnews_bonus_5_gilets_jaunes.png",
+      "before": {
+        "count": 30,
+        "shields": 5
+      },
+      "after": {
+        "count": 35,
+        "shields": 5,
+        "ammo": 0,
+        "marseille": 0
+      },
+      "models": 35
+    },
+    {
+      "district": 2,
+      "index": 9,
+      "side": "left",
+      "key": "barrage15",
+      "file": "tv_lci_malus_15_barrage.png",
+      "before": {
+        "count": 30,
+        "shields": 5
+      },
+      "after": {
+        "count": 20,
+        "shields": 0,
+        "ammo": 0,
+        "marseille": 0
+      },
+      "models": 20
+    },
+    {
+      "district": 2,
+      "index": 9,
+      "side": "right",
+      "key": "bravm3",
+      "file": "tv_lci_malus_3_manifestants.png",
+      "before": {
+        "count": 30,
+        "shields": 5
+      },
+      "after": {
+        "count": 27,
+        "shields": 5,
+        "ammo": 0,
+        "marseille": 0
+      },
+      "models": 27
+    }
+  ],
+  "boundaries": [
+    {
+      "index": 0,
+      "side": "right",
+      "key": "renforts10",
+      "file": "tv_bfmtv_bonus_10_renforts.png",
+      "before": {
+        "count": 70,
+        "shields": 47
+      },
+      "after": {
+        "count": 80,
+        "shields": 47,
+        "ammo": 0,
+        "marseille": 0
+      },
+      "models": 72
+    },
+    {
+      "index": 0,
+      "side": "right",
+      "key": "renforts10",
+      "file": "tv_bfmtv_bonus_10_renforts.png",
+      "before": {
+        "count": 100,
+        "shields": 60
+      },
+      "after": {
+        "count": 110,
+        "shields": 60,
+        "ammo": 0,
+        "marseille": 0
+      },
+      "models": 72
+    },
+    {
+      "index": 0,
+      "side": "left",
+      "key": "mobilisation2",
+      "file": "tv_bfmtv_bonus_x2_mobilisation.png",
+      "before": {
+        "count": 70,
+        "shields": 47
+      },
+      "after": {
+        "count": 140,
+        "shields": 47,
+        "ammo": 0,
+        "marseille": 0
+      },
+      "models": 72
+    },
+    {
+      "index": 0,
+      "side": "left",
+      "key": "mobilisation2",
+      "file": "tv_bfmtv_bonus_x2_mobilisation.png",
+      "before": {
+        "count": 100,
+        "shields": 60
+      },
+      "after": {
+        "count": 200,
+        "shields": 60,
+        "ammo": 0,
+        "marseille": 0
+      },
+      "models": 72
+    },
+    {
+      "index": 1,
+      "side": "right",
+      "key": "protections14",
+      "file": "tv_bfmtv_bonus_14_protections.png",
+      "before": {
+        "count": 70,
+        "shields": 47
+      },
+      "after": {
+        "count": 70,
+        "shields": 61,
+        "ammo": 0,
+        "marseille": 0
+      },
+      "models": 70
+    },
+    {
+      "index": 1,
+      "side": "right",
+      "key": "protections14",
+      "file": "tv_bfmtv_bonus_14_protections.png",
+      "before": {
+        "count": 100,
+        "shields": 60
+      },
+      "after": {
+        "count": 100,
+        "shields": 74,
+        "ammo": 0,
+        "marseille": 0
+      },
+      "models": 72
+    },
+    {
+      "index": 3,
+      "side": "left",
+      "key": "protections21",
+      "file": "tv_bfmtv_bonus_21_protections.png",
+      "before": {
+        "count": 70,
+        "shields": 47
+      },
+      "after": {
+        "count": 70,
+        "shields": 68,
+        "ammo": 0,
+        "marseille": 0
+      },
+      "models": 70
+    },
+    {
+      "index": 3,
+      "side": "left",
+      "key": "protections21",
+      "file": "tv_bfmtv_bonus_21_protections.png",
+      "before": {
+        "count": 100,
+        "shields": 60
+      },
+      "after": {
+        "count": 100,
+        "shields": 81,
+        "ammo": 0,
+        "marseille": 0
+      },
+      "models": 72
+    },
+    {
+      "index": 4,
+      "side": "right",
+      "key": "boucliers5",
+      "file": "tv_bfmtv_bonus_5_boucliers.png",
+      "before": {
+        "count": 70,
+        "shields": 47
+      },
+      "after": {
+        "count": 70,
+        "shields": 52,
+        "ammo": 0,
+        "marseille": 0
+      },
+      "models": 70
+    },
+    {
+      "index": 4,
+      "side": "right",
+      "key": "boucliers5",
+      "file": "tv_bfmtv_bonus_5_boucliers.png",
+      "before": {
+        "count": 100,
+        "shields": 60
+      },
+      "after": {
+        "count": 100,
+        "shields": 65,
+        "ammo": 0,
+        "marseille": 0
+      },
+      "models": 72
+    },
+    {
+      "index": 2,
+      "side": "right",
+      "key": "ralliement50",
+      "file": "tv_bfmtv_bonus_50pct_ralliement.png",
+      "before": {
+        "count": 70,
+        "shields": 47
+      },
+      "after": {
+        "count": 105,
+        "shields": 47,
+        "ammo": 0,
+        "marseille": 0
+      },
+      "models": 72
+    },
+    {
+      "index": 2,
+      "side": "right",
+      "key": "ralliement50",
+      "file": "tv_bfmtv_bonus_50pct_ralliement.png",
+      "before": {
+        "count": 100,
+        "shields": 60
+      },
+      "after": {
+        "count": 150,
+        "shields": 60,
+        "ammo": 0,
+        "marseille": 0
+      },
+      "models": 72
+    },
+    {
+      "index": 2,
+      "side": "left",
+      "key": "genz6",
+      "file": "tv_cnews_bonus_6_genz.png",
+      "before": {
+        "count": 70,
+        "shields": 47
+      },
+      "after": {
+        "count": 76,
+        "shields": 47,
+        "ammo": 0,
+        "marseille": 0
+      },
+      "models": 72
+    },
+    {
+      "index": 2,
+      "side": "left",
+      "key": "genz6",
+      "file": "tv_cnews_bonus_6_genz.png",
+      "before": {
+        "count": 100,
+        "shields": 60
+      },
+      "after": {
+        "count": 106,
+        "shields": 60,
+        "ammo": 0,
+        "marseille": 0
+      },
+      "models": 72
+    },
+    {
+      "index": 4,
+      "side": "left",
+      "key": "pompiers4",
+      "file": "tv_cnews_bonus_4_pompiers.png",
+      "before": {
+        "count": 70,
+        "shields": 47
+      },
+      "after": {
+        "count": 74,
+        "shields": 47,
+        "ammo": 0,
+        "marseille": 0
+      },
+      "models": 72
+    },
+    {
+      "index": 4,
+      "side": "left",
+      "key": "pompiers4",
+      "file": "tv_cnews_bonus_4_pompiers.png",
+      "before": {
+        "count": 100,
+        "shields": 60
+      },
+      "after": {
+        "count": 104,
+        "shields": 60,
+        "ammo": 0,
+        "marseille": 0
+      },
+      "models": 72
+    },
+    {
+      "index": 6,
+      "side": "left",
+      "key": "infirmieres3",
+      "file": "tv_cnews_bonus_3_infirmieres.png",
+      "before": {
+        "count": 70,
+        "shields": 47
+      },
+      "after": {
+        "count": 73,
+        "shields": 47,
+        "ammo": 0,
+        "marseille": 0
+      },
+      "models": 72
+    },
+    {
+      "index": 6,
+      "side": "left",
+      "key": "infirmieres3",
+      "file": "tv_cnews_bonus_3_infirmieres.png",
+      "before": {
+        "count": 100,
+        "shields": 60
+      },
+      "after": {
+        "count": 103,
+        "shields": 60,
+        "ammo": 0,
+        "marseille": 0
+      },
+      "models": 72
+    },
+    {
+      "index": 1,
+      "side": "left",
+      "key": "gilets5",
+      "file": "tv_cnews_bonus_5_gilets_jaunes.png",
+      "before": {
+        "count": 70,
+        "shields": 47
+      },
+      "after": {
+        "count": 75,
+        "shields": 47,
+        "ammo": 0,
+        "marseille": 0
+      },
+      "models": 72
+    },
+    {
+      "index": 1,
+      "side": "left",
+      "key": "gilets5",
+      "file": "tv_cnews_bonus_5_gilets_jaunes.png",
+      "before": {
+        "count": 100,
+        "shields": 60
+      },
+      "after": {
+        "count": 105,
+        "shields": 60,
+        "ammo": 0,
+        "marseille": 0
+      },
+      "models": 72
+    },
+    {
+      "index": 9,
+      "side": "left",
+      "key": "barrage15",
+      "file": "tv_lci_malus_15_barrage.png",
+      "before": {
+        "count": 70,
+        "shields": 47
+      },
+      "after": {
+        "count": 70,
+        "shields": 32,
+        "ammo": 0,
+        "marseille": 0
+      },
+      "models": 70
+    },
+    {
+      "index": 9,
+      "side": "left",
+      "key": "barrage15",
+      "file": "tv_lci_malus_15_barrage.png",
+      "before": {
+        "count": 100,
+        "shields": 60
+      },
+      "after": {
+        "count": 100,
+        "shields": 45,
+        "ammo": 0,
+        "marseille": 0
+      },
+      "models": 72
+    },
+    {
+      "index": 5,
+      "side": "left",
+      "key": "fourgons20",
+      "file": "tv_lci_malus_20_fourgons.png",
+      "before": {
+        "count": 70,
+        "shields": 47
+      },
+      "after": {
+        "count": 70,
+        "shields": 27,
+        "ammo": 0,
+        "marseille": 0
+      },
+      "models": 70
+    },
+    {
+      "index": 5,
+      "side": "left",
+      "key": "fourgons20",
+      "file": "tv_lci_malus_20_fourgons.png",
+      "before": {
+        "count": 100,
+        "shields": 60
+      },
+      "after": {
+        "count": 100,
+        "shields": 40,
+        "ammo": 0,
+        "marseille": 0
+      },
+      "models": 72
+    },
+    {
+      "index": 5,
+      "side": "right",
+      "key": "obstacles40",
+      "file": "tv_lci_malus_40pct_obstacles.png",
+      "before": {
+        "count": 70,
+        "shields": 47
+      },
+      "after": {
+        "count": 70,
+        "shields": 19,
+        "ammo": 0,
+        "marseille": 0
+      },
+      "models": 70
+    },
+    {
+      "index": 5,
+      "side": "right",
+      "key": "obstacles40",
+      "file": "tv_lci_malus_40pct_obstacles.png",
+      "before": {
+        "count": 100,
+        "shields": 60
+      },
+      "after": {
+        "count": 100,
+        "shields": 20,
+        "ammo": 0,
+        "marseille": 0
+      },
+      "models": 72
+    },
+    {
+      "index": 7,
+      "side": "right",
+      "key": "departs5",
+      "file": "tv_lci_malus_5_departs.png",
+      "before": {
+        "count": 70,
+        "shields": 47
+      },
+      "after": {
+        "count": 65,
+        "shields": 47,
+        "ammo": 0,
+        "marseille": 0
+      },
+      "models": 65
+    },
+    {
+      "index": 7,
+      "side": "right",
+      "key": "departs5",
+      "file": "tv_lci_malus_5_departs.png",
+      "before": {
+        "count": 100,
+        "shields": 60
+      },
+      "after": {
+        "count": 95,
+        "shields": 60,
+        "ammo": 0,
+        "marseille": 0
+      },
+      "models": 72
+    },
+    {
+      "index": 7,
+      "side": "left",
+      "key": "dispersion2",
+      "file": "tv_lci_malus_div2_dispersion.png",
+      "before": {
+        "count": 70,
+        "shields": 47
+      },
+      "after": {
+        "count": 35,
+        "shields": 47,
+        "ammo": 0,
+        "marseille": 0
+      },
+      "models": 35
+    },
+    {
+      "index": 7,
+      "side": "left",
+      "key": "dispersion2",
+      "file": "tv_lci_malus_div2_dispersion.png",
+      "before": {
+        "count": 100,
+        "shields": 60
+      },
+      "after": {
+        "count": 50,
+        "shields": 60,
+        "ammo": 0,
+        "marseille": 0
+      },
+      "models": 50
+    },
+    {
+      "index": 9,
+      "side": "right",
+      "key": "bravm3",
+      "file": "tv_lci_malus_3_manifestants.png",
+      "before": {
+        "count": 70,
+        "shields": 47
+      },
+      "after": {
+        "count": 67,
+        "shields": 47,
+        "ammo": 0,
+        "marseille": 0
+      },
+      "models": 67
+    },
+    {
+      "index": 9,
+      "side": "right",
+      "key": "bravm3",
+      "file": "tv_lci_malus_3_manifestants.png",
+      "before": {
+        "count": 100,
+        "shields": 60
+      },
+      "after": {
+        "count": 97,
+        "shields": 60,
+        "ammo": 0,
+        "marseille": 0
+      },
+      "models": 72
+    }
+  ],
+  "errors": [],
+  "badAssets": [],
+  "marseille": {
+    "before": {
+      "count": 5,
+      "shields": 0,
+      "ammo": 0,
+      "marseille": 0,
+      "roster": [
+        "gilets",
+        "gilets",
+        "gilets",
+        "gilets",
+        "gilets"
+      ],
+      "models": 5,
+      "hud": "👥 5"
+    },
+    "after": {
+      "count": 5,
+      "shields": 0,
+      "ammo": 0,
+      "marseille": 1,
+      "roster": [
+        "gilets",
+        "gilets",
+        "gilets",
+        "gilets",
+        "gilets"
+      ],
+      "models": 5,
+      "hud": "👥 5"
+    },
+    "selected": true,
+    "second": false,
+    "active": false
+  },
+  "daily": {
+    "state": "boss_defeated",
+    "history": 10,
+    "path": [
+      "right",
+      "left",
+      "right",
+      "left",
+      "left",
+      "left",
+      "right",
+      "left",
+      "right",
+      "left"
+    ],
+    "count": 33,
+    "version": 4
+  }
+}

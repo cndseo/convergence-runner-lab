@@ -33,3 +33,5 @@ for(const [key,d] of Object.entries(FIXED_TV_CATALOG)){
 lines.push('| [tv-marseille-attack.png](../../../prototype/convergence/public/assets/marseille-bonus/tv-marseille-attack.png) | +1 charge marseillaise en réserve | Effectifs et protections inchangés ; attaque inactive |');
 writeFileSync(new URL('correspondance.md',dir),lines.join('\n')+'\n');
 console.log('48 campaign configurations: resistance/layout unchanged, all exact free witnesses win; 2,834,352 ternary routes accounted for.');
+
+rmSync(reference,{recursive:true,force:true});
